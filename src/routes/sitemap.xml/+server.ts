@@ -33,6 +33,11 @@ export const GET = ({ url }: { url: URL }) => {
 			changefreq: 'weekly',
 			priority: 1.0
 		},
+		{
+			loc: new URL(`${base}/dev-log/`, url.origin).toString(),
+			changefreq: 'weekly',
+			priority: 0.6
+		},
 		...articles.map<SitemapEntry>((article) => ({
 			loc: new URL(`${base}/${article.slug}/`, url.origin).toString(),
 			lastmod: normalizeIsoDate(article.date),

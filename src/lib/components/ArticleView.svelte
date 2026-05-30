@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { base } from '$app/paths';
-	import { page } from '$app/state';
-	import SiteHeader from '$lib/components/SiteHeader.svelte';
-	import type { Article } from '$lib/articles';
+import { onMount } from 'svelte';
+import { base } from '$app/paths';
+import { page } from '$app/state';
+import { articleAccentColor } from '$lib/article-accent';
+import SiteHeader from '$lib/components/SiteHeader.svelte';
+import { articleTitleTransitionName } from '$lib/view-transitions';
+import type { Article } from '$lib/articles';
 
 	type Props = {
 		article: Article;
@@ -14,6 +16,8 @@
 	let activeTocId = $state<string | null>(null);
 	let commandFeedback = $state<string | null>(null);
 	let feedbackTimer: number | null = null;
+	const articleAccent = $derived(articleAccentColor(article));
+	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 
 	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
 	const description = $derived(article.summary || 'Technical blog drafts and production notes from Ryan Spice.');
@@ -184,7 +188,7 @@
 	<section class="hero">
 		<div>
 			<div class="eyebrow">{article.design.eyebrow}</div>
-			<h1>{article.title}</h1>
+			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
 			<dl class="meta-grid article-meta" aria-label="Article metadata">
 				<div>
 					<dt>Published</dt>
@@ -207,7 +211,7 @@
 			</div>
 		</div>
 
-		<aside class="hero-card" aria-label={article.design.heroCardAria}>
+		<aside class="hero-card" aria-label={article.design.heroCardAria} style={`--article-accent: ${articleAccent}`}>
 			<strong>{article.design.heroCardTitle}</strong>
 			<div class="status-grid">
 				{#each article.design.statusItems as item (item.label)}

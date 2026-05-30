@@ -9,6 +9,8 @@
 
 	let { brandLabel = 'Ryan Spice / Canopy Digital', navLinks = [] }: Props = $props();
 	const draftLink: NavItem = { label: 'Drafts', href: '/drafts' };
+	const devLogLink: NavItem = { label: 'Dev log', href: '/dev-log' };
+	const defaultNavLinks = [draftLink, devLogLink];
 
 	const brandParts = $derived(
 		brandLabel
@@ -17,7 +19,10 @@
 			.filter(Boolean)
 	);
 	const visibleNavLinks = $derived(
-		navLinks.some((item) => item.href === draftLink.href) ? navLinks : [...navLinks, draftLink]
+		[
+			...navLinks,
+			...defaultNavLinks.filter((item) => !navLinks.some((link) => link.href === item.href))
+		]
 	);
 
 	function hrefFor(href: string): string {

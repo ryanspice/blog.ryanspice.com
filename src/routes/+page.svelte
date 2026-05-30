@@ -1,21 +1,27 @@
 <script lang="ts">
 	import { base } from '$app/paths';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { articles } from '$lib/articles';
+	import { articleAccentColor } from '$lib/article-accent';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
+	import { articleTitleTransitionName, runViewTransition } from '$lib/view-transitions';
 
 	const title = 'blog.ryanspice.com · Technical notes';
-	const description = 'Technical blog drafts and production notes from Ryan Spice.';
+	const description = 'Technical blog drafts, production notes, and a lightweight dev log from Ryan Spice.';
 	const latestArticle = articles[0];
 	const latestDate = latestArticle ? latestArticle.date : '2026-05-28';
 	const latestDateLabel = latestArticle ? latestArticle.dateLabel : 'May 28, 2026';
-	const latestPalette = latestArticle?.design.cardPalette ?? latestArticle?.design.railPalette;
-	const latestPaletteColors = latestPalette?.colors ?? [];
 	const latestArticleHref = latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`;
+	const latestArticleAccent = $derived(latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)');
+	const latestArticleTitleTransitionName = $derived(
+		latestArticle ? articleTitleTransitionName(latestArticle.slug) : 'article-title-home-latest'
+	);
 	const footerLinks = [
 		{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
 		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
+		{ label: 'Dev log', href: '/dev-log' },
 		{ label: 'RSS feed', href: '/rss.xml' },
 		{ label: 'Sitemap', href: '/sitemap.xml' }
 	];
@@ -44,6 +50,22 @@
 	function hrefFor(href: string): string {
 		if (href.startsWith('#') || href.startsWith('http')) return href;
 		return `${base}${href}`;
+	}
+
+	function navigateToLatestArticle(event: MouseEvent) {
+		if (
+			!latestArticle ||
+			event.button !== 0 ||
+			event.metaKey ||
+			event.ctrlKey ||
+			event.shiftKey ||
+			event.altKey
+		) {
+			return;
+		}
+
+		event.preventDefault();
+		void runViewTransition(() => goto(latestArticleHref));
 	}
 </script>
 
@@ -85,7 +107,7 @@
 	<div class="home-hero-copy">
 		<p class="eyebrow">Ryan Spice · technical blog</p>
 		<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
-		<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, and research comparisons that stay grounded in the actual workflow.</p>
+		<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.</p>
 		<dl class="meta-grid home-meta" aria-label="Site metadata">
 			<div>
 				<dt>Articles</dt>
@@ -102,9 +124,13 @@
 		</dl>
 	</div>
 
-	<aside class="hero-card home-hero-card" aria-label="Latest article">
+	<aside class="hero-card home-hero-card" aria-label="Latest article" style={`--article-accent: ${latestArticleAccent}`}>
 		<strong>Latest article</strong>
-		<h2><a href={latestArticleHref}>{latestArticle?.title ?? 'Latest article'}</a></h2>
+		<h2 style:view-transition-name={latestArticleTitleTransitionName}>
+			<a href={latestArticleHref} onclick={navigateToLatestArticle}>
+				{latestArticle?.title ?? 'Latest article'}
+			</a>
+		</h2>
 		<p>{latestArticle?.summary ?? 'Recent technical notes and comparisons.'}</p>
 		<dl class="hero-meta" aria-label="Latest article metadata">
 			<div>
@@ -120,13 +146,6 @@
 				<dd>{latestArticle?.draftType?.replaceAll('-', ' ') ?? 'article'}</dd>
 			</div>
 		</dl>
-		{#if latestPaletteColors.length}
-			<div class="card-palette home-palette" aria-label={latestPalette?.label ?? 'Latest article palette'}>
-				{#each latestPaletteColors.slice(0, 5) as color (color)}
-					<span class="card-swatch" style={`background:${color}`}></span>
-				{/each}
-			</div>
-		{/if}
 		<p class="home-hero-note">Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.</p>
 		<div class="home-hero-links" aria-label="Quick links">
 			<a href={hrefFor('/rss.xml')}>RSS feed</a>
@@ -151,7 +170,7 @@
 		<div class="site-footer-copy">
 			<p class="eyebrow">Elsewhere</p>
 			<h2>Links and site info</h2>
-			<p class="site-footer-dek">A static SvelteKit blog for technical notes, repair logs, and research writeups. The public surface stays small and easy to scan.</p>
+			<p class="site-footer-dek">A static SvelteKit blog for technical notes, repair logs, research writeups, and a lightweight dev log tied back to AI Wiki fragments. The public surface stays small and easy to scan.</p>
 		</div>
 
 		<div class="site-footer-links">
