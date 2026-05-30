@@ -45,6 +45,7 @@ export type ArticleMeta = {
 	tags: string[];
 	audience: string[];
 	date: string;
+	dateLabel: string;
 	relatedPosts: string[];
 	design: ArticleDesign;
 };
@@ -62,7 +63,7 @@ const modules = import.meta.glob('./content/articles/*.md', {
 
 export const articles: Article[] = Object.entries(modules)
 	.map(([path, raw]) => parseArticle(path, raw))
-	.sort((a, b) => a.title.localeCompare(b.title));
+	.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
 
 export function getArticle(slug: string): Article | undefined {
 	return articles.find((article) => article.slug === slug);
@@ -78,7 +79,8 @@ function parseArticle(path: string, raw: string): Article {
 	const draftType = stringValue(frontmatter.draft_type) || 'technical-blog-post';
 	const summary = stringValue(frontmatter.summary) || '';
 	const tags = arrayValue(frontmatter.tags);
-	const date = filename.match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? '2026-05-28';
+	const date = stringValue(frontmatter.date) || filename.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || '2026-05-28';
+	const dateLabel = formatArticleDate(date);
 
 	return {
 		...rendered,
@@ -90,13 +92,14 @@ function parseArticle(path: string, raw: string): Article {
 		tags,
 		audience: arrayValue(frontmatter.audience),
 		date,
+		dateLabel,
 		relatedPosts: arrayValue(frontmatter.related_posts),
-		design: designFor({ slug, title, status, draftType, summary, tags, date }),
+		design: designFor({ slug, title, status, draftType, summary, tags, date, dateLabel }),
 		body
 	};
 }
 
-function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date'>): ArticleDesign {
+function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date' | 'dateLabel'>): ArticleDesign {
 	const common = {
 		brandLabel: 'Ryan Spice / Canopy Digital',
 		tocTitle: 'Contents'
@@ -121,7 +124,8 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				{ label: 'PhotoGIMP', value: 'Installed' },
 				{ label: "G'MIC", value: 'Working' },
 				{ label: 'PixelBoats Kit', value: 'Installed' },
-				{ label: 'Old plug-ins', value: 'Quarantined' }
+				{ label: 'Old plug-ins', value: 'Quarantined' },
+				{ label: 'Date', value: article.dateLabel }
 			],
 			railTitle: 'Real-world page direction',
 			railBodyHtml: 'This mock leans more <strong>ryanspice.com / Canopy Digital technical article</strong> than raw Obsidian note.',
@@ -153,7 +157,8 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				{ label: 'Better clue', value: 'Pango / GI' },
 				{ label: 'Suspect', value: 'Windhawk hooks' },
 				{ label: 'Secondary risk', value: 'PATH DLLs' },
-				{ label: 'Outcome', value: 'Clean launch' }
+				{ label: 'Outcome', value: 'Clean launch' },
+				{ label: 'Date', value: article.dateLabel }
 			],
 			railTitle: 'Debugging angle',
 			railBodyHtml: 'This page is intentionally more searchable and technical than the PixelBoats workflow article.',
@@ -181,7 +186,8 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				{ label: 'Chosen', value: 'PixiJS 8.18 + Colyseus' },
 				{ label: 'Runner-up', value: 'Phaser 4.1' },
 				{ label: '3D fallback', value: 'Three.js / Babylon.js (future)' },
-				{ label: 'License', value: 'MIT (all)' }
+				{ label: 'License', value: 'MIT (all)' },
+				{ label: 'Date', value: article.dateLabel }
 			],
 			railTitle: 'The framing that changed everything',
 			railBodyHtml: 'The question was framed as "Phaser vs PixiJS" but the real answer came from naming the actual rendering problem: a height field driving vertex displacement, particles, and custom projection. Once that was clear, Phaser\'s abstractions became overhead and Pixi\'s Mesh/Filter primitives became the natural fit.',
@@ -197,13 +203,13 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 		variant: 'default',
 		eyebrow: `Technical blog · ${article.status}`,
 		tags: article.tags,
-		navLinks: [{ label: 'Articles', href: '#articles' }],
+		navLinks: [{ label: 'Articles', href: '/#articles' }],
 		heroCardTitle: 'Article profile',
 		heroCardAria: 'Article details',
 		statusItems: [
 			{ label: 'Type', value: article.draftType.replaceAll('-', ' ') },
 			{ label: 'Status', value: article.status },
-			{ label: 'Date', value: article.date }
+			{ label: 'Date', value: article.dateLabel }
 		],
 		railTitle: 'Publishing notes',
 		railBodyHtml: 'This route is static-friendly and generated from local Markdown.',
@@ -264,6 +270,18 @@ function stringValue(value: string | string[] | undefined): string {
 
 function arrayValue(value: string | string[] | undefined): string[] {
 	return Array.isArray(value) ? value : [];
+}
+
+function formatArticleDate(value: string): string {
+	const parsed = new Date(`${value}T00:00:00Z`);
+	if (Number.isNaN(parsed.getTime())) return value;
+
+	return new Intl.DateTimeFormat('en-US', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+		timeZone: 'UTC'
+	}).format(parsed);
 }
 
 function firstHeading(body: string): string | undefined {

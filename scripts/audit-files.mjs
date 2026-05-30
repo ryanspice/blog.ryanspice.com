@@ -14,6 +14,7 @@ const required = [
 	'src/lib/articles.ts',
 	'src/lib/content/articles/debugging-gimp-3-python-plugin-failures-windows-windhawk.md',
 	'src/lib/content/articles/gimp-3-repair-photogimp-pixelboats-workstation.md',
+	'src/lib/content/articles/how-chatgpt-performs-deep-research.md',
 	'src/lib/content/articles/phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game.md',
 	'context/source-html/gimp-repair-blog-realworld-demo-v0.1.0.html',
 	'context/source-html/gimp-windhawk-debug-blog-realworld-demo-v0.1.0.html',

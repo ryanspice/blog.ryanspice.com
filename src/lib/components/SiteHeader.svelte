@@ -35,7 +35,7 @@
 		</a>
 		{#if navLinks.length}
 			<div class="nav-links">
-				{#each navLinks as item}
+				{#each navLinks as item (item.href)}
 					<a href={hrefFor(item.href)}>{item.label}</a>
 				{/each}
 			</div>

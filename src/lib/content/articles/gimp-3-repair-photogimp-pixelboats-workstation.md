@@ -3,6 +3,7 @@ title: "Repairing a Broken GIMP 3 Install and Turning It Into a Pixel Art Workst
 slug: "gimp-3-repair-photogimp-pixelboats-workstation"
 status: "draft"
 draft_type: "technical-blog-post"
+date: "2026-05-28"
 audience:
   - "indie game developers"
   - "front-end engineers doing art-adjacent production"

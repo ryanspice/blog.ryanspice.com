@@ -3,6 +3,7 @@ title: "Debugging GIMP 3 Python Plug-in Failures on Windows: When the Culprit Wa
 slug: "debugging-gimp-3-python-plugin-failures-windows-windhawk"
 status: "draft"
 draft_type: "technical-blog-post"
+date: "2026-05-28"
 audience:
   - "Windows power users"
   - "developers debugging desktop runtime issues"

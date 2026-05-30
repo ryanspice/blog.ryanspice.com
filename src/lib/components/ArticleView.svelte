@@ -21,10 +21,6 @@
 	const rssUrl = $derived(new URL(`${base}/rss.xml`, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
 
-	const publishedIso = $derived(
-		Number.isNaN(new Date(article.date).getTime()) ? null : new Date(article.date).toISOString()
-	);
-
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
 		'@graph': [
@@ -50,8 +46,8 @@
 				headline: article.title,
 				description,
 				mainEntityOfPage: canonical,
-				datePublished: publishedIso ?? undefined,
-				dateModified: publishedIso ?? undefined,
+				datePublished: article.date,
+				dateModified: article.date,
 				author: {
 					'@type': 'Person',
 					name: 'Ryan Spice',
@@ -170,12 +166,10 @@
 
 	<link rel="alternate" type="application/rss+xml" title="RSS" href={rssUrl} />
 
-	{#if publishedIso}
-		<meta property="article:published_time" content={publishedIso} />
-		<meta property="article:modified_time" content={publishedIso} />
-	{/if}
+	<meta property="article:published_time" content={article.date} />
+	<meta property="article:modified_time" content={article.date} />
 
-	{#each article.tags as tag}
+	{#each article.tags as tag (tag)}
 		<meta property="article:tag" content={tag} />
 	{/each}
 
@@ -191,9 +185,23 @@
 		<div>
 			<div class="eyebrow">{article.design.eyebrow}</div>
 			<h1>{article.title}</h1>
+			<dl class="meta-grid article-meta" aria-label="Article metadata">
+				<div>
+					<dt>Published</dt>
+					<dd><time datetime={article.date}>{article.dateLabel}</time></dd>
+				</div>
+				<div>
+					<dt>Read time</dt>
+					<dd>{article.readingMinutes} min</dd>
+				</div>
+				<div>
+					<dt>Type</dt>
+					<dd>{article.draftType.replaceAll('-', ' ')}</dd>
+				</div>
+			</dl>
 			<p class="dek">{article.summary}</p>
 			<div class="tag-row" aria-label="Tags">
-				{#each article.design.tags as tag}
+				{#each article.design.tags as tag (tag)}
 					<span class="tag">{tag}</span>
 				{/each}
 			</div>
@@ -202,7 +210,7 @@
 		<aside class="hero-card" aria-label={article.design.heroCardAria}>
 			<strong>{article.design.heroCardTitle}</strong>
 			<div class="status-grid">
-				{#each article.design.statusItems as item}
+				{#each article.design.statusItems as item (item.label)}
 					<div class="status-pill"><span>{item.label}</span><strong>{item.value}</strong></div>
 				{/each}
 			</div>
@@ -212,7 +220,7 @@
 	<main class="layout">
 		<aside class="toc" aria-label="Table of contents">
 			<h2>{article.design.tocTitle}</h2>
-			{#each article.toc as item}
+			{#each article.toc as item (item.id)}
 				<a
 					class:toc-l3={item.level === 3}
 					class:toc-l2={item.level === 2}
@@ -235,7 +243,7 @@
 
 			{#if article.design.railPalette}
 				<div class="palette-preview" aria-label={article.design.railPalette.label}>
-					{#each article.design.railPalette.colors as color}
+					{#each article.design.railPalette.colors as color (color)}
 						<span class="swatch" style={`background:${color}`}></span>
 					{/each}
 				</div>
@@ -243,7 +251,7 @@
 
 			{#if article.design.railChips?.length}
 				<div class="debug-stack" aria-label={article.design.railChipsLabel ?? 'Debugging stack'}>
-					{#each article.design.railChips as chip}
+					{#each article.design.railChips as chip (chip)}
 						<span class="debug-chip">{chip}</span>
 					{/each}
 				</div>

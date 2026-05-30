@@ -7,6 +7,9 @@
 
 	const title = 'blog.ryanspice.com · Technical notes';
 	const description = 'Technical blog drafts and production notes from Ryan Spice.';
+	const latestArticle = articles[0];
+	const latestDate = latestArticle ? latestArticle.date : '2026-05-28';
+	const latestDateLabel = latestArticle ? latestArticle.dateLabel : 'May 28, 2026';
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const rssUrl = $derived(new URL(`${base}/rss.xml`, page.url.origin).toString());
@@ -59,6 +62,7 @@
 <SiteHeader
 	navLinks={[
 		{ label: 'Articles', href: '#articles' },
+		{ label: 'RSS', href: '/rss.xml' },
 		{ label: 'ryanspice.com', href: 'https://ryanspice.com' }
 	]}
 />
@@ -67,6 +71,20 @@
 	<p class="eyebrow">Ryan Spice · technical blog</p>
 	<h1>Practical field notes for tooling, web work, and weird Windows problems.</h1>
 	<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, starting with the two GIMP / Windhawk / PixelBoats workstation articles.</p>
+	<dl class="meta-grid home-meta" aria-label="Site metadata">
+		<div>
+			<dt>Articles</dt>
+			<dd>{articles.length}</dd>
+		</div>
+		<div>
+			<dt>Latest</dt>
+			<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
+		</div>
+		<div>
+			<dt>Feed</dt>
+			<dd>RSS available</dd>
+		</div>
+	</dl>
 	<div class="home-actions">
 		<a class="primary-action" href={`${base}/#articles`}>Read articles</a>
 		<a class="secondary-action" href="https://ryanspice.com" rel="noreferrer" target="_blank">ryanspice.com</a>
@@ -74,8 +92,12 @@
 </section>
 
 <section id="articles" class="article-grid" aria-label="Latest articles">
-	<h2 class="panorama-title">articles</h2>
-	{#each articles as article}
+	<div class="section-head">
+		<p class="eyebrow">Latest articles</p>
+		<h2>Recent posts</h2>
+		<p class="section-dek">Published technical notes with dates, reading time, and source-linked metadata.</p>
+	</div>
+	{#each articles as article (article.slug)}
 		<ArticleCard {article} />
 	{/each}
 </section>
