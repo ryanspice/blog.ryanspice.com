@@ -198,6 +198,37 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 		};
 	}
 
+	if (article.slug === 'how-chatgpt-performs-deep-research') {
+		return {
+			...common,
+			variant: 'default',
+			eyebrow: 'Research comparison · OpenAI vs DeepSeek',
+			tags: ['ChatGPT', 'Deep Research', 'DeepSeek', 'Reasoning Models', 'LLMs', 'Agentic Workflows'],
+			navLinks: [
+				{ label: 'Short version', href: '#the-short-version' },
+				{ label: 'Overlap', href: '#where-the-two-systems-overlap' },
+				{ label: 'Difference', href: '#retrieval-is-the-real-difference' },
+				{ label: 'Takeaway', href: '#the-useful-mental-model' }
+			],
+			heroCardTitle: 'Comparison frame',
+			heroCardAria: 'Comparison summary',
+			statusItems: [
+				{ label: 'OpenAI', value: 'Governed research workflow' },
+				{ label: 'DeepSeek', value: 'Reasoning/API substrate' },
+				{ label: 'Primary question', value: 'Workflow vs model layer' },
+				{ label: 'Date', value: article.dateLabel }
+			],
+			railTitle: 'How to read this article',
+			railBodyHtml:
+				'This comparison separates the product experience from the model surface so the differences stay concrete instead of hand-wavy.',
+			railChipsLabel: 'Key themes',
+			railChips: ['source control', 'plan review', 'exposed CoT', 'long context', 'developer integration'],
+			railCalloutHtml:
+				'<strong>Editorial angle:</strong> compare the layer you are actually using — research workflow, model API, or both.',
+			footerText: 'Static SvelteKit comparison article generated from local Markdown.'
+		};
+	}
+
 	return {
 		...common,
 		variant: 'default',

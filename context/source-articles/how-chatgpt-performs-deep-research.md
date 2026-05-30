@@ -1,262 +1,499 @@
 ---
-title: "How ChatGPT Performs Deep Research"
+title: "ChatGPT Deep Research vs. DeepSeek: What’s Actually Happening Under the Hood"
 slug: "how-chatgpt-performs-deep-research"
 status: "draft"
-draft_type: "technical-blog-post"
+draft_type: "research-analysis"
 date: "2026-05-30"
 audience:
   - "AI practitioners"
+  - "developers building agentic workflows"
   - "researchers comparing reasoning systems"
-  - "technical readers evaluating research workflows"
 possible_publication_targets:
   - "AI Wiki inbox"
   - "ryanspice.com"
 tags:
   - openai
   - chatgpt
-  - deep-research
-  - reasoning-models
+  - deep research
   - deepseek
-  - ai-research
-summary: "A source-linked comparison of ChatGPT deep research, its public product workflow, and how it differs from DeepSeek's more transparent reasoning-model surface."
+  - reasoning models
+  - developer workflow
+summary: "A practical comparison of ChatGPT Deep Research and DeepSeek-style reasoning APIs, focused on workflow, retrieval, transparency, and what builders should actually take away."
 ---
-# How ChatGPT Performs Deep Research
+# ChatGPT Deep Research vs. DeepSeek: What’s Actually Happening Under the Hood
 
-## Executive summary
+There is a useful but often-muddled distinction between **a reasoning model** and **a research product**.
 
-OpenAI’s public documentation indicates that ChatGPT’s deep research feature is an **agentic research workflow**, not merely a longer answer. In its current form, the workflow lets a user define a goal, choose or restrict sources, review and edit a proposed research plan, watch the run in progress, interrupt it if needed, and receive a structured report with citations or source links, a sources-used section, and an activity history. At launch, OpenAI said deep research was powered by a version of **o3** optimised for web browsing and data analysis; current Help Centre documentation says deep research is powered by the **latest models by default**, with legacy-model choice still available. 
+That distinction matters a lot when comparing ChatGPT Deep Research with DeepSeek.
 
-Under the hood, OpenAI discloses only part of the stack. The clearest public picture is a layered one: a general GPT foundation-model pipeline; an **o-series reasoning layer** trained with large-scale reinforcement learning on chain-of-thought and tool use; and a deep-research product layer trained end-to-end on hard browsing-and-reasoning tasks that use browser and Python tools. OpenAI also states that o-series models can use tools **inside** their reasoning process. What remains undisclosed is notable: OpenAI does **not** publish the exact current architecture, parameter counts, search/indexing/ranking internals, or raw chain-of-thought for ChatGPT deep research. 
+ChatGPT Deep Research is not just “ChatGPT, but slower and longer.” It is better understood as an **agentic research workflow**: it scopes a task, proposes a plan, browses or reads sources, performs analysis, tracks activity, and produces a cited report.
 
-The attached “Deep Seek Research” material points in a different direction. It frames DeepSeek primarily as an **OpenAI-compatible reasoning API/model family** with exposed reasoning output, explicit thinking controls, and more openly documented model-side details. That aligns with official DeepSeek documentation showing OpenAI/Anthropic-compatible API formats, explicit `thinking`/`reasoning_effort` controls, exposed `reasoning_content`, and published model papers that disclose MoE/MLA-style architectures for DeepSeek-V3 and reinforcement-learning-heavy reasoning development for DeepSeek-R1. The strongest overlap with OpenAI is at the high level—reasoning, RL, and tool use. The biggest divergence is in **transparency and product scope**: OpenAI exposes more policy/process governance and a richer end-user research workflow, while DeepSeek exposes more API-level reasoning detail and more model internals.  
+DeepSeek, at least from the public documentation and the DeepSeek/Hermes-style research notes I reviewed, is better understood as a **reasoning model and API substrate**: OpenAI-compatible endpoints, long context, explicit thinking controls, exposed reasoning output, and model papers that disclose more architectural detail than OpenAI tends to publish.
 
-For researchers and practitioners, the practical conclusion is that ChatGPT deep research is best understood as a **closed, controllable, citation-oriented research assistant**. It is strong when the task is source-bounded synthesis, evidence gathering, and long-form reporting. It is weaker when the requirement is full reproducibility, exact replay, or inspection of every reasoning step. OpenAI’s own materials support this mixed assessment: it offers plan control, source control, citations, exports, model specs, and system cards, but also updates models over time, hides raw chain-of-thought, and acknowledges that production behaviour can vary with updates and prompts. 
+That does not mean one is simply “better.” They are solving different layers of the stack.
 
-## Assumptions and evidence base
+One is a finished research assistant.
 
-The attached document is **present**, but it is best characterised as a **pasted transcript / compiled note** rather than a formal DeepSeek technical white paper. It appears to mix local AI Wiki context, a tool-generated summary of DeepSeek capabilities, and direct or indirect claims about DeepSeek model families and API behaviour. That makes it useful as a comparison artefact, but weaker than a primary source where it goes beyond what the cited DeepSeek documentation itself clearly states. 
+The other is closer to raw material for building research assistants.
 
-This report therefore prioritises, in order, official OpenAI product documentation, OpenAI system cards and alignment papers, primary model papers, official DeepSeek API/model documentation, and benchmark papers. Where OpenAI or DeepSeek does not specify a detail—especially around exact architecture, indexing, or deployment internals—the report marks it as **unspecified** rather than inferring beyond the public record. 
+## The short version
 
-A further methodological caveat matters. The comparison is not fully like-for-like. OpenAI deep research is a **consumer/product workflow** for scoped, documented research, whereas the attached DeepSeek note is closer to a **model/API summary**, not a documented DeepSeek consumer deep-research product with the same plan-review, report-view, and source-control UX. Some apparent discrepancies are therefore actually differences in **layer of abstraction**.  
+ChatGPT Deep Research is optimized for:
 
-## Side-by-side comparison
+* source-bounded research
+* web and file synthesis
+* citation-heavy reports
+* plan review
+* user-facing research workflows
+* enterprise/admin source control
+* safer hidden reasoning
 
-| Attribute | ChatGPT deep research | Attached Deep Seek note | Agreements, discrepancies, and likely reasons |
-|---|---|---|---|
-| Model architecture and training pipeline | OpenAI says deep research launched on an o3-derived model optimised for browsing/data analysis, trained end-to-end on hard browsing-and-reasoning tasks and on browser/Python tool use; broader o-series models are trained with large-scale RL on chain-of-thought and can use tools in their CoT.  | The attachment presents DeepSeek as a reasoning-first API/model family with explicit thinking controls and cites/openly references MoE/MLA/RL-style development. Official DeepSeek papers support MoE/MLA for V3 and pure-RL reasoning development for R1.   | Agreement: both centre reasoning + RL + tools. Discrepancy: OpenAI does not disclose exact current deep-research architecture; DeepSeek disclosures are more model-specific. Likely reason: closed-service safety/competition trade-offs versus open-weight/API strategy. |
-| Data sources and curation | OpenAI describes training data at a high level as public data, partnership/proprietary data, and in-house/custom data, with filtering to reduce personal information and harmful/sensitive content; individual ChatGPT content may train models unless opted out, while business/API data is not used by default.  | The attachment emphasises DeepSeek’s public/open-data and cost-efficiency narrative more than privacy controls; official DeepSeek-V3 materials describe 14.8T high-quality tokens and later SFT/RL stages, while R1 release materials emphasise openness and distillation.   | Agreement: both rely on large-scale pretraining plus post-training. Discrepancy: OpenAI foregrounds privacy controls and filtering; the DeepSeek note foregrounds openness, cost, and distillation. Likely reason: product/privacy commitments versus model-release positioning. |
-| Retrieval, indexing, and grounding | Deep research can use the public web, uploaded files, specific sites, and connected apps; apps are read-only in research; outputs include citations/source links, sources used, and activity history. Search/indexing/ranking internals are not publicly specified.  | The attachment and official DeepSeek docs focus on API compatibility, long context, thinking mode, and tool calls, but not on a comparable first-party research-product indexing/grounding workflow.   | Agreement: both support tool-augmented information work. Discrepancy: OpenAI documents a report-generation workflow; the DeepSeek note documents a model/API substrate. Likely reason: consumer research product versus developer-facing API. |
-| Prompt engineering and chain-of-thought | ChatGPT deep research proposes a plan before execution, may ask clarifying questions, lets the user edit that plan, and can be interrupted mid-run. OpenAI hides raw CoT but shows summaries/activity history; Model Spec and alignment docs treat tool outputs/files as untrusted by default.  | The attachment highlights exposed `reasoning_content`, `thinking` mode, and `reasoning_effort`; current DeepSeek reasoning docs state CoT is returned as `reasoning_content` and should not be replayed into the next request for `deepseek-reasoner`.   | Agreement: reasoning is a first-class object in both systems. Discrepancy: OpenAI hides raw reasoning; DeepSeek exposes it at the API level. Likely reason: OpenAI’s safety-monitoring and UX position versus DeepSeek’s API transparency/distillation position. |
-| Evaluation metrics, benchmarks, and human-in-the-loop | OpenAI reports deep research scores of 26.6% on HLE with browsing+Python and SOTA on GAIA; broader o-series work includes AIME, GPQA, Codeforces, human-preference evals by trainers, internal safety testing, external red teaming, and early external safety access.  | The attachment stresses DeepSeek reasoning parity claims and cost/performance narratives; official DeepSeek-R1 release says performance is on par with o1 and highlights maths/code/reasoning rather than a documented research-agent evaluation programme.   | Agreement: both lean heavily on reasoning benchmarks. Discrepancy: OpenAI documents product-level research-agent evals and human oversight; the DeepSeek note centres model benchmarks. Likely reason: one is a research product, the other mostly a model/API note. |
-| Safety, alignment, and bias mitigation | OpenAI documents deliberative alignment, Preparedness Framework gating, model/system cards, instruction hierarchy, bias and hallucination evals, moderation/safety classifiers, and privacy/admin controls.  | The attachment says comparatively little about DeepSeek safety or bias mitigation; official DeepSeek docs here focus on API behaviour, model access, and openness rather than a comparable public safety stack.   | Agreement: both constrain behaviour through product/API design. Discrepancy: OpenAI publishes a much richer public alignment/governance story. Likely reason: different documentation priorities, deployment models, and trust requirements. |
-| Transparency, explainability, and reproducibility | OpenAI publishes citations, report exports, activity history, system cards, and Model Spec, but withholds raw CoT and many model/deployment details; it also states that production models do not yet fully reflect the public Model Spec and that performance can vary with updates.  | The attachment and official DeepSeek materials offer more API-level transparency—exposed CoT, pricing, context length, OpenAI-compatible requests, and more detailed model papers—while also mixing versions and claims in a way that reduces strict reproducibility of the attachment itself.   | OpenAI is more transparent about policy and process; DeepSeek is more transparent about model/API surfaces. Each is only partially transparent. |
-| Practical implications | Best used as a controllable research assistant for synthesis, source-constrained analysis, and report production, especially where citations, source controls, and exports matter.  | Best interpreted, from the attachment, as a reasoning-model/API stack that developers can integrate into their own agents and workflows.   | The systems overlap in capability primitives, but not in operating model. Practitioners should not assume parity between “a reasoning model with tools” and “a finished deep-research product”. |
+DeepSeek-style reasoning APIs are optimized for:
 
-## ChatGPT deep research pipeline
+* developer integration
+* lower-level model control
+* exposed reasoning content
+* OpenAI-compatible API usage
+* long-context workflows
+* model transparency
+* building your own agent layer
 
-OpenAI’s published materials support a two-level pipeline: an **offline model-development pipeline** and an **online task-execution pipeline**. The latter is comparatively well documented; the former is only partially disclosed. The most defensible reading is that OpenAI combines general foundation-model pretraining, post-training alignment, reasoning-model RL, and then product/task-specific training for browsing-and-analysis behaviour. At runtime, the user-facing system adds source choice, plan review, execution monitoring, and grounded report generation. 
+The big split is this:
 
-```mermaid
-flowchart TD
-    subgraph Offline development
-        A[Pretraining on public, partner, and in-house/custom data]
-        B[Post-training with alignment methods such as SFT, RLHF, and newer scalable alignment techniques]
-        C[o-series reasoning training with large-scale RL on chain-of-thought]
-        D[Deep-research task training on browsing, reasoning, browser use, and Python use]
-        A --> B --> C --> D
-    end
+> **OpenAI gives you a more governed research product. DeepSeek gives developers more visible reasoning and API-level control.**
 
-    subgraph Online deep research run
-        E[User states goal, constraints, and desired output]
-        F[User selects sources: web, specific sites, uploads, connected apps]
-        G[ChatGPT proposes a research plan]
-        H[User reviews, edits, or clarifies]
-        I[Execution loop across web browsing, file/app reading, and Python analysis]
-        J[Grounding layer: citations, source links, sources-used list, activity history]
-        K[Structured report plus export to Markdown, Word, or PDF]
-        E --> F --> G --> H --> I --> J --> K
-    end
+That is the core practical takeaway.
 
-    D --> I
-    X[Public details on search indexing, ranking, and citation-mapping internals are unspecified]
-    X -.-> I
+## ChatGPT Deep Research is a product workflow, not just a model
+
+When OpenAI introduced Deep Research, it described it as being powered by a version of an o-series reasoning model optimized for web browsing and data analysis. More recent documentation frames Deep Research as using the latest available models by default, which means the backend can evolve over time.
+
+That matters. You should not think of Deep Research as one static model with one permanently fixed implementation.
+
+A Deep Research run usually looks more like this:
+
+1. The user provides a research goal.
+2. ChatGPT may ask clarifying questions.
+3. It proposes a research plan.
+4. The user can edit or approve that plan.
+5. The system browses, reads files, or uses connected sources.
+6. It synthesizes findings into a structured report.
+7. It includes citations, source links, source history, and sometimes export options.
+
+That is a product-level loop.
+
+The model matters, obviously, but the workflow around the model matters just as much. The value is not only “the LLM is smart.” The value is that the LLM is operating inside a source-aware research harness.
+
+## DeepSeek is not “OpenAI’s DeepSeek”
+
+One clarification is worth making plainly: **DeepSeek is not an OpenAI product.**
+
+The confusion usually comes from API compatibility. DeepSeek supports OpenAI-compatible API patterns, meaning developers can often point OpenAI SDK-style code at DeepSeek endpoints with a different base URL and API key.
+
+That is interoperability, not ownership.
+
+The interesting comparison is not “OpenAI’s DeepSeek.” It is:
+
+> How does OpenAI’s Deep Research product compare with DeepSeek’s reasoning/API model layer?
+
+That framing keeps the comparison honest.
+
+## Where the two systems overlap
+
+At a high level, both ecosystems are moving toward the same broad shape:
+
+* larger reasoning models
+* reinforcement learning for multi-step problem solving
+* tool use
+* long-context workflows
+* coding and mathematical reasoning benchmarks
+* agentic task execution
+* model/tool orchestration
+
+Both are part of the same industry-wide shift away from simple one-shot text generation and toward systems that can plan, inspect, search, verify, and revise.
+
+The old model was:
+
+> prompt in, answer out
+
+The newer model is:
+
+> goal in, plan formed, sources gathered, tools used, answer checked, report produced
+
+That is the important change.
+
+## Where they diverge: hidden reasoning vs. exposed reasoning
+
+OpenAI generally does **not** expose raw chain-of-thought to users. Instead, it may show summaries, activity traces, plan steps, tool activity, citations, or source lists.
+
+That choice is not accidental. OpenAI has argued that hidden chain-of-thought can be useful for monitoring, safety, and reducing incentives to directly optimize visible reasoning text. Whether you agree with that or not, it is a deliberate product and safety stance.
+
+DeepSeek-style APIs, by contrast, have documentation around fields like `reasoning_content` and explicit thinking controls. That gives developers more visibility into the model’s intermediate reasoning.
+
+This creates a real trade-off.
+
+### Hidden reasoning has advantages
+
+It can:
+
+* reduce leakage of unsafe or misleading intermediate thoughts
+* make the user experience cleaner
+* prevent users from over-trusting messy internal reasoning
+* give the provider more room to monitor reasoning internally
+* avoid turning raw chain-of-thought into a public interface contract
+
+### Exposed reasoning has advantages
+
+It can:
+
+* help developers debug agent behavior
+* make the model feel more inspectable
+* support research into failure modes
+* help builders tune prompts and workflows
+* provide more confidence when integrating into custom tooling
+
+Neither position is free. Hidden reasoning reduces auditability. Exposed reasoning increases inspectability but can create safety, privacy, and reliability issues if people mistake “more text” for “more truth.”
+
+The raw reasoning trace is not automatically a proof. Sometimes it is just a plausible-looking diary of a model being wrong.
+
+## Retrieval is the real difference
+
+This is where ChatGPT Deep Research has the clearer product advantage.
+
+Deep Research is not only a reasoning model. It is a retrieval-and-reporting system. It can operate over:
+
+* the public web
+* specific sites
+* uploaded files
+* connected apps
+* restricted or prioritized source sets
+
+That matters because research quality is often limited less by “IQ” and more by source selection.
+
+A brilliant model reading bad sources still produces bad research.
+
+The useful part of ChatGPT Deep Research is that the user can constrain where it looks, watch what it is doing, and inspect citations afterward. That turns it into something closer to a supervised junior researcher than a normal chatbot.
+
+DeepSeek can absolutely be used in a retrieval workflow, but that workflow usually has to be built around it. You need your own search layer, crawler, indexer, reranker, citation mapper, source viewer, and report renderer.
+
+So the better comparison is:
+
+| Layer                     | ChatGPT Deep Research    | DeepSeek-style API       |
+| ------------------------- | ------------------------ | ------------------------ |
+| Reasoning model           | Provided                 | Provided                 |
+| Search/retrieval workflow | Productized              | Usually builder-supplied |
+| Plan review               | Productized              | Builder-supplied         |
+| Citations                 | Productized              | Builder-supplied         |
+| Source restriction        | Productized              | Builder-supplied         |
+| Exposed reasoning         | Mostly hidden/summarized | More visible             |
+| Architecture disclosure   | Limited                  | More open in papers/docs |
+| Enterprise governance     | Stronger public story    | Depends on integration   |
+
+This is why “model vs. product” is the key distinction.
+
+## OpenAI is more transparent about governance than architecture
+
+OpenAI publishes a lot about safety, policy, privacy, system cards, model behavior, enterprise data controls, and instruction hierarchy.
+
+It publishes much less about exact model architecture.
+
+For example, OpenAI generally does not disclose current parameter counts, exact routing architecture, full training mix, or the internal mechanics of Deep Research’s search and citation system.
+
+That is frustrating if you want reproducible model science.
+
+But OpenAI does publish more around:
+
+* model behavior expectations
+* data-use policies
+* enterprise privacy
+* source handling
+* system cards
+* safety evaluations
+* instruction hierarchy
+* prompt-injection threat models
+
+So the transparency is real, but selective.
+
+OpenAI’s public posture is basically:
+
+> We will show you more about safety, governance, and product behavior than about the exact machine.
+
+## DeepSeek is more transparent about model mechanics
+
+DeepSeek’s papers and docs expose more of the model/API layer.
+
+That includes discussion of architecture patterns like Mixture-of-Experts and Multi-Head Latent Attention in public technical reports, plus API-level features around reasoning mode and compatibility.
+
+That is valuable for builders.
+
+It also means DeepSeek is easier to discuss as a technical artifact. You can point to more explicit model-side details.
+
+But DeepSeek does not provide the same kind of finished, governed, consumer-facing research workflow as ChatGPT Deep Research. At least not in the same documented form.
+
+So DeepSeek is more transparent lower in the stack.
+
+OpenAI is more productized higher in the stack.
+
+That split keeps showing up.
+
+## The “research agent” is more than browsing
+
+A weak version of Deep Research would be:
+
+> search Google, summarize five pages, add citations
+
+That is not enough.
+
+A stronger research agent needs to:
+
+* decompose the question
+* identify missing context
+* search iteratively
+* compare sources
+* notice contradictions
+* avoid prompt injection
+* separate facts from interpretation
+* cite claims accurately
+* preserve source context
+* summarize uncertainty
+* know when the source base is weak
+
+This is where the agent harness matters.
+
+A reasoning model alone does not solve this. A browser alone does not solve this. A citation renderer alone does not solve this.
+
+The system has to coordinate all of them.
+
+That is why ChatGPT Deep Research should be judged as a workflow, not as a chatbot answer with footnotes.
+
+## The biggest weakness: reproducibility
+
+The biggest weakness of ChatGPT Deep Research is not that it lacks sources. It is that exact reproducibility is hard.
+
+A Deep Research result can change because:
+
+* the model backend changes
+* the web changes
+* search rankings change
+* sources update
+* internal prompts change
+* source extraction changes
+* citation mapping changes
+* user plan edits differ
+* connected data changes
+
+For ordinary research, that may be acceptable.
+
+For scientific audit, legal work, regulatory work, or high-stakes business decisions, it means you need to archive the output, source list, date, prompt, and constraints.
+
+Deep Research is useful, but it is not a perfect replayable research instrument.
+
+The same issue exists with custom DeepSeek agents, but there the builder has more opportunity to log every intermediate request and response if they design the system carefully.
+
+## The second weakness: citations are not proof
+
+Citations are necessary. They are not sufficient.
+
+A cited sentence can still be wrong if:
+
+* the cited source does not actually support it
+* the model overgeneralized
+* the source is outdated
+* the source is low quality
+* the source was quoted without enough context
+* the model merged two claims from different places
+* the source itself is wrong
+
+This is why citation-faithfulness audits matter.
+
+For serious work, I would not just ask, “Does this report have citations?”
+
+I would ask:
+
+> If I sample ten important claims, do the cited sources actually support those claims?
+
+That is the real test.
+
+## Practical advice for using ChatGPT Deep Research well
+
+The best way to use Deep Research is not to send it into the whole internet and hope.
+
+Use it like a supervised research assistant.
+
+A good workflow:
+
+1. Define the question tightly.
+2. Name the audience and desired output.
+3. Restrict or prioritize trusted sources.
+4. Ask it to show a plan before execution.
+5. Edit the plan.
+6. Require uncertainty notes.
+7. Require source-quality notes.
+8. Verify the top claims manually.
+9. Save the report and source list.
+
+For example:
+
+```text
+Research how AI-assisted coding tools are changing front-end platform engineering workflows.
+
+Prioritize official documentation, primary research, and credible engineering blogs.
+Avoid hype posts and vendor-only claims unless clearly labeled.
+
+Before writing the report, propose a research plan.
+In the final answer, separate:
+- confirmed facts
+- credible interpretations
+- weak or speculative claims
+- practical recommendations for senior engineers
 ```
 
-The key comparison point with the attached DeepSeek note is that OpenAI’s pipeline is explicitly a **report-generation product workflow**. The DeepSeek material, by contrast, mostly describes a **reasoning model/API surface**—OpenAI-compatible request format, thinking controls, context length, and exposed reasoning output—rather than a first-party end-to-end research UX with plan review, activity history, and source governance.  
+That kind of prompt gives the system a job, a boundary, and an evaluation frame.
 
-## Comparative analysis
+## Practical advice for using DeepSeek-style APIs well
 
-### Model architecture and training pipeline
+DeepSeek-style APIs are strongest when you want to build your own workflow around the model.
 
-OpenAI’s public disclosure supports a cautious but clear account. The original deep research launch says the feature is powered by “a version of the upcoming OpenAI o3 model” optimised for web browsing and data analysis. It also says deep research was trained on real-world tasks requiring browser and Python tool use, and later says the system was trained end-to-end on hard browsing-and-reasoning tasks to learn multi-step trajectories with backtracking and adaptation. In parallel, OpenAI’s o-series documentation says the models are trained with large-scale reinforcement learning on chain-of-thought, and that o3/o4-mini can use tools within their chains of thought. 
+That means you should think like a systems designer, not just a prompt writer.
 
-That said, the architecture disclosure stops early. The GPT-4 Technical Report confirms a **Transformer-based** next-token-prediction foundation with post-training alignment, but OpenAI does not publish the precise current deep-research model architecture, parameter count, mixture-of-experts status, or search/ranking stack. Current Help Centre language also shows backend evolution: deep research is now “powered by the latest models” by default, rather than being permanently tied to one named backend. 
+A practical custom research agent needs:
 
-The attached DeepSeek note is materially more model-explicit. It emphasises named model families, OpenAI-compatible API calls, explicit thinking controls, and a reasoning-specific output field. Official DeepSeek materials back much of that general framing: the API is OpenAI/Anthropic-compatible, current models expose thinking mode and reasoning effort, and DeepSeek-V3’s paper explicitly describes a 671B-parameter MoE model using MLA/DeepSeekMoE, while DeepSeek-R1’s paper foregrounds pure-RL reasoning development.  
+* search provider
+* page fetcher
+* content extractor
+* deduplication
+* source scoring
+* prompt-injection filtering
+* chunking
+* long-context strategy
+* citation mapping
+* logging
+* evaluation harness
+* report templates
+* retry behavior
+* cost controls
 
-The two systems therefore agree on the **importance of reasoning + RL + tool use**, but they diverge sharply on disclosure style. OpenAI documents the existence of the reasoning/tool pipeline while withholding most internals; DeepSeek publishes more architecture- and API-level mechanics. The likeliest causes are closed-service competition, safety-monitoring strategy, and product positioning on the OpenAI side, versus open-weight/API adoption incentives on the DeepSeek side. 
+The model is one component.
 
-### Data sources and curation practices
+A capable research system is the whole pipeline.
 
-On training data, OpenAI’s most precise public statements are general rather than deep-research-specific. The GPT-4.5 System Card says GPT-4.5 was pre-trained and post-trained on a mix of **publicly available data, proprietary data from partnerships, and custom in-house datasets**, and that OpenAI applies rigorous filtering, including steps to reduce personal information and to screen harmful or sensitive content with moderation and safety classifiers. OpenAI’s privacy pages add that individual ChatGPT content may be used for training unless the user opts out, whereas business tiers and the API do not train on inputs/outputs by default. 
+This is where DeepSeek’s OpenAI-compatible API surface can be useful. If your code already talks to OpenAI-style chat completions, switching or testing providers can be relatively straightforward.
 
-For deep research specifically, OpenAI’s runtime data-access model is more visible than its offline corpus composition. The feature can read the public web, uploaded files, specific sites, and connected apps; for business contexts, OpenAI states that app-sourced data is not used for training by default and that organisations control connected internal sources. This makes deep research better documented as a **runtime data orchestration system** than as a uniquely disclosed training corpus. 
+But easy swapping at the API layer does not magically recreate ChatGPT Deep Research. You still need the agent scaffolding.
 
-The attached DeepSeek note leans in a different direction. It emphasises DeepSeek’s openness, cost-efficiency, and model-weight/API availability more than privacy governance. Official DeepSeek-V3 materials support the open-data/open-cost narrative to a degree: the paper says V3 was pre-trained on **14.8 trillion diverse and high-quality tokens**, then post-trained with SFT and RL. The R1 release page also explicitly encourages use of outputs for fine-tuning and distillation, which is a markedly different posture from OpenAI’s consumer-product privacy framing.  
+## The useful mental model
 
-So the agreement is broad—both ecosystems combine large-scale pretraining with post-training—but the emphasis differs. OpenAI foregrounds filtering, privacy reduction, moderation, and enterprise data segregation; the DeepSeek note foregrounds openness and distillation. That is partly a product decision and partly a documentation decision. 
+Here is the cleanest way to think about it:
 
-### Retrieval, indexing, and grounding methods
+```text
+ChatGPT Deep Research
+= model + tools + retrieval + planning UX + citations + source controls + report renderer + safety layer
 
-This is where OpenAI’s deep research product is most concretely described. The Help Centre says a user can choose the permitted source set before a run, including the public web, uploaded files, connected apps, or specific sites/domains. The user can either restrict research to listed sites or prioritise those sites while still allowing broader web search. Connected apps are explicitly read-only for research. The completed output includes citations or source links, a sources-used section, and an activity history. OpenAI’s February 2026 update adds MCP/app connectivity, trusted-site restriction, real-time progress tracking, and interruption/refinement mid-run. 
+DeepSeek reasoning API
+= model + reasoning controls + API compatibility + long context + exposed reasoning surface
+```
 
-What OpenAI does **not** publish is just as important: there is no public specification of the search engine(s), indexing strategy, ranking/re-ranking process, duplicate clustering, freshness policy, or exactly how citation spans are attached to generated prose. That opacity limits strict reproducibility and technical verification, even though the product is visibly more grounded than standard chat. 
+Neither is the whole universe.
 
-The attached DeepSeek note is not comparable on this axis, because it mainly describes an API and model surface. Official DeepSeek docs expose 1M context, tool calls, thinking mode, and OpenAI-compatible chat completions, but they do not document an equivalent first-party research-product pipeline with plan review, source governance, activity history, and long-form cited report exports. In other words, DeepSeek provides primitives for agent builders; OpenAI documents a finished research workflow.  
+ChatGPT Deep Research is better when you want a finished research workflow.
 
-The apparent discrepancy therefore does not necessarily mean that OpenAI has “better retrieval” in a model-scientific sense. It means OpenAI has publicly documented a **more mature end-user grounding product**, while the DeepSeek note and docs describe a **more generic toolkit surface**. 
+DeepSeek is better when you want to build or customize the workflow yourself.
 
-### Prompt engineering, planning, and chain-of-thought techniques
+## What this means for developers
 
-OpenAI’s deep research product introduces a strong **planning layer** in front of execution. The user describes the desired outcome and permitted sources; ChatGPT then proposes a research plan that the user can review and modify before the run starts. During execution, the user can track progress, interrupt the run, refine focus, and adjust source access. OpenAI also notes that deep research may ask clarifying questions before it begins. 
+For developers, the obvious path is not to pick a religion.
 
-Beneath that UI layer is the o-series reasoning approach. OpenAI says o1/o-series models use chain-of-thought learned via reinforcement learning; the model learns to refine strategies, correct mistakes, and try alternate approaches. But OpenAI also explicitly says it will **not show the raw chain of thought** to users. Instead, it shows summaries or product-level activity traces. The rationale is safety and monitoring: OpenAI says hidden CoT could help monitor model intent, and that exposing unaligned raw CoT directly to users is undesirable. 
+Use the right layer for the job.
 
-The attached DeepSeek note is almost the mirror image here. It presents reasoning as a user/developer-visible object through `reasoning_content`, together with explicit thinking toggles. Current DeepSeek reasoning docs confirm that the API exposes `reasoning_content` beside the final answer, and that for `deepseek-reasoner` this field should **not** be fed back into the next turn or the API returns an error. That is a materially different CoT governance choice from OpenAI’s hidden-CoT stance.  
+Use ChatGPT Deep Research when:
 
-OpenAI also places this in a stronger instruction-governance frame. The Model Spec publishes a chain of command, and it explicitly says quoted text, files, multimodal inputs, and tool outputs are **untrusted by default** unless a higher-level instruction delegates authority to them. For a research product that reads websites, files, and connectors, that matters: it is an explicit public defence posture against prompt injection. The attached DeepSeek note does not provide a comparable public instruction-authority framework.  
+* you need a fast research report
+* citations matter
+* source selection matters
+* you want plan review
+* you do not want to build an agent pipeline
+* the output is for synthesis, planning, or editorial work
 
-### Evaluation metrics, benchmarks, and human-in-the-loop processes
+Use DeepSeek-style APIs when:
 
-OpenAI’s public evaluation story for deep research is relatively strong. In the launch materials, OpenAI reports **26.6% accuracy on Humanity’s Last Exam** for the model powering deep research with browsing and Python, and a new state of the art on **GAIA**. This matters because GAIA was designed specifically for assistants that need reasoning, multimodality, browsing, and tool use, making it a good fit for a deep-research agent. HLE is more complicated: its benchmark paper says questions are designed not to be quickly answerable by internet retrieval, so a high deep-research score there is partly evidence of reasoning generality, not just web search. 
+* you are building internal tools
+* you need programmatic control
+* you want exposed reasoning content
+* you care about cost and throughput
+* you want model-provider flexibility
+* you are comfortable owning retrieval and evaluation
 
-OpenAI also publishes a broader human-and-model evaluation stack around its reasoning line. The o1 materials report benchmark gains on AIME, GPQA, MMMU, and Codeforces, and describe a human-preference study in which human trainers compared anonymised outputs from o1-preview and GPT-4o on difficult open-ended prompts. OpenAI further documents internal safety testing, external red teaming, and an early-access programme for outside safety researchers, including collaboration with third-party testing organisations and national AI safety institutes. 
+For my own workflow, this pushes me toward a hybrid setup:
 
-The attached DeepSeek note and official DeepSeek release materials tell a narrower story. The emphasis is on performance parity with o1, reasoning gains in maths/code/logic, low cost, and distillability. What is missing is a clearly published, first-party evaluation stack for a DeepSeek **research agent as product**, including plan-quality evaluation, citation faithfulness evaluation, or human-preference processes tied to a report-generation UX.  
+* ChatGPT Deep Research for high-level synthesis and source discovery
+* local/Hermes/DeepSeek-style agents for repo-aware execution, AI Wiki indexing, and repeatable developer workflows
+* explicit source audits for anything I plan to publish or turn into client-facing recommendations
 
-That does not imply DeepSeek lacks rigorous evaluation internally; it means the public comparison artefact provided here does not document it. The most likely reason is scope: OpenAI is discussing a finished research workflow, while the DeepSeek note is discussing a model/API family. 
+That is the sane middle ground.
 
-### Safety, alignment, and bias mitigation strategies
+## A simple audit framework
 
-OpenAI is much more explicit here than the attached DeepSeek note. It publishes a multi-part safety stack: the Model Spec, system cards, Preparedness scorecards, moderation/safety classifiers, instruction hierarchy work, and **deliberative alignment**, a method that teaches reasoning models the text of safety specifications and trains them to reason over those specifications before answering. OpenAI says this approach improved adherence to safety policies without requiring human-labelled CoTs or answers. 
+If you want to test a research agent seriously, use five checks.
 
-The system-card evidence is concrete. GPT-4.5’s card states that OpenAI evaluates harmfulness, jailbreak robustness, hallucinations, and demographic fairness, and that it uses public and internal evaluations plus external red teaming. It reports refusal metrics, jailbreak metrics, PersonQA hallucination results, BBQ fairness results, and instruction-hierarchy evaluations for conflict between system and user prompts. The o3/o4-mini system card adds that these models combine reasoning with full tool capabilities and can reason about safety policies “through deliberative alignment.” 
+### 1. Source quality
 
-For deep research specifically, source handling is also part of safety posture. The Help Centre says connected apps are read-only, and enterprise/admin controls include RBAC and standard ChatGPT privacy settings. For business tiers, OpenAI says data from ChatGPT Business/Enterprise/Edu/API is not used for training by default, and connected internal sources are organisation-controlled. 
+Did it use primary sources, or did it summarize summaries?
 
-The attached DeepSeek note offers little comparable material. DeepSeek’s official docs in the corpus used here document API compatibility, pricing, context length, reasoning output, and openness, but not a similarly rich public alignment, bias, and preparedness stack. The discrepancy therefore lies less in proven capability than in **public governance disclosure**. OpenAI provides more auditable public policy/process artefacts; the DeepSeek note does not.  
+### 2. Citation faithfulness
 
-### Transparency, explainability, and reproducibility
+Do the citations actually support the claims?
 
-OpenAI’s transparency model is selective. On the positive side, it provides citations/source links in deep research, a sources-used section, an activity history, report exports, public system cards, alignment papers, and an openly published Model Spec. The Model Spec explicitly says OpenAI is training models to align to that specification and publishes it to deepen public discussion. 
+### 3. Contradiction handling
 
-But OpenAI is equally explicit about what it does **not** reveal. The GPT-4 report is minimal on architecture, raw chain-of-thought is hidden, and production behaviour can vary slightly with system updates, final parameters, and prompts. The Model Spec also says current production models do not yet fully reflect the public spec. For scientific reproducibility, those are real limits: the same prompt can change with model updates, source freshness, hidden ranking differences, and unavailable raw reasoning traces. 
+Did it notice disagreement between sources?
 
-The DeepSeek side is stronger on some forms of reproducibility. Official docs expose request schemas, reasoning fields, pricing, context lengths, and OpenAI-compatible integration patterns, while model papers provide more architecture details and, for some releases, open weights/licensing. The attached note reflects that API/model-level openness. At the same time, the attachment itself is a mixed-source transcript, not a clean technical report, and some of its claims—such as certain parameter counts or newer behaviour nuances—are not fully verifiable from the official DeepSeek pages retrieved here.  
+### 4. Reproducibility
 
-The net result is a trade-off. OpenAI is more transparent about **policy, behavioural governance, and user-facing provenance**, while DeepSeek is more transparent about **API and model mechanics**. Researchers who care about reproducible model science will usually prefer the latter; practitioners who care about enterprise controls and a governed deep-research workflow may prefer the former. 
+Can you rerun or reconstruct the process later?
 
-## Limitations and open questions
+### 5. Actionability
 
-The first open question is architectural opacity. OpenAI does not publicly specify the exact current deep-research backend, its search/indexing/ranking implementation, citation-mapping internals, or the full runtime tool orchestration logic. Because the Help Centre now says deep research is powered by the “latest models” by default, backend drift over time is part of the product design. That is good for iterative improvement, but bad for exact replay and method transparency. 
+Did the report produce decisions, or just a polished wall of text?
 
-The second open question is evaluation adequacy. GAIA is highly relevant to research agents, but HLE is partly orthogonal because it was designed so that questions cannot be quickly answered by internet retrieval. In addition, later work such as HLE-Verified argues that non-trivial benchmark noise can significantly alter cross-model comparisons. So benchmark leadership should not be read as a complete measure of real-world deep-research reliability, citation faithfulness, or robustness to adversarial sources. 
+That last point matters. A research report that does not change what you would do next is mostly decoration.
 
-The third open question is source trust and prompt injection. OpenAI’s own Model Spec makes clear that files, quoted text, and tool outputs are untrusted by default, which implies that prompt injection is not a solved problem but an active design constraint. For a product that reads websites, PDFs, and enterprise connectors, this is a critical threat model. Public docs describe the governance principle, but not a full public quantitative injection-resilience programme specific to deep research. 
+## My bottom line
 
-The fourth open question is explainability. OpenAI’s decision to hide raw chain-of-thought may improve safety and monitoring, but it necessarily reduces external auditability and mechanistic transparency. The attachment’s DeepSeek framing highlights the opposite choice—more exposed reasoning text—which improves inspectability but changes the safety and competitive trade-space. Neither approach is cost-free.  
+ChatGPT Deep Research is best understood as a **closed, citation-oriented research assistant**.
 
-A final limitation of this comparison is scope mismatch. The attached document is not a formally equivalent DeepSeek deep-research product spec. It is closer to a reasoning-model/API note with some ancillary local-tool context. That means any “winner” narrative would be methodologically weak. The cleaner conclusion is that OpenAI and DeepSeek are optimising for different points in the design space: governed research workflow versus transparent reasoning-model surface.  
+DeepSeek is best understood as a **more transparent reasoning/API layer** that can power custom agents.
 
-## Implications, recommendations, and audit ideas
+OpenAI is stronger on product workflow, safety framing, source controls, and user-facing research ergonomics.
 
-For researchers, the main implication is that ChatGPT deep research should be treated as an **interactive evidence-synthesis system** rather than a transparent scientific instrument. Its best use cases are scoped literature reviews, policy or market scans, competitive intelligence, and source-constrained domain synthesis where exported reports, citation trails, and activity history add practical value. Its weaker use cases are those that demand stable replay, full reasoning trace inspection, or precise claims about internal search/index design. 
+DeepSeek is stronger on visible reasoning controls, API-level transparency, and model-side openness.
 
-For practitioners, the strongest operational pattern is to **bound the source set and review the plan before execution**. OpenAI explicitly supports trusted-site restriction, prioritised domains, uploads, connected apps, plan review, and run interruption. In practice, that means the system is most defensible when it is used less like an unconstrained web crawler and more like a supervised research assistant working inside a known evidence perimeter. 
+The interesting future is not one replacing the other. It is combining the strengths:
 
-Recommended follow-up experiments and audits are straightforward:
+* governed source-aware research UX
+* transparent and inspectable agent logs
+* swappable model backends
+* reliable citation audits
+* repeatable local workflows
+* better protection against prompt injection
+* cheaper long-context reasoning where appropriate
 
-- **Source-set ablation audit.** Run the same task with full web, trusted domains only, and web-plus-uploads to measure how strongly conclusions depend on retrieval scope. OpenAI’s source controls make this directly testable. 
-- **Citation-faithfulness audit.** Sample every major claim in a report, verify whether the cited source really supports the sentence, and score omission, misquotation, and over-interpretation rates. OpenAI’s report citations and sources-used section make this operationally feasible. 
-- **Prompt-injection red-team.** Seed malicious instructions into uploaded files, quoted text, or hostile pages and test whether the system obeys them. This directly probes the “untrusted data by default” design principle. 
-- **Reproducibility drift audit.** Re-run identical prompts over several days and across default versus legacy-model selection to measure variance introduced by model and web drift. OpenAI explicitly supports legacy-model selection for deep research and acknowledges production variation. 
-- **Benchmark-to-product gap audit.** Compare performance on GAIA-like tasks, HLE-style hard questions, and real organisational tasks to see where benchmark wins do or do not predict practical research quality. 
+The real winner will not be the model that writes the longest report.
 
-Concise actionable recommendations follow from that:
+It will be the system that helps you make the next correct decision with the least amount of unverifiable nonsense in the way.
 
-- Use **specific-site restriction** for high-stakes work instead of unrestricted web search. 
-- Review and, when necessary, **edit the proposed plan** before execution starts. 
-- Export and archive the report **with its cited sources** for later verification or challenge. 
-- For confidential or regulated workflows, prefer business/enterprise environments where OpenAI says data is **not used for training by default** and source access is admin-controlled. 
-- Do not treat “summary of thinking” or activity history as equivalent to a full reasoning trace; for that level of inspection, the current OpenAI product is structurally limited. 
+## Sources and further reading
 
-## Source URLs
+* OpenAI — Introducing Deep Research
+* OpenAI Help Center — Deep Research in ChatGPT
+* OpenAI — Learning to Reason with LLMs
+* OpenAI — o3 and o4-mini System Card
+* OpenAI — Model Spec
+* OpenAI — Enterprise Privacy and Business Data Privacy
+* OpenAI / arXiv — GPT-4 Technical Report
+* DeepSeek API Docs — First API Call
+* DeepSeek API Docs — Reasoning Model
+* DeepSeek / arXiv — DeepSeek-V3 Technical Report
+* DeepSeek / arXiv — DeepSeek-R1
+* arXiv — GAIA benchmark
+* arXiv — Humanity’s Last Exam
 
-The attached file has no public URL; it was supplied directly in chat as a local upload. Other cited sources are listed below.
-
-- OpenAI, *Introducing deep research*  
-  `https://openai.com/index/introducing-deep-research/`
-
-- OpenAI Help Centre, *Deep research in ChatGPT*  
-  `https://help.openai.com/en/articles/10500283-deep-research-faq`
-
-- OpenAI, *Learning to reason with LLMs*  
-  `https://openai.com/index/learning-to-reason-with-llms/`
-
-- OpenAI, *Introducing OpenAI o1-preview*  
-  `https://openai.com/index/introducing-openai-o1-preview/`
-
-- OpenAI, *OpenAI o3 and o4-mini System Card*  
-  `https://openai.com/index/o3-o4-mini-system-card/`
-
-- OpenAI, *Deliberative alignment: reasoning enables safer language models*  
-  `https://openai.com/index/deliberative-alignment/`
-
-- OpenAI Model Spec  
-  `https://model-spec.openai.com/2025-09-12.html`
-
-- OpenAI, *Enterprise privacy at OpenAI*  
-  `https://openai.com/enterprise-privacy/`
-
-- OpenAI, *Business data privacy, security, and compliance*  
-  `https://openai.com/business-data/`
-
-- OpenAI, *How your data is used to improve model performance*  
-  `https://openai.com/policies/how-your-data-is-used-to-improve-model-performance/`
-
-- OpenAI / arXiv, *GPT-4 Technical Report*  
-  `https://arxiv.org/abs/2303.08774`
-
-- OpenAI / arXiv, *Training language models to follow instructions with human feedback*  
-  `https://arxiv.org/abs/2203.02155`
-
-- DeepSeek API Docs, *Your First API Call*  
-  `https://api-docs.deepseek.com/`
-
-- DeepSeek API Docs, *Reasoning Model (deepseek-reasoner)*  
-  `https://api-docs.deepseek.com/guides/reasoning_model`
-
-- DeepSeek API Docs, *Models & Pricing*  
-  `https://api-docs.deepseek.com/quick_start/pricing`
-
-- DeepSeek API Docs, *DeepSeek-R1 Release*  
-  `https://api-docs.deepseek.com/news/news250120`
-
-- DeepSeek / arXiv, *DeepSeek-V3 Technical Report*  
-  `https://arxiv.org/abs/2412.19437`
-
-- DeepSeek / arXiv, *DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning*  
-  `https://arxiv.org/abs/2501.12948`
-
-- DeepSeek / arXiv, *DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models*  
-  `https://arxiv.org/abs/2402.03300`
-
-- arXiv, *Humanity’s Last Exam*  
-  `https://arxiv.org/abs/2501.14249`
-
-- arXiv, *GAIA: a benchmark for General AI Assistants*  
-  `https://arxiv.org/abs/2311.12983`
-
-- arXiv, *HLE-Verified: A Systematic Verification and Structured Revision of Humanity’s Last Exam*  
-  `https://arxiv.org/abs/2602.13964`

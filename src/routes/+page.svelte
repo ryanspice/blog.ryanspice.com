@@ -69,8 +69,8 @@
 
 <section class="home-hero">
 	<p class="eyebrow">Ryan Spice · technical blog</p>
-	<h1>Practical field notes for tooling, web work, and weird Windows problems.</h1>
-	<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, starting with the two GIMP / Windhawk / PixelBoats workstation articles.</p>
+	<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
+	<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, and research comparisons that stay grounded in the actual workflow.</p>
 	<dl class="meta-grid home-meta" aria-label="Site metadata">
 		<div>
 			<dt>Articles</dt>
