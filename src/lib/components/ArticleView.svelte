@@ -1,11 +1,12 @@
 <script lang="ts">
-import { onMount } from 'svelte';
-import { base } from '$app/paths';
-import { page } from '$app/state';
-import { articleAccentColor } from '$lib/article-accent';
-import SiteHeader from '$lib/components/SiteHeader.svelte';
-import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
-import type { Article } from '$lib/articles';
+	import { onMount } from 'svelte';
+	import { base } from '$app/paths';
+	import { page } from '$app/state';
+	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
+	import { articleAccentColor } from '$lib/article-accent';
+	import { getRelatedArticles, type Article } from '$lib/articles';
+	import SiteHeader from '$lib/components/SiteHeader.svelte';
+	import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
 
 	type Props = {
 		article: Article;
@@ -17,6 +18,7 @@ import type { Article } from '$lib/articles';
 	let commandFeedback = $state<string | null>(null);
 	let feedbackTimer: number | null = null;
 	const articleAccent = $derived(articleAccentColor(article));
+	const relatedArticles = $derived(getRelatedArticles(article, 3));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 
@@ -109,6 +111,39 @@ import type { Article } from '$lib/articles';
 		setCommandFeedback(ok ? 'Link copied' : 'Copy failed');
 	}
 
+	async function enhanceMermaid() {
+		const diagrams = Array.from(document.querySelectorAll<HTMLElement>('.mermaid-diagram'));
+		if (!diagrams.length) return;
+
+		try {
+			const { default: mermaid } = await import('mermaid');
+			mermaid.initialize({
+				startOnLoad: false,
+				securityLevel: 'strict',
+				theme: 'dark',
+				darkMode: true
+			});
+
+			for (const [index, diagram] of diagrams.entries()) {
+				const source = diagram.textContent?.trim();
+				if (!source) continue;
+
+				try {
+					const renderId = `mermaid-${article.slug}-${index}`;
+					const { svg } = await mermaid.render(renderId, source);
+					diagram.innerHTML = svg;
+					diagram.classList.add('mermaid-ready');
+				} catch {
+					diagram.classList.add('mermaid-error');
+				}
+			}
+		} catch {
+			for (const diagram of diagrams) {
+				diagram.classList.add('mermaid-error');
+			}
+		}
+	}
+
 	onMount(() => {
 		const headings = Array.from(
 			document.querySelectorAll<HTMLElement>('.article-inner h2[id], .article-inner h3[id]')
@@ -139,6 +174,7 @@ import type { Article } from '$lib/articles';
 		update();
 		window.addEventListener('scroll', update, { passive: true });
 		window.addEventListener('resize', update);
+		void enhanceMermaid();
 		return () => {
 			if (frame !== null) cancelAnimationFrame(frame);
 			if (feedbackTimer !== null) window.clearTimeout(feedbackTimer);
@@ -187,6 +223,19 @@ import type { Article } from '$lib/articles';
 	<SiteHeader brandLabel={article.design.brandLabel} navLinks={article.design.navLinks} />
 
 	<section class="hero">
+		<aside class="toc article-toc" aria-label="Table of contents">
+			<h2>{article.design.tocTitle}</h2>
+			{#each article.toc as item (item.id)}
+				<a
+					class:toc-l3={item.level === 3}
+					class:toc-l2={item.level === 2}
+					class:is-active={activeTocId === item.id}
+					href={`#${item.id}`}
+					>{item.text}</a
+				>
+			{/each}
+		</aside>
+
 		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
 			<div class="eyebrow">{article.design.eyebrow}</div>
 			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
@@ -207,7 +256,7 @@ import type { Article } from '$lib/articles';
 			<p class="dek">{article.summary}</p>
 			<div class="tag-row" aria-label="Tags">
 				{#each article.design.tags as tag (tag)}
-					<span class="tag">{tag}</span>
+					<a class="tag tag-link" href={articleTagIndexHref(tag, article.status as ArticleIndexStatus)}>{tag}</a>
 				{/each}
 			</div>
 		</div>
@@ -222,20 +271,42 @@ import type { Article } from '$lib/articles';
 		</aside>
 	</section>
 
-	<main class="layout">
-		<aside class="toc" aria-label="Table of contents">
-			<h2>{article.design.tocTitle}</h2>
-			{#each article.toc as item (item.id)}
-				<a
-					class:toc-l3={item.level === 3}
-					class:toc-l2={item.level === 2}
-					class:is-active={activeTocId === item.id}
-					href={`#${item.id}`}
-					>{item.text}</a
-				>
-			{/each}
-		</aside>
+	{#if relatedArticles.length}
+		<section class="related-articles" aria-label="Related articles">
+			<div class="section-head">
+				<p class="eyebrow">Related articles</p>
+				<h2>More like this</h2>
+				<p class="section-dek">
+					Articles with overlapping tags, explicit references, or the same line of work.
+				</p>
+			</div>
 
+			<div class="related-articles-grid">
+				{#each relatedArticles as related (related.slug)}
+					<a
+						class="related-article-card article-card-link"
+						href={`${base}/${related.slug}/`}
+						style={`--article-accent: ${articleAccentColor(related)}`}
+					>
+						<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
+						<h3>{related.title}</h3>
+						<p class="related-meta">
+							<time datetime={related.date}>{related.dateLabel}</time>
+							<span>{related.readingMinutes} min read</span>
+						</p>
+						<p>{related.summary}</p>
+						<div class="tag-row compact" aria-label={`${related.title} tags`}>
+							{#each related.tags.slice(0, 4) as tag (tag)}
+								<span class="tag">{tag}</span>
+							{/each}
+						</div>
+					</a>
+				{/each}
+			</div>
+		</section>
+	{/if}
+
+	<main class="layout">
 		<article class="article-shell">
 			<div class="article-inner">
 				{@html article.html}

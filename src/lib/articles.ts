@@ -83,9 +83,61 @@ export const articles: Article[] = Object.entries(modules)
 
 export const publishedArticles = articles.filter((article) => article.status === 'published');
 export const draftArticles = articles.filter((article) => article.status !== 'published');
+export const articleTags = Array.from(new Set(articles.flatMap((article) => article.tags))).sort((left, right) =>
+	left.localeCompare(right)
+);
 
 export function getArticle(slug: string): Article | undefined {
 	return articles.find((article) => article.slug === slug);
+}
+
+export function getRelatedArticles(
+	article: Pick<ArticleMeta, 'slug' | 'status' | 'tags' | 'relatedPosts' | 'draftType'>,
+	limit = 3
+): Article[] {
+	const pool = article.status === 'published' ? publishedArticles : articles;
+	const explicitTargets = new Set(article.relatedPosts.map((target) => normalizeRelatedTarget(target)));
+	const articleTags = new Set(article.tags.map((tag) => tag.toLowerCase()));
+
+	const ranked = pool
+		.filter((candidate) => candidate.slug !== article.slug)
+		.map((candidate) => {
+			let score = 0;
+
+			if (explicitTargets.has(candidate.slug)) {
+				score += 100;
+			}
+
+			if (candidate.relatedPosts.some((target) => normalizeRelatedTarget(target) === article.slug)) {
+				score += 45;
+			}
+
+			const sharedTags = candidate.tags.filter((tag) => articleTags.has(tag.toLowerCase())).length;
+			score += sharedTags * 12;
+
+			if (candidate.draftType === article.draftType) {
+				score += 3;
+			}
+
+			return { candidate, score };
+		})
+		.filter(({ score }) => score > 0)
+		.sort((left, right) => {
+			if (right.score !== left.score) return right.score - left.score;
+			return right.candidate.date.localeCompare(left.candidate.date) || left.candidate.title.localeCompare(right.candidate.title);
+		})
+		.slice(0, limit)
+		.map(({ candidate }) => candidate);
+
+	if (ranked.length >= limit) {
+		return ranked;
+	}
+
+	const fallback = pool
+		.filter((candidate) => candidate.slug !== article.slug && !ranked.some((item) => item.slug === candidate.slug))
+		.sort((left, right) => right.date.localeCompare(left.date) || left.title.localeCompare(right.title));
+
+	return [...ranked, ...fallback].slice(0, limit);
 }
 
 function parseArticle(path: string, raw: string): Article {
@@ -361,4 +413,13 @@ function formatArticleDate(value: string): string {
 
 function firstHeading(body: string): string | undefined {
 	return body.match(/^#\s+(.+)$/m)?.[1]?.trim();
+}
+
+function normalizeRelatedTarget(value: string): string {
+	return slugify(
+		value
+			.replace(/\.md$/i, '')
+			.replace(/^\d{4}-\d{2}-\d{2}-/, '')
+			.trim()
+	);
 }

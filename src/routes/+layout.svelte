@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
+	import { base } from '$app/paths';
 	import '../app.css';
 
 	onNavigate((navigation) => {
@@ -15,6 +16,10 @@
 
 	let { children, data } = $props();
 </script>
+
+<svelte:head>
+	<link rel="alternate" type="application/rss+xml" title="Ryan Spice · Technical notes" href={`${base}/rss.xml`} />
+</svelte:head>
 
 <div class="site-shell" style={`--accent: ${data?.siteAccent ?? '#1e9bff'}`}>
 	{@render children()}

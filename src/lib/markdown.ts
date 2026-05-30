@@ -19,6 +19,7 @@ export function renderMarkdown(markdown: string): RenderedMarkdown {
 	const toc: TocItem[] = [];
 	let i = 0;
 	let wordCount = 0;
+	let renderedLeadParagraph = false;
 
 	while (i < lines.length) {
 		const line = lines[i] ?? '';
@@ -38,6 +39,10 @@ export function renderMarkdown(markdown: string): RenderedMarkdown {
 				i += 1;
 			}
 			i += 1;
+			if (/^mermaid$/i.test(lang)) {
+				html.push(`<div class="mermaid-diagram code-block" data-lang="${escapeAttr(lang)}">${escapeHtml(block.join('\n'))}</div>`);
+				continue;
+			}
 			html.push(`<pre class="code-block" data-lang="${escapeAttr(lang)}"><code>${highlightCode(block.join('\n'), lang)}</code></pre>`);
 			continue;
 		}
@@ -120,7 +125,8 @@ export function renderMarkdown(markdown: string): RenderedMarkdown {
 
 		const text = paragraph.join(' ');
 		wordCount += text.split(/\s+/).filter(Boolean).length;
-		html.push(`<p>${inline(text)}</p>`);
+		html.push(renderParagraph(text, renderedLeadParagraph));
+		renderedLeadParagraph = true;
 	}
 
 	return {
@@ -170,6 +176,21 @@ function renderTable(header: string[], rows: string[][]): string {
 	return `<div class="table-wrap"><table><thead><tr>${header.map((cell) => `<th>${inline(cell)}</th>`).join('')}</tr></thead><tbody>${rows
 		.map((row) => `<tr>${row.map((cell) => `<td>${inline(cell)}</td>`).join('')}</tr>`)
 		.join('')}</tbody></table></div>`;
+}
+
+function renderParagraph(value: string, isLead: boolean): string {
+	if (!isLead) {
+		return `<p>${inline(value)}</p>`;
+	}
+
+	const leadSentence = value.match(/^(.+?[.!?])(\s+.+)?$/);
+	if (!leadSentence) {
+		return `<p class="article-lede">${inline(value)}</p>`;
+	}
+
+	const firstSentence = leadSentence[1];
+	const remaining = leadSentence[2]?.trim() ?? '';
+	return `<p class="article-lede"><span class="article-lede-sentence">${inline(firstSentence)}</span>${remaining ? ` ${inline(remaining)}` : ''}</p>`;
 }
 
 function inline(value: string): string {
