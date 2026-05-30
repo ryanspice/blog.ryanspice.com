@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store/
+.svelte-kit/
+build/
+dist/
+.env
+.env.*
+!.env.example
+deploy.config.json
+*.local.json
+.DS_Store
+Thumbs.db

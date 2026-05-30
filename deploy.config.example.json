@@ -1,0 +1,16 @@
+{
+  "host": "blog.ryanspice.com",
+  "user": "<ssh-username>",
+  "port": 22,
+  "remotePath": "public_html/blog.ryanspice.com",
+  "publicUrl": "https://blog.ryanspice.com/",
+  "keyPath": "",
+  "basePath": "",
+  "keepNames": [
+    "_incoming",
+    "_releases",
+    "_backups",
+    ".well-known",
+    "cgi-bin"
+  ]
+}

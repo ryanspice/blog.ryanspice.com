@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+	# This SvelteKit build is canonical on blog.ryanspice.com (domain root).
+	# If the same folder is also reachable as https://ryanspice.com/blog/,
+	# redirect so asset paths (/ _app /...) resolve correctly and avoid duplicate URLs.
+	RewriteCond %{HTTP_HOST} ^(www\.)?ryanspice\.com$ [NC]
+	RewriteRule ^(.*)$ https://blog.ryanspice.com/$1 [R=301,L]
+</IfModule>
+

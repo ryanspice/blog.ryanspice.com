@@ -1,0 +1,37 @@
+{
+  "name": "blog.ryanspice.com",
+  "private": true,
+  "version": "0.1.5",
+  "type": "module",
+  "description": "SvelteKit static blog project for Ryan Spice's technical articles, staged inside the AI Wiki.",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "dev:host": "vite --host 0.0.0.0",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "build": "svelte-kit sync && vite build",
+    "build:blog": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Build-BlogStatic.ps1",
+    "preview": "vite preview --host 127.0.0.1",
+    "audit:files": "node ./scripts/audit-files.mjs",
+    "audit:seo": "node ./scripts/audit-prerender-output.mjs",
+    "verify:seo": "pnpm run build:blog && pnpm run audit:seo",
+    "setup:runtime": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Repair-PnpmExternalization.ps1 -Apply -InstallDeps",
+    "deploy:plan": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1",
+    "deploy:parallel": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Build -Apply",
+    "deploy:activate": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Apply -Activate",
+    "publish:parallel": "pnpm run deploy:parallel",
+    "deploy:test": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Test-BlogDeployConnection.ps1"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "@types/node": "^24.0.0",
+    "svelte": "^5.0.0",
+    "svelte-check": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=20.11"
+  },
+  "packageManager": "pnpm@9.0.3"
+}

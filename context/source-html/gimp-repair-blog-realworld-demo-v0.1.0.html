@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Repairing a Broken GIMP 3 Install and Turning It Into a Pixel Art Workstation · Blog Demo</title>
+  <meta name="description" content="A real-world repair log and workflow writeup covering GIMP 3.2, PhotoGIMP, G’MIC-Qt, Windhawk, DLL debugging, and a PixelBoats-ready art workflow." />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b10;
+      --bg-2: #101722;
+      --panel: rgba(16, 23, 34, 0.82);
+      --panel-strong: rgba(20, 30, 44, 0.96);
+      --text: #edf3f7;
+      --muted: #aebdca;
+      --soft: #718195;
+      --line: rgba(160, 186, 205, 0.18);
+      --gold: #f2d27c;
+      --gold-2: #b87936;
+      --blue: #0078d4;
+      --blue-2: #53b8ff;
+      --pink: #ff00ff;
+      --green: #87dac4;
+      --danger: #d44c36;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      --radius: 24px;
+      --content: min(760px, calc(100vw - 36px));
+      --wide: min(1160px, calc(100vw - 36px));
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background:
+        radial-gradient(circle at 15% -10%, rgba(0, 120, 212, 0.34), transparent 34rem),
+        radial-gradient(circle at 95% 3%, rgba(242, 210, 124, 0.18), transparent 28rem),
+        linear-gradient(180deg, #07101b 0%, #080b10 40%, #05070b 100%);
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Calibri, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 18px;
+      line-height: 1.65;
+      letter-spacing: 0.01em;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.28;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, black, transparent 72%);
+    }
+
+    .read-progress {
+      position: fixed;
+      z-index: 50;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0;
+      background: linear-gradient(90deg, var(--blue), var(--gold), var(--pink));
+      box-shadow: 0 0 20px rgba(0, 120, 212, .75);
+    }
+
+    .site-shell {
+      position: relative;
+      z-index: 1;
+    }
+
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(18px);
+      background: rgba(8, 11, 16, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      width: var(--wide);
+      margin: 0 auto;
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      background:
+        linear-gradient(135deg, rgba(0,120,212,.95), rgba(242,210,124,.88)),
+        radial-gradient(circle at 75% 20%, white, transparent 10px);
+      box-shadow: 0 0 28px rgba(0, 120, 212, .28);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 11px;
+      border-radius: 999px;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+    }
+
+    .hero {
+      width: var(--wide);
+      margin: 0 auto;
+      padding: 88px 0 42px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 46px;
+      align-items: end;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 18px;
+      color: var(--gold);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: .14em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: var(--pink);
+      box-shadow: 0 0 20px var(--pink);
+    }
+
+    h1 {
+      font-size: clamp(44px, 7vw, 84px);
+      line-height: .94;
+      margin: 0 0 24px;
+      letter-spacing: -0.065em;
+      max-width: 900px;
+    }
+
+    .dek {
+      color: var(--muted);
+      font-size: clamp(19px, 2vw, 24px);
+      line-height: 1.45;
+      margin: 0;
+      max-width: 760px;
+    }
+
+    .hero-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(20,30,44,.84), rgba(10,14,20,.84));
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .status-pill {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.035);
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .status-pill strong {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 26px;
+    }
+
+    .tag {
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+
+    .layout {
+      width: var(--wide);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 760px) 1fr;
+      gap: 40px;
+      align-items: start;
+      padding-bottom: 90px;
+    }
+
+    aside.toc {
+      position: sticky;
+      top: 90px;
+      border: 1px solid var(--line);
+      background: rgba(8, 11, 16, .56);
+      border-radius: 20px;
+      padding: 18px;
+      max-height: calc(100vh - 120px);
+      overflow: auto;
+    }
+
+    aside.toc h2 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      text-transform: uppercase;
+      color: var(--gold);
+      letter-spacing: .12em;
+    }
+
+    aside.toc a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      line-height: 1.35;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,.045);
+    }
+
+    aside.toc a:hover { color: var(--text); }
+    aside.toc .toc-l3 { padding-left: 14px; font-size: 13px; color: var(--soft); }
+
+    article {
+      border: 1px solid var(--line);
+      background: rgba(8, 11, 16, .68);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .article-inner {
+      padding: clamp(24px, 5vw, 54px);
+    }
+
+    article h1 {
+      font-size: clamp(36px, 4.8vw, 58px);
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+
+    article h2 {
+      margin: 58px 0 14px;
+      font-size: clamp(27px, 3vw, 38px);
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+
+    article h3 {
+      margin: 36px 0 10px;
+      font-size: 23px;
+      color: var(--gold);
+      letter-spacing: -0.02em;
+    }
+
+    article p {
+      color: #dce6ee;
+      margin: 18px 0;
+    }
+
+    article ul, article ol {
+      color: #dce6ee;
+      padding-left: 1.25em;
+    }
+
+    article li { margin: 7px 0; }
+
+    article code {
+      color: #ffcf77;
+      background: rgba(242, 210, 124, 0.10);
+      border: 1px solid rgba(242, 210, 124, 0.16);
+      border-radius: 7px;
+      padding: 0.08em 0.32em;
+      font-family: "Cascadia Code", Consolas, monospace;
+      font-size: .88em;
+    }
+
+    .code-block {
+      position: relative;
+      overflow: auto;
+      margin: 22px 0;
+      padding: 18px;
+      background: #070a0f;
+      border: 1px solid rgba(83,184,255,.18);
+      border-radius: 18px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .code-block::before {
+      content: attr(data-lang);
+      display: block;
+      margin-bottom: 10px;
+      color: var(--blue-2);
+      font-family: Calibri, "Segoe UI", sans-serif;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .code-block code {
+      background: none;
+      border: 0;
+      color: #d7e8f5;
+      padding: 0;
+      white-space: pre;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      margin: 24px 0;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,.03);
+      font-size: 15px;
+    }
+
+    th, td {
+      padding: 11px 13px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--gold);
+      background: rgba(242, 210, 124, .07);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+    }
+
+    .rail-card {
+      position: sticky;
+      top: 90px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(20,30,44,.72), rgba(8,11,16,.72));
+      border-radius: 20px;
+      padding: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .rail-card h2 {
+      color: var(--text);
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .palette-preview {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 5px;
+      margin: 14px 0 18px;
+    }
+
+    .swatch {
+      height: 20px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .callout {
+      border-left: 4px solid var(--gold);
+      background: rgba(242, 210, 124, .08);
+      padding: 16px 18px;
+      border-radius: 16px;
+      margin-top: 18px;
+    }
+
+    footer {
+      width: var(--wide);
+      margin: 0 auto;
+      padding: 36px 0 70px;
+      color: var(--soft);
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1050px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 58px;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      aside.toc,
+      .rail-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 680px) {
+      body { font-size: 16px; }
+      .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
+      .hero { padding-top: 44px; }
+      .article-inner { padding: 24px; }
+      h1 { letter-spacing: -0.045em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="read-progress" id="readProgress"></div>
+
+  <div class="site-shell">
+    <header class="site-header">
+      <nav class="nav" aria-label="Site">
+        <a class="brand" href="#">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Ryan Spice / Canopy Digital</span>
+        </a>
+        <div class="nav-links">
+          <a href="#the-symptom">Problem</a>
+          <a href="#the-useful-test-hard-isolated-launch">Debugging</a>
+          <a href="#creating-the-pixelboats-gimp-kit">PixelBoats Kit</a>
+          <a href="#future-improvements">Next</a>
+        </div>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Tooling repair log · PixelBoats</div>
+        <h1>Repairing a Broken GIMP 3 Install and Turning It Into a Pixel Art Workstation</h1>
+        <p class="dek">A real-world repair log and workflow writeup covering GIMP 3.2, PhotoGIMP, G’MIC-Qt, Windhawk, DLL debugging, and a PixelBoats-ready art workflow.</p>
+        <div class="tag-row" aria-label="Tags">
+          <span class="tag">GIMP 3.2</span>
+          <span class="tag">PhotoGIMP</span>
+          <span class="tag">G'MIC-Qt</span>
+          <span class="tag">Windows 11</span>
+          <span class="tag">Pixel Art</span>
+          <span class="tag">DLL Debugging</span>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="Article summary">
+        <strong>Production outcome</strong>
+        <div class="status-grid">
+          <div class="status-pill"><span>GIMP</span><strong>Repaired</strong></div>
+          <div class="status-pill"><span>PhotoGIMP</span><strong>Installed</strong></div>
+          <div class="status-pill"><span>G'MIC</span><strong>Working</strong></div>
+          <div class="status-pill"><span>PixelBoats Kit</span><strong>Installed</strong></div>
+          <div class="status-pill"><span>Old plug-ins</span><strong>Quarantined</strong></div>
+        </div>
+      </aside>
+    </section>
+
+    <main class="layout">
+      <aside class="toc" aria-label="Table of contents">
+        <h2>Contents</h2>
+        <a class="toc-l2" href="#the-symptom">The Symptom</a>
+<a class="toc-l2" href="#the-first-trap-fresh-reinstall-did-not-mean-clean-runtime">The First Trap: Fresh Reinstall Did Not Mean Clean Runtime</a>
+<a class="toc-l2" href="#the-useful-test-hard-isolated-launch">The Useful Test: Hard-Isolated Launch</a>
+<a class="toc-l2" href="#the-rule-that-saved-the-setup">The Rule That Saved the Setup</a>
+<a class="toc-l2" href="#installing-photogimp">Installing PhotoGIMP</a>
+<a class="toc-l2" href="#installing-gmic-qt">Installing G&#x27;MIC-Qt</a>
+<a class="toc-l2" href="#adding-a-fluent-ish-theme">Adding a Fluent-ish Theme</a>
+<a class="toc-l2" href="#creating-the-pixelboats-gimp-kit">Creating the PixelBoats GIMP Kit</a>
+<a class="toc-l2" href="#pixel-art-defaults-that-matter">Pixel Art Defaults That Matter</a>
+<a class="toc-l2" href="#the-final-working-stack">The Final Working Stack</a>
+<a class="toc-l2" href="#what-this-process-says-about-practical-tooling">What This Process Says About Practical Tooling</a>
+<a class="toc-l2" href="#future-improvements">Future Improvements</a>
+      </aside>
+
+      <article>
+        <div class="article-inner">
+          <h1 id="repairing-a-broken-gimp-3-install-and-turning-it-into-a-pixel-art-workstation">Repairing a Broken GIMP 3 Install and Turning It Into a Pixel Art Workstation</h1>
+<p>Sometimes the problem is not that a tool is bad. Sometimes the problem is that Windows, plug-in runtimes, environment variables, app hooks, and one innocent folder move all decide to form a small committee.</p>
+<p>This is a writeup of a real repair pass on a Windows 11 GIMP 3.2 setup. The end goal was not merely “make GIMP open again.” The goal was to turn it into a practical art-adjacent workstation for PixelBoats: sprite cleanup, palette work, UI mockups, hot-pink matte separation, texture experiments, and non-artist-friendly image processing.</p>
+<p>The short version:</p>
+<ul>
+<li>- GIMP had been moved from one folder to another.</li>
+<li>- A fresh reinstall still produced runtime errors.</li>
+<li>- The visible failures involved <code>_Unwind_Resume</code>, <code>libgraphite2.dll</code>, <code>libpango-1.0-0.dll</code>, and bundled GIMP Python plug-ins.</li>
+<li>- A hard-isolated launch worked.</li>
+<li>- A Windhawk plug-in was disabled because it had previously caused issues with Python programs.</li>
+<li>- Tesseract-OCR DLLs were also visible on <code>PATH</code>, which made DLL pollution a secondary suspect.</li>
+<li>- Once vanilla GIMP launched cleanly, PhotoGIMP, G&#x27;MIC-Qt, a lightweight Fluent-ish theme, and a PixelBoats kit were installed.</li>
+</ul>
+<p>The important lesson: do not restore the old GIMP profile wholesale. Restore safe assets only. Leave old plug-ins and scripts quarantined until you can test them one at a time.</p>
+<h2 id="the-symptom">The Symptom</h2>
+<p>The most obvious startup error was:</p>
+<pre class="code-block" data-lang="text"><code>entrypoint _Unwind_Resume could not be located in the dynamic link library
+...\GIMP 3\bin\libgraphite2.dll</code></pre>
+<p>That looks like a missing function in <code>libgraphite2.dll</code>, but that is usually not the whole story. In a Windows GTK/GIMP install, one DLL error can really mean “something earlier in the dependency chain is wrong, old, injected, or being loaded from the wrong place.”</p>
+<p>After launching GIMP from PowerShell with console output, the more useful error surfaced:</p>
+<pre class="code-block" data-lang="text"><code>Failed to load shared library &#x27;libpango-1.0-0.dll&#x27; referenced by the typelib:
+&#x27;libpango-1.0-0.dll&#x27;: The specified procedure could not be found.</code></pre>
+<p>Then GIMP&#x27;s bundled Python plug-ins started failing while importing <code>gi.repository</code>, including plug-ins such as:</p>
+<pre class="code-block" data-lang="text"><code>spyro-plus
+python-eval
+python-console
+palette-sort
+palette-offset
+foggify
+file-openraster
+colorxhtml</code></pre>
+<p>That changed the diagnosis. Python was not the core problem. Python was where the runtime collision became visible.</p>
+<h2 id="the-first-trap-fresh-reinstall-did-not-mean-clean-runtime">The First Trap: Fresh Reinstall Did Not Mean Clean Runtime</h2>
+<p>GIMP was freshly installed through winget as GIMP 3.2.4:</p>
+<pre class="code-block" data-lang="text"><code>GIMP 3.2.4
+GIMP.GIMP
+3.2.4.0</code></pre>
+<p>The Start Menu shortcut pointed to:</p>
+<pre class="code-block" data-lang="text"><code><USER_HOME>\AppData\Local\Programs\GIMP 3\bin\gimp-3.exe</code></pre>
+<p>So the install itself existed and Windows knew where to launch it. But external DLLs were also visible from <code>PATH</code>:</p>
+<pre class="code-block" data-lang="text"><code>C:\Program Files\Tesseract-OCR\libgcc_s_seh-1.dll
+C:\Program Files\Tesseract-OCR\libstdc++-6.dll
+C:\Program Files\Tesseract-OCR\libwinpthread-1.dll
+C:\Program Files\Tesseract-OCR\libgraphite2.dll
+C:\Program Files\Tesseract-OCR\libpango-1.0-0.dll</code></pre>
+<p>That does not automatically prove Tesseract caused the failure. But it does mean the machine had external MinGW/GTK-ish DLLs available globally, which is exactly the kind of thing that can make Windows desktop applications fail in confusing ways.</p>
+<p>The stronger clue came from a hard-isolated launch.</p>
+<h2 id="the-useful-test-hard-isolated-launch">The Useful Test: Hard-Isolated Launch</h2>
+<p>Instead of launching GIMP with the normal user environment, we launched it with a reduced environment:</p>
+<ul>
+<li>- GIMP <code>bin</code> first</li>
+<li>- Windows system paths only</li>
+<li>- no <code>PYTHONPATH</code></li>
+<li>- no <code>PYTHONHOME</code></li>
+<li>- no <code>GI_TYPELIB_PATH</code></li>
+<li>- no <code>GTK_PATH</code></li>
+<li>- no <code>GTK_DATA_PREFIX</code></li>
+<li>- no <code>GIO_MODULE_DIR</code></li>
+</ul>
+<p>That launch worked cleanly.</p>
+<p>At around the same point, a Windhawk plug-in was disabled. That mattered because Windhawk had already caused issues with Python programs on this machine before. There are also real-world reports of GIMP 3 / Windows / Python plug-in entrypoint weirdness around Windhawk-style injection, so this was not a random superstition.</p>
+<p>The working theory became:</p>
+<pre class="code-block" data-lang="text"><code>Primary likely cause:
+Windhawk hook/mod conflict with GIMP&#x27;s bundled Python/GI/Pango runtime.
+
+Secondary risk:
+Tesseract-OCR DLL pollution in global PATH.</code></pre>
+<p>This is the kind of conclusion that is annoying but useful. It avoids the worse conclusion: “reinstall Windows” or “GIMP is broken.”</p>
+<h2 id="the-rule-that-saved-the-setup">The Rule That Saved the Setup</h2>
+<p>Once vanilla GIMP launched cleanly, the next temptation was to restore everything from the old profile.</p>
+<p>Do not do that.</p>
+<p>The safe restore set was:</p>
+<pre class="code-block" data-lang="text"><code>brushes
+dynamics
+gradients
+palettes
+patterns
+fonts
+tool-presets
+templates</code></pre>
+<p>The intentionally skipped restore set was:</p>
+<pre class="code-block" data-lang="text"><code>gimprc
+pluginrc
+sessionrc
+dockrc
+toolrc
+shortcutsrc
+plug-ins
+scripts
+modules
+interpreters</code></pre>
+<p>That distinction matters. The safe folders are mostly personal assets. The skipped files and folders can restore broken paths, revive incompatible plug-ins, undo PhotoGIMP changes, or bring back old GIMP 2.x assumptions.</p>
+<h2 id="installing-photogimp">Installing PhotoGIMP</h2>
+<p>After GIMP launched cleanly, PhotoGIMP was applied to the active profile:</p>
+<pre class="code-block" data-lang="text"><code><USER_HOME>\AppData\Roaming\GIMP\3.2</code></pre>
+<p>PhotoGIMP helped with the human side of GIMP:</p>
+<ul>
+<li>- Photoshop-like layout</li>
+<li>- Photoshop-like shortcuts</li>
+<li>- less hostile default workflow</li>
+<li>- better muscle memory for non-GIMP-native users</li>
+</ul>
+<p>That matters more than people admit. A tool you avoid because it feels alien is not really “free.”</p>
+<h2 id="installing-gmic-qt">Installing G&#x27;MIC-Qt</h2>
+<p>The next install was G&#x27;MIC-Qt for GIMP 3.</p>
+<p>G&#x27;MIC is the practical “make this more usable” layer:</p>
+<ul>
+<li>- filters</li>
+<li>- texture generation</li>
+<li>- dithering and stylization</li>
+<li>- sharpening and cleanup</li>
+<li>- non-artist-friendly image improvement tools</li>
+<li>- rough parchment, wood, water, fog, grain, and UI overlay experiments</li>
+</ul>
+<p>At first, <code>Filters -&gt; G&#x27;MIC-Qt</code> appeared greyed out. That was normal. GIMP disables many filters until an image is open and active.</p>
+<p>Once a blank image was created, G&#x27;MIC-Qt opened correctly.</p>
+<h2 id="adding-a-fluent-ish-theme">Adding a Fluent-ish Theme</h2>
+<p>There is no real WinUI/Mica/Fluent mod for GIMP. GIMP is GTK-based, so you can theme colors and some widget styles, but you cannot turn it into a native Windows 11 app with a CSS file.</p>
+<p>The safe compromise was a lightweight <code>Fluent-ish Dark</code> theme:</p>
+<ul>
+<li>- dark GTK palette</li>
+<li>- Windows-like blue accent</li>
+<li>- softer controls</li>
+<li>- no Windhawk UI hooks</li>
+<li>- no system-level injection</li>
+</ul>
+<p>The theme was installed into:</p>
+<pre class="code-block" data-lang="text"><code><USER_HOME>\AppData\Roaming\GIMP\3.2\themes\Fluent-ish Dark
+<USER_HOME>\AppData\Local\Programs\GIMP 3\share\gimp\3.0\themes\Fluent-ish Dark</code></pre>
+<p>This is the sane approach: theme the app, do not hook the app.</p>
+<h2 id="creating-the-pixelboats-gimp-kit">Creating the PixelBoats GIMP Kit</h2>
+<p>The final step was turning the repaired tool into a project workstation.</p>
+<p>The kit was installed to:</p>
+<pre class="code-block" data-lang="text"><code><USER_HOME>\AppData\Roaming\GIMP\3.2\pixelboats-kit</code></pre>
+<p>It included:</p>
+<pre class="code-block" data-lang="text"><code>palettes/
+templates/
+docs/
+scripts/
+README.md
+.thoughts</code></pre>
+<p>The palettes copied into the GIMP profile were:</p>
+<pre class="code-block" data-lang="text"><code>PixelBoats Core
+PixelBoats Water
+PixelBoats UI
+PixelBoats Factions</code></pre>
+<p>The templates included practical working surfaces:</p>
+<pre class="code-block" data-lang="text"><code>16x16-inventory-icon-template.png
+24x24-tiny-pickup-template.png
+32x32-skill-icon-template.png
+48x48-skill-icon-template.png
+64x64-character-frame-template.png
+96x96-character-frame-template.png
+128x128-ship-frame-template.png
+256x256-ui-panel-template.png
+256x128-ui-9slice-panel-template.png
+hot-pink-sprite-split-template.png</code></pre>
+<p>The point was not to make GIMP “beautiful.” The point was to reduce decision friction.</p>
+<p>When you are not a full-time artist, the blank canvas is the enemy. Templates, palettes, and known export sizes are how you make the tool easier to approach.</p>
+<h2 id="pixel-art-defaults-that-matter">Pixel Art Defaults That Matter</h2>
+<p>For pixel work, the most important GIMP habit is to avoid blurry transforms.</p>
+<p>Recommended settings:</p>
+<pre class="code-block" data-lang="text"><code>Edit -&gt; Preferences -&gt; Tool Options
+Set transform/scaling interpolation to None or Nearest Neighbor where available.</code></pre>
+<p>For individual files:</p>
+<pre class="code-block" data-lang="text"><code>View -&gt; Show Grid
+View -&gt; Snap to Grid
+Image -&gt; Configure Grid</code></pre>
+<p>Recommended grids:</p>
+<div class='table-wrap'><table><thead><tr>
+<th>Asset</th>
+<th>Grid</th>
+</tr></thead><tbody>
+<tr>
+<td>Inventory icons</td>
+<td>16x16 / 24x24</td>
+</tr>
+<tr>
+<td>Skill icons</td>
+<td>32x32 / 48x48</td>
+</tr>
+<tr>
+<td>Character frames</td>
+<td>64x64 / 96x96</td>
+</tr>
+<tr>
+<td>Ships</td>
+<td>128x128 / 256x256</td>
+</tr>
+<tr>
+<td>UI panels</td>
+<td>8px / 16px</td>
+</tr>
+</tbody></table></div>
+<p>Hot pink is useful, but only as a temporary matte/separation color. Final game sprites should export as PNG with real transparency.</p>
+<h2 id="the-final-working-stack">The Final Working Stack</h2>
+<p>The repaired and improved stack became:</p>
+<pre class="code-block" data-lang="text"><code>GIMP 3.2.4
+PhotoGIMP
+G&#x27;MIC-Qt
+Fluent-ish Dark theme
+PixelBoats palettes
+PixelBoats templates
+Safe restored personal assets
+Windhawk excluded/disabled for GIMP/Python
+Old plug-ins and scripts quarantined</code></pre>
+<p>That is a good stack because it is boring in the right way.</p>
+<p>No random plug-in archaeology. No fragile UI injection. No old config resurrection. No “copy the whole backup and pray.”</p>
+<h2 id="what-this-process-says-about-practical-tooling">What This Process Says About Practical Tooling</h2>
+<p>This is the kind of workflow repair that often gets dismissed as “just fixing my machine,” but it is more than that.</p>
+<p>For small studios, solo developers, and client-facing technical teams, the tooling layer is production infrastructure. If a creative tool is unreliable, the project pays for it every time someone avoids opening it.</p>
+<p>The real value was not just making GIMP launch again. It was turning a broken, distrusted tool into a repeatable workstation:</p>
+<ul>
+<li>- known install path</li>
+<li>- documented failure mode</li>
+<li>- isolated suspected causes</li>
+<li>- safe restore policy</li>
+<li>- project-specific palettes</li>
+<li>- project-specific templates</li>
+<li>- documented next steps</li>
+</ul>
+<p>That is how you move from “I fought my computer for an evening” to “I improved the production pipeline.”</p>
+<h2 id="future-improvements">Future Improvements</h2>
+<p>The next sensible iteration is not more plug-ins. It is better project assets:</p>
+<ul>
+<li>- real <code>.xcf</code> templates for PixelBoats UI panels</li>
+<li>- captain&#x27;s log page templates</li>
+<li>- minimap and inventory templates</li>
+<li>- ship sprite-sheet templates</li>
+<li>- character walk-cycle templates</li>
+<li>- palette extraction from actual approved PixelBoats art</li>
+<li>- a layer-group export workflow if GIMP 3 scripting remains stable</li>
+</ul>
+<p>The boring conclusion is the right one:</p>
+<pre class="code-block" data-lang="text"><code>Fix the runtime first.
+Customize lightly.
+Restore selectively.
+Build project-specific workflow assets.
+Avoid haunted plug-in piles.</code></pre>
+<p>That is the difference between tinkering and tooling.</p>
+        </div>
+      </article>
+
+      <aside class="rail-card" aria-label="Design notes">
+        <h2>Real-world page direction</h2>
+        <p>This mock leans more <strong>ryanspice.com / Canopy Digital technical article</strong> than raw Obsidian note.</p>
+        <div class="palette-preview" aria-label="PixelBoats palette preview">
+          <span class="swatch" style="background:#080c14"></span>
+          <span class="swatch" style="background:#112032"></span>
+          <span class="swatch" style="background:#2d5c79"></span>
+          <span class="swatch" style="background:#0078d4"></span>
+          <span class="swatch" style="background:#53b8ff"></span>
+          <span class="swatch" style="background:#f2d27c"></span>
+          <span class="swatch" style="background:#b87936"></span>
+          <span class="swatch" style="background:#ff00ff"></span>
+        </div>
+        <div class="callout">
+          <strong>Editorial angle:</strong> tooling repair as production infrastructure, not just “I fixed my app.”
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      Draft HTML demo generated from the AI Wiki inbox blog post. No external assets or frameworks. Safe to open locally.
+    </footer>
+  </div>
+
+  <script>
+    const bar = document.getElementById('readProgress');
+    function updateProgress() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? (window.scrollY / max) * 100 : 0;
+      bar.style.width = progress + '%';
+    }
+    updateProgress();
+    addEventListener('scroll', updateProgress, { passive: true });
+  </script>
+</body>
+</html>
+

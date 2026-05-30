@@ -1,0 +1,65 @@
+---
+project: blog.ryanspice.com
+version: 0.1.0
+updated: 2026-05-28
+status: scaffolded
+phase: sveltekit-starter
+risk_tier: low-medium
+preferred_agent: codex-or-local-agent
+package_manager: pnpm
+runtime_policy: node_modules-externalized
+---
+
+# blog.ryanspice.com State
+
+## Request
+
+Create a new AI Wiki project under:
+
+```txt
+<AI_WIKI_ROOT>\07_Projects\blog.ryanspice.com
+```
+
+Generate a SvelteKit application based on the two attached GIMP/Windhawk blog drafts and their attached HTML demos. Trial pnpm, but keep dependency folders out of the AI Wiki / OneDrive tree.
+
+## Current result
+
+- SvelteKit static blog scaffold created.
+- Two Markdown articles normalized and included.
+- Source Markdown and HTML demos preserved under `context/`.
+- UI adapted from the attached demos: dark technical article shell, sticky header, TOC rail, article profile card, tag pills, code blocks, and subtle background grid.
+- pnpm selected for this trial.
+- Installer creates a junction from project `node_modules` to an external runtime folder.
+
+## Key decisions
+
+1. Use pnpm for this trial instead of Bun so the dependency layout can be compared later.
+2. Use a local Markdown renderer for v0.1.0 to avoid dependency creep.
+3. Use `@sveltejs/adapter-static` because these are local/public blog posts.
+4. Keep `.ai/skills/blog-ryanspice-com/SKILL.md` as a project-local pointer, not a canonical skill.
+5. Preserve source artifacts in `context/` so later agents can compare generated Svelte UI against the original HTML demos.
+
+## Verification pending on Windows
+
+```powershell
+cd "<AI_WIKI_ROOT>\07_Projects\blog.ryanspice.com"
+pnpm install
+pnpm check
+pnpm build
+pnpm dev
+```
+
+## Known risks
+
+- Package versions use broad ranges and will resolve when pnpm installs.
+- The local Markdown renderer is intentionally incomplete.
+- Static adapter output is correct for simple hosting, but deployment target is not chosen yet.
+- Original blog content includes local Windows paths; review before public publishing.
+
+## Next useful pass
+
+1. Run install/check/build locally.
+2. Compare `/blog/<slug>` routes against the attached HTML demos.
+3. Add canonical URLs, RSS, sitemap, OG metadata, and article image strategy.
+4. Decide whether this becomes the canonical `blog.ryanspice.com` repo or a prototype inside the AI Wiki.
+
