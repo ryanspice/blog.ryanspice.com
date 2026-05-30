@@ -1,7 +1,7 @@
 ---
 title: "Repairing a Broken GIMP 3 Install and Turning It Into a Pixel Art Workstation"
 slug: "gimp-3-repair-photogimp-pixelboats-workstation"
-status: "draft"
+status: "published"
 draft_type: "technical-blog-post"
 date: "2026-05-28"
 audience:

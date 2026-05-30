@@ -1,7 +1,7 @@
 ---
 title: "ChatGPT Deep Research vs. DeepSeek: What’s Actually Happening Under the Hood"
 slug: "how-chatgpt-performs-deep-research"
-status: "draft"
+status: "published"
 draft_type: "research-analysis"
 date: "2026-05-30"
 audience:

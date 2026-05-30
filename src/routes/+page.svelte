@@ -1,23 +1,18 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { articles } from '$lib/articles';
+	import { publishedArticles } from '$lib/articles';
 	import { articleAccentColor } from '$lib/article-accent';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
-	import { articleTitleTransitionName, runViewTransition } from '$lib/view-transitions';
 
 	const title = 'blog.ryanspice.com · Technical notes';
-	const description = 'Technical blog drafts, production notes, and a lightweight dev log from Ryan Spice.';
-	const latestArticle = articles[0];
+	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';
+	const latestArticle = publishedArticles[0];
 	const latestDate = latestArticle ? latestArticle.date : '2026-05-28';
 	const latestDateLabel = latestArticle ? latestArticle.dateLabel : 'May 28, 2026';
 	const latestArticleHref = latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`;
 	const latestArticleAccent = $derived(latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)');
-	const latestArticleTitleTransitionName = $derived(
-		latestArticle ? articleTitleTransitionName(latestArticle.slug) : 'article-title-home-latest'
-	);
 	const footerLinks = [
 		{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
 		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
@@ -52,21 +47,6 @@
 		return `${base}${href}`;
 	}
 
-	function navigateToLatestArticle(event: MouseEvent) {
-		if (
-			!latestArticle ||
-			event.button !== 0 ||
-			event.metaKey ||
-			event.ctrlKey ||
-			event.shiftKey ||
-			event.altKey
-		) {
-			return;
-		}
-
-		event.preventDefault();
-		void runViewTransition(() => goto(latestArticleHref));
-	}
 </script>
 
 <svelte:head>
@@ -111,7 +91,7 @@
 		<dl class="meta-grid home-meta" aria-label="Site metadata">
 			<div>
 				<dt>Articles</dt>
-				<dd>{articles.length}</dd>
+				<dd>{publishedArticles.length}</dd>
 			</div>
 			<div>
 				<dt>Latest</dt>
@@ -126,11 +106,7 @@
 
 	<aside class="hero-card home-hero-card" aria-label="Latest article" style={`--article-accent: ${latestArticleAccent}`}>
 		<strong>Latest article</strong>
-		<h2 style:view-transition-name={latestArticleTitleTransitionName}>
-			<a href={latestArticleHref} onclick={navigateToLatestArticle}>
-				{latestArticle?.title ?? 'Latest article'}
-			</a>
-		</h2>
+		<h2><a href={latestArticleHref}>{latestArticle?.title ?? 'Latest article'}</a></h2>
 		<p>{latestArticle?.summary ?? 'Recent technical notes and comparisons.'}</p>
 		<dl class="hero-meta" aria-label="Latest article metadata">
 			<div>
@@ -154,13 +130,13 @@
 	</aside>
 </section>
 
-<section id="articles" class="article-grid" aria-label="Latest articles">
+<section id="articles" class="article-grid" aria-label="Published articles">
 	<div class="section-head">
 		<p class="eyebrow">Latest articles</p>
-		<h2>Recent posts</h2>
+		<h2>Recent published posts</h2>
 		<p class="section-dek">Published technical notes with dates, reading time, and source-linked metadata.</p>
 	</div>
-	{#each articles as article (article.slug)}
+	{#each publishedArticles as article (article.slug)}
 		<ArticleCard {article} />
 	{/each}
 </section>
@@ -170,7 +146,7 @@
 		<div class="site-footer-copy">
 			<p class="eyebrow">Elsewhere</p>
 			<h2>Links and site info</h2>
-			<p class="site-footer-dek">A static SvelteKit blog for technical notes, repair logs, research writeups, and a lightweight dev log tied back to AI Wiki fragments. The public surface stays small and easy to scan.</p>
+			<p class="site-footer-dek">A static SvelteKit blog for technical notes, repair logs, research writeups, and a lightweight dev log for site changes. The public surface stays small and easy to scan.</p>
 		</div>
 
 		<div class="site-footer-links">
@@ -183,7 +159,7 @@
 	</div>
 
 	<div class="site-footer-meta">
-		<span>{articles.length} posts</span>
+		<span>{publishedArticles.length} posts</span>
 		<span>SvelteKit 2 / Svelte 5</span>
 		<span>Static site</span>
 	</div>

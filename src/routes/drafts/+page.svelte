@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { draftArticles } from '$lib/articles';
 	import { articleAccentColor } from '$lib/article-accent';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
-	import { articleTitleTransitionName, runViewTransition } from '$lib/view-transitions';
 
 	const title = 'blog.ryanspice.com · Drafts';
 	const description = 'Unpublished draft articles and working posts from Ryan Spice.';
@@ -15,28 +13,10 @@
 	const latestDateLabel = latestDraft ? latestDraft.dateLabel : 'May 30, 2026';
 	const latestDraftHref = latestDraft ? `${base}/${latestDraft.slug}/` : `${base}/`;
 	const latestDraftAccent = $derived(latestDraft ? articleAccentColor(latestDraft) : 'var(--accent)');
-	const latestDraftTitleTransitionName = $derived(
-		latestDraft ? articleTitleTransitionName(latestDraft.slug) : 'article-title-home-draft'
-	);
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const draftCount = draftArticles.length;
 
-	function navigateToLatestDraft(event: MouseEvent) {
-		if (
-			!latestDraft ||
-			event.button !== 0 ||
-			event.metaKey ||
-			event.ctrlKey ||
-			event.shiftKey ||
-			event.altKey
-		) {
-			return;
-		}
-
-		event.preventDefault();
-		void runViewTransition(() => goto(latestDraftHref));
-	}
 </script>
 
 <svelte:head>
@@ -87,11 +67,7 @@
 
 	<aside class="hero-card home-hero-card" aria-label="Latest draft" style={`--article-accent: ${latestDraftAccent}`}>
 		<strong>Latest draft</strong>
-		<h2 style:view-transition-name={latestDraftTitleTransitionName}>
-			<a href={latestDraftHref} onclick={navigateToLatestDraft}>
-				{latestDraft?.title ?? 'No drafts yet'}
-			</a>
-		</h2>
+		<h2><a href={latestDraftHref}>{latestDraft?.title ?? 'No drafts yet'}</a></h2>
 		<p>{latestDraft?.summary ?? 'Drafts will appear here once they are added.'}</p>
 		<dl class="hero-meta" aria-label="Latest draft metadata">
 			<div>

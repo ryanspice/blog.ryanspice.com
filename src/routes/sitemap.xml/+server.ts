@@ -1,5 +1,5 @@
 import { base } from '$app/paths';
-import { articles } from '$lib/articles';
+import { publishedArticles } from '$lib/articles';
 
 export const prerender = true;
 
@@ -38,7 +38,7 @@ export const GET = ({ url }: { url: URL }) => {
 			changefreq: 'weekly',
 			priority: 0.6
 		},
-		...articles.map<SitemapEntry>((article) => ({
+		...publishedArticles.map<SitemapEntry>((article) => ({
 			loc: new URL(`${base}/${article.slug}/`, url.origin).toString(),
 			lastmod: normalizeIsoDate(article.date),
 			changefreq: 'yearly',

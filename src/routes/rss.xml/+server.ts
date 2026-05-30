@@ -1,5 +1,5 @@
 import { base } from '$app/paths';
-import { articles } from '$lib/articles';
+import { publishedArticles } from '$lib/articles';
 
 export const prerender = true;
 
@@ -21,11 +21,11 @@ function toRfc822Date(value: string): string {
 export const GET = ({ url }: { url: URL }) => {
 	const siteTitle = 'blog.ryanspice.com';
 	const channelTitle = 'Ryan Spice · Technical notes';
-	const channelDescription = 'Technical blog drafts and production notes from Ryan Spice.';
+	const channelDescription = 'Published technical notes and production notes from Ryan Spice.';
 	const channelUrl = new URL(`${base}/`, url.origin).toString();
 	const selfUrl = new URL(`${base}/rss.xml`, url.origin).toString();
 
-	const items = articles
+	const items = publishedArticles
 		.slice()
 		.sort((a, b) => b.date.localeCompare(a.date))
 		.map((article) => {
@@ -63,4 +63,3 @@ ${items ? `\n${items}\n` : '\n'}
 		}
 	});
 };
-

@@ -5,9 +5,10 @@
 	import { devLogEntries } from '$lib/dev-log';
 
 	const title = 'blog.ryanspice.com · Dev log';
-	const description =
-		'A running log of AI Wiki fragments, site changes, and the process hooks behind the blog.';
-	const latestEntry = devLogEntries[0];
+	const description = 'A running log of site changes, AI Wiki notes, and the process hooks behind the blog.';
+	const featuredEntries = devLogEntries.slice(0, 3);
+	const logEntries = devLogEntries.slice(3);
+	const latestEntry = featuredEntries[0];
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
@@ -20,11 +21,6 @@
 		url: canonical
 	});
 	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
-
-	function hrefFor(href: string): string {
-		if (href.startsWith('#') || href.startsWith('http')) return href;
-		return `${base}${href}`;
-	}
 </script>
 
 <svelte:head>
@@ -63,8 +59,8 @@
 		<p class="eyebrow">AI Wiki · blog process</p>
 		<h1>Dev log for the blog and the work that feeds it.</h1>
 		<p class="dek">
-			A loose bridge between the public site, AI Wiki fragments, and the small implementation
-			decisions that make the rest of the blog move.
+			A small running history of site changes, AI Wiki notes, and the process hooks behind the
+			blog.
 		</p>
 		<dl class="meta-grid home-meta" aria-label="Dev log metadata">
 			<div>
@@ -76,7 +72,7 @@
 				<dd><time datetime={latestEntry.date}>{latestEntry.dateLabel}</time></dd>
 			</div>
 			<div>
-				<dt>Hook</dt>
+				<dt>Mode</dt>
 				<dd>Manual for now</dd>
 			</div>
 		</dl>
@@ -84,13 +80,13 @@
 
 	<aside
 		class="hero-card home-hero-card"
-		aria-label="Fragment tie-in"
+		aria-label="Process hook"
 		style={`--article-accent: ${latestEntry.accent}`}
 	>
-		<strong>Fragment tie-in</strong>
+		<strong>Process hook</strong>
 		<p>
-			This page starts as a lightweight manual log. Later, it can accept a command summary or an
-			AI Wiki fragment export instead of a hand-edited list.
+			This starts as a manual page. Later, it can accept a compact command-layer summary or other
+			repo-generated note.
 		</p>
 		<dl class="hero-meta" aria-label="Dev log summary">
 			<div>
@@ -106,46 +102,73 @@
 				<dd>Blog + drafts</dd>
 			</div>
 		</dl>
-		<p class="home-hero-note">The point is traceability, not ceremony.</p>
+		<p class="home-hero-note">The point is traceability without turning the page into a taxonomy.</p>
 	</aside>
 </section>
 
-<section class="article-grid" aria-label="Dev log entries">
+<section class="dev-log-featured" aria-label="Working notes">
 	<div class="section-head">
 		<p class="eyebrow">Working notes</p>
-		<h2>What changed and why</h2>
+		<h2>Latest changes</h2>
 		<p class="section-dek">
-			Small entries that connect the site, the AI Wiki, and the content pipeline behind the
-			published posts.
+			The newest note gets the most space. The two before it stay visible without taking over the
+			page.
 		</p>
 	</div>
 
-	{#each devLogEntries as entry (entry.date + entry.title)}
-		<article class="article-card dev-log-entry" style={`--article-accent: ${entry.accent}`}>
-			<p class="card-kicker">{entry.fragment}</p>
-			<h2>{entry.title}</h2>
-			<div class="card-meta" aria-label="Entry metadata">
-				<time datetime={entry.date}>{entry.dateLabel}</time>
-				<span>{entry.source}</span>
-			</div>
-			<p>{entry.summary}</p>
-			<div class="tag-row compact" aria-label="Tags">
-				{#each entry.tags as tag (tag)}
-					<span class="tag">{tag}</span>
-				{/each}
-			</div>
-			{#if entry.links?.length}
-				<div class="home-hero-links" aria-label={`Related links for ${entry.title}`}>
-					{#each entry.links as link (link.href)}
-						<a href={hrefFor(link.href)}>{link.label}</a>
-					{/each}
+	<div class="dev-log-featured-grid">
+		{#if featuredEntries[0]}
+			<article class="dev-log-card dev-log-card-large" style={`--article-accent: ${featuredEntries[0].accent}`}>
+				<p class="dev-log-meta">
+					<time datetime={featuredEntries[0].date}>{featuredEntries[0].dateLabel}</time>
+					<span>{featuredEntries[0].source}</span>
+				</p>
+				<h2>{featuredEntries[0].title}</h2>
+				<p>{featuredEntries[0].summary}</p>
+			</article>
+		{/if}
+
+		<div class="dev-log-featured-stack">
+			{#each featuredEntries.slice(1) as entry (entry.date + entry.title)}
+				<article class="dev-log-card dev-log-card-small" style={`--article-accent: ${entry.accent}`}>
+					<p class="dev-log-meta">
+						<time datetime={entry.date}>{entry.dateLabel}</time>
+						<span>{entry.source}</span>
+					</p>
+					<h3>{entry.title}</h3>
+					<p>{entry.summary}</p>
+				</article>
+			{/each}
+		</div>
+	</div>
+</section>
+
+<section class="dev-log-feed" aria-label="Logs and events">
+	<div class="section-head">
+		<p class="eyebrow">Logs and events</p>
+		<h2>Readable history</h2>
+		<p class="section-dek">
+			Short, human-readable entries that are easy to scan later.
+		</p>
+	</div>
+
+	<ul class="dev-log-list">
+		{#each logEntries as entry (entry.date + entry.title)}
+			<li class="dev-log-list-item" style={`--article-accent: ${entry.accent}`}>
+				<div class="dev-log-list-meta">
+					<time datetime={entry.date}>{entry.dateLabel}</time>
+					<span>{entry.source}</span>
 				</div>
-			{/if}
-		</article>
-	{/each}
+				<div class="dev-log-list-body">
+					<strong>{entry.title}</strong>
+					<p>{entry.summary}</p>
+				</div>
+			</li>
+		{/each}
+	</ul>
 </section>
 
 <footer>
-	Seeded from AI Wiki fragments and repo notes. Future hook: wire a command-layer summary export
-	into this page when the process is worth automating.
+	Seeded from AI Wiki notes and repo history. Future hook: wire a command-layer summary export
+	into this page when it becomes worth automating.
 </footer>

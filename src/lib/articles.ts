@@ -21,6 +21,7 @@ export type ArticleDesign = {
 	navLinks: NavItem[];
 	eyebrow: string;
 	tags: string[];
+	accent: string;
 	cardPalette?: ArticlePalette;
 	heroCardTitle: string;
 	heroCardAria: string;
@@ -61,6 +62,20 @@ const modules = import.meta.glob('./content/articles/*.md', {
 	query: '?raw',
 	import: 'default'
 }) as RawArticleModule;
+
+const articleAccents: Record<string, string> = {
+	'gimp-3-repair-photogimp-pixelboats-workstation': '#f2d27c',
+	'debugging-gimp-3-python-plugin-failures-windows-windhawk': '#ffcf77',
+	'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game': '#87dac4',
+	'how-chatgpt-performs-deep-research': '#7c5cff',
+	'ship-fast-for-windows-microsoft-store-playbook': '#53b8ff',
+	'hermes-deepseek-setup': '#1e9bff',
+	'what-can-you-actually-do-with-a-deepseek-api-key': '#ff00ff',
+	'ingesting-voxel-engine-optimisations-ai-wiki-pixelboats': '#b87936',
+	'pixelboats-water-pipeline-pixi-webgl': '#0078d4',
+	'pixelboats-networking-final-recommendation': '#87dac4',
+	'pixelboats-networking-player-hosted-php': '#00c2ff'
+};
 
 export const articles: Article[] = Object.entries(modules)
 	.map(([path, raw]) => parseArticle(path, raw))
@@ -106,7 +121,8 @@ function parseArticle(path: string, raw: string): Article {
 function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date' | 'dateLabel'>): ArticleDesign {
 	const common = {
 		brandLabel: 'Ryan Spice / Canopy Digital',
-		tocTitle: 'Contents'
+		tocTitle: 'Contents',
+		accent: accentForSlug(article.slug)
 	};
 
 	if (article.slug === 'gimp-3-repair-photogimp-pixelboats-workstation') {
@@ -272,6 +288,10 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 		railCalloutHtml: '<strong>Editorial angle:</strong> practical technical notes with durable source context.',
 		footerText: 'Static SvelteKit article generated from local Markdown.'
 	};
+}
+
+function accentForSlug(slug: string): string {
+	return articleAccents[slug] ?? '#1e9bff';
 }
 
 type Frontmatter = Record<string, string | string[]>;

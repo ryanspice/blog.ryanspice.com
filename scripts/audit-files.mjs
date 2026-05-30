@@ -21,6 +21,7 @@ const required = [
 	'src/lib/content/articles/how-chatgpt-performs-deep-research.md',
 	'src/lib/content/articles/ingesting-voxel-engine-optimisations-ai-wiki-pixelboats.md',
 	'src/lib/content/articles/pixelboats-networking-final-recommendation.md',
+	'src/lib/content/articles/pixelboats-networking-player-hosted-php.md',
 	'src/lib/content/articles/pixelboats-water-pipeline-pixi-webgl.md',
 	'src/lib/content/articles/phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game.md',
 	'src/lib/content/articles/ship-fast-for-windows-microsoft-store-playbook.md',

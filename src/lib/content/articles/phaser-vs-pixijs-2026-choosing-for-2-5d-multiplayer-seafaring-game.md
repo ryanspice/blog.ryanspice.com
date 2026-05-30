@@ -1,7 +1,7 @@
 ---
 title: "Phaser vs PixiJS in 2026: Why I Chose the Rendering Library Over the Game Framework for a Water-Heavy 2.5D Seafaring Game"
 slug: "phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game"
-status: "draft"
+status: "published"
 draft_type: "technical-decision-log"
 date: "2026-05-29"
 summary: "A detailed comparison of Phaser 4.1 and PixiJS 8.18 for a browser-based multiplayer roguelike sailing game with custom water rendering. Why the default choice (Phaser) turned out to be wrong for this project, and how PixiJS's lower-level rendering primitives map more directly to what I'm actually building."

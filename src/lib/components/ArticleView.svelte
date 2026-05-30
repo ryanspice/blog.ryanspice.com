@@ -4,7 +4,7 @@ import { base } from '$app/paths';
 import { page } from '$app/state';
 import { articleAccentColor } from '$lib/article-accent';
 import SiteHeader from '$lib/components/SiteHeader.svelte';
-import { articleTitleTransitionName } from '$lib/view-transitions';
+import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
 import type { Article } from '$lib/articles';
 
 	type Props = {
@@ -17,6 +17,7 @@ import type { Article } from '$lib/articles';
 	let commandFeedback = $state<string | null>(null);
 	let feedbackTimer: number | null = null;
 	const articleAccent = $derived(articleAccentColor(article));
+	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 
 	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
@@ -180,13 +181,13 @@ import type { Article } from '$lib/articles';
 	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
 </svelte:head>
 
-<div class={`article-page theme-${article.design.variant} has-command-bar`}>
+<div class={`article-page theme-${article.design.variant} has-command-bar`} style={`--article-accent: ${articleAccent}`}>
 	<div class="read-progress" style={`width: ${progress}%`}></div>
 
 	<SiteHeader brandLabel={article.design.brandLabel} navLinks={article.design.navLinks} />
 
 	<section class="hero">
-		<div>
+		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
 			<div class="eyebrow">{article.design.eyebrow}</div>
 			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
 			<dl class="meta-grid article-meta" aria-label="Article metadata">
