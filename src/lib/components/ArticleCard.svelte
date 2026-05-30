@@ -17,6 +17,13 @@
 		<span>{article.readingMinutes} min read</span>
 	</div>
 	<p>{article.summary}</p>
+	{#if article.design.cardPalette?.colors.length}
+		<div class="card-palette" aria-label={article.design.cardPalette.label}>
+			{#each article.design.cardPalette.colors.slice(0, 5) as color (color)}
+				<span class="card-swatch" style={`background:${color}`}></span>
+			{/each}
+		</div>
+	{/if}
 	<div class="tag-row compact" aria-label="Tags">
 		{#each article.tags.slice(0, 5) as tag (tag)}
 			<span class="tag">{tag}</span>

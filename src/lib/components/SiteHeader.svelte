@@ -8,12 +8,16 @@
 	};
 
 	let { brandLabel = 'Ryan Spice / Canopy Digital', navLinks = [] }: Props = $props();
+	const draftLink: NavItem = { label: 'Drafts', href: '/drafts' };
 
 	const brandParts = $derived(
 		brandLabel
 			.split('/')
 			.map((part) => part.trim())
 			.filter(Boolean)
+	);
+	const visibleNavLinks = $derived(
+		navLinks.some((item) => item.href === draftLink.href) ? navLinks : [...navLinks, draftLink]
 	);
 
 	function hrefFor(href: string): string {
@@ -33,9 +37,9 @@
 				{/if}
 			</span>
 		</a>
-		{#if navLinks.length}
+		{#if visibleNavLinks.length}
 			<div class="nav-links">
-				{#each navLinks as item (item.href)}
+				{#each visibleNavLinks as item (item.href)}
 					<a href={hrefFor(item.href)}>{item.label}</a>
 				{/each}
 			</div>

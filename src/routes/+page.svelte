@@ -10,6 +10,15 @@
 	const latestArticle = articles[0];
 	const latestDate = latestArticle ? latestArticle.date : '2026-05-28';
 	const latestDateLabel = latestArticle ? latestArticle.dateLabel : 'May 28, 2026';
+	const latestPalette = latestArticle?.design.cardPalette ?? latestArticle?.design.railPalette;
+	const latestPaletteColors = latestPalette?.colors ?? [];
+	const latestArticleHref = latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`;
+	const footerLinks = [
+		{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
+		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
+		{ label: 'RSS feed', href: '/rss.xml' },
+		{ label: 'Sitemap', href: '/sitemap.xml' }
+	];
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const rssUrl = $derived(new URL(`${base}/rss.xml`, page.url.origin).toString());
@@ -31,6 +40,11 @@
 		]
 	});
 	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
+
+	function hrefFor(href: string): string {
+		if (href.startsWith('#') || href.startsWith('http')) return href;
+		return `${base}${href}`;
+	}
 </script>
 
 <svelte:head>
@@ -68,27 +82,57 @@
 />
 
 <section class="home-hero">
-	<p class="eyebrow">Ryan Spice · technical blog</p>
-	<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
-	<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, and research comparisons that stay grounded in the actual workflow.</p>
-	<dl class="meta-grid home-meta" aria-label="Site metadata">
-		<div>
-			<dt>Articles</dt>
-			<dd>{articles.length}</dd>
-		</div>
-		<div>
-			<dt>Latest</dt>
-			<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
-		</div>
-		<div>
-			<dt>Feed</dt>
-			<dd>RSS available</dd>
-		</div>
-	</dl>
-	<div class="home-actions">
-		<a class="primary-action" href={`${base}/#articles`}>Read articles</a>
-		<a class="secondary-action" href="https://ryanspice.com" rel="noreferrer" target="_blank">ryanspice.com</a>
+	<div class="home-hero-copy">
+		<p class="eyebrow">Ryan Spice · technical blog</p>
+		<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
+		<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, and research comparisons that stay grounded in the actual workflow.</p>
+		<dl class="meta-grid home-meta" aria-label="Site metadata">
+			<div>
+				<dt>Articles</dt>
+				<dd>{articles.length}</dd>
+			</div>
+			<div>
+				<dt>Latest</dt>
+				<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
+			</div>
+			<div>
+				<dt>Feed</dt>
+				<dd>RSS available</dd>
+			</div>
+		</dl>
 	</div>
+
+	<aside class="hero-card home-hero-card" aria-label="Latest article">
+		<strong>Latest article</strong>
+		<h2><a href={latestArticleHref}>{latestArticle?.title ?? 'Latest article'}</a></h2>
+		<p>{latestArticle?.summary ?? 'Recent technical notes and comparisons.'}</p>
+		<dl class="hero-meta" aria-label="Latest article metadata">
+			<div>
+				<dt>Published</dt>
+				<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
+			</div>
+			<div>
+				<dt>Read time</dt>
+				<dd>{latestArticle?.readingMinutes ?? 0} min</dd>
+			</div>
+			<div>
+				<dt>Type</dt>
+				<dd>{latestArticle?.draftType?.replaceAll('-', ' ') ?? 'article'}</dd>
+			</div>
+		</dl>
+		{#if latestPaletteColors.length}
+			<div class="card-palette home-palette" aria-label={latestPalette?.label ?? 'Latest article palette'}>
+				{#each latestPaletteColors.slice(0, 5) as color (color)}
+					<span class="card-swatch" style={`background:${color}`}></span>
+				{/each}
+			</div>
+		{/if}
+		<p class="home-hero-note">Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.</p>
+		<div class="home-hero-links" aria-label="Quick links">
+			<a href={hrefFor('/rss.xml')}>RSS feed</a>
+			<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>
+		</div>
+	</aside>
 </section>
 
 <section id="articles" class="article-grid" aria-label="Latest articles">
@@ -101,3 +145,27 @@
 		<ArticleCard {article} />
 	{/each}
 </section>
+
+<footer class="site-footer" aria-label="Site footer">
+	<div class="site-footer-grid">
+		<div class="site-footer-copy">
+			<p class="eyebrow">Elsewhere</p>
+			<h2>Links and site info</h2>
+			<p class="site-footer-dek">A static SvelteKit blog for technical notes, repair logs, and research writeups. The public surface stays small and easy to scan.</p>
+		</div>
+
+		<div class="site-footer-links">
+			{#each footerLinks as link (link.label)}
+				<a href={hrefFor(link.href)} rel={link.href.startsWith('http') ? 'noreferrer' : undefined} target={link.href.startsWith('http') ? '_blank' : undefined}>{link.label}</a>
+			{/each}
+			<a href={hrefFor('#articles')}>Articles</a>
+			<a href="https://canopydigital.ca" rel="noreferrer" target="_blank">Canopy Digital</a>
+		</div>
+	</div>
+
+	<div class="site-footer-meta">
+		<span>{articles.length} posts</span>
+		<span>SvelteKit 2 / Svelte 5</span>
+		<span>Static site</span>
+	</div>
+</footer>

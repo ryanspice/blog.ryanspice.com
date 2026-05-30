@@ -21,6 +21,7 @@ export type ArticleDesign = {
 	navLinks: NavItem[];
 	eyebrow: string;
 	tags: string[];
+	cardPalette?: ArticlePalette;
 	heroCardTitle: string;
 	heroCardAria: string;
 	statusItems: StatusItem[];
@@ -64,6 +65,9 @@ const modules = import.meta.glob('./content/articles/*.md', {
 export const articles: Article[] = Object.entries(modules)
 	.map(([path, raw]) => parseArticle(path, raw))
 	.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
+
+export const publishedArticles = articles.filter((article) => article.status === 'published');
+export const draftArticles = articles.filter((article) => article.status !== 'published');
 
 export function getArticle(slug: string): Article | undefined {
 	return articles.find((article) => article.slug === slug);
@@ -117,6 +121,10 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				{ label: 'PixelBoats Kit', href: '#creating-the-pixelboats-gimp-kit' },
 				{ label: 'Next', href: '#future-improvements' }
 			],
+			cardPalette: {
+				label: 'Repair palette',
+				colors: ['#f2d27c', '#112032', '#0078d4', '#53b8ff', '#ff00ff']
+			},
 			heroCardTitle: 'Production outcome',
 			heroCardAria: 'Article summary',
 			statusItems: [
@@ -150,6 +158,10 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				{ label: 'Windhawk', href: '#the-spoiler-windhawk-was-a-strong-suspect' },
 				{ label: 'Repair sequence', href: '#safe-repair-sequence' }
 			],
+			cardPalette: {
+				label: 'Debug palette',
+				colors: ['#ffcf77', '#090909', '#232733', '#6fa8dc', '#d44c36']
+			},
 			heroCardTitle: 'Debugging outcome',
 			heroCardAria: 'Article summary',
 			statusItems: [
@@ -180,6 +192,10 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				{ label: 'Architecture', href: '#the-architecture-that-emerged' },
 				{ label: 'Stack', href: '#the-stack-im-shipping-with' }
 			],
+			cardPalette: {
+				label: 'Engine palette',
+				colors: ['#53b8ff', '#112032', '#2d5c79', '#87dac4', '#ffcf77']
+			},
 			heroCardTitle: 'Decision outcome',
 			heroCardAria: 'Article summary',
 			statusItems: [
@@ -210,6 +226,10 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				{ label: 'Difference', href: '#retrieval-is-the-real-difference' },
 				{ label: 'Takeaway', href: '#the-useful-mental-model' }
 			],
+			cardPalette: {
+				label: 'Research palette',
+				colors: ['#1e9bff', '#0f172a', '#53b8ff', '#7c5cff', '#f2d27c']
+			},
 			heroCardTitle: 'Comparison frame',
 			heroCardAria: 'Comparison summary',
 			statusItems: [
@@ -234,6 +254,10 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 		variant: 'default',
 		eyebrow: `Technical blog · ${article.status}`,
 		tags: article.tags,
+		cardPalette: {
+			label: 'Blog palette',
+			colors: ['#1e9bff', '#0b0f14', '#53b8ff', '#f2d27c', '#ff00ff']
+		},
 		navLinks: [{ label: 'Articles', href: '/#articles' }],
 		heroCardTitle: 'Article profile',
 		heroCardAria: 'Article details',
