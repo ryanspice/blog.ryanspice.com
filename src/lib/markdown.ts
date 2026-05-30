@@ -11,9 +11,20 @@ export type RenderedMarkdown = {
 	readingMinutes: number;
 };
 
-const SELF_CLOSING_BOUNDARY = /^\s*$/;
+export type MarkdownLinkTerm = {
+	label: string;
+	href: string;
+};
 
-export function renderMarkdown(markdown: string): RenderedMarkdown {
+type RenderMarkdownOptions = {
+	linkTerms?: MarkdownLinkTerm[];
+};
+
+const SELF_CLOSING_BOUNDARY = /^\s*$/;
+const VOID_TAGS = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr']);
+const LINK_EXCLUDED_TAGS = new Set(['a', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'math', 'pre', 'script', 'style', 'svg']);
+
+export function renderMarkdown(markdown: string, options: RenderMarkdownOptions = {}): RenderedMarkdown {
 	const lines = markdown.replace(/\r\n/g, '\n').split('\n');
 	const html: string[] = [];
 	const toc: TocItem[] = [];
@@ -129,8 +140,10 @@ export function renderMarkdown(markdown: string): RenderedMarkdown {
 		renderedLeadParagraph = true;
 	}
 
+	const renderedHtml = options.linkTerms?.length ? linkFirstOccurrences(html.join('\n'), options.linkTerms) : html.join('\n');
+
 	return {
-		html: html.join('\n'),
+		html: renderedHtml,
 		toc,
 		wordCount,
 		readingMinutes: Math.max(1, Math.ceil(wordCount / 220))
@@ -176,6 +189,70 @@ function renderTable(header: string[], rows: string[][]): string {
 	return `<div class="table-wrap"><table><thead><tr>${header.map((cell) => `<th>${inline(cell)}</th>`).join('')}</tr></thead><tbody>${rows
 		.map((row) => `<tr>${row.map((cell) => `<td>${inline(cell)}</td>`).join('')}</tr>`)
 		.join('')}</tbody></table></div>`;
+}
+
+function linkFirstOccurrences(html: string, linkTerms: MarkdownLinkTerm[]): string {
+	const linked = new Set<string>();
+	const tokens = html.match(/<[^>]+>|[^<]+/g) ?? [];
+	const stack: string[] = [];
+	const terms = linkTerms
+		.map((term) => ({
+			label: term.label.trim(),
+			href: term.href.trim(),
+			key: term.label.trim().toLowerCase()
+		}))
+		.filter((term) => term.label.length > 0 && term.href.length > 0)
+		.sort((left, right) => right.label.length - left.label.length || left.label.localeCompare(right.label));
+
+	return tokens
+		.map((token) => {
+			if (token.startsWith('<')) {
+				updateTagStack(token, stack);
+				return token;
+			}
+
+			if (stack.some((tag) => LINK_EXCLUDED_TAGS.has(tag))) {
+				return token;
+			}
+
+			let output = token;
+			for (const term of terms) {
+				if (linked.has(term.key)) continue;
+
+				const pattern = new RegExp(
+					`(^|[^A-Za-z0-9-])(${escapeRegExp(term.label)})(?=$|[^A-Za-z0-9-])`,
+					'i'
+				);
+
+				if (!pattern.test(output)) continue;
+
+				output = output.replace(pattern, (_match, prefix: string, matched: string) => {
+					linked.add(term.key);
+					const link = `<a href="${escapeAttr(term.href)}"${
+						term.href.startsWith('http') ? ' rel="noreferrer" target="_blank"' : ''
+					}>${escapeHtml(matched)}</a>`;
+					return `${prefix}${link}`;
+				});
+			}
+
+			return output;
+		})
+		.join('');
+}
+
+function updateTagStack(token: string, stack: string[]): void {
+	const match = token.match(/^<\/?\s*([a-zA-Z0-9:-]+)(?:\s[^>]*)?>$/);
+	if (!match) return;
+
+	const tag = match[1].toLowerCase();
+	if (token.startsWith('</')) {
+		const index = stack.lastIndexOf(tag);
+		if (index >= 0) stack.splice(index);
+		return;
+	}
+
+	if (VOID_TAGS.has(tag) || token.endsWith('/>')) return;
+	stack.push(tag);
 }
 
 function renderParagraph(value: string, isLead: boolean): string {
@@ -237,4 +314,8 @@ function escapeHtml(value: string): string {
 
 function escapeAttr(value: string): string {
 	return escapeHtml(value).replace(/`/g, '&#096;');
+}
+
+function escapeRegExp(value: string): string {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

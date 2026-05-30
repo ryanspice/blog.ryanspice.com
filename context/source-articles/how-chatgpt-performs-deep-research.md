@@ -18,6 +18,13 @@ tags:
   - deepseek
   - reasoning models
   - developer workflow
+credits:
+  - "Ryan Spice"
+  - "AI Wiki research notes"
+link_terms:
+  - "ChatGPT Deep Research|https://openai.com/index/introducing-deep-research/"
+  - "DeepSeek|https://api-docs.deepseek.com/"
+  - "reasoning models|https://platform.openai.com/docs/guides/reasoning-best-practices"
 summary: "A practical comparison of ChatGPT Deep Research and DeepSeek-style reasoning APIs, focused on workflow, retrieval, transparency, and what builders should actually take away."
 ---
 # ChatGPT Deep Research vs. DeepSeek: What’s Actually Happening Under the Hood
@@ -481,19 +488,19 @@ The real winner will not be the model that writes the longest report.
 
 It will be the system that helps you make the next correct decision with the least amount of unverifiable nonsense in the way.
 
+## Credits
+
+Written by Ryan Spice with research notes and source checks staged through the AI Wiki.
+
 ## Sources and further reading
 
-* OpenAI — Introducing Deep Research
-* OpenAI Help Center — Deep Research in ChatGPT
-* OpenAI — Learning to Reason with LLMs
-* OpenAI — o3 and o4-mini System Card
-* OpenAI — Model Spec
-* OpenAI — Enterprise Privacy and Business Data Privacy
-* OpenAI / arXiv — GPT-4 Technical Report
-* DeepSeek API Docs — First API Call
-* DeepSeek API Docs — Reasoning Model
-* DeepSeek / arXiv — DeepSeek-V3 Technical Report
-* DeepSeek / arXiv — DeepSeek-R1
-* arXiv — GAIA benchmark
-* arXiv — Humanity’s Last Exam
+* [OpenAI — Introducing deep research](https://openai.com/index/introducing-deep-research/)
+* [OpenAI Help Center — Deep research in ChatGPT](https://help.openai.com/en/articles/10500283)
+* [OpenAI — Deep research system card](https://openai.com/research/deep-research-system-card/)
+* [OpenAI — Research with ChatGPT](https://openai.com/academy/search-and-deep-research/)
+* [OpenAI — Reasoning best practices](https://platform.openai.com/docs/guides/reasoning-best-practices)
+* [DeepSeek API Docs — Your First API Call](https://api-docs.deepseek.com/)
+* [DeepSeek API Docs — Reasoning Model](https://api-docs.deepseek.com/guides/reasoning_model)
+* [DeepSeek API Docs — Thinking Mode](https://api-docs.deepseek.com/guides/thinking_mode)
+* [DeepSeek API Docs — DeepSeek API](https://api-docs.deepseek.com/api/deepseek-api)
 

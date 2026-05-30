@@ -1,4 +1,4 @@
-import { renderMarkdown, slugify, type RenderedMarkdown, type TocItem } from './markdown';
+import { renderMarkdown, slugify, type MarkdownLinkTerm, type RenderedMarkdown, type TocItem } from './markdown';
 
 export type NavItem = {
 	label: string;
@@ -48,6 +48,7 @@ export type ArticleMeta = {
 	audience: string[];
 	date: string;
 	dateLabel: string;
+	credits: string[];
 	relatedPosts: string[];
 	design: ArticleDesign;
 };
@@ -145,13 +146,17 @@ function parseArticle(path: string, raw: string): Article {
 	const filename = path.split('/').pop()?.replace(/\.md$/, '') ?? 'article';
 	const title = stringValue(frontmatter.title) || firstHeading(body) || filename;
 	const slug = stringValue(frontmatter.slug) || slugify(title);
-	const rendered = renderMarkdown(body);
 	const status = stringValue(frontmatter.status) || 'draft';
 	const draftType = stringValue(frontmatter.draft_type) || 'technical-blog-post';
 	const summary = stringValue(frontmatter.summary) || '';
 	const tags = arrayValue(frontmatter.tags);
 	const date = stringValue(frontmatter.date) || filename.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || '2026-05-28';
 	const dateLabel = formatArticleDate(date);
+	const credits = arrayValue(frontmatter.credits);
+	const linkTerms = arrayValue(frontmatter.link_terms)
+		.map(parseLinkTerm)
+		.filter((term): term is MarkdownLinkTerm => term !== null);
+	const rendered = renderMarkdown(body, { linkTerms });
 
 	return {
 		...rendered,
@@ -164,6 +169,7 @@ function parseArticle(path: string, raw: string): Article {
 		audience: arrayValue(frontmatter.audience),
 		date,
 		dateLabel,
+		credits: credits.length ? credits : ['Ryan Spice'],
 		relatedPosts: arrayValue(frontmatter.related_posts),
 		design: designFor({ slug, title, status, draftType, summary, tags, date, dateLabel }),
 		body
@@ -397,6 +403,15 @@ function stringValue(value: string | string[] | undefined): string {
 
 function arrayValue(value: string | string[] | undefined): string[] {
 	return Array.isArray(value) ? value : [];
+}
+
+function parseLinkTerm(value: string): MarkdownLinkTerm | null {
+	const [label, ...rest] = value.split('|');
+	const href = rest.join('|').trim();
+	const cleanedLabel = label?.trim() ?? '';
+
+	if (!cleanedLabel || !href) return null;
+	return { label: cleanedLabel, href };
 }
 
 function formatArticleDate(value: string): string {

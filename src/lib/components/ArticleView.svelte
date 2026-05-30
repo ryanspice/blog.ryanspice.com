@@ -21,6 +21,7 @@
 	const relatedArticles = $derived(getRelatedArticles(article, 3));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
+	const articleCredits = $derived(article.credits.length ? article.credits.join(' · ') : 'Ryan Spice');
 
 	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
 	const description = $derived(article.summary || 'Technical blog drafts and production notes from Ryan Spice.');
@@ -223,26 +224,16 @@
 	<SiteHeader brandLabel={article.design.brandLabel} navLinks={article.design.navLinks} />
 
 	<section class="hero">
-		<aside class="toc article-toc" aria-label="Table of contents">
-			<h2>{article.design.tocTitle}</h2>
-			{#each article.toc as item (item.id)}
-				<a
-					class:toc-l3={item.level === 3}
-					class:toc-l2={item.level === 2}
-					class:is-active={activeTocId === item.id}
-					href={`#${item.id}`}
-					>{item.text}</a
-				>
-			{/each}
-		</aside>
-
 		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
 			<div class="eyebrow">{article.design.eyebrow}</div>
 			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
+			<p class="article-byline">
+				<time datetime={article.date}>{article.dateLabel}</time>
+			</p>
 			<dl class="meta-grid article-meta" aria-label="Article metadata">
 				<div>
-					<dt>Published</dt>
-					<dd><time datetime={article.date}>{article.dateLabel}</time></dd>
+					<dt>Credits</dt>
+					<dd>{articleCredits}</dd>
 				</div>
 				<div>
 					<dt>Read time</dt>
@@ -261,82 +252,99 @@
 			</div>
 		</div>
 
-		<aside class="hero-card" aria-label={article.design.heroCardAria} style={`--article-accent: ${articleAccent}`}>
-			<strong>{article.design.heroCardTitle}</strong>
-			<div class="status-grid">
-				{#each article.design.statusItems as item (item.label)}
-					<div class="status-pill"><span>{item.label}</span><strong>{item.value}</strong></div>
-				{/each}
-			</div>
-		</aside>
+		<div class="article-hero-side">
+			<aside class="hero-card" aria-label={article.design.heroCardAria} style={`--article-accent: ${articleAccent}`}>
+				<strong>{article.design.heroCardTitle}</strong>
+				<div class="status-grid">
+					{#each article.design.statusItems as item (item.label)}
+						<div class="status-pill"><span>{item.label}</span><strong>{item.value}</strong></div>
+					{/each}
+				</div>
+			</aside>
+
+			<aside class="rail-card" aria-label={article.design.railTitle}>
+				<h2>{article.design.railTitle}</h2>
+				<p>{@html article.design.railBodyHtml}</p>
+
+				{#if article.design.railPalette}
+					<div class="palette-preview" aria-label={article.design.railPalette.label}>
+						{#each article.design.railPalette.colors as color (color)}
+							<span class="swatch" style={`background:${color}`}></span>
+						{/each}
+					</div>
+				{/if}
+
+				{#if article.design.railChips?.length}
+					<div class="debug-stack" aria-label={article.design.railChipsLabel ?? 'Debugging stack'}>
+						{#each article.design.railChips as chip (chip)}
+							<span class="debug-chip">{chip}</span>
+						{/each}
+					</div>
+				{/if}
+
+				<div class="callout">
+					{@html article.design.railCalloutHtml}
+				</div>
+			</aside>
+		</div>
 	</section>
 
-	{#if relatedArticles.length}
-		<section class="related-articles" aria-label="Related articles">
-			<div class="section-head">
-				<p class="eyebrow">Related articles</p>
-				<h2>More like this</h2>
-				<p class="section-dek">
-					Articles with overlapping tags, explicit references, or the same line of work.
-				</p>
-			</div>
-
-			<div class="related-articles-grid">
-				{#each relatedArticles as related (related.slug)}
-					<a
-						class="related-article-card article-card-link"
-						href={`${base}/${related.slug}/`}
-						style={`--article-accent: ${articleAccentColor(related)}`}
-					>
-						<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
-						<h3>{related.title}</h3>
-						<p class="related-meta">
-							<time datetime={related.date}>{related.dateLabel}</time>
-							<span>{related.readingMinutes} min read</span>
-						</p>
-						<p>{related.summary}</p>
-						<div class="tag-row compact" aria-label={`${related.title} tags`}>
-							{#each related.tags.slice(0, 4) as tag (tag)}
-								<span class="tag">{tag}</span>
-							{/each}
-						</div>
-					</a>
-				{/each}
-			</div>
-		</section>
-	{/if}
-
 	<main class="layout">
-		<article class="article-shell">
-			<div class="article-inner">
-				{@html article.html}
-			</div>
-		</article>
-
-		<aside class="rail-card" aria-label="Design notes">
-			<h2>{article.design.railTitle}</h2>
-			<p>{@html article.design.railBodyHtml}</p>
-
-			{#if article.design.railPalette}
-				<div class="palette-preview" aria-label={article.design.railPalette.label}>
-					{#each article.design.railPalette.colors as color (color)}
-						<span class="swatch" style={`background:${color}`}></span>
-					{/each}
-				</div>
-			{/if}
-
-			{#if article.design.railChips?.length}
-				<div class="debug-stack" aria-label={article.design.railChipsLabel ?? 'Debugging stack'}>
-					{#each article.design.railChips as chip (chip)}
-						<span class="debug-chip">{chip}</span>
-					{/each}
-				</div>
-			{/if}
-
-			<div class="callout">
-				{@html article.design.railCalloutHtml}
-			</div>
+		<aside class="toc article-toc" aria-label="Table of contents">
+			<h2>{article.design.tocTitle}</h2>
+			{#each article.toc as item (item.id)}
+				<a
+					class:toc-l3={item.level === 3}
+					class:toc-l2={item.level === 2}
+					class:is-active={activeTocId === item.id}
+					href={`#${item.id}`}
+					>{item.text}</a
+				>
+			{/each}
 		</aside>
+
+		<div class="article-column">
+			<article class="article-shell">
+				<div class="article-inner">
+					{@html article.html}
+				</div>
+			</article>
+
+			{#if relatedArticles.length}
+				<section class="related-articles" aria-label="Related articles">
+					<div class="section-head">
+						<p class="eyebrow">Related articles</p>
+						<h2>More like this</h2>
+						<p class="section-dek">
+							Articles with overlapping tags, explicit references, or the same line of work.
+						</p>
+					</div>
+
+					<div class="related-articles-grid">
+						{#each relatedArticles as related (related.slug)}
+							<a
+								class="related-article-card article-card-link"
+								href={`${base}/${related.slug}/`}
+								style={`--article-accent: ${articleAccentColor(related)}`}
+							>
+								<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
+								<h3>{related.title}</h3>
+								<p class="related-meta">
+									<time datetime={related.date}>{related.dateLabel}</time>
+									<span>{related.readingMinutes} min read</span>
+								</p>
+								<p>{related.summary}</p>
+								<div class="tag-row compact" aria-label={`${related.title} tags`}>
+									{#each related.tags.slice(0, 4) as tag (tag)}
+										<span class="tag">{tag}</span>
+									{/each}
+								</div>
+							</a>
+						{/each}
+					</div>
+				</section>
+			{/if}
+		</div>
 	</main>
 
 	<div class="command-bar" aria-label="Commands">
