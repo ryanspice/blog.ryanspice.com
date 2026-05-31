@@ -1,17 +1,17 @@
 {
   "generatedBy": "scripts/Sync-SvelteKitPhpAdapter.ps1",
-  "syncedAtUtc": "2026-05-31T16:00:56.3469748Z",
+  "syncedAtUtc": "2026-05-31T16:25:28.6912234Z",
   "sourceRoot": "B:/Dev/sveltekit-php",
   "packageName": "sveltekit-php",
   "packageVersion": "0.0.1",
-  "gitHead": "2a7588d7c51673cdfbd9f2312f70643b5d35e0bb",
+  "gitHead": "f05d0763eaddf54d84cc3daf83edf7437f9a6436",
   "gitBranch": "main",
   "gitDirty": false,
   "files": [
     {
       "path": "adapter/index.js",
-      "sha256": "aa5329a9dd19a3791d110a035f557419e90175b171e15f8faa9cfe448392eac6",
-      "bytes": 171950
+      "sha256": "29532dcf8693e4207aa7c112d653582341e3c2c882270e9186e4a963ba0e7e8c",
+      "bytes": 172154
     },
     {
       "path": "adapter/src/runtime/php-compat.php",

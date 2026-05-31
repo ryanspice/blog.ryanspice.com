@@ -3296,8 +3296,9 @@ function sveltekitPhpAdapter(options = {}) {
       const assetsDir = path3.resolve(assets);
       const tmpDir = builder.getBuildDirectory("sveltekit-php");
       const basePath = baseMode === "fixed" ? options.basePath ?? builder.config.kit.paths.base ?? "" : "";
-      const trailingSlash = builder.config.kit.trailingSlash || "never";
-      debug(`DEBUG: trailingSlash from config: ${trailingSlash}`);
+      const routesBasePath = path3.resolve(builder.config.kit.files.routes);
+      const trailingSlash = await readTrailingSlashFromRoute("/", routesBasePath) ?? "ignore";
+      debug(`DEBUG: trailingSlash from root route: ${trailingSlash}`);
       const buildTimeBase = options.basePath ?? builder.config.kit.paths.base ?? "";
       const compatCandidates = [
         fileURLToPath(new URL("./runtime/php-compat.php", import.meta.url)),
@@ -3458,16 +3459,22 @@ function sveltekitPhpAdapter(options = {}) {
       const phpMap = new Map;
       for (const rel of allPhpRel) {
         const key = serverKey(rel);
-        if (!phpMap.has(key))
-          phpMap.set(key, []);
-        phpMap.get(key).push(rel);
+        const list = phpMap.get(key);
+        if (!list) {
+          phpMap.set(key, [rel]);
+        } else {
+          list.push(rel);
+        }
       }
       const tsMap = new Map;
       for (const rel of validTsFiles) {
         const key = serverKey(rel);
-        if (!tsMap.has(key))
-          tsMap.set(key, []);
-        tsMap.get(key).push(rel);
+        const list = tsMap.get(key);
+        if (!list) {
+          tsMap.set(key, [rel]);
+        } else {
+          list.push(rel);
+        }
       }
       const effectivePhpFiles = new Set;
       const effectiveTsFiles = new Set;
