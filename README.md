@@ -46,10 +46,18 @@ Create `.env` from `.env.example` and fill in your Microsoft Entra app registrat
 ```txt
 VITE_MSAL_CLIENT_ID="your-client-id"
 VITE_MSAL_TENANT_ID="common"
-VITE_MSAL_REDIRECT_URI="http://localhost:5173/auth/callback"
 ```
 
-The login page at `/login` starts the Microsoft sign-in flow, and `/auth/callback` completes the redirect before sending you back to the requested draft route.
+The login page at `/login` starts the Microsoft sign-in flow, and `/auth/callback` completes the redirect before sending you back to the requested draft route. The redirect URI is resolved from the current origin at runtime unless you pin `VITE_MSAL_REDIRECT_URI` explicitly.
+
+The app registration I created for this repo is `blog.ryanspice.com draft auth`, with SPA redirect URIs for:
+
+- `http://localhost:5173/auth/callback`
+- `http://127.0.0.1:5173/auth/callback`
+- `http://127.0.0.1:4178/auth/callback`
+- `https://blog.ryanspice.com/auth/callback`
+
+If you recreate it later, keep `User.Read` delegated permission attached as well.
 
 ## Notes
 

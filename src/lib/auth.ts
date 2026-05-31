@@ -24,9 +24,6 @@ const storageKey = 'blog-auth-return-to';
 
 export const msalClientId = normalizeValue(import.meta.env.VITE_MSAL_CLIENT_ID as string | undefined);
 export const msalTenantId = normalizeValue(import.meta.env.VITE_MSAL_TENANT_ID as string | undefined) || 'common';
-export const msalRedirectUri =
-	normalizeValue(import.meta.env.VITE_MSAL_REDIRECT_URI as string | undefined) ||
-	(browser ? `${window.location.origin}/auth/callback` : 'http://localhost:5173/auth/callback');
 export const msalAuthority = `https://login.microsoftonline.com/${msalTenantId}`;
 export const msalScopes = ['User.Read'];
 
@@ -55,7 +52,7 @@ function createConfig(): Configuration {
 		auth: {
 			clientId: msalClientId!,
 			authority: msalAuthority,
-			redirectUri: msalRedirectUri,
+			redirectUri: getMsalRedirectUri(),
 			postLogoutRedirectUri: browser ? window.location.origin : 'http://localhost:5173'
 		},
 		cache: {
@@ -169,7 +166,7 @@ export async function signIn(returnTo = '/drafts/'): Promise<void> {
 	const app = await getMsalClient();
 	const request: RedirectRequest = {
 		scopes: [...msalScopes],
-		redirectUri: msalRedirectUri,
+		redirectUri: getMsalRedirectUri(),
 		prompt: 'select_account'
 	};
 
@@ -237,6 +234,13 @@ function normalizeReturnTo(value: string | null | undefined, fallback: string): 
 
 function normalizeValue(value: string | undefined): string {
 	return typeof value === 'string' ? value.trim() : '';
+}
+
+function getMsalRedirectUri(): string {
+	const configured = normalizeValue(import.meta.env.VITE_MSAL_REDIRECT_URI as string | undefined);
+	if (configured) return configured;
+	if (browser) return `${window.location.origin}/auth/callback`;
+	return 'http://localhost:5173/auth/callback';
 }
 
 function errorMessage(error: unknown): string {
