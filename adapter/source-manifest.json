@@ -1,10 +1,10 @@
 {
   "generatedBy": "scripts/Sync-SvelteKitPhpAdapter.ps1",
-  "syncedAtUtc": "2026-05-31T15:35:05.8364863Z",
+  "syncedAtUtc": "2026-05-31T15:45:17.6024829Z",
   "sourceRoot": "B:/Dev/sveltekit-php",
   "packageName": "sveltekit-php",
   "packageVersion": "0.0.1",
-  "gitHead": "d3f066bc833103a7a386fada0aae3d3ceae76911",
+  "gitHead": "3854b17523b40edc62a7e4f1f3e6df951d704380",
   "gitBranch": "main",
   "gitDirty": false,
   "files": [

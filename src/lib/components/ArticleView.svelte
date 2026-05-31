@@ -25,6 +25,7 @@
 	const articleFooterLinks = [
 		{ label: 'Home', href: `${base}/` },
 		{ label: 'RSS', href: `${base}/rss.xml` },
+		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
 		{ label: 'Dev log', href: `${base}/dev-log/` }
 	];
 	const articleInfo = $derived(

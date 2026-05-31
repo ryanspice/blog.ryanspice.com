@@ -169,6 +169,6 @@
 </section>
 
 <footer>
-	Seeded from AI Wiki notes and repo history. Future hook: wire a command-layer summary export
-	into this page when it becomes worth automating.
+	Seeded from AI Wiki notes and repo history. <a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>.
+	Future hook: wire a command-layer summary export into this page when it becomes worth automating.
 </footer>
