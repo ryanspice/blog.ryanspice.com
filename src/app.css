@@ -184,11 +184,30 @@ a { color: var(--accent); }
 }
 
 .brand-mark {
-	width: 28px;
-	height: 28px;
+	width: 32px;
+	height: 32px;
 	border-radius: 6px;
 	background: var(--accent);
-	box-shadow: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 650;
+	font-size: 15px;
+	letter-spacing: -0.02em;
+	color: #0f1117;
+	flex-shrink: 0;
+}
+
+.brand-mark-r {
+	vertical-align: super;
+	font-size: 0.72em;
+	line-height: 1;
+}
+
+.brand-mark-s {
+	vertical-align: sub;
+	font-size: 0.72em;
+	line-height: 1;
 }
 
 .nav-links {
@@ -260,6 +279,14 @@ a { color: var(--accent); }
 	color: var(--accent);
 }
 
+.article-icon {
+	display: block;
+	flex: none;
+	width: 18px;
+	height: 18px;
+	color: currentColor;
+}
+
 .hero,
 .home-hero {
 	width: var(--wide);
@@ -290,7 +317,7 @@ a { color: var(--accent); }
 	max-width: var(--wide);
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
-	gap: 32px;
+	gap: clamp(22px, 2.4vw, 36px);
 }
 
 .home-hero.compact-page { min-height: auto; padding-bottom: 28px; }
@@ -407,6 +434,19 @@ h1 {
 
 .home-meta { max-width: 820px; }
 
+.home-meta dt {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.home-meta .meta-icon {
+	width: 16px;
+	height: 16px;
+	color: var(--article-accent, var(--accent));
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--article-accent, var(--accent)) 55%, transparent));
+}
+
 .article-meta {
 	margin: 0 0 22px;
 	max-width: 820px;
@@ -494,6 +534,32 @@ h1 {
 .home-hero-card h2 a,
 .home-hero-card .hero-meta dt {
 	color: var(--article-accent, var(--accent));
+}
+
+.home-hero-card > strong {
+	font-size: 17px;
+	letter-spacing: -0.01em;
+}
+
+.home-hero-card h2 {
+	color: var(--article-accent, var(--accent));
+}
+
+.home-hero-card p:not(.home-hero-note) {
+	color: color-mix(in srgb, var(--text) 88%, var(--article-accent, var(--accent)) 12%);
+}
+
+.home-hero-card .hero-meta dt {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.home-hero-card .hero-meta .meta-icon {
+	width: 15px;
+	height: 15px;
+	color: var(--article-accent, var(--accent));
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--article-accent, var(--accent)) 55%, transparent));
 }
 
 .home-hero-card h2 a {

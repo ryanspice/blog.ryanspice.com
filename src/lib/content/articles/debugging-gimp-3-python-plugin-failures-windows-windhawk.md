@@ -24,6 +24,7 @@ tags:
   - dll-debugging
   - desktop-tooling
   - troubleshooting
+  - pixelboats
 related_posts:
   - "2026-05-28-gimp-3-repair-photogimp-pixelboats-workstation.md"
 summary: "A companion debugging article about GIMP 3 Python plug-in failures on Windows, the misleading libgraphite2/_Unwind_Resume symptom, Pango/GI failures, PATH/DLL pollution, and the Windhawk hook layer."

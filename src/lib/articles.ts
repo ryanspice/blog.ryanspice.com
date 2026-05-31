@@ -29,6 +29,7 @@ export type ArticleDesign = {
 	tocTitle: string;
 	railTitle: string;
 	railBodyHtml: string;
+	railStatusItems?: StatusItem[];
 	railPalette?: ArticlePalette;
 	railChips?: string[];
 	railChipsLabel?: string;
@@ -210,7 +211,7 @@ function designFor(
 			...common,
 			variant: 'repair',
 			eyebrow: 'Tooling repair log · PixelBoats',
-			tags: ['GIMP 3.2', 'PhotoGIMP', "G'MIC-Qt", 'Windows 11', 'Pixel Art', 'DLL Debugging'],
+			tags: ['GIMP', 'GIMP 3', 'Windows 11', 'Pixel Art', 'Windhawk', 'DLL Debugging', 'PhotoGIMP', "G'MIC", 'PixelBoats'],
 			navLinks: [
 				{ label: 'Problem', href: '#the-symptom' },
 				{ label: 'Debugging', href: '#the-useful-test-hard-isolated-launch' },
@@ -247,7 +248,7 @@ function designFor(
 			...common,
 			variant: 'debug',
 			eyebrow: 'Windows debugging · GIMP 3 · Windhawk',
-			tags: ['GIMP 3', 'Python Plug-ins', 'Pango', 'Windhawk', 'DLLs', 'Windows 11'],
+			tags: ['GIMP', 'GIMP 3', 'Windows 11', 'Windhawk', 'DLL Debugging', 'Python', 'Troubleshooting'],
 			navLinks: [
 				{ label: 'First error', href: '#the-misleading-first-error' },
 				{ label: 'The test', href: '#the-test-that-changed-the-diagnosis' },
@@ -282,7 +283,7 @@ function designFor(
 			...common,
 			variant: 'default',
 			eyebrow: 'Engine decision log · May 2026',
-			tags: ['Phaser', 'PixiJS', 'WebGPU', 'Game Engine', '2.5D', 'Water Simulation', 'Multiplayer', 'Colyseus'],
+			tags: ['Phaser', 'PixiJS', 'WebGPU', 'Game Engine Comparison', '2.5D Rendering', 'Water Simulation', 'Multiplayer', 'Colyseus', 'Indie Game Dev'],
 			navLinks: [
 				{ label: 'Decision', href: '#the-decision-that-looked-easy-until-it-wasnt' },
 				{ label: 'Architecture', href: '#the-architecture-that-emerged' },
@@ -345,6 +346,8 @@ function designFor(
 		};
 	}
 
+	const isDraft = article.status === 'draft';
+
 	return {
 		...common,
 		variant: 'default',
@@ -363,10 +366,22 @@ function designFor(
 			{ label: 'Date', value: article.dateLabel },
 			...(article.releaseDateLabel ? [{ label: 'Release', value: article.releaseDateLabel }] : [])
 		],
-		railTitle: 'Publishing notes',
-		railBodyHtml: 'This route is static-friendly and generated from local Markdown.',
-		railChips: ['Static SvelteKit', 'Local Markdown', 'pnpm'],
-		railCalloutHtml: '<strong>Editorial angle:</strong> practical technical notes with durable source context.',
+		railTitle: isDraft ? 'Publishing tool' : 'Publishing notes',
+		railBodyHtml: isDraft
+			? 'Set the release date, pin the publish window, and keep the draft parked until the final review passes.'
+			: 'This route is static-friendly and generated from local Markdown.',
+		railStatusItems: isDraft
+			? [
+					{ label: 'Schedule date', value: article.releaseDateLabel ?? 'Choose a date' },
+					{ label: 'Publish time', value: 'TBD' },
+					{ label: 'Queue', value: 'Draft review' },
+					{ label: 'Target', value: 'ryanspice.com' }
+				]
+			: undefined,
+		railChips: isDraft ? undefined : ['Static SvelteKit', 'Local Markdown', 'pnpm'],
+		railCalloutHtml: isDraft
+			? '<strong>Editorial angle:</strong> turn the draft into a release plan before the final pass.'
+			: '<strong>Editorial angle:</strong> practical technical notes with durable source context.',
 		footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
 	};
 }

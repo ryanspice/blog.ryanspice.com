@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
 	import type { NavItem } from '$lib/articles';
+	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
 
 	type Props = {
 		brandLabel?: string;
@@ -11,13 +12,24 @@
 	let { brandLabel = 'Ryan Spice / Canopy Digital', navLinks = [] }: Props = $props();
 	let readingMode = $state(false);
 
+	onMount(() => {
+		void loadAuthState();
+	});
+
 	const brandParts = $derived(
 		brandLabel
 			.split('/')
 			.map((part) => part.trim())
 			.filter(Boolean)
 	);
-	const visibleNavLinks = $derived(navLinks);
+
+	const visibleNavLinks = $derived.by(() => {
+		const merged = [...navLinks, { label: 'Dev log', href: '/dev-log' }];
+		if (canAccessDrafts($authState)) {
+			merged.push({ label: 'Drafts', href: '/drafts' });
+		}
+		return dedupeByHref(merged);
+	});
 
 	function hrefFor(href: string): string {
 		if (href.startsWith('#') || href.startsWith('http')) return href;
@@ -40,13 +52,29 @@
 		readingMode = stored === 'true';
 		applyReadingMode(readingMode);
 	});
+
+	function dedupeByHref(items: NavItem[]): NavItem[] {
+		const seen = new Set<string>();
+		return items.filter((item) => {
+			const key = normalizeHrefForLinkDedup(item.href);
+			if (seen.has(key)) return false;
+			seen.add(key);
+			return true;
+		});
+	}
+
+	function normalizeHrefForLinkDedup(href: string): string {
+		if (!href || href === '/') return href;
+		if (href.startsWith('http') || href.startsWith('#')) return href;
+		return href.endsWith('/') ? href.slice(0, -1) : href;
+	}
 </script>
 
 <header class="site-header">
 	<nav class="nav" aria-label="Site">
 		<div class="nav-branding">
 			<a class="brand" href={`${base}/`}>
-				<span class="brand-mark" aria-hidden="true"></span>
+								<span class="brand-mark" aria-hidden="true"><span class="brand-mark-r">R</span><span class="brand-mark-s">S</span></span>
 				<span class="brand-text">
 					<span class="brand-primary">{brandParts[0] ?? brandLabel}</span>
 					{#if brandParts[1]}

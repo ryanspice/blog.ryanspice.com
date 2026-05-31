@@ -27,7 +27,8 @@
 	const latestDraft = $derived(draftArticles[0] ?? null);
 	const draftCount = $derived(draftArticles.length);
 	const draftArticleTags = $derived(
-		Array.from(new Set(draftArticles.flatMap((article) => [...article.tags, ...article.design.tags]))).sort((left, right) =>
+		Array.from(new Set(draftArticles.flatMap((article) => [...article.tags, ...article.design.tags]))).sort(
+			(left: string, right: string) =>
 			left.localeCompare(right)
 		)
 	);
@@ -69,11 +70,11 @@
 			}
 
 			const module = await import('$lib/articles');
-			draftArticles = module.draftArticles;
+			draftArticles = module.draftArticles.filter((article) => article.status !== 'published');
 			draftsLoaded = true;
 		} catch (error_) {
 			authResolved = true;
-			authError = error_ instanceof Error ? error_.message : 'Unable to load drafts';
+			authError = error_ instanceof Error ? error_?.message : 'Unable to load drafts';
 			draftsLoaded = true;
 		}
 	});
@@ -227,7 +228,9 @@
 
 		{#if visibleDrafts.length}
 			{#each visibleDrafts as article (article.slug)}
-				<ArticleCard {article} href={articleHref(article)} />
+				<div class="draft-item">
+					<ArticleCard {article} href={articleHref(article)} />
+				</div>
 			{/each}
 		{:else}
 			<div class="article-empty">
@@ -248,8 +251,7 @@
 			<p class="eyebrow">Draft queue · Microsoft sign-in required</p>
 			<h1>Drafts live behind the auth gate.</h1>
 			<p class="dek">
-				Sign in with Microsoft to review unpublished articles, set release dates in frontmatter,
-				and promote drafts when they are ready to ship.
+				Sign in with Microsoft to review unpublished articles before they are ready to ship.
 			</p>
 			<dl class="meta-grid home-meta" aria-label="Draft gate metadata">
 				<div>
@@ -294,16 +296,19 @@
 					<code>release_date</code> in the article frontmatter to schedule a release.
 				</p>
 			</aside>
-		</section>
+	</section>
 {/if}
 
-
-	<footer class="drafts-footer">
+<footer class="drafts-footer">
 	<FooterAuthControls returnTo="/drafts/" />
-	</footer>
+</footer>
 {#if authError}
 	<p class="drafts-error" role="status">{authError}</p>
 {/if}
 
-
-
+<style>
+	.draft-item {
+		display: grid;
+		gap: 12px;
+	}
+</style>

@@ -384,6 +384,14 @@
 				<h2>{article.design.railTitle}</h2>
 				<p>{@html article.design.railBodyHtml}</p>
 
+				{#if article.design.railStatusItems?.length}
+					<div class="status-grid" aria-label="Publishing controls">
+						{#each article.design.railStatusItems as item (item.label)}
+							<div class="status-pill"><span>{item.label}</span><strong>{item.value}</strong></div>
+						{/each}
+					</div>
+				{/if}
+
 				{#if article.design.railPalette}
 					<div class="palette-preview" aria-label={article.design.railPalette.label}>
 						{#each article.design.railPalette.colors as color (color)}

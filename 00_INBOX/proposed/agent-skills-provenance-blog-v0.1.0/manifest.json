@@ -1,0 +1,14 @@
+{
+  "package": "agent-skills-provenance-blog-v0.1.0",
+  "files": [
+    ".thoughts",
+    "README.md",
+    "aiwiki/agent-skills-provenance-pnpm-cleanup.md",
+    "aiwiki/blog-publish-checklist.md",
+    "blog/blog.ryanspice.com-agent-skills-provenance-pnpm.mdx",
+    "blog/fragments/agent-skills-provenance-pnpm-fragment.md",
+    "prompts/codex-continue-deep-research-skill-promotion.md",
+    "scripts/Apply-AgentSkillsProvenanceBlog-v0.1.0.ps1"
+  ],
+  "sha256": "b4a49752be3b436672e9f8fa4556182e40da17ab47f10baa9e8b1e87b549d159"
+}

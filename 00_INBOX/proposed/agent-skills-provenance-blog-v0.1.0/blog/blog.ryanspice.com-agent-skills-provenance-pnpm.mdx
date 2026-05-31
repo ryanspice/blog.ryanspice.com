@@ -1,0 +1,179 @@
+---
+title: "The Boring Part of AI Agents: Keeping Skills from Rotting"
+description: "A practical engineering note on repo-backed AI skills, pnpm hygiene, provenance manifests, and why copy-folder chaos quietly breaks agent workflows."
+date: "2026-05-30"
+updated: "2026-05-30"
+draft: true
+slug: "ai-agent-skills-provenance-pnpm"
+tags:
+  - AI Wiki
+  - Agent Skills
+  - Prompt Operations
+  - Developer Workflow
+  - pnpm
+  - Provenance
+---
+
+# The Boring Part of AI Agents: Keeping Skills from Rotting
+
+Most AI tooling demos skip the maintenance layer.
+
+They show the agent writing code, searching the web, generating reports, and maybe running tests. That is the exciting part. But once you start using agents seriously across real projects, the less glamorous problem becomes unavoidable:
+
+> How do you keep the agent’s working knowledge from turning into a junk drawer?
+
+For my AI Wiki workflow, that means treating reusable agent skills like a real software dependency surface. They need ownership, provenance, validation, indexes, duplicate policy, and package-manager discipline. Otherwise, the system slowly fills with “final-final-v2-copy” knowledge fragments that are technically searchable but operationally useless.
+
+This week’s cleanup was a good example: the `agent-skills` repo needed to become a cleaner source of truth for AI Wiki skills, while avoiding accidental Node dependency installs inside a OneDrive-backed vault.
+
+That is not glamorous. It is also exactly the kind of thing that determines whether an AI workflow scales beyond a weekend experiment.
+
+## The actual problem
+
+The repo had three separate concerns tangled together:
+
+1. **Package-manager ambiguity** — scripts worked through `npm`, but the repo should use `pnpm` as the explicit command contract.
+2. **Manifest drift** — skill files had been edited/promoted, but `skills/provenance.json` no longer matched their paths and SHA-256 hashes.
+3. **Copy-lane pollution** — a copied `repo-skill-recommender` folder existed alongside the canonical skill, creating duplicate noise and promotion risk.
+
+The package-manager issue was mostly about workflow hygiene. The validation scripts were dependency-free Node scripts, so running `npm run check` was not necessarily creating `node_modules`. But the command contract still matters. If a repo is meant to be handled through `pnpm`, the docs, package metadata, and repeated muscle memory should all point there.
+
+The manifest drift mattered more. The validator compares skill frontmatter against `skills/provenance.json`, then recomputes SHA-256 hashes for managed source files. Once generated or promoted skills get edited without updating the manifest, the repo no longer has a trustworthy inventory.
+
+That is a quiet failure. It does not look dramatic. It just means future agents cannot confidently tell which skill is canonical, where it came from, or whether a file changed intentionally.
+
+The copy-lane issue was the ugliest because it is the easiest to normalize. A folder named something like `repo-skill-recommender - Copy` feels harmless until it becomes indexed, cited, scanned, or accidentally promoted. Then it stops being harmless. It becomes ambiguous infrastructure.
+
+## The fix
+
+The cleanup happened in two passes.
+
+First, the repo was made explicit about `pnpm`:
+
+```powershell
+pnpm run check
+pnpm test
+pnpm run build
+pnpm run aiwiki:status
+pnpm run aiwiki:rebuild-indexes -- --apply
+```
+
+The goal was not to add dependencies. The goal was to avoid dropping `node_modules` into the AI Wiki / OneDrive lane and to make the package-manager contract obvious to both humans and agents.
+
+Second, the provenance manifest was repaired. The script normalized frontmatter, refreshed `skills/provenance.json`, recalculated hashes, and removed stale copy-lane references.
+
+After the cleanup, validation passed again:
+
+```text
+Validated 52 AI Wiki-ingested skills with provenance labels.
+```
+
+The AI Wiki index rebuild also confirmed the broader registry shape:
+
+```text
+All skills:     112
+Active default: 95
+Duplicates:     16
+```
+
+That remaining duplicate count is not necessarily bad. Some duplicates are intentional mirrors, overlays, or historical variants. The point is that the junk copy lane was removed from the active operating surface.
+
+## Why provenance matters for AI skills
+
+A reusable agent skill is not just a Markdown file.
+
+It is a compact operational contract. It tells an agent:
+
+- when to use the skill,
+- what assumptions to preserve,
+- what commands are safe,
+- what workflows are canonical,
+- what sources or upstreams influenced it,
+- and what local conventions matter.
+
+That makes provenance more important than it might look.
+
+A good skill library should answer:
+
+| Question | Why it matters |
+|---|---|
+| Who owns this skill? | Determines whether it is canonical or imported context. |
+| Where did it come from? | Preserves upstream credit and review obligations. |
+| Is this original or modified? | Prevents accidental laundering of adapted material. |
+| Is this selected by default? | Controls what agents should actually use. |
+| Does the hash match? | Confirms the manifest reflects the file on disk. |
+| Is it duplicated? | Prevents agents from loading competing instructions. |
+
+This is the unsexy part of prompt operations: the library has to remain boring enough to trust.
+
+## The deeper lesson
+
+AI projects do not usually fail because one prompt was imperfect.
+
+They fail because operational context becomes unstable. Notes duplicate. Generated files drift. Skills get copied. Temporary folders become semi-canonical. Agents read stale docs. Indexes say one thing, repos say another. A tool says “status ok” while half the working tree is untracked.
+
+That is how an AI workflow becomes haunted.
+
+The fix is not bureaucracy for its own sake. The fix is a small number of boring rules:
+
+- one owned source of truth,
+- explicit package-manager contract,
+- no dependency installs in synced vault folders unless intentional,
+- no copy-folder promotion lanes,
+- provenance frontmatter on every managed skill,
+- hash-backed manifest validation,
+- rebuild indexes after structural changes,
+- commit cleanup separately from feature promotion.
+
+That last one matters. Tooling repairs and skill promotions should be separate commits. If the pnpm/provenance cleanup breaks something, it should be reversible without also rolling back new research skills.
+
+## How this connects to deep research
+
+This cleanup was part of a larger effort to promote deep-research skills into the Prompt Operations Handbook and the AI Wiki.
+
+That matters because deep research workflows create even more metadata pressure than normal coding skills. A serious research workflow needs:
+
+- source lanes,
+- evidence matrices,
+- claims ledgers,
+- credibility notes,
+- stale-source warnings,
+- local/wiki search routing,
+- and continuation state.
+
+If the skill library underneath that is messy, the research layer will inherit the mess.
+
+A deep research agent with sloppy skill provenance is just a very confident librarian in a room full of mislabeled boxes.
+
+## Practical checklist
+
+For repo-backed AI skill libraries, I would now treat this checklist as baseline:
+
+```text
+[ ] Use one package manager and document it.
+[ ] Keep validation scripts dependency-light where possible.
+[ ] Avoid node_modules inside synced wiki/vault folders.
+[ ] Maintain provenance frontmatter on every managed skill.
+[ ] Maintain a manifest with paths, source paths, origin, credit, and hashes.
+[ ] Remove copy-folder variants instead of letting them become searchable history.
+[ ] Rebuild local indexes after structural changes.
+[ ] Commit hygiene fixes separately from promoted skill changes.
+[ ] Keep generated/candidate/promoted lanes distinct.
+[ ] Do not let “searchable” become a synonym for “canonical.”
+```
+
+The last line is the real point.
+
+Search is not governance. Search finds things. It does not decide whether those things should be trusted.
+
+For AI-assisted development, that distinction matters more every month.
+
+## Closing thought
+
+The best AI workflows are not the ones with the most prompts.
+
+They are the ones with the cleanest operating surface: clear source of truth, small reproducible commands, visible state, validated metadata, and enough structure that an agent can help without quietly amplifying old mess.
+
+The future of AI work is not just better models.
+
+It is better context maintenance.

@@ -39,7 +39,7 @@ const initialState: AuthState = {
 	userEmail: null,
 	identityProvider: null,
 	userRoles: [],
-	loginHref: authLoginHref('/drafts/'),
+	loginHref: authLoginHref('/'),
 	logoutHref: authLogoutHref('/'),
 	error: null
 };
@@ -143,8 +143,8 @@ export async function refreshAuthState(): Promise<AuthState> {
 	}
 }
 
-export function authLoginHref(returnTo = '/drafts/'): string {
-	const target = normalizeReturnTo(returnTo, '/drafts/');
+export function authLoginHref(returnTo = '/'): string {
+	const target = normalizeReturnTo(returnTo, '/');
 	return `/login?returnTo=${encodeURIComponent(target)}`;
 }
 
@@ -170,7 +170,7 @@ export function consumeAuthReturnTo(defaultReturnTo = '/'): string {
 	return normalizeReturnTo(stored ?? defaultReturnTo, defaultReturnTo);
 }
 
-export async function signIn(returnTo = '/drafts/'): Promise<void> {
+export async function signIn(returnTo = '/'): Promise<void> {
 	rememberAuthReturnTo(returnTo);
 	const app = await getMsalClient();
 	const request: RedirectRequest = {
@@ -210,7 +210,7 @@ function buildAuthenticatedState(account: AccountInfo): AuthState {
 		userEmail,
 		identityProvider: account.environment || account.tenantId || 'Microsoft',
 		userRoles: extractRoles(account),
-		loginHref: authLoginHref('/drafts/'),
+		loginHref: authLoginHref('/'),
 		logoutHref: authLogoutHref('/'),
 		error: null
 	};
@@ -226,7 +226,7 @@ function buildUnauthenticatedState(available: boolean, error: string | null = nu
 		userEmail: null,
 		identityProvider: null,
 		userRoles: [],
-		loginHref: authLoginHref('/drafts/'),
+		loginHref: authLoginHref('/'),
 		logoutHref: authLogoutHref('/'),
 		error
 	};

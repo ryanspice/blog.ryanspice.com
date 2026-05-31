@@ -1,0 +1,39 @@
+---
+version: 0.1.0
+date: 2026-05-30
+project: agent-skills / AI Wiki / blog.ryanspice.com
+status: proposed
+next_action: stage into AI Wiki and blog.ryanspice.com inboxes
+risk_tier: low
+---
+
+# .thoughts — Agent Skills Provenance Blog Pack
+
+## Purpose
+
+Create a blog-ready explanation of the agent-skills cleanup around pnpm, provenance, validation, copy-lane removal, and deep-research skill promotion hygiene.
+
+## Source context
+
+Based on the local terminal workflow where:
+
+- pnpm became the command contract.
+- provenance manifest/hash drift was repaired.
+- `repo-skill-recommender - Copy` and `repo-skill-recommender-copy` lanes were removed.
+- `pnpm run check`, `pnpm test`, and `pnpm run build` passed.
+- AI Wiki indexes rebuilt.
+- deep-research skill folders remained pending as the next intended promotion commit.
+
+## Decisions
+
+- Public blog avoids exact local paths by default.
+- Full draft and short fragment are both included.
+- DeepSeek remains framed as candidate/pending validation, not fully promoted.
+- The core theme is context maintenance, not just prompts/models.
+
+## Next checkpoint
+
+After staging, decide whether this becomes:
+
+1. a standalone `blog.ryanspice.com` post; or
+2. a subsection/fragment inside a larger Prompt Operations Handbook article.

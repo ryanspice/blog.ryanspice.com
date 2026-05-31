@@ -4,7 +4,9 @@
 	import { page } from '$app/state';
 	import { articleIndexHref, articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
+	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
 	import { publishedArticleTags, publishedArticles } from '$lib/articles';
+	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
@@ -20,13 +22,21 @@
 	const latestDateLabel = latestArticle ? latestArticle.dateLabel : 'May 28, 2026';
 	const latestArticleHref = latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`;
 	const latestArticleAccent = $derived(latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)');
-	const footerLinks = [
+	const footerLinks = $derived.by(() => {
+		const links = [
 		{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
 		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
 		{ label: 'Dev log', href: '/dev-log' },
 		{ label: 'RSS feed', href: '/rss.xml' },
 		{ label: 'Sitemap', href: '/sitemap.xml' }
-	];
+		];
+
+		if (canAccessDrafts($authState)) {
+			links.push({ label: 'Drafts', href: '/drafts' });
+		}
+
+		return links;
+	});
 
 	const canonical = $derived(data.canonical);
 	const rssUrl = $derived(data.rssUrl);
@@ -41,6 +51,7 @@
 		searchQuery = (params.get('q') ?? '').trim();
 		selectedTag = (params.get('tag') ?? '').trim();
 		compactRequested = params.get('view') === 'compact';
+		void loadAuthState();
 	});
 
 	const compactMode = $derived(compactRequested || searchQuery.length > 0 || selectedTag.length > 0);
@@ -112,28 +123,37 @@
 />
 
 {#if !compactMode}
-	<section class="home-hero">
-		<div class="home-hero-copy">
+<section class="home-hero" style={`--article-accent: ${latestArticleAccent}`}>
+	<div class="home-hero-copy">
 			<p class="eyebrow">Ryan Spice · technical blog</p>
 			<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
 			<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.</p>
 			<dl class="meta-grid home-meta" aria-label="Site metadata">
 				<div>
-					<dt>Articles</dt>
+					<dt>
+						<ArticleIcon name="articles" class="meta-icon" />
+						<span>Articles</span>
+					</dt>
 					<dd>{publishedArticles.length}</dd>
 				</div>
 				<div>
-					<dt>Latest</dt>
+					<dt>
+						<ArticleIcon name="latest" class="meta-icon" />
+						<span>Latest</span>
+					</dt>
 					<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
 				</div>
 				<div>
-					<dt>Feed</dt>
+					<dt>
+						<ArticleIcon name="feed" class="meta-icon" />
+						<span>Feed</span>
+					</dt>
 					<dd>RSS available</dd>
 				</div>
 			</dl>
-		</div>
+	</div>
 
-		<aside class="hero-card home-hero-card" aria-label="Latest article" style={`--article-accent: ${latestArticleAccent}`}>
+	<aside class="hero-card home-hero-card" aria-label="Latest article" style={`--article-accent: ${latestArticleAccent}`}>
 			<strong>Latest article</strong>
 			<h2><a href={latestArticleHref}>{latestArticle?.title ?? 'Latest article'}</a></h2>
 			<p>{latestArticle?.summary ?? 'Recent technical notes and comparisons.'}</p>

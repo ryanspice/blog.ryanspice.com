@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { authState, loadAuthState, signIn, signOut } from '$lib/auth';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
@@ -11,7 +12,7 @@
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
 	const signInLabel = $derived($authState.loading ? 'Checking session…' : 'Sign in with Microsoft');
 
-	let returnTo = $state('/drafts/');
+	let returnTo = $state('/');
 	let logoutRequested = $state(false);
 	let signing = $state(false);
 	let signOutInFlight = $state(false);
@@ -29,12 +30,11 @@
 	onMount(() => {
 		let cancelled = false;
 		const params = new URLSearchParams(window.location.search);
-		returnTo = sanitizeReturnTo(params.get('returnTo'), '/drafts/');
+		returnTo = sanitizeReturnTo(params.get('returnTo'), '/');
 		logoutRequested = params.get('logout') === '1';
 
 		void loadAuthState().then(async (state) => {
 			if (cancelled) return;
-
 			if (logoutRequested && state.authenticated) {
 				signOutInFlight = true;
 				actionError = '';
@@ -48,6 +48,30 @@
 				} finally {
 					if (!cancelled) {
 						signOutInFlight = false;
+					}
+				}
+				return;
+			}
+
+			if (state.authenticated) {
+				actionError = '';
+				await goto(returnTo, { replaceState: true });
+				return;
+			}
+
+			if (!state.loading && state.available && !logoutRequested && !actionError) {
+				signing = true;
+				actionError = '';
+
+				try {
+					await signIn(returnTo);
+				} catch (caught) {
+					if (!cancelled) {
+						actionError = caught instanceof Error ? caught.message : String(caught);
+					}
+				} finally {
+					if (!cancelled) {
+						signing = false;
 					}
 				}
 			}
@@ -170,18 +194,18 @@
 				</button>
 			</div>
 		{:else}
-			<p>Use any Microsoft account to enter the draft queue.</p>
-			<div class="home-hero-links">
-				<button
-					type="button"
-					class="plain-action"
-					onclick={handleSignIn}
-					disabled={signing || !$authState.available}
-				>
-					{signing ? 'Opening Microsoft…' : signInLabel}
-				</button>
-				<a href={returnTo}>Open drafts</a>
-			</div>
+				<p>Use any Microsoft account to enter the draft queue.</p>
+				<div class="home-hero-links">
+					<button
+						type="button"
+						class="plain-action"
+						onclick={handleSignIn}
+						disabled={signing}
+					>
+						{signing ? 'Opening Microsoft…' : signInLabel}
+					</button>
+					<a href={returnTo}>Open drafts</a>
+				</div>
 		{/if}
 		<p class="home-hero-note">
 			{#if actionError}
