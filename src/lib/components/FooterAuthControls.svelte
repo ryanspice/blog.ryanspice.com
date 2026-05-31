@@ -18,7 +18,7 @@
 		busy = true;
 
 		try {
-			if ($authState.authenticated) {
+			if ($authState.authenticated && $authState.draftsAllowed) {
 				await signOut();
 			} else {
 				await signIn(returnTo);
@@ -35,11 +35,13 @@
 	{:else}
 		<button type="button" class="footer-auth-link" onclick={handleAction} disabled={busy}>
 			{busy
-				? $authState.authenticated
+				? $authState.authenticated && $authState.draftsAllowed
 					? 'Logging out…'
-					: 'Signing in…'
+					: 'Opening Microsoft…'
 				: $authState.authenticated
-					? 'Logout'
+					? $authState.draftsAllowed
+						? 'Logout'
+						: 'Try another account'
 					: 'Sign in with Microsoft'}
 		</button>
 	{/if}

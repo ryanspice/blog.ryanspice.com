@@ -12,6 +12,7 @@ export type AuthState = {
 	loading: boolean;
 	available: boolean;
 	authenticated: boolean;
+	draftsAllowed: boolean;
 	userName: string | null;
 	userEmail: string | null;
 	identityProvider: string | null;
@@ -22,6 +23,7 @@ export type AuthState = {
 };
 
 const storageKey = 'blog-auth-return-to';
+const draftsAccessEmail = 'spice.ryan@hotmail.com';
 
 export const msalClientId = normalizeValue(import.meta.env.VITE_MSAL_CLIENT_ID as string | undefined);
 export const msalTenantId = normalizeValue(import.meta.env.VITE_MSAL_TENANT_ID as string | undefined) || 'common';
@@ -32,6 +34,7 @@ const initialState: AuthState = {
 	loading: true,
 	available: false,
 	authenticated: false,
+	draftsAllowed: false,
 	userName: null,
 	userEmail: null,
 	identityProvider: null,
@@ -150,8 +153,8 @@ export function authLogoutHref(returnTo = '/'): string {
 	return target;
 }
 
-export function canAccessDrafts(state: Pick<AuthState, 'authenticated'>): boolean {
-	return state.authenticated;
+export function canAccessDrafts(state: Pick<AuthState, 'authenticated' | 'draftsAllowed'>): boolean {
+	return state.authenticated && state.draftsAllowed;
 }
 
 export function rememberAuthReturnTo(returnTo: string): void {
@@ -197,12 +200,14 @@ export function getActiveAccount(app?: PublicClientApplication): AccountInfo | n
 }
 
 function buildAuthenticatedState(account: AccountInfo): AuthState {
+	const userEmail = account.username?.trim() || null;
 	return {
 		loading: false,
 		available: true,
 		authenticated: true,
+		draftsAllowed: canAccessDraftMailbox(userEmail),
 		userName: account.name?.trim() || account.username?.trim() || null,
-		userEmail: account.username?.trim() || null,
+		userEmail,
 		identityProvider: account.environment || account.tenantId || 'Microsoft',
 		userRoles: extractRoles(account),
 		loginHref: authLoginHref('/drafts/'),
@@ -216,6 +221,7 @@ function buildUnauthenticatedState(available: boolean, error: string | null = nu
 		loading: false,
 		available,
 		authenticated: false,
+		draftsAllowed: false,
 		userName: null,
 		userEmail: null,
 		identityProvider: null,
@@ -242,6 +248,14 @@ function normalizeReturnTo(value: string | null | undefined, fallback: string): 
 
 function normalizeValue(value: string | undefined): string {
 	return typeof value === 'string' ? value.trim() : '';
+}
+
+function canAccessDraftMailbox(email: string | null): boolean {
+	return normalizeEmail(email) === normalizeEmail(draftsAccessEmail);
+}
+
+function normalizeEmail(value: string | null): string {
+	return (value ?? '').trim().toLowerCase();
 }
 
 function getMsalRedirectUri(): string {

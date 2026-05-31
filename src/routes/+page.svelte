@@ -6,6 +6,7 @@
 	import { articleAccentColor } from '$lib/article-accent';
 	import { publishedArticleTags, publishedArticles } from '$lib/articles';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
+	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { PageData } from './$types';
 
@@ -230,6 +231,7 @@
 			{/each}
 			<a href={hrefFor('#articles')}>Articles</a>
 			<a href="https://canopydigital.ca" rel="noreferrer" target="_blank">Canopy Digital</a>
+			<FooterAuthControls returnTo="/drafts/" />
 		</div>
 	</div>
 

@@ -6,6 +6,7 @@
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleHref } from '$lib/article-links';
 	import { getRelatedArticles, type Article } from '$lib/articles';
+	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
 
@@ -531,6 +532,7 @@
 			{#each articleFooterLinks as link (link.href)}
 				<a href={link.href}>{link.label}</a>
 			{/each}
+			<FooterAuthControls returnTo="/drafts/" />
 		</div>
 	</footer>
 </div>

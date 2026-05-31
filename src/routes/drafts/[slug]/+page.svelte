@@ -125,19 +125,31 @@
 		<div class="home-hero-copy">
 			<p class="eyebrow">Private draft preview · Microsoft sign-in required</p>
 			<h1>This draft stays behind the gate.</h1>
-			<p class="dek">Sign in to open the draft preview. The public homepage does not surface this content. Any signed-in Microsoft account can open drafts for now.</p>
+			<p class="dek">
+				Sign in to open the draft preview. The public homepage does not surface this content.
+				Only spice.ryan@hotmail.com can open drafts.
+			</p>
 		</div>
 		<aside class="hero-card home-hero-card">
 			<strong>{ $authState.loading ? 'Checking access' : 'Sign in' }</strong>
-		<div class="home-hero-links">
+			<div class="home-hero-links">
 				<button type="button" class="plain-action" onclick={handleSignIn} disabled={signingIn || !$authState.available}>
-					{signingIn ? 'Opening Microsoft…' : 'Sign in with Microsoft'}
+					{signingIn
+						? 'Opening Microsoft…'
+						: $authState.authenticated && !$authState.draftsAllowed
+							? 'Try another account'
+							: 'Sign in with Microsoft'}
 				</button>
 			</div>
 			<p class="home-hero-note">
-				{$authState.loading
-					? 'Hold on while the auth gate responds.'
-					: 'The drafts preview is private even though the route exists in the static build.'}
+				{#if $authState.loading}
+					Hold on while the auth gate responds.
+				{:else if $authState.authenticated && !$authState.draftsAllowed}
+					Signed in as {$authState.userEmail ?? 'a Microsoft account'}, but drafts are reserved for
+					spice.ryan@hotmail.com.
+				{:else}
+					The drafts preview is private even though the route exists in the static build.
+				{/if}
 			</p>
 		</aside>
 	</section>

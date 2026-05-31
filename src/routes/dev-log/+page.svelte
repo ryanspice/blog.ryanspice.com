@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
+	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { devLogEntries } from '$lib/dev-log';
 
@@ -171,4 +172,5 @@
 <footer>
 	Seeded from AI Wiki notes and repo history. <a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>.
 	Future hook: wire a command-layer summary export into this page when it becomes worth automating.
+	<FooterAuthControls returnTo="/drafts/" />
 </footer>

@@ -272,6 +272,9 @@
 				<p>
 					{#if $authState.loading}
 						Hold on while the auth gate responds.
+					{:else if $authState.authenticated && !$authState.draftsAllowed}
+						Signed in as {$authState.userEmail ?? 'a Microsoft account'}, but drafts are only open to
+						spice.ryan@hotmail.com. Use the footer button to switch accounts.
 					{:else}
 						The drafts area stays out of the public homepage. Use the Microsoft gateway to open the
 						draft queue.
@@ -279,7 +282,11 @@
 				</p>
 				<div class="home-hero-links">
 					<button type="button" class="plain-action" onclick={handleSignIn} disabled={signingIn || !$authState.available}>
-						{signingIn ? 'Opening Microsoft…' : 'Sign in with Microsoft'}
+						{signingIn
+							? 'Opening Microsoft…'
+							: $authState.authenticated && !$authState.draftsAllowed
+								? 'Try another account'
+								: 'Sign in with Microsoft'}
 					</button>
 				</div>
 				<p class="home-hero-note">

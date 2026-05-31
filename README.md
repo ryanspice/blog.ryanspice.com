@@ -63,6 +63,8 @@ The login page at `/login` starts the Microsoft sign-in flow, and `/auth/callbac
 
 Draft navigation and the private draft queue are only exposed to the owner Microsoft account `spice.ryan@hotmail.com`; other signed-in accounts stay on the public surface.
 
+The GitHub deploy workflow also needs `VITE_MSAL_CLIENT_ID` available at build time so the production bundle carries the same Microsoft auth config as local development.
+
 The app registration I created for this repo is `blog.ryanspice.com draft auth`, with SPA redirect URIs for:
 
 - `http://localhost:5173/auth/callback`

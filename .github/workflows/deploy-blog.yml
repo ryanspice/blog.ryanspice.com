@@ -17,6 +17,9 @@ jobs:
     env:
       PUBLIC_SITE_URL: ${{ secrets.PUBLIC_SITE_URL || 'https://blog.ryanspice.com' }}
       PUBLIC_BASE_PATH: ${{ secrets.PUBLIC_BASE_PATH }}
+      VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
+      VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID || 'common' }}
+      VITE_MSAL_REDIRECT_URI: ${{ secrets.VITE_MSAL_REDIRECT_URI }}
       BLOG_DEPLOY_HOST: ${{ secrets.BLOG_DEPLOY_HOST }}
       BLOG_DEPLOY_USER: ${{ secrets.BLOG_DEPLOY_USER }}
       BLOG_DEPLOY_PORT: ${{ secrets.BLOG_DEPLOY_PORT }}

@@ -149,9 +149,22 @@
 		{#if $authState.loading}
 			<p>Checking the current session.</p>
 		{:else if $authState.authenticated}
-			<p>You are already signed in as {$authState.userName ?? 'a Microsoft account'}.</p>
+			<p>
+				You are already signed in as {$authState.userName ?? 'a Microsoft account'}.
+				{#if $authState.draftsAllowed}
+					This account can open drafts.
+				{:else}
+					Drafts are reserved for spice.ryan@hotmail.com.
+				{/if}
+			</p>
 			<div class="home-hero-links">
-				<a href={returnTo}>Open drafts</a>
+				{#if $authState.draftsAllowed}
+					<a href={returnTo}>Open drafts</a>
+				{:else}
+					<button type="button" class="plain-action" onclick={handleSignIn} disabled={signing || !$authState.available}>
+						{signing ? 'Opening Microsoft…' : 'Try another account'}
+					</button>
+				{/if}
 				<button type="button" class="plain-action" onclick={handleSignOut} disabled={signOutInFlight}>
 					{signOutInFlight ? 'Signing out…' : 'Sign out'}
 				</button>
