@@ -24,6 +24,15 @@ tags:
   - pixelboats
   - creative-tooling
 summary: "A real-world repair log and workflow writeup covering a broken GIMP 3.2 install, Windows DLL/runtime conflicts, Windhawk suspicion, PhotoGIMP, G'MIC-Qt, a Fluent-ish theme, and a PixelBoats-ready asset kit."
+link_terms:
+  - "GIMP|https://en.wikipedia.org/wiki/GIMP"
+  - "PixelBoats|/?view=compact&tag=PixelBoats"
+  - "PhotoGIMP|https://github.com/Diolinux/PhotoGIMP"
+  - "G'MIC-Qt|https://gmic.eu/"
+  - "Windhawk|https://github.com/ramensoftware/windhawk"
+references:
+  - "https://github.com/ramensoftware/windhawk/issues/380"
+  - "https://developer.gimp.org/resource/writing-a-plug-in/tutorial-python/"
 source_context:
   gimp_install_path: "<USER_HOME>\\AppData\\Local\\Programs\\GIMP 3\\bin\\gimp-3.exe"
   active_gimp_profile: "<USER_HOME>\\AppData\\Roaming\\GIMP\\3.2"

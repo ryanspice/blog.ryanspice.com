@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
-	import { articleTags, articles, publishedArticles } from '$lib/articles';
-	import { articleIndexHref, articleMatchesTag, articleSearchText, type ArticleIndexStatus } from '$lib/article-browse';
+	import { articleIndexHref, articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
+	import { publishedArticleTags, publishedArticles } from '$lib/articles';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { PageData } from './$types';
@@ -32,25 +32,19 @@
 
 	let searchQuery = $state('');
 	let selectedTag = $state('');
-	let selectedStatus = $state<ArticleIndexStatus>('published');
 	let compactRequested = $state(false);
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
 		searchQuery = (params.get('q') ?? '').trim();
 		selectedTag = (params.get('tag') ?? '').trim();
-		const statusParam = params.get('status');
-		selectedStatus = (statusParam === 'draft' || statusParam === 'all' ? statusParam : 'published') as ArticleIndexStatus;
 		compactRequested = params.get('view') === 'compact';
 	});
 
-	const compactMode = $derived(
-		compactRequested || searchQuery.length > 0 || selectedTag.length > 0 || selectedStatus !== 'published'
-	);
-	const browseArticles = $derived(compactMode ? articles : publishedArticles);
+	const compactMode = $derived(compactRequested || searchQuery.length > 0 || selectedTag.length > 0);
+	const browseArticles = $derived(publishedArticles);
 	const visibleArticles = $derived(
 		browseArticles.filter((article) => {
-			if (selectedStatus !== 'all' && article.status !== selectedStatus) return false;
 			if (selectedTag && !articleMatchesTag(article, selectedTag)) return false;
 			if (searchQuery && !articleSearchText(article).includes(searchQuery.toLowerCase())) return false;
 			return true;
@@ -166,7 +160,7 @@
 	<section class="article-index-shell" aria-label="Compact article index">
 		<div class="section-head compact-section-head">
 			<p class="eyebrow">Article index</p>
-			<h1>{selectedTag ? `Articles tagged ${selectedTag}` : 'Filter articles by tag, status, or text.'}</h1>
+			<h1>{selectedTag ? `Articles tagged ${selectedTag}` : 'Filter articles by tag or text.'}</h1>
 			<p class="section-dek">Use the controls below to narrow the list. Clear them to widen the view or return to the full hero home.</p>
 		</div>
 
@@ -182,24 +176,15 @@
 				<span>Tag</span>
 				<select name="tag">
 					<option value="" selected={!selectedTag}>All tags</option>
-					{#each articleTags as tag (tag)}
+					{#each publishedArticleTags as tag (tag)}
 						<option value={tag} selected={selectedTag === tag}>{tag}</option>
 					{/each}
 				</select>
 			</label>
 
-			<label class="filter-field">
-				<span>Status</span>
-				<select name="status">
-					<option value="published" selected={selectedStatus === 'published'}>Published</option>
-					<option value="draft" selected={selectedStatus === 'draft'}>Drafts</option>
-					<option value="all" selected={selectedStatus === 'all'}>All</option>
-				</select>
-			</label>
-
 			<div class="filter-actions">
 				<button type="submit">Update</button>
-				<a class="home-filter-link" href={articleIndexHref({ view: 'compact', status: 'published' })}>Reset</a>
+				<a class="home-filter-link" href={articleIndexHref({ view: 'compact' })}>Reset</a>
 				<a class="home-filter-link" href={indexRootHref}>Full home</a>
 			</div>
 		</form>
@@ -225,7 +210,7 @@
 		<div class="article-empty">
 			<p class="eyebrow">No results</p>
 			<h2>No articles match the current filters.</h2>
-			<p class="section-dek">Try clearing the tag, changing the status, or broadening the search text.</p>
+			<p class="section-dek">Try clearing the tag or broadening the search text.</p>
 		</div>
 	{/if}
 </section>

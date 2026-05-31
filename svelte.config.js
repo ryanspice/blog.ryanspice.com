@@ -11,7 +11,11 @@ const config = {
 		},
 		prerender: {
 			origin: prerenderOrigin,
-			entries: ['*', '/robots.txt', '/sitemap.xml', '/rss.xml']
+			entries: ['*', '/robots.txt', '/sitemap.xml', '/rss.xml'],
+			handleHttpError: ({ path, message }) => {
+				if (path.startsWith('/.auth/')) return;
+				throw new Error(message);
+			}
 		},
 		adapter: adapter({
 			pages: 'build',

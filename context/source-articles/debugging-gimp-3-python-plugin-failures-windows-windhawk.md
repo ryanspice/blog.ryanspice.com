@@ -27,6 +27,15 @@ tags:
 related_posts:
   - "2026-05-28-gimp-3-repair-photogimp-pixelboats-workstation.md"
 summary: "A companion debugging article about GIMP 3 Python plug-in failures on Windows, the misleading libgraphite2/_Unwind_Resume symptom, Pango/GI failures, PATH/DLL pollution, and the Windhawk hook layer."
+link_terms:
+  - "GIMP|https://en.wikipedia.org/wiki/GIMP"
+  - "PixelBoats|/?view=compact&tag=PixelBoats"
+  - "Windhawk|https://github.com/ramensoftware/windhawk"
+  - "libgraphite2.dll|https://graphite.sil.org/"
+  - "_Unwind_Resume|https://en.wikipedia.org/wiki/Stack_unwinding"
+  - "libpango-1.0-0.dll|https://docs.gtk.org/Pango/"
+  - "gi.repository|https://pygobject.gnome.org/"
+  - "AssertionError|https://docs.python.org/3/library/exceptions.html#AssertionError"
 source_context:
   gimp_install_path: "<USER_HOME>\\AppData\\Local\\Programs\\GIMP 3\\bin\\gimp-3.exe"
   active_gimp_profile: "<USER_HOME>\\AppData\\Roaming\\GIMP\\3.2"
@@ -97,7 +106,7 @@ Python itself was probably not the root cause. Python was where the GTK/GObject/
 GIMP 3’s Python plug-in system uses Python 3 and GObject-Introspection bindings. The official GIMP plug-in documentation specifically frames Python 3 plug-ins through `gi.repository` / GObject-Introspection, so failures around `gi.repository`, typelibs, Pango, and GTK are runtime-loading problems, not normal “my script has a syntax error” problems.
 
 Reference:
-https://developer.gimp.org/resource/writing-a-plug-in/tutorial-python/
+[GIMP Python plug-in tutorial](https://developer.gimp.org/resource/writing-a-plug-in/tutorial-python/)
 
 ## The Suspects
 

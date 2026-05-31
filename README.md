@@ -11,6 +11,7 @@ SvelteKit 2 / Svelte 5 static blog application staged for the AI Wiki project fo
 - `src/lib/content/articles/` — the two normalized Markdown blog drafts.
 - `src/routes/[slug]` — prerendered article pages.
 - `src/routes/+page.svelte` — article index.
+- `src/routes/login` and `src/routes/auth/callback` — Microsoft sign-in flow for the private draft queue.
 - `src/app.css` — UI adapted from the two attached HTML article demos.
 - `context/source-articles/` — source Markdown copies.
 - `context/source-html/` — source HTML demo copies.
@@ -37,6 +38,18 @@ pnpm check
 pnpm build
 pnpm dev
 ```
+
+## Microsoft auth
+
+Create `.env` from `.env.example` and fill in your Microsoft Entra app registration:
+
+```txt
+VITE_MSAL_CLIENT_ID="your-client-id"
+VITE_MSAL_TENANT_ID="common"
+VITE_MSAL_REDIRECT_URI="http://localhost:5173/auth/callback"
+```
+
+The login page at `/login` starts the Microsoft sign-in flow, and `/auth/callback` completes the redirect before sending you back to the requested draft route.
 
 ## Notes
 

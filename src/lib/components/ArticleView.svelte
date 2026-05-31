@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
+	import { articleHref } from '$lib/article-links';
 	import { getRelatedArticles, type Article } from '$lib/articles';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
@@ -22,6 +23,7 @@
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const articleCredits = $derived(article.credits.length ? article.credits.join(' · ') : 'Ryan Spice');
+	const articleReferences = $derived(article.references.filter(Boolean));
 
 	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
 	const description = $derived(article.summary || 'Technical blog drafts and production notes from Ryan Spice.');
@@ -94,6 +96,16 @@
 			return false;
 		} finally {
 			document.body.removeChild(textarea);
+		}
+	}
+
+	function formatReferenceLabel(value: string): string {
+		try {
+			const url = new URL(value);
+			const shortPath = url.pathname.replace(/\/$/, '');
+			return `${url.hostname.replace(/^www\./, '')}${shortPath === '' || shortPath === '/' ? '' : shortPath}`;
+		} catch {
+			return value;
 		}
 	}
 
@@ -243,6 +255,12 @@
 					<dt>Type</dt>
 					<dd>{article.draftType.replaceAll('-', ' ')}</dd>
 				</div>
+				{#if article.releaseDateLabel}
+					<div>
+						<dt>Release</dt>
+						<dd>{article.releaseDateLabel}</dd>
+					</div>
+				{/if}
 			</dl>
 			<p class="dek">{article.summary}</p>
 			<div class="tag-row" aria-label="Tags">
@@ -310,6 +328,33 @@
 				</div>
 			</article>
 
+			{#if articleReferences.length}
+				<section class="article-references" aria-label="References">
+					<div class="section-head">
+						<p class="eyebrow">References</p>
+						<h2>Sources and external context</h2>
+						<p class="section-dek">
+							External documentation and source material linked for the parts of the article that need it.
+						</p>
+					</div>
+
+					<ul class="reference-list">
+						{#each articleReferences as reference (reference)}
+							<li>
+								<a
+									class="wiki-link external-link"
+									href={reference}
+									rel="noreferrer"
+									target="_blank"
+								>
+									{formatReferenceLabel(reference)}
+								</a>
+							</li>
+						{/each}
+					</ul>
+				</section>
+			{/if}
+
 			{#if relatedArticles.length}
 				<section class="related-articles" aria-label="Related articles">
 					<div class="section-head">
@@ -324,7 +369,7 @@
 						{#each relatedArticles as related (related.slug)}
 							<a
 								class="related-article-card article-card-link"
-								href={`${base}/${related.slug}/`}
+								href={articleHref(related)}
 								style={`--article-accent: ${articleAccentColor(related)}`}
 							>
 								<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>

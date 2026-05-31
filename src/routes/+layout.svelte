@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
 	import { base } from '$app/paths';
+	import { onMount } from 'svelte';
+	import { loadAuthState } from '$lib/auth';
 	import '../app.css';
 
 	onNavigate((navigation) => {
@@ -12,6 +14,10 @@
 				await navigation.complete;
 			});
 		});
+	});
+
+	onMount(() => {
+		void loadAuthState();
 	});
 
 	let { children, data } = $props();

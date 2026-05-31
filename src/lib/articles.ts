@@ -48,7 +48,10 @@ export type ArticleMeta = {
 	audience: string[];
 	date: string;
 	dateLabel: string;
+	releaseDate?: string;
+	releaseDateLabel?: string;
 	credits: string[];
+	references: string[];
 	relatedPosts: string[];
 	design: ArticleDesign;
 };
@@ -84,6 +87,9 @@ export const articles: Article[] = Object.entries(modules)
 
 export const publishedArticles = articles.filter((article) => article.status === 'published');
 export const draftArticles = articles.filter((article) => article.status !== 'published');
+export const publishedArticleTags = Array.from(new Set(publishedArticles.flatMap((article) => article.tags))).sort((left, right) =>
+	left.localeCompare(right)
+);
 export const articleTags = Array.from(new Set(articles.flatMap((article) => article.tags))).sort((left, right) =>
 	left.localeCompare(right)
 );
@@ -152,6 +158,8 @@ function parseArticle(path: string, raw: string): Article {
 	const tags = arrayValue(frontmatter.tags);
 	const date = stringValue(frontmatter.date) || filename.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || '2026-05-28';
 	const dateLabel = formatArticleDate(date);
+	const releaseDate = stringValue(frontmatter.release_date);
+	const releaseDateLabel = releaseDate ? formatArticleDate(releaseDate) : '';
 	const credits = arrayValue(frontmatter.credits);
 	const linkTerms = arrayValue(frontmatter.link_terms)
 		.map(parseLinkTerm)
@@ -169,14 +177,17 @@ function parseArticle(path: string, raw: string): Article {
 		audience: arrayValue(frontmatter.audience),
 		date,
 		dateLabel,
+		releaseDate: releaseDate || undefined,
+		releaseDateLabel: releaseDateLabel || undefined,
 		credits: credits.length ? credits : ['Ryan Spice'],
+		references: arrayValue(frontmatter.references),
 		relatedPosts: arrayValue(frontmatter.related_posts),
-		design: designFor({ slug, title, status, draftType, summary, tags, date, dateLabel }),
+		design: designFor({ slug, title, status, draftType, summary, tags, date, dateLabel, releaseDate, releaseDateLabel }),
 		body
 	};
 }
 
-function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date' | 'dateLabel'>): ArticleDesign {
+function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date' | 'dateLabel' | 'releaseDate' | 'releaseDateLabel'>): ArticleDesign {
 	const common = {
 		brandLabel: 'Ryan Spice / Canopy Digital',
 		tocTitle: 'Contents',
@@ -209,14 +220,14 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				{ label: 'Old plug-ins', value: 'Quarantined' },
 				{ label: 'Date', value: article.dateLabel }
 			],
-			railTitle: 'Real-world page direction',
-			railBodyHtml: 'This mock leans more <strong>ryanspice.com / Canopy Digital technical article</strong> than raw Obsidian note.',
+			railTitle: 'Reference notes',
+			railBodyHtml: 'This article stays practical: repair steps, a safe asset restore order, and a PixelBoats-ready workstation setup.',
 			railPalette: {
 				label: 'PixelBoats palette preview',
 				colors: ['#080c14', '#112032', '#2d5c79', '#0078d4', '#53b8ff', '#f2d27c', '#b87936', '#ff00ff']
 			},
 			railCalloutHtml: '<strong>Editorial angle:</strong> tooling repair as production infrastructure, not just “I fixed my app.”',
-			footerText: 'Draft HTML demo generated from the AI Wiki inbox blog post. No external assets or frameworks. Safe to open locally.'
+			footerText: 'Static SvelteKit article generated from local Markdown.'
 		};
 	}
 
@@ -251,7 +262,7 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 			railChipsLabel: 'Debugging stack',
 			railChips: ['_Unwind_Resume', 'libgraphite2.dll', 'libpango-1.0-0.dll', 'gi.repository', 'Windhawk hooks', 'PATH DLL pollution'],
 			railCalloutHtml: '<strong>Editorial angle:</strong> the search-friendly article people needed when the error message pointed everywhere except the actual suspect.',
-			footerText: 'Draft HTML demo generated from the AI Wiki inbox companion article. No external assets or frameworks.'
+			footerText: 'Static SvelteKit article generated from local Markdown.'
 		};
 	}
 
@@ -338,7 +349,8 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 		statusItems: [
 			{ label: 'Type', value: article.draftType.replaceAll('-', ' ') },
 			{ label: 'Status', value: article.status },
-			{ label: 'Date', value: article.dateLabel }
+			{ label: 'Date', value: article.dateLabel },
+			...(article.releaseDateLabel ? [{ label: 'Release', value: article.releaseDateLabel }] : [])
 		],
 		railTitle: 'Publishing notes',
 		railBodyHtml: 'This route is static-friendly and generated from local Markdown.',

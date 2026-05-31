@@ -27,10 +27,27 @@ const LINK_EXCLUDED_TAGS = new Set(['a', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', '
 export function renderMarkdown(markdown: string, options: RenderMarkdownOptions = {}): RenderedMarkdown {
 	const lines = markdown.replace(/\r\n/g, '\n').split('\n');
 	const html: string[] = [];
+	const sectionBlocks: string[] = [];
 	const toc: TocItem[] = [];
 	let i = 0;
 	let wordCount = 0;
 	let renderedLeadParagraph = false;
+	let sectionActive = false;
+
+	function pushBlock(block: string): void {
+		if (sectionActive) {
+			sectionBlocks.push(block);
+			return;
+		}
+
+		html.push(block);
+	}
+
+	function flushSection(): void {
+		if (!sectionActive || !sectionBlocks.length) return;
+		html.push(`<section class="article-section">${sectionBlocks.join('\n')}</section>`);
+		sectionBlocks.length = 0;
+	}
 
 	while (i < lines.length) {
 		const line = lines[i] ?? '';
@@ -51,10 +68,10 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 			}
 			i += 1;
 			if (/^mermaid$/i.test(lang)) {
-				html.push(`<div class="mermaid-diagram code-block" data-lang="${escapeAttr(lang)}">${escapeHtml(block.join('\n'))}</div>`);
+				pushBlock(`<div class="mermaid-diagram code-block" data-lang="${escapeAttr(lang)}">${escapeHtml(block.join('\n'))}</div>`);
 				continue;
 			}
-			html.push(`<pre class="code-block" data-lang="${escapeAttr(lang)}"><code>${highlightCode(block.join('\n'), lang)}</code></pre>`);
+			pushBlock(`<pre class="code-block" data-lang="${escapeAttr(lang)}"><code>${highlightCode(block.join('\n'), lang)}</code></pre>`);
 			continue;
 		}
 
@@ -62,7 +79,7 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 		if (h1) {
 			const text = stripInlineMarkdown(h1[1].trim());
 			const id = slugify(text);
-			html.push(`<h1 id="${id}">${inline(h1[1].trim())}</h1>`);
+			pushBlock(`<h1 id="${id}">${inline(h1[1].trim())}</h1>`);
 			i += 1;
 			continue;
 		}
@@ -73,7 +90,11 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 			const text = stripInlineMarkdown(heading[2].trim());
 			const id = uniqueSlug(text, toc.map((item) => item.id));
 			toc.push({ id, text, level });
-			html.push(`<h${level} id="${id}">${inline(heading[2].trim())}</h${level}>`);
+			if (level === 2) {
+				if (sectionActive) flushSection();
+				sectionActive = true;
+			}
+			pushBlock(`<h${level} id="${id}">${inline(heading[2].trim())}</h${level}>`);
 			i += 1;
 			continue;
 		}
@@ -86,7 +107,7 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 				rows.push(splitTableLine(lines[i] ?? ''));
 				i += 1;
 			}
-			html.push(renderTable(header, rows));
+			pushBlock(renderTable(header, rows));
 			continue;
 		}
 
@@ -96,7 +117,7 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 				items.push((lines[i] ?? '').replace(/^\s*[-*]\s+/, ''));
 				i += 1;
 			}
-			html.push(`<ul>${items.map((item) => `<li>${inline(item)}</li>`).join('')}</ul>`);
+			pushBlock(`<ul>${items.map((item) => `<li>${inline(item)}</li>`).join('')}</ul>`);
 			continue;
 		}
 
@@ -106,7 +127,7 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 				items.push((lines[i] ?? '').replace(/^\s*\d+\.\s+/, ''));
 				i += 1;
 			}
-			html.push(`<ol>${items.map((item) => `<li>${inline(item)}</li>`).join('')}</ol>`);
+			pushBlock(`<ol>${items.map((item) => `<li>${inline(item)}</li>`).join('')}</ol>`);
 			continue;
 		}
 
@@ -116,7 +137,7 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 				block.push((lines[i] ?? '').replace(/^>\s?/, ''));
 				i += 1;
 			}
-			html.push(`<blockquote>${block.map((part) => `<p>${inline(part)}</p>`).join('')}</blockquote>`);
+			pushBlock(`<blockquote>${block.map((part) => `<p>${inline(part)}</p>`).join('')}</blockquote>`);
 			continue;
 		}
 
@@ -136,11 +157,15 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 
 		const text = paragraph.join(' ');
 		wordCount += text.split(/\s+/).filter(Boolean).length;
-		html.push(renderParagraph(text, renderedLeadParagraph));
+		pushBlock(renderParagraph(text, renderedLeadParagraph));
 		renderedLeadParagraph = true;
 	}
 
-	const renderedHtml = options.linkTerms?.length ? linkFirstOccurrences(html.join('\n'), options.linkTerms) : html.join('\n');
+	flushSection();
+
+	const structuredHtml = html.join('\n');
+	const linkedHtml = options.linkTerms?.length ? linkFirstOccurrences(structuredHtml, options.linkTerms) : structuredHtml;
+	const renderedHtml = autoLinkUrls(linkedHtml);
 
 	return {
 		html: renderedHtml,
@@ -228,14 +253,40 @@ function linkFirstOccurrences(html: string, linkTerms: MarkdownLinkTerm[]): stri
 
 				output = output.replace(pattern, (_match, prefix: string, matched: string) => {
 					linked.add(term.key);
-					const link = `<a href="${escapeAttr(term.href)}"${
-						term.href.startsWith('http') ? ' rel="noreferrer" target="_blank"' : ''
+					const external = term.href.startsWith('http');
+					const link = `<a class="wiki-link ${external ? 'external-link' : 'internal-link'}" href="${escapeAttr(term.href)}"${
+						external ? ' rel="noreferrer" target="_blank"' : ''
 					}>${escapeHtml(matched)}</a>`;
 					return `${prefix}${link}`;
 				});
 			}
 
 			return output;
+		})
+		.join('');
+}
+
+function autoLinkUrls(html: string): string {
+	const tokens = html.match(/<[^>]+>|[^<]+/g) ?? [];
+	const stack: string[] = [];
+
+	return tokens
+		.map((token) => {
+			if (token.startsWith('<')) {
+				updateTagStack(token, stack);
+				return token;
+			}
+
+			if (stack.some((tag) => LINK_EXCLUDED_TAGS.has(tag))) {
+				return token;
+			}
+
+			return token.replace(/(?:https?:\/\/|www\.)[^\s<]+/g, (rawUrl) => {
+				const trimmed = rawUrl.replace(/[)\].,!?;:]+$/g, '');
+				const suffix = rawUrl.slice(trimmed.length);
+				const href = trimmed.startsWith('http') ? trimmed : `https://${trimmed}`;
+				return `<a class="wiki-link external-link" href="${escapeAttr(href)}" rel="noreferrer" target="_blank">${escapeHtml(trimmed)}</a>${escapeHtml(suffix)}`;
+			});
 		})
 		.join('');
 }
@@ -275,9 +326,12 @@ function inline(value: string): string {
 
 	output = output.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, (_match, target, label) => {
 		const slug = normalizeArticleTarget(String(target));
-		return `<a href="../${slug}/">${escapeHtml(String(label))}</a>`;
+		return `<a class="wiki-link internal-link" href="../${slug}/">${escapeHtml(String(label))}</a>`;
 	});
-	output = output.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="noreferrer" target="_blank">$1</a>');
+	output = output.replace(
+		/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+		'<a class="wiki-link external-link" href="$2" rel="noreferrer" target="_blank">$1</a>'
+	);
 	output = output.replace(/`([^`]+)`/g, '<code>$1</code>');
 	output = output.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 	output = output.replace(/\*([^*]+)\*/g, '<em>$1</em>');

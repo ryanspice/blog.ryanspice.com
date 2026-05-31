@@ -13,12 +13,13 @@ export type ArticleIndexHrefOptions = {
 
 export function articleIndexHref(options: ArticleIndexHrefOptions = {}): string {
 	const searchParams = new URLSearchParams();
+	const targetBase = options.status === 'draft' ? `${base}/drafts` : base;
 
 	if (options.view === 'compact') {
 		searchParams.set('view', 'compact');
 	}
 
-	if (options.status && options.status !== 'published') {
+	if (options.status && options.status !== 'published' && options.status !== 'draft') {
 		searchParams.set('status', options.status);
 	}
 
@@ -31,7 +32,7 @@ export function articleIndexHref(options: ArticleIndexHrefOptions = {}): string 
 	}
 
 	const query = searchParams.toString();
-	return query ? `${base}/?${query}` : `${base}/`;
+	return query ? `${targetBase}/?${query}` : `${targetBase}/`;
 }
 
 export function articleTagIndexHref(tag: string, status: ArticleIndexStatus = 'published'): string {

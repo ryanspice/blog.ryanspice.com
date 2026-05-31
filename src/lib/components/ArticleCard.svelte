@@ -1,23 +1,24 @@
 <script lang="ts">
-	import { base } from '$app/paths';
 	import { articleAccentColor } from '$lib/article-accent';
+	import { articleHref } from '$lib/article-links';
 	import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
 	import type { Article } from '$lib/articles';
 
 	type Props = {
 		article: Article;
+		href?: string;
 	};
 
-	let { article }: Props = $props();
+	let { article, href }: Props = $props();
 	const articleAccent = $derived(articleAccentColor(article));
-	const articleHref = $derived(`${base}/${article.slug}/`);
+	const resolvedHref = $derived(href ?? articleHref(article));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 </script>
 
 <a
 	class="article-card article-card-link"
-	href={articleHref}
+	href={resolvedHref}
 	style={`--article-accent: ${articleAccent}`}
 	style:view-transition-name={previewTransitionName}
 >
@@ -26,6 +27,9 @@
 	<div class="card-meta" aria-label="Article metadata">
 		<time datetime={article.date}>{article.dateLabel}</time>
 		<span>{article.readingMinutes} min read</span>
+		{#if article.releaseDateLabel}
+			<span>{article.status === 'draft' ? `Releases ${article.releaseDateLabel}` : article.releaseDateLabel}</span>
+		{/if}
 	</div>
 	<p>{article.summary}</p>
 	<div class="tag-row compact" aria-label="Tags">
