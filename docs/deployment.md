@@ -141,12 +141,13 @@ Required repository secrets:
 
 - `BLOG_DEPLOY_HOST`
 - `BLOG_DEPLOY_USER`
-- `BLOG_DEPLOY_KEY`
+- `BLOG_DEPLOY_KEY_B64`
 - `BLOG_DEPLOY_PATH`
 
 Optional repository secrets:
 
 - `BLOG_DEPLOY_PORT`
+- `BLOG_DEPLOY_KEY` (raw multiline fallback if `BLOG_DEPLOY_KEY_B64` is not set)
 - `BLOG_PUBLIC_URL`
 - `BLOG_BASE_PATH`
 - `PUBLIC_SITE_URL`

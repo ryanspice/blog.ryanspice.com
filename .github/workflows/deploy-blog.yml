@@ -69,15 +69,21 @@ jobs:
         shell: pwsh
         env:
           BLOG_DEPLOY_KEY: ${{ secrets.BLOG_DEPLOY_KEY }}
+          BLOG_DEPLOY_KEY_B64: ${{ secrets.BLOG_DEPLOY_KEY_B64 }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:BLOG_DEPLOY_KEY)) {
+          if ([string]::IsNullOrWhiteSpace($env:BLOG_DEPLOY_KEY) -and [string]::IsNullOrWhiteSpace($env:BLOG_DEPLOY_KEY_B64)) {
             throw "Missing BLOG_DEPLOY_KEY secret."
           }
 
           $keyPath = Join-Path $env:RUNNER_TEMP "blog_deploy_key"
-          $normalized = $env:BLOG_DEPLOY_KEY.Replace("`r`n", "`n")
-          [System.IO.File]::WriteAllText($keyPath, $normalized, [System.Text.UTF8Encoding]::new($false))
+          if (-not [string]::IsNullOrWhiteSpace($env:BLOG_DEPLOY_KEY_B64)) {
+            [System.IO.File]::WriteAllBytes($keyPath, [Convert]::FromBase64String($env:BLOG_DEPLOY_KEY_B64.Trim()))
+          } else {
+            $normalized = $env:BLOG_DEPLOY_KEY.Replace("`r`n", "`n").TrimEnd() + "`n"
+            [System.IO.File]::WriteAllText($keyPath, $normalized, [System.Text.UTF8Encoding]::new($false))
+          }
           chmod 600 $keyPath
+          ssh-keygen -y -f $keyPath > $null
           "BLOG_DEPLOY_KEY_PATH=$keyPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Deploy and activate production
