@@ -121,7 +121,9 @@ After checking the parallel release:
 pnpm run deploy:activate
 ```
 
-Activation backs up the current remote blog folder to `_backups/live-<release-id>.tar.gz`, keeps `_incoming`, `_releases`, `_backups`, `.well-known`, and `cgi-bin`, then copies the chosen release into the live blog folder (including the merged repo-managed `.htaccess` and `index.php` entrypoint).
+Activation backs up the current remote blog folder to `_backups/live-<release-id>.tar.gz`, verifies that archive before touching the live files, keeps `_incoming`, `_releases`, `_backups`, `.well-known`, and `cgi-bin`, then copies the chosen release into the live blog folder (including the merged repo-managed `.htaccess` and `index.php` entrypoint).
+
+Backups under `_backups` must stay compressed. During activation, legacy backup directories are converted to `.tar.gz` archives and removed. Any remaining uncompressed backup artifact makes the deploy fail before activation continues.
 
 ## Runtime dependency repair
 

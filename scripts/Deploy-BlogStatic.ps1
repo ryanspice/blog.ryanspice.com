@@ -237,7 +237,8 @@ set -eu
 LIVE=__REMOTE__
 RELEASE=__RELEASE__
 KEEP_NAMES=__KEEP__
-BACKUP="$LIVE/_backups/live-$RELEASE.tar.gz"
+BACKUP="_backups/live-$RELEASE.tar.gz"
+BACKUP_LABEL="$LIVE/$BACKUP"
 
 cd "$LIVE"
 test -f "_releases/$RELEASE/index.php"
@@ -248,7 +249,29 @@ test -f "_releases/$RELEASE/_protected/.htaccess"
 test -f "_releases/$RELEASE/_app/version.json"
 test -f "_releases/$RELEASE/adapter/route-manifest.php"
 
-tar -czf "_backups/live-$RELEASE.tar.gz" --exclude='./_incoming' --exclude='./_releases' --exclude='./_backups' . || true
+tar -czf "$BACKUP" --exclude='./_incoming' --exclude='./_releases' --exclude='./_backups' .
+test -s "$BACKUP"
+tar -tzf "$BACKUP" >/dev/null
+
+find "_backups" -mindepth 1 -maxdepth 1 -type d | while IFS= read -r backup_dir; do
+  name="${backup_dir#_backups/}"
+  archive="_backups/$name.tar.gz"
+  if [ -e "$archive" ]; then
+    echo "Uncompressed backup has matching archive; leaving for manual cleanup: $backup_dir" >&2
+    exit 1
+  fi
+  tar -czf "$archive" -C "_backups" "$name"
+  test -s "$archive"
+  tar -tzf "$archive" >/dev/null
+  rm -rf -- "$backup_dir"
+  echo "Compressed legacy backup: $archive"
+done
+
+uncompressed_backup="$(find "_backups" -mindepth 1 -maxdepth 1 ! -name '*.tar.gz' ! -name '.htaccess' -print -quit)"
+if [ -n "$uncompressed_backup" ]; then
+  echo "Found uncompressed backup artifact in _backups: $uncompressed_backup" >&2
+  exit 1
+fi
 
 is_keep_name() {
   name="$1"
@@ -275,7 +298,7 @@ done
 
 cp -a "_releases/$RELEASE"/. .
 echo "Activated release: $RELEASE"
-echo "Backup: $BACKUP"
+echo "Backup: $BACKUP_LABEL"
 '@
 
   $ActivateRemote = New-RemoteScript $ActivateRemoteTemplate @{ REMOTE = $remoteQ; RELEASE = $releaseQ; KEEP = $keepQ }
