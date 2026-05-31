@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 	import { articleIndexHref, articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
 	import { publishedArticleTags, publishedArticles } from '$lib/articles';
@@ -238,3 +239,7 @@
 		<span>Static site</span>
 	</div>
 </footer>
+
+
+
+

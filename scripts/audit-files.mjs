@@ -26,6 +26,7 @@ const required = [
 	'src/lib/article-links.ts',
 	'src/lib/dev-log.ts',
 	'src/lib/articles.ts',
+	'src/lib/components/FooterAuthControls.svelte',
 	'src/lib/content/articles/debugging-gimp-3-python-plugin-failures-windows-windhawk.md',
 	'src/lib/content/articles/gimp-3-repair-photogimp-pixelboats-workstation.md',
 	'src/lib/content/articles/hermes-deepseek-setup.md',

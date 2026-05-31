@@ -2,7 +2,8 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { authLoginHref, authState, loadAuthState } from '$lib/auth';
+	import { authState, canAccessDrafts, loadAuthState, signIn } from '$lib/auth';
+	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import { articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleHref } from '$lib/article-links';
@@ -19,6 +20,7 @@
 	let draftsLoaded = $state(false);
 	let searchQuery = $state('');
 	let selectedTag = $state('');
+	let signingIn = $state(false);
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
@@ -41,6 +43,7 @@
 		})
 	);
 	const latestDraftAccent = $derived(latestDraft ? articleAccentColor(latestDraft) : 'var(--accent)');
+	const canViewDrafts = $derived(canAccessDrafts($authState));
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -74,6 +77,16 @@
 			draftsLoaded = true;
 		}
 	});
+
+	async function handleSignIn() {
+		signingIn = true;
+
+		try {
+			await signIn('/drafts/');
+		} finally {
+			signingIn = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -108,7 +121,7 @@
 	]}
 />
 
-{#if $authState.authenticated}
+{#if canViewDrafts}
 	{#if !draftsLoaded}
 	<section class="home-hero compact-page">
 		<div class="home-hero-copy">
@@ -254,28 +267,36 @@
 			</dl>
 		</div>
 
-		<aside class="hero-card home-hero-card" aria-label="Draft access">
-			<strong>{authResolved ? 'Access required' : 'Checking access'}</strong>
-			<p>
-				{#if $authState.loading}
-					Hold on while the auth gate responds.
-				{:else}
-					The drafts area stays out of the public homepage. Use the Microsoft gateway to open the
-					draft queue.
-				{/if}
-			</p>
-			<div class="home-hero-links">
-				<a href="/login">Sign in with Microsoft</a>
-				<a href={authLoginHref('/drafts/')}>Open drafts</a>
-			</div>
-			<p class="home-hero-note">
-				Promotion remains file-based for now: set <code>status: published</code> to promote, or set
-				<code>release_date</code> in the article frontmatter to schedule a release.
-			</p>
-		</aside>
-	</section>
+			<aside class="hero-card home-hero-card" aria-label="Draft access">
+				<strong>{authResolved ? 'Access required' : 'Checking access'}</strong>
+				<p>
+					{#if $authState.loading}
+						Hold on while the auth gate responds.
+					{:else}
+						The drafts area stays out of the public homepage. Use the Microsoft gateway to open the
+						draft queue.
+					{/if}
+				</p>
+				<div class="home-hero-links">
+					<button type="button" class="plain-action" onclick={handleSignIn} disabled={signingIn || !$authState.available}>
+						{signingIn ? 'Opening Microsoft…' : 'Sign in with Microsoft'}
+					</button>
+				</div>
+				<p class="home-hero-note">
+					Promotion remains file-based for now: set <code>status: published</code> to promote, or set
+					<code>release_date</code> in the article frontmatter to schedule a release.
+				</p>
+			</aside>
+		</section>
 {/if}
 
+
+	<footer class="drafts-footer">
+	<FooterAuthControls returnTo="/drafts/" />
+	</footer>
 {#if authError}
 	<p class="drafts-error" role="status">{authError}</p>
 {/if}
+
+
+

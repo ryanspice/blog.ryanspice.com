@@ -40,7 +40,7 @@
 				actionError = '';
 
 				try {
-					await signOut(returnTo);
+					await signOut();
 				} catch (caught) {
 					if (!cancelled) {
 						actionError = caught instanceof Error ? caught.message : String(caught);
@@ -76,7 +76,7 @@
 		actionError = '';
 
 		try {
-			await signOut(returnTo);
+			await signOut();
 		} catch (caught) {
 			actionError = caught instanceof Error ? caught.message : String(caught);
 		} finally {
@@ -157,7 +157,7 @@
 				</button>
 			</div>
 		{:else}
-			<p>Use your Microsoft account to enter the draft queue.</p>
+			<p>Use any Microsoft account to enter the draft queue.</p>
 			<div class="home-hero-links">
 				<button
 					type="button"
@@ -208,3 +208,5 @@
 		opacity: 0.68;
 	}
 </style>
+
+

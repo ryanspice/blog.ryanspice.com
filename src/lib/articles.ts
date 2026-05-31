@@ -48,6 +48,8 @@ export type ArticleMeta = {
 	audience: string[];
 	date: string;
 	dateLabel: string;
+	updatedDate: string;
+	updatedDateLabel: string;
 	releaseDate?: string;
 	releaseDateLabel?: string;
 	credits: string[];
@@ -158,6 +160,8 @@ function parseArticle(path: string, raw: string): Article {
 	const tags = arrayValue(frontmatter.tags);
 	const date = stringValue(frontmatter.date) || filename.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || '2026-05-28';
 	const dateLabel = formatArticleDate(date);
+	const updatedDate = stringValue(frontmatter.updated_date) || stringValue(frontmatter.modified_date) || date;
+	const updatedDateLabel = formatArticleDate(updatedDate);
 	const releaseDate = stringValue(frontmatter.release_date);
 	const releaseDateLabel = releaseDate ? formatArticleDate(releaseDate) : '';
 	const credits = arrayValue(frontmatter.credits);
@@ -177,17 +181,24 @@ function parseArticle(path: string, raw: string): Article {
 		audience: arrayValue(frontmatter.audience),
 		date,
 		dateLabel,
+		updatedDate,
+		updatedDateLabel,
 		releaseDate: releaseDate || undefined,
 		releaseDateLabel: releaseDateLabel || undefined,
 		credits: credits.length ? credits : ['Ryan Spice'],
 		references: arrayValue(frontmatter.references),
 		relatedPosts: arrayValue(frontmatter.related_posts),
-		design: designFor({ slug, title, status, draftType, summary, tags, date, dateLabel, releaseDate, releaseDateLabel }),
+		design: designFor({ slug, title, status, draftType, summary, tags, date, dateLabel, updatedDate, updatedDateLabel, releaseDate, releaseDateLabel }),
 		body
 	};
 }
 
-function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date' | 'dateLabel' | 'releaseDate' | 'releaseDateLabel'>): ArticleDesign {
+function designFor(
+	article: Pick<
+		ArticleMeta,
+		'slug' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date' | 'dateLabel' | 'updatedDate' | 'updatedDateLabel' | 'releaseDate' | 'releaseDateLabel'
+	>
+): ArticleDesign {
 	const common = {
 		brandLabel: 'Ryan Spice / Canopy Digital',
 		tocTitle: 'Contents',
@@ -227,7 +238,7 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				colors: ['#080c14', '#112032', '#2d5c79', '#0078d4', '#53b8ff', '#f2d27c', '#b87936', '#ff00ff']
 			},
 			railCalloutHtml: '<strong>Editorial angle:</strong> tooling repair as production infrastructure, not just “I fixed my app.”',
-			footerText: 'Static SvelteKit article generated from local Markdown.'
+			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
 		};
 	}
 
@@ -262,7 +273,7 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 			railChipsLabel: 'Debugging stack',
 			railChips: ['_Unwind_Resume', 'libgraphite2.dll', 'libpango-1.0-0.dll', 'gi.repository', 'Windhawk hooks', 'PATH DLL pollution'],
 			railCalloutHtml: '<strong>Editorial angle:</strong> the search-friendly article people needed when the error message pointed everywhere except the actual suspect.',
-			footerText: 'Static SvelteKit article generated from local Markdown.'
+			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
 		};
 	}
 
@@ -295,7 +306,7 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 			railChips: ['2.5D surface rendering', 'WebGPU compute path', 'GLSL/WGSL shaders', 'Colyseus multiplayer', 'GPU-first with fallback'],
 			railChipsLabel: 'Key technical decisions',
 			railCalloutHtml: '<strong>Editorial angle:</strong> the most important step in engine evaluation is naming your actual rendering problem — not comparing feature lists.',
-			footerText: 'Static SvelteKit article generated from AI Wiki deep research work.'
+			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from AI Wiki deep research work.`
 		};
 	}
 
@@ -323,14 +334,14 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 				{ label: 'Primary question', value: 'Workflow vs model layer' },
 				{ label: 'Date', value: article.dateLabel }
 			],
-			railTitle: 'How to read this article',
+			railTitle: 'What to notice',
 			railBodyHtml:
-				'This comparison separates the product experience from the model surface so the differences stay concrete instead of hand-wavy.',
-			railChipsLabel: 'Key themes',
-			railChips: ['source control', 'plan review', 'exposed CoT', 'long context', 'developer integration'],
+				'Read the comparison as two layers: the product workflow you use in front, and the model/API substrate underneath. That split is the point of the article.',
+			railChipsLabel: 'Signals to watch',
+			railChips: ['product workflow', 'model substrate', 'governance', 'retrieval', 'developer control'],
 			railCalloutHtml:
 				'<strong>Editorial angle:</strong> compare the layer you are actually using — research workflow, model API, or both.',
-			footerText: 'Static SvelteKit comparison article generated from local Markdown.'
+			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit comparison article generated from local Markdown.`
 		};
 	}
 
@@ -356,7 +367,7 @@ function designFor(article: Pick<ArticleMeta, 'slug' | 'title' | 'status' | 'dra
 		railBodyHtml: 'This route is static-friendly and generated from local Markdown.',
 		railChips: ['Static SvelteKit', 'Local Markdown', 'pnpm'],
 		railCalloutHtml: '<strong>Editorial angle:</strong> practical technical notes with durable source context.',
-		footerText: 'Static SvelteKit article generated from local Markdown.'
+		footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
 	};
 }
 

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
-	import { authLoginHref, authLogoutHref, authState, loadAuthState } from '$lib/auth';
 	import type { NavItem } from '$lib/articles';
 
 	type Props = {
@@ -10,9 +9,6 @@
 	};
 
 	let { brandLabel = 'Ryan Spice / Canopy Digital', navLinks = [] }: Props = $props();
-	const devLogLink: NavItem = { label: 'Dev log', href: '/dev-log' };
-	const draftLink: NavItem = { label: 'Drafts', href: '/drafts' };
-	const defaultNavLinks = [devLogLink];
 	let readingMode = $state(false);
 
 	const brandParts = $derived(
@@ -21,15 +17,7 @@
 			.map((part) => part.trim())
 			.filter(Boolean)
 	);
-	const visibleNavLinks = $derived(
-		[
-			...navLinks,
-			...defaultNavLinks.filter((item) => !navLinks.some((link) => link.href === item.href)),
-			...($authState.authenticated ? [draftLink] : [])
-		]
-	);
-	const loginHref = $derived($authState.authenticated ? authLogoutHref('/') : authLoginHref('/'));
-	const loginLabel = $derived($authState.authenticated ? 'Logout' : 'Login');
+	const visibleNavLinks = $derived(navLinks);
 
 	function hrefFor(href: string): string {
 		if (href.startsWith('#') || href.startsWith('http')) return href;
@@ -51,7 +39,6 @@
 		const stored = window.localStorage.getItem('blog-reading-mode');
 		readingMode = stored === 'true';
 		applyReadingMode(readingMode);
-		void loadAuthState();
 	});
 </script>
 
@@ -70,7 +57,7 @@
 		</div>
 
 		<div class="nav-cluster">
-			{#if visibleNavLinks.length}
+		{#if visibleNavLinks.length}
 				<div class="nav-links">
 					{#each visibleNavLinks as item (item.href)}
 						<a href={hrefFor(item.href)}>{item.label}</a>
@@ -78,17 +65,25 @@
 				</div>
 			{/if}
 
-			<div class="nav-actions" aria-label="Site actions">
-				<button
-					class="nav-action"
-					type="button"
-					aria-pressed={readingMode}
-					onclick={toggleReadingMode}
-				>
-					{readingMode ? 'Reading on' : 'Reading mode'}
-				</button>
-				<a class="nav-action nav-auth" href={loginHref}>{loginLabel}</a>
-			</div>
+			<button
+				class="nav-action"
+				type="button"
+				aria-pressed={readingMode}
+				onclick={toggleReadingMode}
+			>
+				<svg class="nav-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+					<path
+						d="M6 5.5h7.4c1.9 0 3.1 1.2 3.1 3.1V19a2.3 2.3 0 0 0-2.3-2.3H6.4A1.9 1.9 0 0 1 4.5 15V7a1.5 1.5 0 0 1 1.5-1.5Z"
+						fill="currentColor"
+						fill-opacity="0.14"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linejoin="round"
+					/>
+					<path d="M12 7v10.5M8 8.4h2.4M8 11h2.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+				</svg>
+				<span>{readingMode ? 'Reading on' : 'Reading mode'}</span>
+			</button>
 		</div>
 	</nav>
 </header>

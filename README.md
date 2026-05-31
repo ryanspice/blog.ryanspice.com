@@ -50,6 +50,8 @@ VITE_MSAL_TENANT_ID="common"
 
 The login page at `/login` starts the Microsoft sign-in flow, and `/auth/callback` completes the redirect before sending you back to the requested draft route. The redirect URI is resolved from the current origin at runtime unless you pin `VITE_MSAL_REDIRECT_URI` explicitly.
 
+Draft navigation and the private draft queue are only exposed to the owner Microsoft account `spice.ryan@hotmail.com`; other signed-in accounts stay on the public surface.
+
 The app registration I created for this repo is `blog.ryanspice.com draft auth`, with SPA redirect URIs for:
 
 - `http://localhost:5173/auth/callback`

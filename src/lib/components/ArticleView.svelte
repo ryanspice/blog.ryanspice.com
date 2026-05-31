@@ -22,7 +22,14 @@
 	const relatedArticles = $derived(getRelatedArticles(article, 3));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
-	const articleCredits = $derived(article.credits.length ? article.credits.join(' · ') : 'Ryan Spice');
+	const articleFooterLinks = [
+		{ label: 'Home', href: `${base}/` },
+		{ label: 'RSS', href: `${base}/rss.xml` },
+		{ label: 'Dev log', href: `${base}/dev-log/` }
+	];
+	const articleInfo = $derived(
+		`${article.draftType.replaceAll('-', ' ')} · Updated ${article.updatedDateLabel}`
+	);
 	const articleReferences = $derived(article.references.filter(Boolean));
 
 	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
@@ -57,7 +64,7 @@
 				description,
 				mainEntityOfPage: canonical,
 				datePublished: article.date,
-				dateModified: article.date,
+				dateModified: article.updatedDate,
 				author: {
 					'@type': 'Person',
 					name: 'Ryan Spice',
@@ -70,6 +77,9 @@
 		]
 	});
 	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
+	const jsonLdScriptHtml = $derived(
+		`<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`
+	);
 
 	function setCommandFeedback(message: string) {
 		commandFeedback = message;
@@ -167,9 +177,9 @@
 		const update = () => {
 			if (frame !== null) cancelAnimationFrame(frame);
 			frame = requestAnimationFrame(() => {
-			const scrollTop = window.scrollY || document.documentElement.scrollTop;
-			const height = document.documentElement.scrollHeight - window.innerHeight;
-			progress = height > 0 ? Math.min(100, Math.max(0, (scrollTop / height) * 100)) : 0;
+				const scrollTop = window.scrollY || document.documentElement.scrollTop;
+				const height = document.documentElement.scrollHeight - window.innerHeight;
+				progress = height > 0 ? Math.min(100, Math.max(0, (scrollTop / height) * 100)) : 0;
 
 				if (headings.length) {
 					const offset = 140;
@@ -221,13 +231,13 @@
 	<link rel="alternate" type="application/rss+xml" title="RSS" href={rssUrl} />
 
 	<meta property="article:published_time" content={article.date} />
-	<meta property="article:modified_time" content={article.date} />
+	<meta property="article:modified_time" content={article.updatedDate} />
 
 	{#each article.tags as tag (tag)}
 		<meta property="article:tag" content={tag} />
 	{/each}
 
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
+	{@html jsonLdScriptHtml}
 </svelte:head>
 
 <div class={`article-page theme-${article.design.variant} has-command-bar`} style={`--article-accent: ${articleAccent}`}>
@@ -244,20 +254,58 @@
 			</p>
 			<dl class="meta-grid article-meta" aria-label="Article metadata">
 				<div>
-					<dt>Credits</dt>
-					<dd>{articleCredits}</dd>
+					<dt>
+						<svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+							<path
+								d="M7.5 4.5h6.2l3.8 3.8V19a1.5 1.5 0 0 1-1.5 1.5h-8.5A1.5 1.5 0 0 1 6 19V6a1.5 1.5 0 0 1 1.5-1.5Z"
+								fill="currentColor"
+								fill-opacity="0.12"
+								stroke="currentColor"
+								stroke-width="1.4"
+								stroke-linejoin="round"
+							/>
+							<path d="M13.7 4.5V9h4.3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+							<path d="M8.6 11h6.8M8.6 14h6.8M8.6 17h4.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+						</svg>
+						<span>Article info</span>
+					</dt>
+					<dd>{articleInfo}</dd>
 				</div>
 				<div>
-					<dt>Read time</dt>
+					<dt>
+						<svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+							<circle cx="12" cy="12" r="7.25" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.4" />
+							<path d="M12 8.25V12l2.5 1.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+						<span>Read time</span>
+					</dt>
 					<dd>{article.readingMinutes} min</dd>
 				</div>
 				<div>
-					<dt>Type</dt>
+					<dt>
+						<svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+							<path
+								d="M6.5 6.25h11A1.75 1.75 0 0 1 19.25 8v8A1.75 1.75 0 0 1 17.5 17.75h-11A1.75 1.75 0 0 1 4.75 16V8A1.75 1.75 0 0 1 6.5 6.25Z"
+								fill="currentColor"
+								fill-opacity="0.12"
+								stroke="currentColor"
+								stroke-width="1.4"
+							/>
+							<path d="M8 10h8M8 13h5.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+						</svg>
+						<span>Type</span>
+					</dt>
 					<dd>{article.draftType.replaceAll('-', ' ')}</dd>
 				</div>
 				{#if article.releaseDateLabel}
 					<div>
-						<dt>Release</dt>
+						<dt>
+							<svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+								<rect x="5" y="6" width="14" height="13" rx="2.5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.4" />
+								<path d="M5 9h14M8 4.5v3M16 4.5v3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+							</svg>
+							<span>Release</span>
+						</dt>
 						<dd>{article.releaseDateLabel}</dd>
 					</div>
 				{/if}
@@ -270,6 +318,35 @@
 			</div>
 		</div>
 
+		<div class="article-hero-visual" aria-hidden="true">
+			<svg viewBox="0 0 420 560" focusable="false">
+				<defs>
+					<linearGradient id="hero-visual-line" x1="0%" y1="0%" x2="100%" y2="100%">
+						<stop offset="0%" stop-color="currentColor" stop-opacity="0.55" />
+						<stop offset="100%" stop-color="currentColor" stop-opacity="0.05" />
+					</linearGradient>
+					<radialGradient id="hero-visual-glow" cx="50%" cy="42%" r="58%">
+						<stop offset="0%" stop-color="currentColor" stop-opacity="0.2" />
+						<stop offset="100%" stop-color="currentColor" stop-opacity="0" />
+					</radialGradient>
+				</defs>
+				<rect x="34" y="78" width="306" height="382" rx="32" fill="url(#hero-visual-glow)" />
+				<g fill="none" stroke="url(#hero-visual-line)" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M68 402V184l112-64 128 74v218l-116 66-124-76Z" stroke-width="1.7" />
+					<path d="M68 184l124 72 116-62M192 256v222" stroke-width="1.4" opacity="0.62" />
+					<path d="M104 374V232l78-44 90 52v142l-82 46-86-54Z" stroke-width="1.4" opacity="0.5" />
+					<path d="M132 350V260l52-30 60 35v90l-55 31-57-36Z" stroke-width="1.4" opacity="0.62" />
+					<path d="M66 116h206M92 98h148M238 464h106M262 486h66" stroke-width="1.2" opacity="0.42" />
+				</g>
+				<g fill="currentColor">
+					<circle cx="68" cy="184" r="3" opacity="0.7" />
+					<circle cx="192" cy="256" r="3" opacity="0.88" />
+					<circle cx="308" cy="194" r="2.6" opacity="0.66" />
+					<circle cx="192" cy="478" r="2.8" opacity="0.58" />
+				</g>
+			</svg>
+		</div>
+
 		<div class="article-hero-side">
 			<aside class="hero-card" aria-label={article.design.heroCardAria} style={`--article-accent: ${articleAccent}`}>
 				<strong>{article.design.heroCardTitle}</strong>
@@ -279,6 +356,27 @@
 					{/each}
 				</div>
 			</aside>
+
+			{#if article.toc.length}
+				<details class="toc-accordion article-toc article-toc--mobile" aria-label="Table of contents">
+					<summary>
+						<span>{article.design.tocTitle}</span>
+						<strong>{article.toc.length} sections</strong>
+					</summary>
+
+					<div class="toc-accordion-panel">
+						{#each article.toc as item (item.id)}
+							<a
+								class:toc-l3={item.level === 3}
+								class:toc-l2={item.level === 2}
+								class:is-active={activeTocId === item.id}
+								href={`#${item.id}`}
+								>{item.text}</a
+							>
+						{/each}
+					</div>
+				</details>
+			{/if}
 
 			<aside class="rail-card" aria-label={article.design.railTitle}>
 				<h2>{article.design.railTitle}</h2>
@@ -308,7 +406,7 @@
 	</section>
 
 	<main class="layout">
-		<aside class="toc article-toc" aria-label="Table of contents">
+		<aside class="toc article-toc article-toc--desktop" aria-label="Table of contents">
 			<h2>{article.design.tocTitle}</h2>
 			{#each article.toc as item (item.id)}
 				<a
@@ -329,13 +427,34 @@
 			</article>
 
 			{#if articleReferences.length}
-				<section class="article-references" aria-label="References">
-					<div class="section-head">
-						<p class="eyebrow">References</p>
-						<h2>Sources and external context</h2>
-						<p class="section-dek">
-							External documentation and source material linked for the parts of the article that need it.
-						</p>
+				<section class="article-references" aria-label="Sources and further reading">
+					<div class="section-head section-head-with-art">
+						<div class="section-head-copy">
+							<p class="eyebrow">Sources</p>
+							<h2>Sources and further reading</h2>
+							<p class="section-dek">
+								External documentation and source material linked for the parts of the article that need it.
+							</p>
+						</div>
+						<svg
+							class="section-head-art"
+							viewBox="0 0 240 48"
+							aria-hidden="true"
+							focusable="false"
+						>
+							<path
+								d="M8 24H54M66 24H100M118 24H152M170 24H232"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+							/>
+							<circle cx="54" cy="24" r="3" fill="currentColor" />
+							<circle cx="100" cy="24" r="2.5" fill="currentColor" opacity="0.75" />
+							<circle cx="152" cy="24" r="3" fill="currentColor" />
+							<circle cx="170" cy="24" r="2.5" fill="currentColor" opacity="0.75" />
+							<circle cx="232" cy="24" r="3" fill="currentColor" />
+						</svg>
 					</div>
 
 					<ul class="reference-list">
@@ -405,7 +524,12 @@
 		</div>
 	</div>
 
-	<footer>
-		{article.design.footerText}
+	<footer class="article-footer">
+		<p class="article-footer-copy">{article.design.footerText}</p>
+		<div class="article-footer-links" aria-label="Footer links">
+			{#each articleFooterLinks as link (link.href)}
+				<a href={link.href}>{link.label}</a>
+			{/each}
+		</div>
 	</footer>
 </div>

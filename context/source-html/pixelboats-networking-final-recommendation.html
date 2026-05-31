@@ -1,0 +1,61 @@
+<article class="pixelboats-networking-article">
+  <header class="article-hero">
+    <p class="eyebrow">PixelBoats engineering note</p>
+    <h1>Designing the PixelBoats multiplayer model around feel, fairness, and scale</h1>
+    <p class="lede">PixelBoats is a fast, browser-first naval combat game. That means the network model has to serve the player’s hands first: immediate helm response, fair combat, stable remote ships, and an ocean that can grow without drowning every client in updates.</p>
+  </header>
+
+  <section>
+    <h2>The decision</h2>
+    <p>The recommended networking direction is a <strong>regional authoritative server model</strong>. The browser client predicts the local ship so controls feel responsive, interpolates remote ships so other players look smooth, and renders the ocean effects locally. The server owns the truth: movement validity, shots, collisions, pickups, damage, death, respawn, and what each player is allowed to see.</p>
+    <p>This is not just a theoretical preference. It is the model that best matches what PixelBoats needs to feel like: a direct-control pirate game, not a delayed command simulator.</p>
+  </section>
+
+  <section>
+    <h2>Why the browser should predict, but not own truth</h2>
+    <p>When a player turns the ship, fires a broadside, or tries to avoid a rock, waiting for a round trip to the server would feel heavy. Client-side prediction solves that. The local browser applies the player’s input immediately, then later reconciles against the authoritative server state.</p>
+    <p>The important boundary is that prediction is only a visual and feel layer. The client does not get to declare that it hit another ship, skipped a cooldown, teleported through a sandbar, or collected cargo it never reached. Those outcomes belong to the server.</p>
+  </section>
+
+  <section>
+    <h2>Remote ships need interpolation, not panic</h2>
+    <p>Other players and NPC ships arrive as snapshots from the region server. Those snapshots do not arrive perfectly evenly, especially on Wi‑Fi and mobile networks. A short interpolation buffer lets the client render between known-good states instead of snapping or jittering every time a packet arrives late.</p>
+    <p>For PixelBoats, ships are large, physical, and readable. They do not need twitch-fighting-game rollback across the whole world. A stable interpolation buffer usually gives a better result than aggressive extrapolation.</p>
+  </section>
+
+  <section>
+    <h2>AOI is what lets the ocean scale</h2>
+    <p>Area-of-interest replication is the practical scaling trick. Nearby combat gets high-rate updates. Medium-distance ships get fewer updates. Faraway contacts can become map blips, rumors, silhouettes, or other contextual data.</p>
+    <p>That means the client sees the ocean as alive without receiving the entire world state every frame. This also gives PixelBoats a natural path toward regional ocean servers and border handoff later.</p>
+  </section>
+
+  <section>
+    <h2>What should stay local</h2>
+    <p>The ocean should look rich, but most of that richness should not be networked. Water shimmer, wake foam, spray, seagulls, small ambience, and many shader effects can be derived from authoritative ship positions and local visual rules. Network the facts, not the theatre.</p>
+    <p>This keeps bandwidth focused on gameplay-critical state while preserving PixelBoats’ visual identity.</p>
+  </section>
+
+  <section>
+    <h2>Starting targets</h2>
+    <ul>
+      <li><strong>Server tick:</strong> 30 Hz fixed simulation for ships, bots, projectiles, collision, damage, pickups, death, and respawn.</li>
+      <li><strong>Near snapshots:</strong> 15–20 Hz for close combat entities.</li>
+      <li><strong>Medium snapshots:</strong> 4–8 Hz for visible but non-immediate contacts.</li>
+      <li><strong>Far context:</strong> 1–2 Hz for blips, map hints, or non-combat awareness.</li>
+      <li><strong>Interpolation buffer:</strong> roughly 100–150 ms as a starting target, tuned by real jitter and starvation metrics.</li>
+      <li><strong>Transport:</strong> binary WebSocket first, behind a transport boundary. Evaluate WebRTC or WebTransport only if playtests prove TCP head-of-line blocking is a real gameplay problem.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What to measure</h2>
+    <p>The architecture is only useful if it can be tested. PixelBoats should track server tick p95/p99, snapshot payload size, correction magnitude, interpolation starvation, input rejection rate, hit-validation cost, zone handoff smoothness, and real browser/mobile FPS.</p>
+    <p>The goal is not to win an argument about networking theory. The goal is to know whether the game still feels good at 80 ms, 120 ms, 180 ms, and ugly mobile-network conditions.</p>
+  </section>
+
+  <section>
+    <h2>The final shape</h2>
+    <p>PixelBoats should ship as an authoritative regional naval simulation. The client should make the local ship feel instant, smooth the rest of the ocean, and render the world beautifully. The server should own the decisions that affect fairness, progression, combat, and trust.</p>
+    <p>That gives the project the best path through the messy middle: fun local feel now, cheat-resistant combat later, and enough architectural headroom for larger seas.</p>
+  </section>
+</article>

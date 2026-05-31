@@ -4,6 +4,7 @@ slug: "how-chatgpt-performs-deep-research"
 status: "published"
 draft_type: "research-analysis"
 date: "2026-05-30"
+updated_date: "2026-05-30"
 audience:
   - "AI practitioners"
   - "developers building agentic workflows"
@@ -487,10 +488,6 @@ The interesting future is not one replacing the other. It is combining the stren
 The real winner will not be the model that writes the longest report.
 
 It will be the system that helps you make the next correct decision with the least amount of unverifiable nonsense in the way.
-
-## Credits
-
-Written by Ryan Spice with research notes and source checks staged through the AI Wiki.
 
 ## Sources and further reading
 

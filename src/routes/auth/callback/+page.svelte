@@ -8,8 +8,8 @@
 
 	onMount(async () => {
 		try {
-			await loadAuthState();
-			status = 'Signed in. Returning to the site…';
+			const state = await loadAuthState();
+			status = state.authenticated ? 'Signed in. Returning to the site…' : 'Signed out. Returning home…';
 			await goto(consumeAuthReturnTo('/'));
 		} catch (caught) {
 			error = caught instanceof Error ? caught.message : String(caught);

@@ -13,6 +13,7 @@ export type AuthState = {
 	available: boolean;
 	authenticated: boolean;
 	userName: string | null;
+	userEmail: string | null;
 	identityProvider: string | null;
 	userRoles: string[];
 	loginHref: string;
@@ -32,6 +33,7 @@ const initialState: AuthState = {
 	available: false,
 	authenticated: false,
 	userName: null,
+	userEmail: null,
 	identityProvider: null,
 	userRoles: [],
 	loginHref: authLoginHref('/drafts/'),
@@ -53,7 +55,7 @@ function createConfig(): Configuration {
 			clientId: msalClientId!,
 			authority: msalAuthority,
 			redirectUri: getMsalRedirectUri(),
-			postLogoutRedirectUri: browser ? window.location.origin : 'http://localhost:5173'
+			postLogoutRedirectUri: browser ? getMsalRedirectUri() : 'http://localhost:5173/auth/callback'
 		},
 		cache: {
 			cacheLocation: 'localStorage'
@@ -145,7 +147,11 @@ export function authLoginHref(returnTo = '/drafts/'): string {
 
 export function authLogoutHref(returnTo = '/'): string {
 	const target = normalizeReturnTo(returnTo, '/');
-	return `/login?logout=1&returnTo=${encodeURIComponent(target)}`;
+	return target;
+}
+
+export function canAccessDrafts(state: Pick<AuthState, 'authenticated'>): boolean {
+	return state.authenticated;
 }
 
 export function rememberAuthReturnTo(returnTo: string): void {
@@ -173,13 +179,13 @@ export async function signIn(returnTo = '/drafts/'): Promise<void> {
 	await app.loginRedirect(request);
 }
 
-export async function signOut(returnTo = '/'): Promise<void> {
+export async function signOut(): Promise<void> {
 	const app = await getMsalClient();
 	const account = getActiveAccount(app);
-	const target = normalizeReturnTo(returnTo, '/');
+	rememberAuthReturnTo('/');
 	const request: EndSessionRequest = {
 		account: account ?? undefined,
-		postLogoutRedirectUri: browser ? new URL(target, window.location.origin).toString() : 'http://localhost:5173'
+		postLogoutRedirectUri: getMsalRedirectUri()
 	};
 
 	await app.logoutRedirect(request);
@@ -196,6 +202,7 @@ function buildAuthenticatedState(account: AccountInfo): AuthState {
 		available: true,
 		authenticated: true,
 		userName: account.name?.trim() || account.username?.trim() || null,
+		userEmail: account.username?.trim() || null,
 		identityProvider: account.environment || account.tenantId || 'Microsoft',
 		userRoles: extractRoles(account),
 		loginHref: authLoginHref('/drafts/'),
@@ -210,6 +217,7 @@ function buildUnauthenticatedState(available: boolean, error: string | null = nu
 		available,
 		authenticated: false,
 		userName: null,
+		userEmail: null,
 		identityProvider: null,
 		userRoles: [],
 		loginHref: authLoginHref('/drafts/'),

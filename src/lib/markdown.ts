@@ -33,6 +33,7 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 	let wordCount = 0;
 	let renderedLeadParagraph = false;
 	let sectionActive = false;
+	let sectionCount = 0;
 
 	function pushBlock(block: string): void {
 		if (sectionActive) {
@@ -45,8 +46,12 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 
 	function flushSection(): void {
 		if (!sectionActive || !sectionBlocks.length) return;
-		html.push(`<section class="article-section">${sectionBlocks.join('\n')}</section>`);
+		const isLeadSection = sectionCount === 0;
+		html.push(
+			`<section class="article-section${isLeadSection ? ' article-section--lead' : ''}"><div class="article-section-body">${sectionBlocks.join('\n')}</div>${isLeadSection ? renderLeadSectionArt() : ''}</section>`
+		);
 		sectionBlocks.length = 0;
+		sectionCount += 1;
 	}
 
 	while (i < lines.length) {
@@ -137,7 +142,7 @@ export function renderMarkdown(markdown: string, options: RenderMarkdownOptions 
 				block.push((lines[i] ?? '').replace(/^>\s?/, ''));
 				i += 1;
 			}
-			pushBlock(`<blockquote>${block.map((part) => `<p>${inline(part)}</p>`).join('')}</blockquote>`);
+			pushBlock(`<blockquote class="article-callout">${block.map((part) => `<p>${inline(part)}</p>`).join('')}</blockquote>`);
 			continue;
 		}
 
@@ -368,6 +373,36 @@ function escapeHtml(value: string): string {
 
 function escapeAttr(value: string): string {
 	return escapeHtml(value).replace(/`/g, '&#096;');
+}
+
+function renderLeadSectionArt(): string {
+	return `
+		<div class="article-section-art" aria-hidden="true">
+			<svg viewBox="0 0 320 240" focusable="false" aria-hidden="true">
+				<defs>
+					<linearGradient id="lead-grid" x1="0%" y1="0%" x2="100%" y2="100%">
+						<stop offset="0%" stop-color="currentColor" stop-opacity="0.12" />
+						<stop offset="100%" stop-color="currentColor" stop-opacity="0.02" />
+					</linearGradient>
+				</defs>
+				<rect x="22" y="18" width="276" height="204" rx="24" fill="url(#lead-grid)" opacity="0.9" />
+				<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+					<rect x="176" y="28" width="92" height="92" rx="14" opacity="0.26" stroke-width="1.4" />
+					<rect x="124" y="76" width="106" height="106" rx="16" opacity="0.45" stroke-width="1.6" />
+					<rect x="64" y="126" width="124" height="70" rx="16" opacity="0.78" stroke-width="1.8" />
+					<path d="M64 162H188" opacity="0.34" stroke-width="1.3" />
+					<path d="M124 118H230" opacity="0.28" stroke-width="1.3" />
+					<path d="M176 74H268" opacity="0.22" stroke-width="1.3" />
+				</g>
+				<g fill="currentColor" opacity="0.22">
+					<circle cx="88" cy="58" r="2.2" />
+					<circle cx="105" cy="39" r="1.6" />
+					<circle cx="244" cy="48" r="1.8" />
+					<circle cx="214" cy="184" r="2.1" />
+				</g>
+			</svg>
+		</div>
+	`;
 }
 
 function escapeRegExp(value: string): string {

@@ -2,7 +2,8 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { authLoginHref, authState, loadAuthState } from '$lib/auth';
+	import { authState, canAccessDrafts, loadAuthState, signIn } from '$lib/auth';
+	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import ArticleView from '$lib/components/ArticleView.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { Article } from '$lib/articles';
@@ -17,6 +18,8 @@
 	let article = $state<Article | null>(null);
 	let loadError = $state<string | null>(null);
 	let articleLoading = $state(true);
+	let signingIn = $state(false);
+	const canViewDrafts = $derived(canAccessDrafts($authState));
 
 	const title = $derived(article ? `${article.title} · Draft · blog.ryanspice.com` : 'blog.ryanspice.com · Draft');
 	const description = $derived(article?.summary ?? 'Private draft article preview from Ryan Spice.');
@@ -51,6 +54,16 @@
 			articleLoading = false;
 		}
 	});
+
+	async function handleSignIn() {
+		signingIn = true;
+
+		try {
+			await signIn(`/drafts/${data.slug}/`);
+		} finally {
+			signingIn = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -78,7 +91,7 @@
 	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
 </svelte:head>
 
-{#if $authState.authenticated}
+{#if canViewDrafts}
 	{#if articleLoading}
 		<SiteHeader navLinks={[{ label: 'Drafts', href: '/drafts' }, { label: 'RSS', href: '/rss.xml' }]} />
 		<section class="home-hero compact-page">
@@ -112,13 +125,14 @@
 		<div class="home-hero-copy">
 			<p class="eyebrow">Private draft preview · Microsoft sign-in required</p>
 			<h1>This draft stays behind the gate.</h1>
-			<p class="dek">Sign in to open the draft preview. The public homepage does not surface this content.</p>
+			<p class="dek">Sign in to open the draft preview. The public homepage does not surface this content. Any signed-in Microsoft account can open drafts for now.</p>
 		</div>
 		<aside class="hero-card home-hero-card">
 			<strong>{ $authState.loading ? 'Checking access' : 'Sign in' }</strong>
-			<div class="home-hero-links">
-				<a href="/login">Sign in with Microsoft</a>
-				<a href={authLoginHref(`/drafts/${data.slug}/`)}>Open draft</a>
+		<div class="home-hero-links">
+				<button type="button" class="plain-action" onclick={handleSignIn} disabled={signingIn || !$authState.available}>
+					{signingIn ? 'Opening Microsoft…' : 'Sign in with Microsoft'}
+				</button>
 			</div>
 			<p class="home-hero-note">
 				{$authState.loading
@@ -128,3 +142,10 @@
 		</aside>
 	</section>
 {/if}
+
+{#if articleLoading || !article}
+	<footer class="drafts-footer">
+		<FooterAuthControls returnTo={`/drafts/${data.slug}/`} />
+	</footer>
+{/if}
+
