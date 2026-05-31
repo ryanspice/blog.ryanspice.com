@@ -2,8 +2,6 @@ import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { getArticle, publishedArticles } from '$lib/articles';
 
-export const prerender = true;
-
 export function entries() {
 	return publishedArticles.map((article) => ({ slug: article.slug }));
 }

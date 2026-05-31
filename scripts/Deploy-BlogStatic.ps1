@@ -87,6 +87,10 @@ $KeepNames = if ($Config.keepNames) { @($Config.keepNames) } else { @("_incoming
 Assert-SafeRemotePath -Path $RemotePath
 
 $BuildPath = if ([IO.Path]::IsPathRooted($BuildDir)) { $BuildDir } else { Join-Path $ProjectRoot $BuildDir }
+$AdapterMode = if ($env:ADAPTER_MODE) { $env:ADAPTER_MODE } else { "php-static" }
+if ($AdapterMode -eq "js-ssr" -and $env:ALLOW_BLOG_JS_SSR_DEPLOY -ne "true") {
+  throw "Blog production deploy is php-static only. Set ALLOW_BLOG_JS_SSR_DEPLOY=true only after a sidecar supervisor and public-root protection are configured."
+}
 if ([string]::IsNullOrWhiteSpace($ReleaseId)) {
   $ReleaseId = (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ")
 }
@@ -100,6 +104,7 @@ Info "User" $(if ($UserName) { $UserName } else { "<missing>" })
 Info "RemotePath" $RemotePath
 Info "ReleaseId" $ReleaseId
 Info "PublicUrl" $PublicUrl
+Info "AdapterMode" $AdapterMode
 Info "Mode" $(if ($Apply) { if ($Activate) { "UPLOAD + ACTIVATE" } else { "PARALLEL UPLOAD" } } else { "DRY RUN" })
 
 if ([string]::IsNullOrWhiteSpace($HostName)) { throw "Missing deploy host. Create deploy.config.json or set BLOG_DEPLOY_HOST." }
@@ -131,10 +136,20 @@ $RequiredContract = @(
   ".htaccess",
   "router.php",
   "_runtime/compat.php",
-  "_protected/.htaccess",
   "_app/version.json",
   "adapter/route-manifest.php"
 )
+
+if ($AdapterMode -eq "js-ssr") {
+  $RequiredContract += @(
+    "server/handler.mjs",
+    "server/index.js"
+  )
+} else {
+  $RequiredContract += @(
+    "_protected/.htaccess"
+  )
+}
 
 foreach ($item in $RequiredContract) {
   $full = Join-Path $BuildPath $item
@@ -218,9 +233,14 @@ test -f "$RELEASE_DIR/index.php"
 test -f "$RELEASE_DIR/.htaccess"
 test -f "$RELEASE_DIR/router.php"
 test -f "$RELEASE_DIR/_runtime/compat.php"
-test -f "$RELEASE_DIR/_protected/.htaccess"
 test -f "$RELEASE_DIR/_app/version.json"
 test -f "$RELEASE_DIR/adapter/route-manifest.php"
+if [ -f "$RELEASE_DIR/server/handler.mjs" ] || [ -f "$RELEASE_DIR/server/index.js" ]; then
+  test -f "$RELEASE_DIR/server/handler.mjs"
+  test -f "$RELEASE_DIR/server/index.js"
+else
+  test -f "$RELEASE_DIR/_protected/.htaccess"
+fi
 rm -f "$INCOMING"
 echo "Parallel release uploaded: $RELEASE_DIR"
 '@
@@ -245,9 +265,14 @@ test -f "_releases/$RELEASE/index.php"
 test -f "_releases/$RELEASE/.htaccess"
 test -f "_releases/$RELEASE/router.php"
 test -f "_releases/$RELEASE/_runtime/compat.php"
-test -f "_releases/$RELEASE/_protected/.htaccess"
 test -f "_releases/$RELEASE/_app/version.json"
 test -f "_releases/$RELEASE/adapter/route-manifest.php"
+if [ -f "_releases/$RELEASE/server/handler.mjs" ] || [ -f "_releases/$RELEASE/server/index.js" ]; then
+  test -f "_releases/$RELEASE/server/handler.mjs"
+  test -f "_releases/$RELEASE/server/index.js"
+else
+  test -f "_releases/$RELEASE/_protected/.htaccess"
+fi
 
 tar -czf "$BACKUP" --exclude='./_incoming' --exclude='./_releases' --exclude='./_backups' .
 test -s "$BACKUP"

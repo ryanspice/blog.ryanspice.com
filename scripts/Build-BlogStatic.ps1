@@ -29,6 +29,15 @@ function Test-PathSafe([string]$Path) {
   try { return Test-Path -LiteralPath $Path } catch { return $false }
 }
 
+function Wait-ForPath([string]$Path, [int]$Attempts = 20, [int]$DelayMs = 250) {
+  for ($index = 0; $index -lt $Attempts; $index++) {
+    if (Test-Path -LiteralPath $Path) { return $true }
+    Start-Sleep -Milliseconds $DelayMs
+  }
+
+  return $false
+}
+
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $BuildDir = Join-Path $ProjectRoot "build"
 if ([string]::IsNullOrWhiteSpace($BasePath)) {
@@ -64,6 +73,8 @@ Step "Build blog with PHP adapter"
 Push-Location -LiteralPath $ProjectRoot
 try {
   $env:PUBLIC_BASE_PATH = $BasePath
+  $env:SK_BASE_PATH = $BasePath
+  $env:DEPLOY_BASE = $BasePath
   if (-not $env:ADAPTER_MODE) { $env:ADAPTER_MODE = "php-static" }
   if (-not $env:ADAPTER_BASE_MODE) { $env:ADAPTER_BASE_MODE = "fixed" }
   $env:ADAPTER_OUT = $BuildDir
@@ -88,15 +99,39 @@ $requiredContract = @(
   ".htaccess",
   "router.php",
   "_runtime/compat.php",
-  "_protected/.htaccess",
   "_app/version.json",
   "adapter/route-manifest.php"
 )
 
+if ($env:ADAPTER_MODE -eq "js-ssr") {
+  $requiredContract += @(
+    "server/handler.mjs",
+    "server/index.js"
+  )
+} else {
+  $requiredContract += @(
+    "_protected/.htaccess"
+  )
+}
+
 foreach ($item in $requiredContract) {
   $full = Join-Path $BuildDir $item
-  if (-not (Test-Path -LiteralPath $full)) {
+  if (-not (Wait-ForPath -Path $full)) {
     throw "Build output missing required PHP adapter contract file: build/$item"
+  }
+}
+
+$debugArtifacts = @(
+  "php.stderr.log",
+  "php.stdout.log",
+  "sidecar.stderr.log",
+  "sidecar.stdout.log"
+)
+
+foreach ($item in $debugArtifacts) {
+  $full = Join-Path $BuildDir $item
+  if (Test-Path -LiteralPath $full) {
+    Remove-Item -LiteralPath $full -Force
   }
 }
 

@@ -20,13 +20,14 @@
 		void loadAuthState();
 	});
 
-	let { children, data } = $props();
+	let { children } = $props();
 </script>
 
 <svelte:head>
+	<link rel="stylesheet" href={`${base}/tower-accent.php`} />
 	<link rel="alternate" type="application/rss+xml" title="Ryan Spice · Technical notes" href={`${base}/rss.xml`} />
 </svelte:head>
 
-<div class="site-shell" style={`--accent: ${data?.siteAccent ?? '#1e9bff'}`}>
+<div class="site-shell">
 	{@render children()}
 </div>

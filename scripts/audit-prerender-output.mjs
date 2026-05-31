@@ -3,19 +3,26 @@ import path from 'node:path';
 
 const root = process.cwd();
 const buildDir = path.join(root, process.env.BLOG_BUILD_DIR ?? 'build');
+const adapterMode = process.env.ADAPTER_MODE ?? 'php-static';
 
 const requiredFiles = [
 	'index.php',
 	'.htaccess',
 	'router.php',
 	'_runtime/compat.php',
-	'_protected/.htaccess',
 	'_app/version.json',
 	'adapter/route-manifest.php',
+	'tower-accent.php',
 	'robots.txt',
 	'sitemap.xml',
 	'rss.xml'
 ];
+
+if (adapterMode === 'js-ssr') {
+	requiredFiles.push('server/handler.mjs', 'server/index.js');
+} else {
+	requiredFiles.push('_protected/.htaccess');
+}
 
 const bannedMarkers = [
 	'http://localhost',
@@ -25,7 +32,15 @@ const bannedMarkers = [
 	'http://sveltekit-prerender'
 ];
 
-const bannedFileNames = new Set(['debug_payload.json', 'adapter_debug.log', 'debug_env.txt']);
+const bannedFileNames = new Set([
+	'debug_payload.json',
+	'adapter_debug.log',
+	'debug_env.txt',
+	'php.stderr.log',
+	'php.stdout.log',
+	'sidecar.stderr.log',
+	'sidecar.stdout.log'
+]);
 const protectedPaths = ['_protected'];
 
 function walk(dir) {
@@ -69,6 +84,9 @@ for (const item of requiredFiles) {
 
 for (const protectedPath of protectedPaths) {
 	const htaccess = path.join(buildDir, protectedPath, '.htaccess');
+	if (!fs.existsSync(path.join(buildDir, protectedPath)) && adapterMode === 'js-ssr') {
+		continue;
+	}
 	if (!fs.existsSync(htaccess)) {
 		console.error(`missing: build/${protectedPath}/.htaccess`);
 		failed = true;
@@ -103,7 +121,10 @@ for (const file of allFiles) {
 }
 
 const textFiles = allFiles.filter(
-	(file) => /\.(html|xml|txt|js|php|json)$/i.test(file) || path.basename(file) === '.htaccess'
+	(file) =>
+		(rel(file).startsWith('build/server/') === false &&
+			rel(file).startsWith('build/adapter/') === false &&
+			(/\.(html|xml|txt|js|php|json)$/i.test(file) || path.basename(file) === '.htaccess'))
 );
 
 for (const file of textFiles) {
