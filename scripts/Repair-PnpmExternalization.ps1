@@ -37,7 +37,7 @@ function Remove-NodeModulesSafely([string]$Path) {
 $ProjectRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $ProjectNodeModules = Join-Path $ProjectRoot "node_modules"
 $PnpmStore = Join-Path $RuntimeRoot "pnpm-store"
-$PnpmVirtualStore = Join-Path $RuntimeRoot "pnpm-virtual-store"
+$PnpmVirtualStore = "node_modules/.pnpm"
 $NpmrcPath = Join-Path $ProjectRoot ".npmrc"
 
 Step "Resolve paths"
@@ -55,11 +55,12 @@ if (-not $Apply) {
 }
 
 Step "Create external pnpm runtime"
-New-Item -ItemType Directory -Force -Path $RuntimeRoot, $PnpmStore, $PnpmVirtualStore | Out-Null
+New-Item -ItemType Directory -Force -Path $RuntimeRoot, $PnpmStore | Out-Null
 
 Step "Repair project node_modules"
 # The v0.1.0 installer created node_modules as a junction before pnpm install. pnpm 9 can choke on that on Windows/OneDrive.
-# Use an external pnpm store and external virtual store instead; leave only the lightweight linker folder in the project.
+# Keep only the content-addressed pnpm store external. The virtual store must stay local to this worktree so
+# SvelteKit/Rollup do not see cross-drive realpaths while naming SSR entries.
 Remove-NodeModulesSafely -Path $ProjectNodeModules
 
 if ($CleanProjectNodeModules -and (Test-Path -LiteralPath $ProjectNodeModules)) {
@@ -68,12 +69,11 @@ if ($CleanProjectNodeModules -and (Test-Path -LiteralPath $ProjectNodeModules)) 
 
 Step "Write .npmrc"
 $store = $PnpmStore.Replace('\','/')
-$virtual = $PnpmVirtualStore.Replace('\','/')
 $npmrc = @(
   "node-linker=isolated",
   "strict-peer-dependencies=false",
   "store-dir=$store",
-  "virtual-store-dir=$virtual"
+  "virtual-store-dir=$PnpmVirtualStore"
 )
 Set-Content -LiteralPath $NpmrcPath -Value $npmrc -Encoding UTF8
 Info ".npmrc" $NpmrcPath

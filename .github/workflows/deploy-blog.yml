@@ -1,0 +1,82 @@
+name: Deploy blog.ryanspice.com
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-blog-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_SITE_URL: ${{ secrets.PUBLIC_SITE_URL || 'https://blog.ryanspice.com' }}
+      PUBLIC_BASE_PATH: ${{ secrets.PUBLIC_BASE_PATH }}
+      BLOG_DEPLOY_HOST: ${{ secrets.BLOG_DEPLOY_HOST }}
+      BLOG_DEPLOY_USER: ${{ secrets.BLOG_DEPLOY_USER }}
+      BLOG_DEPLOY_PORT: ${{ secrets.BLOG_DEPLOY_PORT }}
+      BLOG_DEPLOY_PATH: ${{ secrets.BLOG_DEPLOY_PATH }}
+      BLOG_PUBLIC_URL: ${{ secrets.BLOG_PUBLIC_URL || secrets.PUBLIC_SITE_URL || 'https://blog.ryanspice.com/' }}
+      BLOG_BASE_PATH: ${{ secrets.BLOG_BASE_PATH || secrets.PUBLIC_BASE_PATH }}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Normalize pnpm config for CI
+        shell: pwsh
+        run: |
+          @(
+            "node-linker=isolated",
+            "strict-peer-dependencies=false",
+            "store-dir=${{ runner.temp }}/pnpm-store",
+            "virtual-store-dir=node_modules/.pnpm"
+          ) | Set-Content -LiteralPath .npmrc -Encoding utf8NoBOM
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm check
+
+      - name: Build PHP release
+        shell: pwsh
+        run: pnpm run build:blog
+
+      - name: Audit PHP release
+        run: pnpm run audit:seo
+
+      - name: Write deploy key
+        shell: pwsh
+        env:
+          BLOG_DEPLOY_KEY: ${{ secrets.BLOG_DEPLOY_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:BLOG_DEPLOY_KEY)) {
+            throw "Missing BLOG_DEPLOY_KEY secret."
+          }
+
+          $keyPath = Join-Path $env:RUNNER_TEMP "blog_deploy_key"
+          $normalized = $env:BLOG_DEPLOY_KEY.Replace("`r`n", "`n")
+          [System.IO.File]::WriteAllText($keyPath, $normalized, [System.Text.UTF8Encoding]::new($false))
+          chmod 600 $keyPath
+          "BLOG_DEPLOY_KEY_PATH=$keyPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Deploy and activate production
+        shell: pwsh
+        run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Apply -Activate

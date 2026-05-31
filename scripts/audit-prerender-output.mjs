@@ -4,7 +4,19 @@ import path from 'node:path';
 const root = process.cwd();
 const buildDir = path.join(root, process.env.BLOG_BUILD_DIR ?? 'build');
 
-const requiredFiles = ['index.html', 'robots.txt', 'sitemap.xml', 'rss.xml', '.htaccess'];
+const requiredFiles = [
+	'index.php',
+	'.htaccess',
+	'router.php',
+	'_runtime/compat.php',
+	'_protected/.htaccess',
+	'_app/version.json',
+	'adapter/route-manifest.php',
+	'robots.txt',
+	'sitemap.xml',
+	'rss.xml'
+];
+
 const bannedMarkers = [
 	'http://localhost',
 	'https://localhost',
@@ -12,6 +24,9 @@ const bannedMarkers = [
 	'https://127.0.0.1',
 	'http://sveltekit-prerender'
 ];
+
+const bannedFileNames = new Set(['debug_payload.json', 'adapter_debug.log', 'debug_env.txt']);
+const protectedPaths = ['_protected'];
 
 function walk(dir) {
 	const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -31,6 +46,10 @@ function readText(filePath) {
 	return fs.readFileSync(filePath, 'utf8');
 }
 
+function rel(filePath) {
+	return path.relative(root, filePath).replace(/\\/g, '/');
+}
+
 let failed = false;
 
 if (!fs.existsSync(buildDir)) {
@@ -48,7 +67,44 @@ for (const item of requiredFiles) {
 	}
 }
 
-const textFiles = walk(buildDir).filter((file) => /\.(html|xml|txt|js)$/.test(file));
+for (const protectedPath of protectedPaths) {
+	const htaccess = path.join(buildDir, protectedPath, '.htaccess');
+	if (!fs.existsSync(htaccess)) {
+		console.error(`missing: build/${protectedPath}/.htaccess`);
+		failed = true;
+		continue;
+	}
+	const contents = readText(htaccess);
+	if (!/Require\s+all\s+denied/i.test(contents) && !/Deny\s+from\s+all/i.test(contents)) {
+		console.error(`fail: build/${protectedPath}/.htaccess does not deny direct access`);
+		failed = true;
+	}
+}
+
+const htaccessPath = path.join(buildDir, '.htaccess');
+if (fs.existsSync(htaccessPath)) {
+	const htaccess = readText(htaccessPath);
+	if (!/RewriteEngine\s+On/i.test(htaccess)) {
+		console.error('fail: build/.htaccess missing RewriteEngine On');
+		failed = true;
+	}
+	if (!/__data\\?\.json/i.test(htaccess)) {
+		console.error('fail: build/.htaccess missing __data.json rewrite support');
+		failed = true;
+	}
+}
+
+const allFiles = walk(buildDir);
+for (const file of allFiles) {
+	if (bannedFileNames.has(path.basename(file))) {
+		console.error(`fail: banned debug artifact present at ${rel(file)}`);
+		failed = true;
+	}
+}
+
+const textFiles = allFiles.filter(
+	(file) => /\.(html|xml|txt|js|php|json)$/i.test(file) || path.basename(file) === '.htaccess'
+);
 
 for (const file of textFiles) {
 	let contents = '';
@@ -60,7 +116,7 @@ for (const file of textFiles) {
 
 	for (const marker of bannedMarkers) {
 		if (contents.includes(marker)) {
-			console.error(`fail: found "${marker}" in ${path.relative(root, file).replace(/\\/g, '/')}`);
+			console.error(`fail: found "${marker}" in ${rel(file)}`);
 			failed = true;
 		}
 	}

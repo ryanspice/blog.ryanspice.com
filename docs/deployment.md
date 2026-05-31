@@ -65,10 +65,36 @@ pnpm run deploy:test
 pnpm run build:blog
 ```
 
-This builds with `PUBLIC_BASE_PATH=""` by default. To build for a subpath, pass a base path:
+This builds the PHP-hosted release with `PUBLIC_BASE_PATH=""` by default. To build for a subpath, pass a base path:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-BlogStatic.ps1 -BasePath "/blog" -Clean
+```
+
+The build output now includes `index.php`, adapter-generated `.htaccess` rules, and the redirect overlay from `static/.htaccess`.
+It also verifies the PHP adapter contract: `router.php`, `_runtime/compat.php`, `_protected/.htaccess`, `_app/version.json`, and `adapter/route-manifest.php`.
+
+## Release checklist
+
+Use this order before any commit/push/deploy:
+
+1. `pnpm run build:blog`
+2. `pnpm run audit:seo`
+3. Smoke the build with PHP against `build/router.php` and check `/`, a representative article route, `/rss.xml`, `/sitemap.xml`, `/_app/version.json`, one missing route, and one protected runtime denial
+4. Confirm the contract files exist:
+   - `index.php`
+   - `.htaccess`
+   - `router.php`
+   - `_runtime/compat.php`
+   - `_protected/.htaccess`
+   - `_app/version.json`
+   - `adapter/route-manifest.php`
+5. Deploy with the checked-in vendored adapter artifact only
+
+To refresh the vendored adapter from the canonical source:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Sync-SvelteKitPhpAdapter.ps1 -AdapterRoot "B:\Dev\sveltekit-php"
 ```
 
 ## Upload parallel release
@@ -95,7 +121,7 @@ After checking the parallel release:
 pnpm run deploy:activate
 ```
 
-Activation backs up the current remote blog folder to `_backups/live-<release-id>.tar.gz`, keeps `_incoming`, `_releases`, `_backups`, `.well-known`, and `cgi-bin`, then copies the chosen release into the live blog folder (including the repo-managed `.htaccess`).
+Activation backs up the current remote blog folder to `_backups/live-<release-id>.tar.gz`, keeps `_incoming`, `_releases`, `_backups`, `.well-known`, and `cgi-bin`, then copies the chosen release into the live blog folder (including the merged repo-managed `.htaccess` and `index.php` entrypoint).
 
 ## Runtime dependency repair
 
@@ -105,7 +131,28 @@ The v0.1.0 installer tried to create `node_modules` as a junction before pnpm ra
 pnpm run setup:runtime
 ```
 
-This keeps the heavy pnpm store and virtual store in `B:\AI-Wiki\.runtime\projects\blog.ryanspice.com`, while allowing pnpm to own the lightweight project `node_modules` linker folder.
+This keeps the heavy pnpm store in `B:\AI-Wiki\.runtime\projects\blog.ryanspice.com`, while keeping `node_modules\.pnpm` local to the worktree. The virtual store must not cross drives because SvelteKit/Rollup uses dependency realpaths when naming SSR entries.
+
+## GitHub production deploy
+
+The workflow at `.github/workflows/deploy-blog.yml` deploys on pushes to `main`/`master` and can also be run manually with `workflow_dispatch`.
+
+Required repository secrets:
+
+- `BLOG_DEPLOY_HOST`
+- `BLOG_DEPLOY_USER`
+- `BLOG_DEPLOY_KEY`
+- `BLOG_DEPLOY_PATH`
+
+Optional repository secrets:
+
+- `BLOG_DEPLOY_PORT`
+- `BLOG_PUBLIC_URL`
+- `BLOG_BASE_PATH`
+- `PUBLIC_SITE_URL`
+- `PUBLIC_BASE_PATH`
+
+The workflow uses the committed vendored `adapter/` artifact. GitHub Actions cannot access `B:\Dev\sveltekit-php`, so sync the adapter locally before committing adapter changes.
 
 ## Remote path safety
 

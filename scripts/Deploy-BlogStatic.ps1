@@ -40,10 +40,10 @@ function Read-DeployConfig([string]$Path) {
     user = $env:BLOG_DEPLOY_USER
     port = if ($env:BLOG_DEPLOY_PORT) { [int]$env:BLOG_DEPLOY_PORT } else { 22 }
     remotePath = if ($env:BLOG_DEPLOY_PATH) { $env:BLOG_DEPLOY_PATH } else { "blog" }
-    publicUrl = if ($env:BLOG_PUBLIC_URL) { $env:BLOG_PUBLIC_URL } else { "https://blog.ryanspice.com/" }
+    publicUrl = if ($env:BLOG_PUBLIC_URL) { $env:BLOG_PUBLIC_URL } elseif ($env:PUBLIC_SITE_URL) { $env:PUBLIC_SITE_URL } else { "https://blog.ryanspice.com/" }
     keyPath = $env:BLOG_DEPLOY_KEY_PATH
     keepNames = @("_incoming", "_releases", "_backups", ".well-known", "cgi-bin")
-    basePath = if ($env:BLOG_BASE_PATH) { $env:BLOG_BASE_PATH } else { "" }
+    basePath = if ($env:BLOG_BASE_PATH) { $env:BLOG_BASE_PATH } elseif ($env:PUBLIC_BASE_PATH) { $env:PUBLIC_BASE_PATH } else { "" }
   }
 }
 
@@ -122,8 +122,25 @@ if ($Build) {
   if ($LASTEXITCODE -ne 0) { throw "Build failed." }
 }
 
-if (-not (Test-Path -LiteralPath (Join-Path $BuildPath "index.html"))) {
-  throw "Build output missing index.html: $BuildPath. Run pnpm run build:blog first."
+if (-not (Test-Path -LiteralPath (Join-Path $BuildPath "index.php"))) {
+  throw "Build output missing index.php: $BuildPath. Run pnpm run build:blog first."
+}
+
+$RequiredContract = @(
+  "index.php",
+  ".htaccess",
+  "router.php",
+  "_runtime/compat.php",
+  "_protected/.htaccess",
+  "_app/version.json",
+  "adapter/route-manifest.php"
+)
+
+foreach ($item in $RequiredContract) {
+  $full = Join-Path $BuildPath $item
+  if (-not (Test-Path -LiteralPath $full)) {
+    throw "Build output missing required PHP adapter contract file: $item"
+  }
 }
 
 $SshArgs = @("-p", $Port, "-o", "User=$UserName")
@@ -197,7 +214,13 @@ INCOMING="$LIVE/_incoming/$ARCHIVE"
 rm -rf "$RELEASE_DIR"
 mkdir -p "$RELEASE_DIR"
 tar -xzf "$INCOMING" -C "$RELEASE_DIR"
-test -f "$RELEASE_DIR/index.html"
+test -f "$RELEASE_DIR/index.php"
+test -f "$RELEASE_DIR/.htaccess"
+test -f "$RELEASE_DIR/router.php"
+test -f "$RELEASE_DIR/_runtime/compat.php"
+test -f "$RELEASE_DIR/_protected/.htaccess"
+test -f "$RELEASE_DIR/_app/version.json"
+test -f "$RELEASE_DIR/adapter/route-manifest.php"
 rm -f "$INCOMING"
 echo "Parallel release uploaded: $RELEASE_DIR"
 '@
@@ -217,7 +240,13 @@ KEEP_NAMES=__KEEP__
 BACKUP="$LIVE/_backups/live-$RELEASE.tar.gz"
 
 cd "$LIVE"
-test -f "_releases/$RELEASE/index.html"
+test -f "_releases/$RELEASE/index.php"
+test -f "_releases/$RELEASE/.htaccess"
+test -f "_releases/$RELEASE/router.php"
+test -f "_releases/$RELEASE/_runtime/compat.php"
+test -f "_releases/$RELEASE/_protected/.htaccess"
+test -f "_releases/$RELEASE/_app/version.json"
+test -f "_releases/$RELEASE/adapter/route-manifest.php"
 
 tar -czf "_backups/live-$RELEASE.tar.gz" --exclude='./_incoming' --exclude='./_releases' --exclude='./_backups' . || true
 

@@ -30,12 +30,13 @@ Generate a SvelteKit application based on the two attached GIMP/Windhawk blog dr
 - UI adapted from the attached demos: dark technical article shell, sticky header, TOC rail, article profile card, tag pills, code blocks, and subtle background grid.
 - pnpm selected for this trial.
 - Installer creates a junction from project `node_modules` to an external runtime folder.
+- The blog build is now wired to a vendored PHP adapter in `adapter/`.
 
 ## Key decisions
 
 1. Use pnpm for this trial instead of Bun so the dependency layout can be compared later.
 2. Use a local Markdown renderer for v0.1.0 to avoid dependency creep.
-3. Use `@sveltejs/adapter-static` because these are local/public blog posts.
+3. Use the vendored PHP adapter because the deploy target is PHP hosting and the blog now needs a PHP-ready build artifact.
 4. Keep `.ai/skills/blog-ryanspice-com/SKILL.md` as a project-local pointer, not a canonical skill.
 5. Preserve source artifacts in `context/` so later agents can compare generated Svelte UI against the original HTML demos.
 
@@ -53,13 +54,13 @@ pnpm dev
 
 - Package versions use broad ranges and will resolve when pnpm installs.
 - The local Markdown renderer is intentionally incomplete.
-- Static adapter output is correct for simple hosting, but deployment target is not chosen yet.
+- PHP adapter output now needs browser-level verification, especially the merged `.htaccess` and the `index.php` entrypoint.
 - Original blog content includes local Windows paths; review before public publishing.
 
 ## Next useful pass
 
 1. Run install/check/build locally.
-2. Compare `/blog/<slug>` routes against the attached HTML demos.
-3. Add canonical URLs, RSS, sitemap, OG metadata, and article image strategy.
-4. Decide whether this becomes the canonical `blog.ryanspice.com` repo or a prototype inside the AI Wiki.
+2. Compare `/blog/<slug>` routes against the attached HTML demos under the PHP build.
+3. Smoke-test the generated PHP release in a browser before calling the adapter integration done.
+4. Add canonical URLs, RSS, sitemap, OG metadata, and article image strategy if they still need follow-up.
 

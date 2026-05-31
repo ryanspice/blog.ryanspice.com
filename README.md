@@ -1,6 +1,6 @@
 # blog.ryanspice.com
 
-SvelteKit 2 / Svelte 5 static blog application staged for the AI Wiki project folder:
+SvelteKit 2 / Svelte 5 blog application built for PHP hosting with a vendored SvelteKit PHP adapter:
 
 ```txt
 <AI_WIKI_ROOT>\07_Projects\blog.ryanspice.com
@@ -13,21 +13,31 @@ SvelteKit 2 / Svelte 5 static blog application staged for the AI Wiki project fo
 - `src/routes/+page.svelte` — article index.
 - `src/routes/login` and `src/routes/auth/callback` — Microsoft sign-in flow for the private draft queue.
 - `src/app.css` — UI adapted from the two attached HTML article demos.
+- `adapter/` — vendored SvelteKit PHP adapter entrypoint and PHP runtime helper.
 - `context/source-articles/` — source Markdown copies.
 - `context/source-html/` — source HTML demo copies.
 - `context/source-skills/` — uploaded skill references used for this scaffold.
 - `.ai/skills/blog-ryanspice-com/SKILL.md` — project-local pointer skill notes.
 - `.thoughts` — project state and continuation note.
 
+## Support policy
+
+- Official support floor: PHP 8.1+
+- Recommended production target: PHP 8.3+
+- Supported deployment styles: Apache, Nginx, shared hosting, and PHP-FPM-backed hosts
+- `php-static` is the blog’s production path
+- `js-ssr` is JavaScript-sidecar SSR behind PHP, not a separate Node-branded mode
+- Historical notes under `docs/AUDIT-*` and `docs/CHAT-*` are archival snapshots, not current contract
+
 ## Dependency policy
 
-This project is **pnpm-first** as a trial. `node_modules` should stay out of OneDrive/AI Wiki storage by using the installer-created junction:
+This project is **pnpm-first**. The pnpm content-addressed store may live under `B:\AI-Wiki\.runtime`, but the pnpm virtual store must stay local to the worktree:
 
 ```txt
-07_Projects\blog.ryanspice.com\node_modules -> B:\AI-Wiki\.runtime\projects\blog.ryanspice.com\node_modules
+07_Projects\blog.ryanspice.com\node_modules\.pnpm
 ```
 
-Do not manually copy `node_modules` into the AI Wiki.
+Do not recreate `node_modules` as a junction. SvelteKit/Rollup can generate invalid SSR entry names when dependency realpaths cross drives.
 
 ## Commands
 
@@ -35,7 +45,8 @@ Do not manually copy `node_modules` into the AI Wiki.
 cd "<AI_WIKI_ROOT>\07_Projects\blog.ryanspice.com"
 pnpm install
 pnpm check
-pnpm build
+pnpm run build:blog
+pnpm run audit:seo
 pnpm dev
 ```
 
@@ -63,9 +74,12 @@ If you recreate it later, keep `User.Read` delegated permission attached as well
 
 ## Notes
 
-- The site is static-first via `@sveltejs/adapter-static`.
+- The site now builds through the vendored PHP adapter in `adapter/index.js`.
+- `scripts/Sync-SvelteKitPhpAdapter.ps1` rebuilds/syncs the canonical adapter from `B:\Dev\sveltekit-php` and writes `adapter/source-manifest.json`.
+- `scripts/Build-BlogStatic.ps1` merges the host redirect overlay from `static/.htaccess` into the adapter-generated `.htaccess`.
+- Release flow: build, audit the PHP output contract, smoke the built site under PHP, then deploy.
 - Markdown is rendered through a small local renderer in `src/lib/markdown.ts` to avoid early dependency creep.
 - Deployment expects `blog.ryanspice.com` at the domain root by default; override `PUBLIC_BASE_PATH` / `PUBLIC_SITE_URL` (or `deploy.config.json`) if you need to serve from a subpath.
 - SSH deploy requires an authorized public key (cPanel typically: SSH Access → Manage SSH Keys → Import Key → Authorize), plus the correct `deploy.config.json` `user` (usually the cPanel account username) and `remotePath` (the domain/subdomain document root).
-- This is a starter build. The next useful pass is moving toward MDsveX or a small content pipeline only if the local renderer starts fighting the articles.
+- The next useful pass is validating the PHP-hosted delivery path in-browser and then deciding whether MDsveX or a small content pipeline is still worth adding.
 
