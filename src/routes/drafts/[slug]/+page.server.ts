@@ -1,12 +1,12 @@
 import { error } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 import { draftArticles } from '$lib/articles';
 
 export function entries() {
 	return draftArticles.map((article) => ({ slug: article.slug }));
 }
 
-export const load: PageLoad = ({ params }) => {
+export const load: PageServerLoad = ({ params }) => {
 	const article = draftArticles.find((item) => item.slug === params.slug);
 
 	if (!article) {
@@ -15,3 +15,4 @@ export const load: PageLoad = ({ params }) => {
 
 	return { slug: params.slug };
 };
+

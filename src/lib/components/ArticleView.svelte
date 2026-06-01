@@ -5,22 +5,22 @@
 	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleHref } from '$lib/article-links';
-	import { getRelatedArticles, type Article } from '$lib/articles';
+	import type { Article } from '$lib/articles';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
 
 	type Props = {
 		article: Article;
+		relatedArticles?: Article[];
 	};
 
-	let { article }: Props = $props();
+	let { article, relatedArticles = [] }: Props = $props();
 	let progress = $state(0);
 	let activeTocId = $state<string | null>(null);
 	let commandFeedback = $state<string | null>(null);
 	let feedbackTimer: number | null = null;
 	const articleAccent = $derived(articleAccentColor(article));
-	const relatedArticles = $derived(getRelatedArticles(article, 3));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const articleFooterLinks = [
@@ -365,7 +365,7 @@
 					</summary>
 
 					<div class="toc-accordion-panel">
-						{#each article.toc as item (item.id)}
+						{#each article.toc as item, index (item.id + ':' + index)}
 							<a
 								class:toc-l3={item.level === 3}
 								class:toc-l2={item.level === 2}
@@ -416,7 +416,7 @@
 	<main class="layout">
 		<aside class="toc article-toc article-toc--desktop" aria-label="Table of contents">
 			<h2>{article.design.tocTitle}</h2>
-			{#each article.toc as item (item.id)}
+			{#each article.toc as item, index (item.id + ':' + index)}
 				<a
 					class:toc-l3={item.level === 3}
 					class:toc-l2={item.level === 2}

@@ -5,7 +5,6 @@
 	import { articleIndexHref, articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
 	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
-	import { publishedArticleTags, publishedArticles } from '$lib/articles';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
@@ -13,6 +12,8 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+	const publishedArticles = data.publishedArticles ?? [];
+	const publishedArticleTags = data.publishedArticleTags ?? [];
 
 	const title = 'blog.ryanspice.com · Technical notes';
 	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';

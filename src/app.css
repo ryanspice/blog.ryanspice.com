@@ -1887,6 +1887,88 @@ th {
 	color: var(--article-accent, var(--accent));
 }
 
+.article-inner .callout {
+	--callout-accent: var(--article-accent, var(--accent));
+	margin: 28px 0;
+	padding: 18px 20px;
+	border: 1px solid color-mix(in srgb, var(--callout-accent) 24%, var(--metro-line-soft));
+	border-left: 4px solid var(--callout-accent);
+	border-radius: 14px;
+	background:
+		linear-gradient(90deg, color-mix(in srgb, var(--callout-accent) 12%, transparent), transparent 72%),
+		rgba(255, 255, 255, 0.025);
+	color: var(--text);
+}
+
+.article-inner .callout.callout-note { --callout-accent: var(--blue-2); }
+.article-inner .callout.callout-info { --callout-accent: var(--blue-2); }
+.article-inner .callout.callout-tip { --callout-accent: var(--green); }
+.article-inner .callout.callout-warning { --callout-accent: var(--amber); }
+.article-inner .callout.callout-danger { --callout-accent: var(--danger); }
+
+.article-inner .callout-title,
+.article-inner details.callout > summary {
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--callout-accent);
+	margin-bottom: 12px;
+}
+
+.article-inner details.callout > summary {
+	cursor: pointer;
+	list-style: none;
+}
+
+.article-inner details.callout > summary::-webkit-details-marker {
+	display: none;
+}
+
+.article-inner figure.article-figure {
+	margin: 26px 0;
+	border: 1px solid var(--metro-line-soft);
+	border-radius: 14px;
+	overflow: hidden;
+	background: rgba(255, 255, 255, 0.015);
+}
+
+.article-inner figure.article-figure img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+.article-inner figure.article-figure figcaption {
+	padding: 10px 14px;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+	color: var(--muted);
+	font-size: 13px;
+	letter-spacing: 0.02em;
+}
+
+.article-inner sup a {
+	color: var(--article-accent, var(--accent));
+	text-decoration: none;
+}
+
+.article-inner .footnotes {
+	margin-top: 44px;
+	padding-top: 22px;
+	border-top: 1px solid var(--metro-line-soft);
+	color: var(--muted);
+}
+
+.article-inner .footnotes ol {
+	padding-left: 1.4em;
+}
+
+.article-inner .footnotes li {
+	margin: 12px 0;
+}
+
+.article-inner .footnotes p {
+	margin: 10px 0;
+}
+
 .drafts-error {
 	width: var(--wide);
 	margin: 0 auto 24px;

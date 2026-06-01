@@ -1,17 +1,21 @@
 import { error } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
-import { getArticle, publishedArticles } from '$lib/articles';
+import type { PageServerLoad } from './$types';
+import { getArticle, getRelatedArticles, publishedArticles } from '$lib/articles';
 
 export function entries() {
 	return publishedArticles.map((article) => ({ slug: article.slug }));
 }
 
-export const load: PageLoad = ({ params }) => {
+export const load: PageServerLoad = ({ params }) => {
 	const article = getArticle(params.slug);
 
 	if (!article || article.status !== 'published') {
 		throw error(404, 'Article not found');
 	}
 
-	return { article };
+	return {
+		article,
+		relatedArticles: getRelatedArticles(article, 3)
+	};
 };
+

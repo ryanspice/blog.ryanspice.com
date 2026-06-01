@@ -84,8 +84,9 @@ const articleAccents: Record<string, string> = {
 	'pixelboats-networking-player-hosted-php': '#00c2ff'
 };
 
-export const articles: Article[] = Object.entries(modules)
-	.map(([path, raw]) => parseArticle(path, raw))
+// NOTE: renderMarkdown is async (unified pipeline + server-only Shiki highlighting), so article parsing is async as well.
+// Top-level await is supported by Vite/SvelteKit and keeps the export contract unchanged.
+export const articles: Article[] = (await Promise.all(Object.entries(modules).map(([path, raw]) => parseArticle(path, raw))))
 	.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
 
 export const publishedArticles = articles.filter((article) => article.status === 'published');
@@ -150,7 +151,7 @@ export function getRelatedArticles(
 	return [...ranked, ...fallback].slice(0, limit);
 }
 
-function parseArticle(path: string, raw: string): Article {
+async function parseArticle(path: string, raw: string): Promise<Article> {
 	const { frontmatter, body } = splitFrontmatter(raw);
 	const filename = path.split('/').pop()?.replace(/\.md$/, '') ?? 'article';
 	const title = stringValue(frontmatter.title) || firstHeading(body) || filename;
@@ -169,7 +170,7 @@ function parseArticle(path: string, raw: string): Article {
 	const linkTerms = arrayValue(frontmatter.link_terms)
 		.map(parseLinkTerm)
 		.filter((term): term is MarkdownLinkTerm => term !== null);
-	const rendered = renderMarkdown(body, { linkTerms });
+	const rendered = await renderMarkdown(body, { linkTerms });
 
 	return {
 		...rendered,

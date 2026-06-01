@@ -4,4 +4,4 @@
 	let { data } = $props();
 </script>
 
-<ArticleView article={data.article} />
+<ArticleView article={data.article} relatedArticles={data.relatedArticles} />

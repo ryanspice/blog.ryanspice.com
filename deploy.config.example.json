@@ -12,5 +12,7 @@
     "_backups",
     ".well-known",
     "cgi-bin"
-  ]
+  ],
+  "keepReleases": 1,
+  "keepBackups": 0
 }
