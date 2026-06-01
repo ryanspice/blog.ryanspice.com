@@ -59,6 +59,13 @@ function Parse-IntOr([object]$Value, [int]$Fallback) {
   try { return [int]$Value } catch { return $Fallback }
 }
 
+function Get-ConfigProperty([object]$Obj, [string]$Name) {
+  if ($Obj -eq $null) { return $null }
+  $prop = $Obj.PSObject.Properties[$Name]
+  if ($prop) { return $prop.Value }
+  return $null
+}
+
 $ProjectRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $Config = Read-DeployConfig -Path $ConfigPath
 
@@ -70,8 +77,8 @@ $KeyPath = if ($Config.keyPath) { [string]$Config.keyPath } else { "" }
 
 Assert-SafeRemotePath -Path $RemotePath
 
-if ($KeepReleases -lt 0) { $KeepReleases = Parse-IntOr $Config.keepReleases 1 }
-if ($KeepBackups -lt 0) { $KeepBackups = Parse-IntOr $Config.keepBackups 0 }
+if ($KeepReleases -lt 0) { $KeepReleases = Parse-IntOr (Get-ConfigProperty $Config "keepReleases") 1 }
+if ($KeepBackups -lt 0) { $KeepBackups = Parse-IntOr (Get-ConfigProperty $Config "keepBackups") 0 }
 if ($KeepReleases -lt 1) { $KeepReleases = 1 }
 if ($KeepBackups -lt 0) { $KeepBackups = 0 }
 
@@ -100,39 +107,25 @@ $SshArgs += @(
 
 $remoteQ = ShellQuote $RemotePath
 
-$ListRemote = @"
-set -eu
-LIVE=$remoteQ
-if [ ! -d "\$LIVE" ]; then
-  echo "ERR\tmissing_live\t\$LIVE"
-  exit 0
-fi
-
-if [ -d "\$LIVE/_releases" ]; then
-  for d in "\$LIVE/_releases"/*; do
-    [ -d "\$d" ] || continue
-    name="\$(basename "\$d")"
-    [ -n "\$name" ] || continue
-    case "\$name" in
-      .*) continue ;;
-    esac
-    echo "RELEASE\t\$name"
-  done
-fi
-
-if [ -d "\$LIVE/_backups" ]; then
-  for f in "\$LIVE/_backups"/*.tar.gz; do
-    [ -f "\$f" ] || continue
-    name="\$(basename "\$f")"
-    [ -n "\$name" ] || continue
-    echo "BACKUP\t\$name"
-  done
-fi
-"@
+function Invoke-RemoteSh([string]$Command) {
+  # Avoid piping multiline strings into ssh stdin (PowerShell will append CRLF);
+  # run as a one-liner via `sh -c` instead to keep line endings out of the equation.
+  $cmdQ = ShellQuote $Command
+  $out = & ssh @SshArgs "$UserName@$HostName" "sh -c $cmdQ"
+  if ($LASTEXITCODE -ne 0) { throw "Remote command failed (exit $LASTEXITCODE)." }
+  return $out
+}
 
 Step "Query remote bucket contents"
-$raw = $ListRemote | & ssh @SshArgs "$UserName@$HostName" "sh -s"
-if ($LASTEXITCODE -ne 0) { throw "Remote list failed." }
+$listCommand = @(
+  "set -eu",
+  "LIVE=$remoteQ",
+  'if [ ! -d "$LIVE" ]; then printf "ERR\tmissing_live\t%s\n" "$LIVE"; exit 0; fi',
+  'if [ -d "$LIVE/_releases" ]; then for d in "$LIVE/_releases"/*; do [ -d "$d" ] || continue; name="$(basename "$d")"; [ -n "$name" ] || continue; case "$name" in .*) continue ;; esac; printf "RELEASE\t%s\n" "$name"; done; fi',
+  'if [ -d "$LIVE/_backups" ]; then for f in "$LIVE/_backups"/*.tar.gz; do [ -f "$f" ] || continue; name="$(basename "$f")"; [ -n "$name" ] || continue; printf "BACKUP\t%s\n" "$name"; done; fi'
+) -join "; "
+
+$raw = Invoke-RemoteSh -Command $listCommand
 
 $releaseNames = New-Object System.Collections.Generic.List[string]
 $backupNames = New-Object System.Collections.Generic.List[string]
@@ -156,8 +149,8 @@ function Tail([string[]]$Items, [int]$Count) {
   return $Items[($Items.Length - $Count)..($Items.Length - 1)]
 }
 
-$keepRelease = Tail $releases $KeepReleases
-$keepBackup = Tail $backups $KeepBackups
+$keepRelease = @(Tail $releases $KeepReleases)
+$keepBackup = @(Tail $backups $KeepBackups)
 $deleteRelease = $releases | Where-Object { $_ -notin $keepRelease }
 $deleteBackup = $backups | Where-Object { $_ -notin $keepBackup }
 
@@ -182,28 +175,25 @@ foreach ($name in $deleteRelease) {
   if ($name -notmatch "^[A-Za-z0-9._-]+$") { throw "Unsafe release name from remote listing: $name" }
 }
 foreach ($name in $deleteBackup) {
-  if ($name -notmatch "^[A-Za-z0-9._-]+\\.tar\\.gz$") { throw "Unsafe backup name from remote listing: $name" }
+  # PowerShell doesn't treat `\` as a string escape, so only use ONE backslash here
+  # (and single quotes to keep `$` anchors literal).
+  if ($name -notmatch '^[A-Za-z0-9._-]+\.tar\.gz$') { throw "Unsafe backup name from remote listing: $name" }
 }
 
-$deleteReleaseScript = ($deleteRelease | ForEach-Object { "rm -rf -- \"\$LIVE/_releases/$($_)\"" }) -join "`n"
-$deleteBackupScript = ($deleteBackup | ForEach-Object { "rm -f -- \"\$LIVE/_backups/$($_)\"" }) -join "`n"
-
-$CleanupRemote = @"
-set -eu
-LIVE=$remoteQ
-test -d "\$LIVE"
-
-$deleteReleaseScript
-$deleteBackupScript
-
-echo "Cleanup complete."
-"@
+$deleteReleaseScript = ($deleteRelease | ForEach-Object { 'rm -rf -- "$LIVE/_releases/' + $_ + '"' }) -join "; "
+$deleteBackupScript = ($deleteBackup | ForEach-Object { 'rm -f -- "$LIVE/_backups/' + $_ + '"' }) -join "; "
+$cleanupCommand = @(
+  "set -eu",
+  "LIVE=$remoteQ",
+  'test -d "$LIVE"',
+  $deleteReleaseScript,
+  $deleteBackupScript,
+  'echo "Cleanup complete."'
+) -join "; "
 
 Step "Apply cleanup (remote deletes)"
-$CleanupRemote | & ssh @SshArgs "$UserName@$HostName" "sh -s"
-if ($LASTEXITCODE -ne 0) { throw "Remote cleanup failed." }
+$null = Invoke-RemoteSh -Command $cleanupCommand
 
 Step "Receipt"
 Info "Deleted releases" ([string]$deleteRelease.Length)
 Info "Deleted backups" ([string]$deleteBackup.Length)
-
