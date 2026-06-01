@@ -18,11 +18,11 @@
 	const title = 'blog.ryanspice.com · Technical notes';
 	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';
 	const indexRootHref = `${base}/`;
-	const latestArticle = publishedArticles[0];
-	const latestDate = latestArticle ? latestArticle.date : '2026-05-28';
-	const latestDateLabel = latestArticle ? latestArticle.dateLabel : 'May 28, 2026';
-	const latestArticleHref = latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`;
-	const latestArticleAccent = $derived(latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)');
+	const latestArticle = $derived.by(() => publishedArticles[0] ?? null);
+	const latestDate = $derived.by(() => (latestArticle ? latestArticle.date : '2026-05-28'));
+	const latestDateLabel = $derived.by(() => (latestArticle ? latestArticle.dateLabel : 'May 28, 2026'));
+	const latestArticleHref = $derived.by(() => (latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`));
+	const latestArticleAccent = $derived.by(() => (latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)'));
 	const footerLinks = $derived.by(() => {
 		const links = [
 		{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
