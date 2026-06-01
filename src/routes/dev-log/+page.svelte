@@ -130,7 +130,7 @@
 		{/if}
 
 		<div class="dev-log-featured-stack">
-			{#each featuredEntries.slice(1) as entry (entry.date + entry.title)}
+			{#each featuredEntries.slice(1) as entry, index (entry.date + ':' + entry.title + ':' + index)}
 				<article class="dev-log-card dev-log-card-small" style={`--article-accent: ${entry.accent}`}>
 					<p class="dev-log-meta">
 						<time datetime={entry.date}>{entry.dateLabel}</time>
@@ -154,7 +154,7 @@
 	</div>
 
 	<ul class="dev-log-list">
-		{#each logEntries as entry (entry.date + entry.title)}
+		{#each logEntries as entry, index (entry.date + ':' + entry.title + ':' + index)}
 			<li class="dev-log-list-item" style={`--article-accent: ${entry.accent}`}>
 				<div class="dev-log-list-meta">
 					<time datetime={entry.date}>{entry.dateLabel}</time>

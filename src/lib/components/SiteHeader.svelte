@@ -85,9 +85,9 @@
 		</div>
 
 		<div class="nav-cluster">
-		{#if visibleNavLinks.length}
+			{#if visibleNavLinks.length}
 				<div class="nav-links">
-					{#each visibleNavLinks as item (item.href)}
+					{#each visibleNavLinks as item, index (item.href + ':' + index)}
 						<a href={hrefFor(item.href)}>{item.label}</a>
 					{/each}
 				</div>

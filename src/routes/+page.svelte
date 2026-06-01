@@ -193,15 +193,15 @@
 				<input type="text" name="q" value={searchQuery} placeholder="Title, summary, tag..." />
 			</label>
 
-			<label class="filter-field">
-				<span>Tag</span>
-				<select name="tag">
-					<option value="" selected={!selectedTag}>All tags</option>
-					{#each publishedArticleTags as tag (tag)}
-						<option value={tag} selected={selectedTag === tag}>{tag}</option>
-					{/each}
-				</select>
-			</label>
+				<label class="filter-field">
+					<span>Tag</span>
+					<select name="tag">
+						<option value="" selected={!selectedTag}>All tags</option>
+					{#each publishedArticleTags as tag, index (tag + ':' + index)}
+							<option value={tag} selected={selectedTag === tag}>{tag}</option>
+						{/each}
+					</select>
+				</label>
 
 			<div class="filter-actions">
 				<button type="submit">Update</button>
@@ -245,7 +245,7 @@
 		</div>
 
 		<div class="site-footer-links">
-			{#each footerLinks as link (link.label)}
+			{#each footerLinks as link, index (link.href + ':' + index)}
 				<a href={hrefFor(link.href)} rel={link.href.startsWith('http') ? 'noreferrer' : undefined} target={link.href.startsWith('http') ? '_blank' : undefined}>{link.label}</a>
 			{/each}
 			<a href={hrefFor('#articles')}>Articles</a>

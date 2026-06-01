@@ -201,14 +201,14 @@
 		</label>
 
 		<label class="filter-field">
-			<span>Tag</span>
-			<select name="tag">
-				<option value="" selected={!selectedTag}>All tags</option>
-				{#each draftArticleTags as tag (tag)}
+				<span>Tag</span>
+				<select name="tag">
+					<option value="" selected={!selectedTag}>All tags</option>
+				{#each draftArticleTags as tag, index (tag + ':' + index)}
 					<option value={tag} selected={selectedTag === tag}>{tag}</option>
 				{/each}
-			</select>
-		</label>
+				</select>
+			</label>
 
 		<div class="filter-actions">
 			<button type="submit">Update</button>

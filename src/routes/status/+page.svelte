@@ -29,7 +29,9 @@
 	let liveError = $state<string | null>(null);
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
-	const ogImage = $derived(data.ogImage);
+	const ogImage = $derived(
+		data?.ogImage ?? new URL(`${base}/og-default.png`, page.url.origin).toString()
+	);
 	const canViewDrafts = $derived(canAccessDrafts($authState));
 	const liveEndpoint = $derived(`${base}/status.live.json`);
 
@@ -141,7 +143,7 @@
 		<dl class="meta-grid home-meta" aria-label="Build status summary">
 			<div>
 				<dt>Pages</dt>
-				<dd>{data.pages.total}</dd>
+				<dd>{data?.pages?.total ?? 'n/a'}</dd>
 			</div>
 			<div>
 				<dt>Connections</dt>
@@ -163,15 +165,15 @@
 		<dl class="hero-meta" aria-label="Build metadata details">
 			<div>
 				<dt>App</dt>
-				<dd>{data.build.name}</dd>
+				<dd>{data?.build?.name ?? 'n/a'}</dd>
 			</div>
 			<div>
 				<dt>Version</dt>
-				<dd>{data.build.version}</dd>
+				<dd>{data?.build?.version ?? 'n/a'}</dd>
 			</div>
 			<div>
 				<dt>SvelteKit</dt>
-				<dd>{data.build.svelteKit}</dd>
+				<dd>{data?.build?.svelteKit ?? 'n/a'}</dd>
 			</div>
 		</dl>
 		<p class="home-hero-note">This page is intentionally <code>noindex</code>.</p>
