@@ -1,7 +1,7 @@
 {
   "name": "blog.ryanspice.com",
   "private": true,
-  "version": "0.1.5",
+  "version": "0.1.0",
   "type": "module",
   "description": "SvelteKit blog project for Ryan Spice's technical articles, staged inside the AI Wiki and built with a vendored PHP adapter.",
   "scripts": {
