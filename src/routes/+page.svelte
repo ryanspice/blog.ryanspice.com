@@ -12,8 +12,8 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
-	const publishedArticles = data.publishedArticles ?? [];
-	const publishedArticleTags = data.publishedArticleTags ?? [];
+	const publishedArticles = $derived(data.publishedArticles ?? []);
+	const publishedArticleTags = $derived(data.publishedArticleTags ?? []);
 
 	const title = 'blog.ryanspice.com · Technical notes';
 	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';
