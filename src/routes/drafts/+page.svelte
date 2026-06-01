@@ -226,13 +226,13 @@
 		</div>
 		<p class="article-results-meta">Showing {visibleDrafts.length} of {draftArticles.length} drafts.</p>
 
-		{#if visibleDrafts.length}
-			{#each visibleDrafts as article (article.slug)}
+	{#if visibleDrafts.length}
+			{#each visibleDrafts as article, index (article.slug + ':' + index)}
 				<div class="draft-item">
 					<ArticleCard {article} href={articleHref(article)} />
 				</div>
 			{/each}
-		{:else}
+	{:else}
 			<div class="article-empty">
 				<p class="eyebrow">{draftArticles.length ? 'No matching drafts' : 'No drafts'}</p>
 				<h2>{draftArticles.length ? 'Nothing matches the current filters.' : 'The queue is empty.'}</h2>

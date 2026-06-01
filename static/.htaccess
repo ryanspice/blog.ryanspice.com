@@ -1,6 +1,22 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 
+	# RSS feed aliases + slash normalization.
+	# Some clients guess /rss, /feed, or accidentally append a trailing slash.
+	#
+	# IMPORTANT: avoid relative redirect targets (like "rss.xml") here.
+	# In .htaccess context, relative substitutions can be prefixed by a filesystem path
+	# when RewriteBase is not set, producing malformed Location headers.
+	# Instead, build a root-relative target from the request URI prefix.
+
+	# Strip a trailing slash on the canonical feed path.
+	RewriteCond %{REQUEST_URI} ^(.*/)rss\.xml/$ [NC]
+	RewriteRule ^ %1rss.xml [R=301,L]
+
+	# Common guesses: /rss and /feed (with or without a trailing slash).
+	RewriteCond %{REQUEST_URI} ^(.*/)(rss|feed)/?$ [NC]
+	RewriteRule ^ %1rss.xml [R=301,L]
+
 	# This SvelteKit build is canonical on blog.ryanspice.com (domain root).
 	# If the same folder is also reachable as https://ryanspice.com/blog/,
 	# redirect so asset paths (/ _app /...) resolve correctly and avoid duplicate URLs.
@@ -8,3 +24,14 @@
 	RewriteRule ^(.*)$ https://blog.ryanspice.com/$1 [R=301,L]
 </IfModule>
 
+# Serve the prerendered RSS file with an RSS-specific content type.
+# (Many readers accept application/xml, but some expect application/rss+xml.)
+<Files "rss.xml">
+	ForceType application/rss+xml
+</Files>
+
+<IfModule mod_headers.c>
+	<Files "rss.xml">
+		Header set Content-Type "application/rss+xml; charset=utf-8"
+	</Files>
+</IfModule>

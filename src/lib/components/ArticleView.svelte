@@ -230,12 +230,10 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={pageTitle} />
 
-	<link rel="alternate" type="application/rss+xml" title="RSS" href={rssUrl} />
-
 	<meta property="article:published_time" content={article.date} />
 	<meta property="article:modified_time" content={article.updatedDate} />
 
-	{#each article.tags as tag (tag)}
+	{#each article.tags as tag, index (tag + ':' + index)}
 		<meta property="article:tag" content={tag} />
 	{/each}
 
@@ -314,7 +312,7 @@
 			</dl>
 			<p class="dek">{article.summary}</p>
 			<div class="tag-row" aria-label="Tags">
-				{#each article.design.tags as tag (tag)}
+				{#each article.design.tags as tag, index (tag + ':' + index)}
 					<a class="tag tag-link" href={articleTagIndexHref(tag, article.status as ArticleIndexStatus)}>{tag}</a>
 				{/each}
 			</div>
@@ -353,7 +351,7 @@
 			<aside class="hero-card" aria-label={article.design.heroCardAria} style={`--article-accent: ${articleAccent}`}>
 				<strong>{article.design.heroCardTitle}</strong>
 				<div class="status-grid">
-					{#each article.design.statusItems as item (item.label)}
+					{#each article.design.statusItems as item, index (item.label + ':' + index)}
 						<div class="status-pill"><span>{item.label}</span><strong>{item.value}</strong></div>
 					{/each}
 				</div>
@@ -386,7 +384,7 @@
 
 				{#if article.design.railStatusItems?.length}
 					<div class="status-grid" aria-label="Publishing controls">
-						{#each article.design.railStatusItems as item (item.label)}
+						{#each article.design.railStatusItems as item, index (item.label + ':' + index)}
 							<div class="status-pill"><span>{item.label}</span><strong>{item.value}</strong></div>
 						{/each}
 					</div>
@@ -394,7 +392,7 @@
 
 				{#if article.design.railPalette}
 					<div class="palette-preview" aria-label={article.design.railPalette.label}>
-						{#each article.design.railPalette.colors as color (color)}
+						{#each article.design.railPalette.colors as color, index (color + ':' + index)}
 							<span class="swatch" style={`background:${color}`}></span>
 						{/each}
 					</div>
@@ -402,7 +400,7 @@
 
 				{#if article.design.railChips?.length}
 					<div class="debug-stack" aria-label={article.design.railChipsLabel ?? 'Debugging stack'}>
-						{#each article.design.railChips as chip (chip)}
+						{#each article.design.railChips as chip, index (chip + ':' + index)}
 							<span class="debug-chip">{chip}</span>
 						{/each}
 					</div>
@@ -468,7 +466,7 @@
 					</div>
 
 					<ul class="reference-list">
-						{#each articleReferences as reference (reference)}
+						{#each articleReferences as reference, index (reference + ':' + index)}
 							<li>
 								<a
 									class="wiki-link external-link"
@@ -495,7 +493,7 @@
 					</div>
 
 					<div class="related-articles-grid">
-						{#each relatedArticles as related (related.slug)}
+						{#each relatedArticles as related, index (related.slug + ':' + index)}
 							<a
 								class="related-article-card article-card-link"
 								href={articleHref(related)}
@@ -509,7 +507,7 @@
 								</p>
 								<p>{related.summary}</p>
 								<div class="tag-row compact" aria-label={`${related.title} tags`}>
-									{#each related.tags.slice(0, 4) as tag (tag)}
+									{#each related.tags.slice(0, 4) as tag, index (tag + ':' + index)}
 										<span class="tag">{tag}</span>
 									{/each}
 								</div>
@@ -537,7 +535,7 @@
 	<footer class="article-footer">
 		<p class="article-footer-copy">{article.design.footerText}</p>
 		<div class="article-footer-links" aria-label="Footer links">
-			{#each articleFooterLinks as link (link.href)}
+			{#each articleFooterLinks as link, index (link.href + ':' + index)}
 				<a href={link.href}>{link.label}</a>
 			{/each}
 			<FooterAuthControls returnTo="/drafts/" />

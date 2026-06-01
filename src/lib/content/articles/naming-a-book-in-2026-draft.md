@@ -1,6 +1,6 @@
 ---
 title: "Naming a Book in 2026"
-slug: "naming-a-book-in-2026"
+slug: "naming-a-book-in-2026-draft"
 status: "draft"
 draft_type: "technical-blog-post"
 date: "2026-05-31"
@@ -150,4 +150,3 @@ If one title is needed now, the practical choice is:
 **Prompt Operations Manual: Structure, Clarity, and Control for AI Systems**
 
 This balances authority, searchability, and readability while preserving a design-friendly visual identity.
-

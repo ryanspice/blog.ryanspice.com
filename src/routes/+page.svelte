@@ -33,6 +33,7 @@
 
 		if (canAccessDrafts($authState)) {
 			links.push({ label: 'Drafts', href: '/drafts' });
+			links.push({ label: 'Status', href: '/status' });
 		}
 
 		return links;
@@ -108,8 +109,6 @@
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
-
-	<link rel="alternate" type="application/rss+xml" title="RSS" href={rssUrl} />
 
 	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
 </svelte:head>
@@ -225,7 +224,7 @@
 	{/if}
 
 	{#if visibleArticles.length}
-		{#each visibleArticles as article (article.slug)}
+		{#each visibleArticles as article, index (article.slug + ':' + index)}
 			<ArticleCard {article} />
 		{/each}
 	{:else}

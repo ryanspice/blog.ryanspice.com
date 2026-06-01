@@ -13,11 +13,11 @@ const config = {
 	kit: {
 		paths: {
 			base: basePath,
-			relative: false
+			relative: true
 		},
 		prerender: {
 			origin: prerenderOrigin,
-			entries: ['*', '/robots.txt', '/sitemap.xml', '/rss.xml'],
+			entries: ['*', '/robots.txt', '/sitemap.xml', '/rss.xml', '/status.json'],
 			handleHttpError: ({ path, message }) => {
 				if (path.startsWith('/.auth/')) return;
 				throw new Error(message);

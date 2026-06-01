@@ -33,7 +33,7 @@
 	</div>
 	<p>{article.summary}</p>
 	<div class="tag-row compact" aria-label="Tags">
-		{#each article.tags.slice(0, 5) as tag (tag)}
+		{#each article.tags.slice(0, 5) as tag, index (tag + ':' + index)}
 			<span class="tag">{tag}</span>
 		{/each}
 	</div>
