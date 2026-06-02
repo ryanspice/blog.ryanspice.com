@@ -42,6 +42,10 @@ const bannedFileNames = new Set([
 	'sidecar.stdout.log'
 ]);
 const protectedPaths = ['_protected'];
+const dataJsonRewritePatterns = [
+	/__data\.json/i,
+	/__data\\\.json/i
+];
 
 function walk(dir) {
 	const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -124,7 +128,7 @@ if (fs.existsSync(htaccessPath)) {
 		console.error('fail: build/.htaccess missing RewriteEngine On');
 		failed = true;
 	}
-	if (!/__data\?\.json/i.test(htaccess)) {
+	if (!dataJsonRewritePatterns.some((pattern) => pattern.test(htaccess))) {
 		console.error('fail: build/.htaccess missing __data.json rewrite support');
 		failed = true;
 	}
