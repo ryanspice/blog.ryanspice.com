@@ -130,7 +130,7 @@ if (fs.existsSync(htaccessPath)) {
 	}
 }
 
-const homepageRuntimeFiles = ['index.php', '__data.php', '__data.template.json'];
+const homepageRuntimeFiles = ['index.php', '__data.php', '__data.template.json', '_protected/_page.php'];
 if (!hasAnyBuildFile(homepageRuntimeFiles)) {
 	console.error('fail: homepage runtime output missing index/data files');
 	failed = true;
