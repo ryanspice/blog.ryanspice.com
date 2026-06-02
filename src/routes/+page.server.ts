@@ -6,6 +6,7 @@ export const load: PageServerLoad = ({ url }) => {
 	const canonical = new URL(url.pathname, url.origin).toString();
 	const rssUrl = new URL(`${base}/rss.xml`, url.origin).toString();
 	const ogImage = new URL(`${base}/og-default.png`, url.origin).toString();
+	const recentPublishedArticles = publishedArticles.slice(0, 5);
 
-	return { canonical, rssUrl, ogImage, publishedArticles, publishedArticleTags };
+	return { canonical, rssUrl, ogImage, publishedArticles, recentPublishedArticles, publishedArticleTags };
 };

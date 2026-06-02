@@ -422,24 +422,52 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 	function rehypeImages() {
 		return (tree: any) => {
 			visit(tree, 'element', (node: any, index: number, parent: any) => {
-				if (node.tagName !== 'img') return;
+				if (node.tagName === 'img') {
+					standardizeMarkdownImage(node);
+					return;
+				}
 
-				node.properties ??= {};
-				node.properties.loading ??= 'lazy';
-				node.properties.decoding ??= 'async';
-
-				const caption = typeof node.properties.title === 'string' ? node.properties.title.trim() : '';
-				if (!caption) return;
+				if (node.tagName !== 'p') return;
 				if (!parent || typeof index !== 'number') return;
+				const children = Array.isArray(node.children) ? node.children.filter((child: any) => hastText(child).trim() || child.tagName === 'img') : [];
+				if (children.length !== 1) return;
+				const image = children[0];
+				if (image?.type !== 'element' || image.tagName !== 'img') return;
 
-				delete node.properties.title;
-
-				parent.children[index] = element('figure', { className: ['article-figure'] }, [
-					node,
-					element('figcaption', {}, [text(caption)])
-				]);
+				standardizeMarkdownImage(image);
+				parent.children[index] = articleImageFigure(image);
 			});
 		};
+	}
+
+	function standardizeMarkdownImage(node: any) {
+		node.properties ??= {};
+		node.properties.loading ??= 'lazy';
+		node.properties.decoding ??= 'async';
+		node.properties.sizes ??= '(min-width: 1040px) 760px, calc(100vw - 32px)';
+		const responsiveSrcset = markdownResponsiveSrcset(typeof node.properties.src === 'string' ? node.properties.src : '');
+		if (responsiveSrcset) node.properties.srcSet ??= responsiveSrcset;
+		setClass(node, 'article-image');
+	}
+
+	function markdownResponsiveSrcset(src: string): string | undefined {
+		const match = src.match(/^(.*?)-(?:900|1200|1600)w\.(webp|jpe?g|png)$/i);
+		if (!match) return undefined;
+		const [, base, ext] = match;
+		return [900, 1200, 1600].map((width) => `${base}-${width}w.${ext} ${width}w`).join(', ');
+	}
+
+	function articleImageFigure(node: any) {
+		const caption = typeof node.properties?.title === 'string' ? node.properties.title.trim() : '';
+		if (node.properties) delete node.properties.title;
+		return element(
+			'figure',
+			{ className: ['article-figure', caption ? 'article-figure--captioned' : 'article-figure--plain'], 'data-image-preset': 'content' },
+			[
+				node,
+				...(caption ? [element('figcaption', {}, [text(caption)])] : [])
+			]
+		);
 	}
 
 	function rehypeWrapTables() {

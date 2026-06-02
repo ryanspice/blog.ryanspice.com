@@ -13,12 +13,13 @@
 
 	let { data }: { data: PageData } = $props();
 	const publishedArticles = $derived(data.publishedArticles ?? []);
+	const recentPublishedArticles = $derived(data.recentPublishedArticles ?? publishedArticles.slice(0, 5));
 	const publishedArticleTags = $derived(data.publishedArticleTags ?? []);
 
 	const title = 'blog.ryanspice.com · Technical notes';
 	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';
 	const indexRootHref = `${base}/`;
-	const latestArticle = $derived.by(() => publishedArticles[0] ?? null);
+	const latestArticle = $derived.by(() => recentPublishedArticles[0] ?? null);
 	const latestDate = $derived.by(() => (latestArticle ? latestArticle.date : '2026-05-28'));
 	const latestDateLabel = $derived.by(() => (latestArticle ? latestArticle.dateLabel : 'May 28, 2026'));
 	const latestArticleHref = $derived.by(() => (latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`));
@@ -57,7 +58,7 @@
 	});
 
 	const compactMode = $derived(compactRequested || searchQuery.length > 0 || selectedTag.length > 0);
-	const browseArticles = $derived(publishedArticles);
+	const browseArticles = $derived(compactMode ? publishedArticles : recentPublishedArticles);
 	const visibleArticles = $derived(
 		browseArticles.filter((article) => {
 			if (selectedTag && !articleMatchesTag(article, selectedTag)) return false;
@@ -111,7 +112,7 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
+	<script type="application/ld+json">{jsonLdEscaped}</script>
 </svelte:head>
 
 <SiteHeader
@@ -220,7 +221,7 @@
 		<div class="section-head">
 			<p class="eyebrow">Latest articles</p>
 			<h2>Recent published posts</h2>
-			<p class="section-dek">Published technical notes with dates, reading time, and source-linked metadata.</p>
+			<p class="section-dek">The newest published technical notes, capped to the latest 5 posts.</p>
 		</div>
 	{/if}
 
@@ -230,9 +231,13 @@
 		{/each}
 	{:else}
 		<div class="article-empty">
-			<p class="eyebrow">No results</p>
-			<h2>No articles match the current filters.</h2>
-			<p class="section-dek">Try clearing the tag or broadening the search text.</p>
+			<p class="eyebrow">{publishedArticles.length ? 'No results' : 'No articles'}</p>
+			<h2>{publishedArticles.length ? 'No articles match the current filters.' : 'No published articles are available yet.'}</h2>
+			<p class="section-dek">
+				{publishedArticles.length
+					? 'Try clearing the tag or broadening the search text.'
+					: 'Check back after the next production deploy.'}
+			</p>
 		</div>
 	{/if}
 </section>

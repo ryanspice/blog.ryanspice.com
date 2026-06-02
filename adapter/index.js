@@ -503,7 +503,7 @@ function normalizePhpHandlerSource(source, rel, prefix) {
     }
     targets.set(target, name);
     renames.set(name, target);
-    if (name.startsWith("sk_") && name !== target) {
+    if (name !== target) {
       referenceRenames.set(name, target);
     }
   }
@@ -519,7 +519,7 @@ function normalizePhpHandlerSource(source, rel, prefix) {
     return target ? full.replace(name, target) : full;
   });
   for (const [from, to] of referenceRenames) {
-    normalized = normalized.replace(new RegExp(`\\b${escapeRegExp(from)}\\b`, "g"), to);
+    normalized = normalized.replace(new RegExp(`\\b${escapeRegExp(from)}\\s*\\(`, "g"), (call) => call.replace(from, to));
   }
   return normalized;
 }
@@ -1315,9 +1315,10 @@ if (!function_exists('router_has_bad_path')) {
             if ($next === $decoded) break;
             $decoded = $next;
         }
+        if (preg_match('/[\\x00-\\x1f\\x7f]/', $decoded)) return true;
         $decoded = str_replace('\\\\', '/', $decoded);
         foreach (explode('/', $decoded) as $segment) {
-            if ($segment === '..') return true;
+            if ($segment === '..' || $segment === '.') return true;
         }
         return false;
     }
@@ -1393,7 +1394,7 @@ if (router_has_bad_path($path) || router_has_bad_path($uri_raw)) {
 	return;
 }
 
-if (strpos($uri_raw, '/_protected/') !== false) {
+if (preg_match('#(^|/)_protected(?:/|$)#', $uri_raw)) {
 	http_response_code(403);
 	echo "Access Denied";
 	return;
@@ -1444,7 +1445,7 @@ if ($base !== '' && $uri !== $base && strpos($uri, $base . '/') !== 0) {
 	return;
 }
 
-if (strpos($uri, '/_protected/') === 0 || ($base !== '' && strpos($uri, $base . '/_protected/') === 0)) {
+if (preg_match('#^/_protected(?:/|$)#', $uri) || ($base !== '' && preg_match('#^' . preg_quote($base, '#') . '/_protected(?:/|$)#', $uri))) {
 	http_response_code(403);
     echo "Access Denied";
 	return;

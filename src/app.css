@@ -1924,25 +1924,36 @@ th {
 }
 
 .article-inner figure.article-figure {
-	margin: 26px 0;
+	margin: 28px 0;
 	border: 1px solid var(--metro-line-soft);
-	border-radius: 14px;
+	border-radius: 16px;
 	overflow: hidden;
-	background: rgba(255, 255, 255, 0.015);
+	background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012));
+	box-shadow: 0 20px 70px rgba(0, 0, 0, 0.24);
 }
 
-.article-inner figure.article-figure img {
+.article-inner figure.article-figure--plain {
+	padding: 0;
+}
+
+.article-inner img.article-image {
 	display: block;
 	max-width: 100%;
 	height: auto;
 }
 
+.article-inner figure.article-figure img.article-image {
+	width: 100%;
+}
+
 .article-inner figure.article-figure figcaption {
-	padding: 10px 14px;
+	padding: 11px 15px;
 	border-top: 1px solid rgba(255, 255, 255, 0.08);
 	color: var(--muted);
 	font-size: 13px;
+	line-height: 1.45;
 	letter-spacing: 0.02em;
+	background: rgba(0, 0, 0, 0.16);
 }
 
 .article-inner sup a {

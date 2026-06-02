@@ -49,10 +49,25 @@ Store article images under:
 static/img/articles/<article-slug>/...
 ```
 
-Reference them from Markdown with root-relative URLs. If you include a title, it becomes a caption:
+Reference them from Markdown with root-relative URLs. If you include a title, it becomes a caption. Prefer generated responsive filenames when available (`-900w`, `-1200w`, `-1600w`); the renderer will add a matching `srcset` automatically for those sizes:
 
 ```md
-![Alt text](/img/articles/my-article/diagram.png "Caption text shown under the image")
+![Alt text](/img/articles/my-article/diagram-1600w.webp "Caption text shown under the image")
+```
+
+Svelte routes/components can use the exported library component instead:
+
+```svelte
+<script lang="ts">
+  import { Image } from '$lib';
+</script>
+
+<Image
+  src="/img/articles/my-article/diagram-1600w.webp"
+  alt="Alt text"
+  caption="Caption text shown under the image"
+  preset="content"
+/>
 ```
 
 ## Code fences (syntax highlighting)

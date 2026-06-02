@@ -44,6 +44,8 @@ One is a finished research assistant.
 
 The other is closer to raw material for building research assistants.
 
+![ChatGPT Deep Research vs DeepSeek comparison graphic](/img/articles/how-chatgpt-performs-deep-research/chatgpt-deep-research-vs-deepseek-1600w.webp "ChatGPT Deep Research and DeepSeek solve different layers of the research stack: one is a product workflow, the other is a model/API substrate.")
+
 ## The short version
 
 ChatGPT Deep Research is optimized for:
