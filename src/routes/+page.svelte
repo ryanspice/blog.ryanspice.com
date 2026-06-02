@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
-	import { page } from '$app/state';
-	import { articleIndexHref, articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
 	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
@@ -13,23 +11,22 @@
 
 	let { data }: { data: PageData } = $props();
 	const publishedArticles = $derived(data.publishedArticles ?? []);
-	const publishedArticleTags = $derived(data.publishedArticleTags ?? []);
+	const latestArticles = $derived.by(() => publishedArticles.slice(0, 5));
 
 	const title = 'blog.ryanspice.com · Technical notes';
 	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';
-	const indexRootHref = `${base}/`;
-	const latestArticle = $derived.by(() => publishedArticles[0] ?? null);
+	const latestArticle = $derived.by(() => latestArticles[0] ?? null);
 	const latestDate = $derived.by(() => (latestArticle ? latestArticle.date : '2026-05-28'));
 	const latestDateLabel = $derived.by(() => (latestArticle ? latestArticle.dateLabel : 'May 28, 2026'));
 	const latestArticleHref = $derived.by(() => (latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`));
 	const latestArticleAccent = $derived.by(() => (latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)'));
 	const footerLinks = $derived.by(() => {
 		const links = [
-		{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
-		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
-		{ label: 'Dev log', href: '/dev-log' },
-		{ label: 'RSS feed', href: '/rss.xml' },
-		{ label: 'Sitemap', href: '/sitemap.xml' }
+			{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
+			{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
+			{ label: 'Dev log', href: '/dev-log' },
+			{ label: 'RSS feed', href: '/rss.xml' },
+			{ label: 'Sitemap', href: '/sitemap.xml' }
 		];
 
 		if (canAccessDrafts($authState)) {
@@ -44,27 +41,9 @@
 	const rssUrl = $derived(data.rssUrl);
 	const ogImage = $derived(data.ogImage);
 
-	let searchQuery = $state('');
-	let selectedTag = $state('');
-	let compactRequested = $state(false);
-
 	onMount(() => {
-		const params = new URLSearchParams(window.location.search);
-		searchQuery = (params.get('q') ?? '').trim();
-		selectedTag = (params.get('tag') ?? '').trim();
-		compactRequested = params.get('view') === 'compact';
 		void loadAuthState();
 	});
-
-	const compactMode = $derived(compactRequested || searchQuery.length > 0 || selectedTag.length > 0);
-	const browseArticles = $derived(publishedArticles);
-	const visibleArticles = $derived(
-		browseArticles.filter((article) => {
-			if (selectedTag && !articleMatchesTag(article, selectedTag)) return false;
-			if (searchQuery && !articleSearchText(article).includes(searchQuery.toLowerCase())) return false;
-			return true;
-		})
-	);
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -87,7 +66,6 @@
 		if (href.startsWith('#') || href.startsWith('http')) return href;
 		return `${base}${href}`;
 	}
-
 </script>
 
 <svelte:head>
@@ -122,117 +100,78 @@
 	]}
 />
 
-{#if !compactMode}
 <section class="home-hero" style={`--article-accent: ${latestArticleAccent}`}>
 	<div class="home-hero-copy">
-			<p class="eyebrow">Ryan Spice · technical blog</p>
-			<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
-			<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.</p>
-			<dl class="meta-grid home-meta" aria-label="Site metadata">
-				<div>
-					<dt>
-						<ArticleIcon name="articles" class="meta-icon" />
-						<span>Articles</span>
-					</dt>
-					<dd>{publishedArticles.length}</dd>
-				</div>
-				<div>
-					<dt>
-						<ArticleIcon name="latest" class="meta-icon" />
-						<span>Latest</span>
-					</dt>
-					<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
-				</div>
-				<div>
-					<dt>
-						<ArticleIcon name="feed" class="meta-icon" />
-						<span>Feed</span>
-					</dt>
-					<dd>RSS available</dd>
-				</div>
-			</dl>
+		<p class="eyebrow">Ryan Spice · technical blog</p>
+		<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
+		<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.</p>
+		<dl class="meta-grid home-meta" aria-label="Site metadata">
+			<div>
+				<dt>
+					<ArticleIcon name="articles" class="meta-icon" />
+					<span>Articles</span>
+				</dt>
+				<dd>{publishedArticles.length}</dd>
+			</div>
+			<div>
+				<dt>
+					<ArticleIcon name="latest" class="meta-icon" />
+					<span>Latest</span>
+				</dt>
+				<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
+			</div>
+			<div>
+				<dt>
+					<ArticleIcon name="feed" class="meta-icon" />
+					<span>Feed</span>
+				</dt>
+				<dd>RSS available</dd>
+			</div>
+		</dl>
 	</div>
 
 	<aside class="hero-card home-hero-card" aria-label="Latest article" style={`--article-accent: ${latestArticleAccent}`}>
-			<strong>Latest article</strong>
-			<h2><a href={latestArticleHref}>{latestArticle?.title ?? 'Latest article'}</a></h2>
-			<p>{latestArticle?.summary ?? 'Recent technical notes and comparisons.'}</p>
-			<dl class="hero-meta" aria-label="Latest article metadata">
-				<div>
-					<dt>Published</dt>
-					<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
-				</div>
-				<div>
-					<dt>Read time</dt>
-					<dd>{latestArticle?.readingMinutes ?? 0} min</dd>
-				</div>
-				<div>
-					<dt>Type</dt>
-					<dd>{latestArticle?.draftType?.replaceAll('-', ' ') ?? 'article'}</dd>
-				</div>
-			</dl>
-			<p class="home-hero-note">Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.</p>
-			<div class="home-hero-links" aria-label="Quick links">
-				<a href={hrefFor('/rss.xml')}>RSS feed</a>
-				<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>
+		<strong>Latest article</strong>
+		<h2><a href={latestArticleHref}>{latestArticle?.title ?? 'Latest article'}</a></h2>
+		<p>{latestArticle?.summary ?? 'Recent technical notes and comparisons.'}</p>
+		<dl class="hero-meta" aria-label="Latest article metadata">
+			<div>
+				<dt>Published</dt>
+				<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
 			</div>
-		</aside>
-	</section>
-{:else}
-	<section class="article-index-shell" aria-label="Compact article index">
-		<div class="section-head compact-section-head">
-			<p class="eyebrow">Article index</p>
-			<h1>{selectedTag ? `Articles tagged ${selectedTag}` : 'Filter articles by tag or text.'}</h1>
-			<p class="section-dek">Use the controls below to narrow the list. Clear them to widen the view or return to the full hero home.</p>
-		</div>
-
-		<form class="article-filter-bar" method="get" action={indexRootHref}>
-			<input type="hidden" name="view" value="compact" />
-
-			<label class="filter-field">
-				<span>Search</span>
-				<input type="text" name="q" value={searchQuery} placeholder="Title, summary, tag..." />
-			</label>
-
-				<label class="filter-field">
-					<span>Tag</span>
-					<select name="tag">
-						<option value="" selected={!selectedTag}>All tags</option>
-					{#each publishedArticleTags as tag, index (tag + ':' + index)}
-							<option value={tag} selected={selectedTag === tag}>{tag}</option>
-						{/each}
-					</select>
-				</label>
-
-			<div class="filter-actions">
-				<button type="submit">Update</button>
-				<a class="home-filter-link" href={articleIndexHref({ view: 'compact' })}>Reset</a>
-				<a class="home-filter-link" href={indexRootHref}>Full home</a>
+			<div>
+				<dt>Read time</dt>
+				<dd>{latestArticle?.readingMinutes ?? 0} min</dd>
 			</div>
-		</form>
-
-		<p class="article-results-meta">Showing {visibleArticles.length} of {browseArticles.length} articles.</p>
-	</section>
-{/if}
-
-<section id="articles" class={`article-grid ${compactMode ? 'compact-grid' : ''}`} aria-label={compactMode ? 'Filtered articles' : 'Published articles'}>
-	{#if !compactMode}
-		<div class="section-head">
-			<p class="eyebrow">Latest articles</p>
-			<h2>Recent published posts</h2>
-			<p class="section-dek">Published technical notes with dates, reading time, and source-linked metadata.</p>
+			<div>
+				<dt>Type</dt>
+				<dd>{latestArticle?.draftType?.replaceAll('-', ' ') ?? 'article'}</dd>
+			</div>
+		</dl>
+		<p class="home-hero-note">Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.</p>
+		<div class="home-hero-links" aria-label="Quick links">
+			<a href={hrefFor('/rss.xml')}>RSS feed</a>
+			<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>
 		</div>
-	{/if}
+	</aside>
+</section>
 
-	{#if visibleArticles.length}
-		{#each visibleArticles as article, index (article.slug + ':' + index)}
+<section id="articles" class="article-grid" aria-label="Latest published articles">
+	<div class="section-head">
+		<p class="eyebrow">Latest articles</p>
+		<h2>Recent published posts</h2>
+		<p class="section-dek">The newest published technical notes, capped to the latest 5 posts.</p>
+	</div>
+
+	{#if latestArticles.length}
+		{#each latestArticles as article, index (article.slug + ':' + index)}
 			<ArticleCard {article} />
 		{/each}
 	{:else}
 		<div class="article-empty">
-			<p class="eyebrow">No results</p>
-			<h2>No articles match the current filters.</h2>
-			<p class="section-dek">Try clearing the tag or broadening the search text.</p>
+			<p class="eyebrow">No articles</p>
+			<h2>No published articles are available yet.</h2>
+			<p class="section-dek">Check back after the next production deploy.</p>
 		</div>
 	{/if}
 </section>
@@ -261,7 +200,3 @@
 		<span>Static site</span>
 	</div>
 </footer>
-
-
-
-
