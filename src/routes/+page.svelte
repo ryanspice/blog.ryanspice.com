@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
-	import { page } from '$app/state';
-	import { articleIndexHref, articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
 	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
+	import { articleIndexHref, articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
@@ -13,24 +12,23 @@
 
 	let { data }: { data: PageData } = $props();
 	const publishedArticles = $derived(data.publishedArticles ?? []);
-	const recentPublishedArticles = $derived(data.recentPublishedArticles ?? publishedArticles.slice(0, 5));
 	const publishedArticleTags = $derived(data.publishedArticleTags ?? []);
 
 	const title = 'blog.ryanspice.com · Technical notes';
 	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';
 	const indexRootHref = `${base}/`;
-	const latestArticle = $derived.by(() => recentPublishedArticles[0] ?? null);
+	const latestArticle = $derived.by(() => publishedArticles[0] ?? null);
 	const latestDate = $derived.by(() => (latestArticle ? latestArticle.date : '2026-05-28'));
 	const latestDateLabel = $derived.by(() => (latestArticle ? latestArticle.dateLabel : 'May 28, 2026'));
 	const latestArticleHref = $derived.by(() => (latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`));
 	const latestArticleAccent = $derived.by(() => (latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)'));
 	const footerLinks = $derived.by(() => {
 		const links = [
-		{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
-		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
-		{ label: 'Dev log', href: '/dev-log' },
-		{ label: 'RSS feed', href: '/rss.xml' },
-		{ label: 'Sitemap', href: '/sitemap.xml' }
+			{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
+			{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
+			{ label: 'Dev log', href: '/dev-log' },
+			{ label: 'RSS feed', href: '/rss.xml' },
+			{ label: 'Sitemap', href: '/sitemap.xml' }
 		];
 
 		if (canAccessDrafts($authState)) {
@@ -58,7 +56,7 @@
 	});
 
 	const compactMode = $derived(compactRequested || searchQuery.length > 0 || selectedTag.length > 0);
-	const browseArticles = $derived(compactMode ? publishedArticles : recentPublishedArticles);
+	const browseArticles = $derived(publishedArticles);
 	const visibleArticles = $derived(
 		browseArticles.filter((article) => {
 			if (selectedTag && !articleMatchesTag(article, selectedTag)) return false;
@@ -126,32 +124,32 @@
 {#if !compactMode}
 <section class="home-hero" style={`--article-accent: ${latestArticleAccent}`}>
 	<div class="home-hero-copy">
-			<p class="eyebrow">Ryan Spice · technical blog</p>
-			<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
-			<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.</p>
-			<dl class="meta-grid home-meta" aria-label="Site metadata">
-				<div>
-					<dt>
-						<ArticleIcon name="articles" class="meta-icon" />
-						<span>Articles</span>
-					</dt>
-					<dd>{publishedArticles.length}</dd>
-				</div>
-				<div>
-					<dt>
-						<ArticleIcon name="latest" class="meta-icon" />
-						<span>Latest</span>
-					</dt>
-					<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
-				</div>
-				<div>
-					<dt>
-						<ArticleIcon name="feed" class="meta-icon" />
-						<span>Feed</span>
-					</dt>
-					<dd>RSS available</dd>
-				</div>
-			</dl>
+		<p class="eyebrow">Ryan Spice · technical blog</p>
+		<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
+		<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.</p>
+		<dl class="meta-grid home-meta" aria-label="Site metadata">
+			<div>
+				<dt>
+					<ArticleIcon name="articles" class="meta-icon" />
+					<span>Articles</span>
+				</dt>
+				<dd>{publishedArticles.length}</dd>
+			</div>
+			<div>
+				<dt>
+					<ArticleIcon name="latest" class="meta-icon" />
+					<span>Latest</span>
+				</dt>
+				<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
+			</div>
+			<div>
+				<dt>
+					<ArticleIcon name="feed" class="meta-icon" />
+					<span>Feed</span>
+				</dt>
+				<dd>RSS available</dd>
+			</div>
+		</dl>
 	</div>
 
 	<aside class="hero-card home-hero-card" aria-label="Latest article" style={`--article-accent: ${latestArticleAccent}`}>
@@ -221,7 +219,7 @@
 		<div class="section-head">
 			<p class="eyebrow">Latest articles</p>
 			<h2>Recent published posts</h2>
-			<p class="section-dek">The newest published technical notes, capped to the latest 5 posts.</p>
+			<p class="section-dek">Published technical notes with dates, reading time, and source-linked metadata.</p>
 		</div>
 	{/if}
 
@@ -266,7 +264,3 @@
 		<span>Static site</span>
 	</div>
 </footer>
-
-
-
-

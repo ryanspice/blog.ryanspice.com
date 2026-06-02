@@ -42,6 +42,10 @@ const bannedFileNames = new Set([
 	'sidecar.stdout.log'
 ]);
 const protectedPaths = ['_protected'];
+const dataJsonRewritePatterns = [
+	/__data\.json/i,
+	/__data\\\.json/i
+];
 
 function walk(dir) {
 	const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -63,6 +67,24 @@ function readText(filePath) {
 
 function rel(filePath) {
 	return path.relative(root, filePath).replace(/\\/g, '/');
+}
+
+function hasAnyBuildFile(paths) {
+	return paths.some((item) => fs.existsSync(path.join(buildDir, item)));
+}
+
+function textFromBuildFiles(paths) {
+	return paths
+		.map((item) => path.join(buildDir, item))
+		.filter((file) => fs.existsSync(file))
+		.map((file) => {
+			try {
+				return readText(file);
+			} catch {
+				return '';
+			}
+		})
+		.join('\n');
 }
 
 let failed = false;
@@ -106,9 +128,29 @@ if (fs.existsSync(htaccessPath)) {
 		console.error('fail: build/.htaccess missing RewriteEngine On');
 		failed = true;
 	}
-	if (!/__data\\?\.json/i.test(htaccess)) {
+	if (!dataJsonRewritePatterns.some((pattern) => pattern.test(htaccess))) {
 		console.error('fail: build/.htaccess missing __data.json rewrite support');
 		failed = true;
+	}
+}
+
+const homepageRuntimeFiles = ['index.php', '__data.php', '__data.template.json', '_protected/_page.php'];
+if (!hasAnyBuildFile(homepageRuntimeFiles)) {
+	console.error('fail: homepage runtime output missing index/data files');
+	failed = true;
+} else {
+	const homepageOutput = textFromBuildFiles(homepageRuntimeFiles);
+	const requiredHomepageMarkers = [
+		'Recent published posts',
+		'publishedArticles',
+		'how-chatgpt-performs-deep-research'
+	];
+
+	for (const marker of requiredHomepageMarkers) {
+		if (!homepageOutput.includes(marker)) {
+			console.error(`fail: homepage production output missing marker: ${marker}`);
+			failed = true;
+		}
 	}
 }
 
