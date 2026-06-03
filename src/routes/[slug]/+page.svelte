@@ -1,11 +1,28 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import ArticleView from '$lib/components/ArticleView.svelte';
-	import type { Article, ArticleDesign } from '$lib/articles';
+	import { getArticle, getRelatedArticles, type Article, type ArticleDesign } from '$lib/articles';
 
 	let { data } = $props();
 
-	const safeArticle = $derived(toSafeArticle(data.article));
-	const safeRelatedArticles = $derived((Array.isArray(data.relatedArticles) ? data.relatedArticles : []).filter(Boolean).map(toSafeArticle));
+	const fallbackArticle = $derived.by(() => getArticle(page.params.slug ?? ''));
+	const sourceArticle = $derived.by(() => hasUsefulArticle(data.article) ? data.article : fallbackArticle);
+	const safeArticle = $derived(toSafeArticle(sourceArticle));
+	const sourceRelatedArticles = $derived.by(() => {
+		const related = Array.isArray(data.relatedArticles) ? data.relatedArticles.filter(Boolean) : [];
+		if (related.length) return related;
+		return fallbackArticle ? getRelatedArticles(fallbackArticle, 3) : [];
+	});
+	const safeRelatedArticles = $derived(sourceRelatedArticles.map(toSafeArticle));
+
+	function hasUsefulArticle(value: unknown): boolean {
+		const article = toObject(value);
+		return Boolean(
+			toString(article.slug) &&
+			toString(article.title) &&
+			(toString(article.html) || toString(article.body) || toString(article.summary))
+		);
+	}
 
 	function toObject(value: unknown): Record<string, unknown> {
 		return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
@@ -25,15 +42,17 @@
 
 	function toSafeDesign(value: unknown, article: Record<string, unknown>): ArticleDesign {
 		const design = toObject(value);
-		const slug = toString(article.slug, 'article');
 		const status = toString(article.status, 'published');
 		const draftType = toString(article.draftType, 'technical-blog-post');
 		const dateLabel = toString(article.dateLabel, 'Recent');
 		const updatedDateLabel = toString(article.updatedDateLabel, dateLabel);
-		const tags = toStringArray(design.tags).length ? toStringArray(design.tags) : toStringArray(article.tags);
+		const designTags = toStringArray(design.tags);
+		const articleTags = toStringArray(article.tags);
+		const tags = designTags.length ? designTags : articleTags;
+		const variant = toString(design.variant);
 
 		return {
-			variant: ['repair', 'debug', 'default'].includes(toString(design.variant)) ? (toString(design.variant) as ArticleDesign['variant']) : 'default',
+			variant: ['repair', 'debug', 'default'].includes(variant) ? (variant as ArticleDesign['variant']) : 'default',
 			brandLabel: toString(design.brandLabel, 'Ryan Spice / Canopy Digital'),
 			navLinks: Array.isArray(design.navLinks) ? (design.navLinks as ArticleDesign['navLinks']) : [{ label: 'Articles', href: '/#articles' }],
 			eyebrow: toString(design.eyebrow, `Technical blog · ${status}`),
@@ -64,7 +83,7 @@
 	function toSafeArticle(value: unknown): Article {
 		const article = toObject(value);
 		const title = toString(article.title, 'Article');
-		const slug = toString(article.slug, 'article');
+		const slug = toString(article.slug, page.params.slug ?? 'article');
 		const status = toString(article.status, 'published');
 		const draftType = toString(article.draftType, 'technical-blog-post');
 		const date = toString(article.date, '2026-05-28');
