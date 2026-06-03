@@ -6,6 +6,10 @@ on:
       - main
       - master
   workflow_dispatch:
+  schedule:
+    # Rebuild once per day so draft frontmatter release_date values become public
+    # without a manual deploy. 05:15 UTC is safely after midnight in America/Toronto.
+    - cron: '15 5 * * *'
 
 concurrency:
   group: deploy-blog-production
