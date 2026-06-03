@@ -58,15 +58,15 @@
 <style>
 	.article-bg-image {
 		position: fixed;
-		inset: -8vmax;
+		inset: -10vmax;
 		z-index: 0;
 		pointer-events: none;
 		overflow: hidden;
-		opacity: 0.2;
-		filter: saturate(1.08) blur(18px);
+		opacity: 0.115;
+		filter: saturate(0.95) blur(34px);
 		mask-image:
-			radial-gradient(circle at 50% 16%, black 0%, black 30%, transparent 72%),
-			linear-gradient(180deg, black 0%, black 48%, transparent 88%);
+			radial-gradient(circle at 50% 10%, black 0%, black 20%, transparent 58%),
+			linear-gradient(180deg, black 0%, black 32%, transparent 74%);
 	}
 
 	.article-bg-image::before,
@@ -80,19 +80,72 @@
 		background-image: var(--article-bg-image);
 		background-size: cover;
 		background-position: center top;
-		transform: scale(1.08);
+		transform: scale(1.14);
 	}
 
 	.article-bg-image::after {
 		background:
-			radial-gradient(circle at 50% 12%, color-mix(in srgb, var(--article-accent, var(--accent)) 32%, transparent), transparent 42%),
-			linear-gradient(180deg, rgba(0, 0, 0, 0.12), #000 86%);
+			radial-gradient(circle at 50% 10%, color-mix(in srgb, var(--article-accent, var(--accent)) 18%, transparent), transparent 34%),
+			linear-gradient(180deg, rgba(0, 0, 0, 0.2), #000 78%);
 		mix-blend-mode: screen;
-		opacity: 0.62;
+		opacity: 0.42;
 	}
 
 	:global(.article-page > :not(.article-bg-image)) {
 		position: relative;
 		z-index: 1;
+	}
+
+	:global(.article-page .article-shell) {
+		border: 1px solid color-mix(in srgb, var(--article-accent, var(--accent)) 18%, rgba(255, 255, 255, 0.12));
+		border-radius: 28px;
+		padding: clamp(22px, 3vw, 42px);
+		background:
+			linear-gradient(135deg, rgba(21, 26, 35, 0.82), rgba(4, 6, 10, 0.66)),
+			color-mix(in srgb, var(--article-accent, var(--accent)) 6%, transparent);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.08),
+			0 22px 70px rgba(0, 0, 0, 0.26);
+		backdrop-filter: blur(28px) saturate(1.18);
+		-webkit-backdrop-filter: blur(28px) saturate(1.18);
+	}
+
+	:global(.article-page .hero-card),
+	:global(.article-page .rail-card),
+	:global(.article-page .toc),
+	:global(.article-page .article-toc--mobile),
+	:global(.article-page .article-references),
+	:global(.article-page .related-article-card) {
+		border-color: color-mix(in srgb, var(--article-accent, var(--accent)) 18%, rgba(255, 255, 255, 0.12));
+		background:
+			linear-gradient(135deg, rgba(24, 29, 38, 0.72), rgba(4, 6, 10, 0.52)),
+			color-mix(in srgb, var(--article-accent, var(--accent)) 5%, transparent);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.08),
+			0 18px 48px rgba(0, 0, 0, 0.2);
+		backdrop-filter: blur(22px) saturate(1.14);
+		-webkit-backdrop-filter: blur(22px) saturate(1.14);
+	}
+
+	:global(.article-page .meta-grid > div),
+	:global(.article-page .hero-meta > div),
+	:global(.article-page .status-pill),
+	:global(.article-page .tag) {
+		background: rgba(255, 255, 255, 0.035);
+		border-color: rgba(255, 255, 255, 0.105);
+		backdrop-filter: blur(16px) saturate(1.08);
+		-webkit-backdrop-filter: blur(16px) saturate(1.08);
+	}
+
+	@media (max-width: 760px) {
+		.article-bg-image {
+			opacity: 0.075;
+			filter: saturate(0.9) blur(38px);
+		}
+
+		:global(.article-page .article-shell) {
+			padding: clamp(18px, 5vw, 26px);
+			border-radius: 22px;
+		}
 	}
 </style>
