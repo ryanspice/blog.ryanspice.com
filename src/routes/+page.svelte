@@ -7,6 +7,7 @@
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import HomeFandangoStyles from '$lib/components/HomeFandangoStyles.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { PageData } from './$types';
 
@@ -52,6 +53,8 @@
 	}
 </script>
 
+<HomeFandangoStyles />
+
 <svelte:head>
 	<title>{title}</title>
 	<meta name="description" content={description} />
@@ -82,18 +85,22 @@
 		<p class="eyebrow">Ryan Spice · technical blog</p>
 		<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
 		<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.</p>
+		<div class="home-primary-actions" aria-label="Primary actions">
+			<a href={latestArticleHref}>Start with the latest article</a>
+			<a href="#articles">Browse the latest 5</a>
+		</div>
 		<dl class="meta-grid home-meta" aria-label="Site metadata">
 			<div>
-				<dt><ArticleIcon name="articles" class="meta-icon" /><span>Articles</span></dt>
+				<dt><ArticleIcon name="articles" class="meta-icon" /><span>Published notes</span></dt>
 				<dd>{publishedArticles.length}</dd>
 			</div>
 			<div>
-				<dt><ArticleIcon name="latest" class="meta-icon" /><span>Latest</span></dt>
+				<dt><ArticleIcon name="latest" class="meta-icon" /><span>Latest update</span></dt>
 				<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
 			</div>
 			<div>
-				<dt><ArticleIcon name="feed" class="meta-icon" /><span>Feed</span></dt>
-				<dd>RSS available</dd>
+				<dt><ArticleIcon name="feed" class="meta-icon" /><span>Subscribe</span></dt>
+				<dd><a href={hrefFor('/rss.xml')}>RSS feed</a></dd>
 			</div>
 		</dl>
 	</div>
