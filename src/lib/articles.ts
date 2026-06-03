@@ -84,13 +84,16 @@ const articleAccents: Record<string, string> = {
 	'pixelboats-networking-player-hosted-php': '#00c2ff'
 };
 
+const buildDate = new Date();
+
 // NOTE: renderMarkdown is async (unified pipeline + server-only Shiki highlighting), so article parsing is async as well.
 // Top-level await is supported by Vite/SvelteKit and keeps the export contract unchanged.
 export const articles: Article[] = (await Promise.all(Object.entries(modules).map(([path, raw]) => parseArticle(path, raw))))
-	.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
+	.sort((a, b) => effectivePublishDate(b).localeCompare(effectivePublishDate(a)) || a.title.localeCompare(b.title));
 
-export const publishedArticles = articles.filter((article) => article.status === 'published');
-export const draftArticles = articles.filter((article) => article.status !== 'published');
+export const publishedArticles = articles.filter(isPublicArticle);
+export const draftArticles = articles.filter((article) => !isPublicArticle(article));
+export const scheduledArticles = draftArticles.filter((article) => article.releaseDate && article.status !== 'published');
 export const publishedArticleTags = Array.from(new Set(publishedArticles.flatMap((article) => article.tags))).sort((left, right) =>
 	left.localeCompare(right)
 );
@@ -102,11 +105,20 @@ export function getArticle(slug: string): Article | undefined {
 	return articles.find((article) => article.slug === slug);
 }
 
+export function isPublicArticle(article: Pick<ArticleMeta, 'status' | 'releaseDate'>): boolean {
+	if (article.status === 'published') return true;
+	return Boolean(article.releaseDate && isDateReached(article.releaseDate, buildDate));
+}
+
+export function effectivePublishDate(article: Pick<ArticleMeta, 'date' | 'releaseDate'>): string {
+	return article.releaseDate || article.date;
+}
+
 export function getRelatedArticles(
 	article: Pick<ArticleMeta, 'slug' | 'status' | 'tags' | 'relatedPosts' | 'draftType'>,
 	limit = 3
 ): Article[] {
-	const pool = article.status === 'published' ? publishedArticles : articles;
+	const pool = isPublicArticle(article) ? publishedArticles : articles;
 	const explicitTargets = new Set(article.relatedPosts.map((target) => normalizeRelatedTarget(target)));
 	const articleTags = new Set(article.tags.map((tag) => tag.toLowerCase()));
 
@@ -135,7 +147,7 @@ export function getRelatedArticles(
 		.filter(({ score }) => score > 0)
 		.sort((left, right) => {
 			if (right.score !== left.score) return right.score - left.score;
-			return right.candidate.date.localeCompare(left.candidate.date) || left.candidate.title.localeCompare(right.candidate.title);
+			return effectivePublishDate(right.candidate).localeCompare(effectivePublishDate(left.candidate)) || left.candidate.title.localeCompare(right.candidate.title);
 		})
 		.slice(0, limit)
 		.map(({ candidate }) => candidate);
@@ -146,7 +158,7 @@ export function getRelatedArticles(
 
 	const fallback = pool
 		.filter((candidate) => candidate.slug !== article.slug && !ranked.some((item) => item.slug === candidate.slug))
-		.sort((left, right) => right.date.localeCompare(left.date) || left.title.localeCompare(right.title));
+		.sort((left, right) => effectivePublishDate(right).localeCompare(effectivePublishDate(left)) || left.title.localeCompare(right.title));
 
 	return [...ranked, ...fallback].slice(0, limit);
 }
@@ -347,12 +359,12 @@ function designFor(
 		};
 	}
 
-	const isDraft = article.status === 'draft';
+	const isDraft = !isPublicArticle(article);
 
 	return {
 		...common,
 		variant: 'default',
-		eyebrow: `Technical blog · ${article.status}`,
+		eyebrow: `Technical blog · ${isDraft ? article.status : 'published'}`,
 		tags: article.tags,
 		cardPalette: {
 			label: 'Blog palette',
@@ -363,7 +375,7 @@ function designFor(
 		heroCardAria: 'Article details',
 		statusItems: [
 			{ label: 'Type', value: article.draftType.replaceAll('-', ' ') },
-			{ label: 'Status', value: article.status },
+			{ label: 'Status', value: isDraft ? article.status : 'published' },
 			{ label: 'Date', value: article.dateLabel },
 			...(article.releaseDateLabel ? [{ label: 'Release', value: article.releaseDateLabel }] : [])
 		],
@@ -463,6 +475,13 @@ function formatArticleDate(value: string): string {
 		year: 'numeric',
 		timeZone: 'UTC'
 	}).format(parsed);
+}
+
+function isDateReached(value: string, now: Date): boolean {
+	const parsed = new Date(`${value}T00:00:00Z`);
+	if (Number.isNaN(parsed.getTime())) return false;
+	const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+	return parsed.getTime() <= todayUtc;
 }
 
 function firstHeading(body: string): string | undefined {
