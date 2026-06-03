@@ -6,6 +6,7 @@
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleHref } from '$lib/article-links';
 	import type { Article } from '$lib/articles';
+	import ArticleBackgroundLayer from '$lib/components/ArticleBackgroundLayer.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
@@ -20,25 +21,22 @@
 	let activeTocId = $state<string | null>(null);
 	let commandFeedback = $state<string | null>(null);
 	let feedbackTimer: number | null = null;
+
 	const articleAccent = $derived(articleAccentColor(article));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
+	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · Updated ${article.updatedDateLabel}`);
+	const articleReferences = $derived(article.references.filter(Boolean));
+	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
+	const description = $derived(article.summary || 'Technical blog drafts and production notes from Ryan Spice.');
+	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
+	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
 	const articleFooterLinks = [
 		{ label: 'Home', href: `${base}/` },
 		{ label: 'RSS', href: `${base}/rss.xml` },
 		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
 		{ label: 'Dev log', href: `${base}/dev-log/` }
 	];
-	const articleInfo = $derived(
-		`${article.draftType.replaceAll('-', ' ')} · Updated ${article.updatedDateLabel}`
-	);
-	const articleReferences = $derived(article.references.filter(Boolean));
-
-	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
-	const description = $derived(article.summary || 'Technical blog drafts and production notes from Ryan Spice.');
-	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
-	const rssUrl = $derived(new URL(`${base}/rss.xml`, page.url.origin).toString());
-	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -79,9 +77,7 @@
 		]
 	});
 	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
-	const jsonLdScriptHtml = $derived(
-		`<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`
-	);
+	const jsonLdScriptHtml = $derived(`<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`);
 
 	function setCommandFeedback(message: string) {
 		commandFeedback = message;
@@ -122,17 +118,15 @@
 	}
 
 	async function copyLink() {
-		const text = canonical;
-
 		try {
-			await navigator.clipboard.writeText(text);
+			await navigator.clipboard.writeText(canonical);
 			setCommandFeedback('Link copied');
 			return;
 		} catch {
 			// fall through
 		}
 
-		const ok = fallbackCopyText(text);
+		const ok = fallbackCopyText(canonical);
 		setCommandFeedback(ok ? 'Link copied' : 'Copy failed');
 	}
 
@@ -142,12 +136,7 @@
 
 		try {
 			const { default: mermaid } = await import('mermaid');
-			mermaid.initialize({
-				startOnLoad: false,
-				securityLevel: 'strict',
-				theme: 'dark',
-				darkMode: true
-			});
+			mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'dark', darkMode: true });
 
 			for (const [index, diagram] of diagrams.entries()) {
 				const source = diagram.textContent?.trim();
@@ -163,17 +152,12 @@
 				}
 			}
 		} catch {
-			for (const diagram of diagrams) {
-				diagram.classList.add('mermaid-error');
-			}
+			for (const diagram of diagrams) diagram.classList.add('mermaid-error');
 		}
 	}
 
 	onMount(() => {
-		const headings = Array.from(
-			document.querySelectorAll<HTMLElement>('.article-inner h2[id], .article-inner h3[id]')
-		);
-
+		const headings = Array.from(document.querySelectorAll<HTMLElement>('.article-inner h2[id], .article-inner h3[id]'));
 		let frame: number | null = null;
 
 		const update = () => {
@@ -200,6 +184,7 @@
 		window.addEventListener('scroll', update, { passive: true });
 		window.addEventListener('resize', update);
 		void enhanceMermaid();
+
 		return () => {
 			if (frame !== null) cancelAnimationFrame(frame);
 			if (feedbackTimer !== null) window.clearTimeout(feedbackTimer);
@@ -213,7 +198,6 @@
 	<title>{pageTitle}</title>
 	<meta name="description" content={description} />
 	<link rel="canonical" href={canonical} />
-
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={description} />
 	<meta property="og:url" content={canonical} />
@@ -223,93 +207,39 @@
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content={pageTitle} />
-
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={pageTitle} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={pageTitle} />
-
 	<meta property="article:published_time" content={article.date} />
 	<meta property="article:modified_time" content={article.updatedDate} />
-
 	{#each article.tags as tag, index (tag + ':' + index)}
 		<meta property="article:tag" content={tag} />
 	{/each}
-
 	{@html jsonLdScriptHtml}
 </svelte:head>
 
 <div class={`article-page theme-${article.design.variant} has-command-bar`} style={`--article-accent: ${articleAccent}`}>
+	<ArticleBackgroundLayer {article} />
 	<div class="read-progress" style={`width: ${progress}%`}></div>
-
 	<SiteHeader brandLabel={article.design.brandLabel} navLinks={article.design.navLinks} />
 
 	<section class="hero">
 		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
 			<div class="eyebrow">{article.design.eyebrow}</div>
 			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
-			<p class="article-byline">
-				<time datetime={article.date}>{article.dateLabel}</time>
-			</p>
+			<p class="article-byline"><time datetime={article.date}>{article.dateLabel}</time></p>
+
 			<dl class="meta-grid article-meta" aria-label="Article metadata">
-				<div>
-					<dt>
-						<svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-							<path
-								d="M7.5 4.5h6.2l3.8 3.8V19a1.5 1.5 0 0 1-1.5 1.5h-8.5A1.5 1.5 0 0 1 6 19V6a1.5 1.5 0 0 1 1.5-1.5Z"
-								fill="currentColor"
-								fill-opacity="0.12"
-								stroke="currentColor"
-								stroke-width="1.4"
-								stroke-linejoin="round"
-							/>
-							<path d="M13.7 4.5V9h4.3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
-							<path d="M8.6 11h6.8M8.6 14h6.8M8.6 17h4.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-						</svg>
-						<span>Article info</span>
-					</dt>
-					<dd>{articleInfo}</dd>
-				</div>
-				<div>
-					<dt>
-						<svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-							<circle cx="12" cy="12" r="7.25" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.4" />
-							<path d="M12 8.25V12l2.5 1.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-						</svg>
-						<span>Read time</span>
-					</dt>
-					<dd>{article.readingMinutes} min</dd>
-				</div>
-				<div>
-					<dt>
-						<svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-							<path
-								d="M6.5 6.25h11A1.75 1.75 0 0 1 19.25 8v8A1.75 1.75 0 0 1 17.5 17.75h-11A1.75 1.75 0 0 1 4.75 16V8A1.75 1.75 0 0 1 6.5 6.25Z"
-								fill="currentColor"
-								fill-opacity="0.12"
-								stroke="currentColor"
-								stroke-width="1.4"
-							/>
-							<path d="M8 10h8M8 13h5.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-						</svg>
-						<span>Type</span>
-					</dt>
-					<dd>{article.draftType.replaceAll('-', ' ')}</dd>
-				</div>
+				<div><dt>Article info</dt><dd>{articleInfo}</dd></div>
+				<div><dt>Read time</dt><dd>{article.readingMinutes} min</dd></div>
+				<div><dt>Type</dt><dd>{article.draftType.replaceAll('-', ' ')}</dd></div>
 				{#if article.releaseDateLabel}
-					<div>
-						<dt>
-							<svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-								<rect x="5" y="6" width="14" height="13" rx="2.5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.4" />
-								<path d="M5 9h14M8 4.5v3M16 4.5v3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-							</svg>
-							<span>Release</span>
-						</dt>
-						<dd>{article.releaseDateLabel}</dd>
-					</div>
+					<div><dt>Release</dt><dd>{article.releaseDateLabel}</dd></div>
 				{/if}
 			</dl>
+
 			<p class="dek">{article.summary}</p>
 			<div class="tag-row" aria-label="Tags">
 				{#each article.design.tags as tag, index (tag + ':' + index)}
@@ -338,12 +268,6 @@
 					<path d="M132 350V260l52-30 60 35v90l-55 31-57-36Z" stroke-width="1.4" opacity="0.62" />
 					<path d="M66 116h206M92 98h148M238 464h106M262 486h66" stroke-width="1.2" opacity="0.42" />
 				</g>
-				<g fill="currentColor">
-					<circle cx="68" cy="184" r="3" opacity="0.7" />
-					<circle cx="192" cy="256" r="3" opacity="0.88" />
-					<circle cx="308" cy="194" r="2.6" opacity="0.66" />
-					<circle cx="192" cy="478" r="2.8" opacity="0.58" />
-				</g>
 			</svg>
 		</div>
 
@@ -359,20 +283,10 @@
 
 			{#if article.toc.length}
 				<details class="toc-accordion article-toc article-toc--mobile" aria-label="Table of contents">
-					<summary>
-						<span>{article.design.tocTitle}</span>
-						<strong>{article.toc.length} sections</strong>
-					</summary>
-
+					<summary><span>{article.design.tocTitle}</span><strong>{article.toc.length} sections</strong></summary>
 					<div class="toc-accordion-panel">
 						{#each article.toc as item, index (item.id + ':' + index)}
-							<a
-								class:toc-l3={item.level === 3}
-								class:toc-l2={item.level === 2}
-								class:is-active={activeTocId === item.id}
-								href={`#${item.id}`}
-								>{item.text}</a
-							>
+							<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} class:is-active={activeTocId === item.id} href={`#${item.id}`}>{item.text}</a>
 						{/each}
 					</div>
 				</details>
@@ -381,7 +295,6 @@
 			<aside class="rail-card" aria-label={article.design.railTitle}>
 				<h2>{article.design.railTitle}</h2>
 				<p>{@html article.design.railBodyHtml}</p>
-
 				{#if article.design.railStatusItems?.length}
 					<div class="status-grid" aria-label="Publishing controls">
 						{#each article.design.railStatusItems as item, index (item.label + ':' + index)}
@@ -389,7 +302,6 @@
 						{/each}
 					</div>
 				{/if}
-
 				{#if article.design.railPalette}
 					<div class="palette-preview" aria-label={article.design.railPalette.label}>
 						{#each article.design.railPalette.colors as color, index (color + ':' + index)}
@@ -397,7 +309,6 @@
 						{/each}
 					</div>
 				{/if}
-
 				{#if article.design.railChips?.length}
 					<div class="debug-stack" aria-label={article.design.railChipsLabel ?? 'Debugging stack'}>
 						{#each article.design.railChips as chip, index (chip + ':' + index)}
@@ -405,10 +316,7 @@
 						{/each}
 					</div>
 				{/if}
-
-				<div class="callout">
-					{@html article.design.railCalloutHtml}
-				</div>
+				<div class="callout">{@html article.design.railCalloutHtml}</div>
 			</aside>
 		</div>
 	</section>
@@ -417,22 +325,12 @@
 		<aside class="toc article-toc article-toc--desktop" aria-label="Table of contents">
 			<h2>{article.design.tocTitle}</h2>
 			{#each article.toc as item, index (item.id + ':' + index)}
-				<a
-					class:toc-l3={item.level === 3}
-					class:toc-l2={item.level === 2}
-					class:is-active={activeTocId === item.id}
-					href={`#${item.id}`}
-					>{item.text}</a
-				>
+				<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} class:is-active={activeTocId === item.id} href={`#${item.id}`}>{item.text}</a>
 			{/each}
 		</aside>
 
 		<div class="article-column">
-			<article class="article-shell">
-				<div class="article-inner">
-					{@html article.html}
-				</div>
-			</article>
+			<article class="article-shell"><div class="article-inner">{@html article.html}</div></article>
 
 			{#if articleReferences.length}
 				<section class="article-references" aria-label="Sources and further reading">
@@ -440,43 +338,12 @@
 						<div class="section-head-copy">
 							<p class="eyebrow">Sources</p>
 							<h2>Sources and further reading</h2>
-							<p class="section-dek">
-								External documentation and source material linked for the parts of the article that need it.
-							</p>
+							<p class="section-dek">External documentation and source material linked for the parts of the article that need it.</p>
 						</div>
-						<svg
-							class="section-head-art"
-							viewBox="0 0 240 48"
-							aria-hidden="true"
-							focusable="false"
-						>
-							<path
-								d="M8 24H54M66 24H100M118 24H152M170 24H232"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.5"
-								stroke-linecap="round"
-							/>
-							<circle cx="54" cy="24" r="3" fill="currentColor" />
-							<circle cx="100" cy="24" r="2.5" fill="currentColor" opacity="0.75" />
-							<circle cx="152" cy="24" r="3" fill="currentColor" />
-							<circle cx="170" cy="24" r="2.5" fill="currentColor" opacity="0.75" />
-							<circle cx="232" cy="24" r="3" fill="currentColor" />
-						</svg>
 					</div>
-
 					<ul class="reference-list">
 						{#each articleReferences as reference, index (reference + ':' + index)}
-							<li>
-								<a
-									class="wiki-link external-link"
-									href={reference}
-									rel="noreferrer"
-									target="_blank"
-								>
-									{formatReferenceLabel(reference)}
-								</a>
-							</li>
+							<li><a class="wiki-link external-link" href={reference} rel="noreferrer" target="_blank">{formatReferenceLabel(reference)}</a></li>
 						{/each}
 					</ul>
 				</section>
@@ -487,29 +354,17 @@
 					<div class="section-head">
 						<p class="eyebrow">Related articles</p>
 						<h2>More like this</h2>
-						<p class="section-dek">
-							Articles with overlapping tags, explicit references, or the same line of work.
-						</p>
+						<p class="section-dek">Articles with overlapping tags, explicit references, or the same line of work.</p>
 					</div>
-
 					<div class="related-articles-grid">
 						{#each relatedArticles as related, index (related.slug + ':' + index)}
-							<a
-								class="related-article-card article-card-link"
-								href={articleHref(related)}
-								style={`--article-accent: ${articleAccentColor(related)}`}
-							>
+							<a class="related-article-card article-card-link" href={articleHref(related)} style={`--article-accent: ${articleAccentColor(related)}`}>
 								<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
 								<h3>{related.title}</h3>
-								<p class="related-meta">
-									<time datetime={related.date}>{related.dateLabel}</time>
-									<span>{related.readingMinutes} min read</span>
-								</p>
+								<p class="related-meta"><time datetime={related.date}>{related.dateLabel}</time><span>{related.readingMinutes} min read</span></p>
 								<p>{related.summary}</p>
 								<div class="tag-row compact" aria-label={`${related.title} tags`}>
-									{#each related.tags.slice(0, 4) as tag, index (tag + ':' + index)}
-										<span class="tag">{tag}</span>
-									{/each}
+									{#each related.tags.slice(0, 4) as tag, index (tag + ':' + index)}<span class="tag">{tag}</span>{/each}
 								</div>
 							</a>
 						{/each}
@@ -523,12 +378,8 @@
 		<div class="command-inner">
 			<a class="cmd" href={`${base}/`}>Back</a>
 			<a class="cmd" href={`${base}/rss.xml`}>RSS</a>
-			<button class="cmd" type="button" onclick={copyLink} aria-label="Copy link to clipboard">
-				Copy link
-			</button>
-			{#if commandFeedback}
-				<span class="cmd-feedback" aria-live="polite">{commandFeedback}</span>
-			{/if}
+			<button class="cmd" type="button" onclick={copyLink} aria-label="Copy link to clipboard">Copy link</button>
+			{#if commandFeedback}<span class="cmd-feedback" aria-live="polite">{commandFeedback}</span>{/if}
 		</div>
 	</div>
 
