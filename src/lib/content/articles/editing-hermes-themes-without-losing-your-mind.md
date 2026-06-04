@@ -26,7 +26,6 @@ credits:
 references:
   - "https://hermes-agent.nousresearch.com/docs/user-guide/features/skins"
   - "https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/features/skins.md"
-summary: "A practical debugging note on editing Hermes Agent skins, why a profile can say it is using a custom skin while still rendering the default theme, and the checklist I should have used before rewriting YAML."
 related_posts:
   - "hermes-deepseek-setup"
   - "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
