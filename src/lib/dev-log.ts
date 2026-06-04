@@ -11,12 +11,20 @@ type DevLogSeed = Omit<DevLogEntry, 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-06-04',
+		title: 'Ingest the PixelBoats rigging and sail-order lab',
+		summary:
+			'Added the latest rigging demo to the blog repo, captured the captain-order research path, and staged a draft article plus a library page for reusable research references.',
+		source: 'PixelBoats demo research',
+		accent: '#00aeef'
+	},
+	{
 		date: '2026-05-30',
 		title: 'Seed the public dev log',
 		summary:
 			'Added a lightweight place for blog work, repo notes, and future command summaries.',
 		source: 'Blog process',
-		accent: '#1e9bff',
+		accent: '#1e9bff'
 	},
 	{
 		date: '2026-05-29',
@@ -24,7 +32,7 @@ const devLogSeeds: DevLogSeed[] = [
 		summary:
 			'Added /drafts so unfinished pieces stay separate from the public homepage while still being easy to review.',
 		source: 'SvelteKit route',
-		accent: '#53b8ff',
+		accent: '#53b8ff'
 	},
 	{
 		date: '2026-05-29',
@@ -32,7 +40,7 @@ const devLogSeeds: DevLogSeed[] = [
 		summary:
 			'Wired article titles into native view transitions so clicks move the title into the reading page instead of hard-cutting.',
 		source: 'UX pass',
-		accent: '#f2d27c',
+		accent: '#f2d27c'
 	},
 	{
 		date: '2026-05-28',
@@ -40,7 +48,7 @@ const devLogSeeds: DevLogSeed[] = [
 		summary:
 			'Loaded the base color from the CN Tower lights feed and kept a blue fallback when the remote source is unavailable.',
 		source: 'External data',
-		accent: '#87dac4',
+		accent: '#87dac4'
 	},
 	{
 		date: '2026-05-27',
@@ -48,7 +56,7 @@ const devLogSeeds: DevLogSeed[] = [
 		summary:
 			'Left the published surface focused on repair logs, research notes, and PixelBoats work instead of hiding everything behind a single generic blog feed.',
 		source: 'AI Wiki',
-		accent: '#ffcf77',
+		accent: '#ffcf77'
 	}
 ];
 
