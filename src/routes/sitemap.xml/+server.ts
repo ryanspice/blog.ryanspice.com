@@ -34,6 +34,11 @@ export const GET = ({ url }: { url: URL }) => {
 			priority: 1.0
 		},
 		{
+			loc: new URL(`${base}/library/`, url.origin).toString(),
+			changefreq: 'monthly',
+			priority: 0.6
+		},
+		{
 			loc: new URL(`${base}/dev-log/`, url.origin).toString(),
 			changefreq: 'weekly',
 			priority: 0.6
