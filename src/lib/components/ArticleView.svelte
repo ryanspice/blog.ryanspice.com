@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
+	import { articleFocalCardCssVars, articleFocalImage, articleFocalPageCssVars } from '$lib/article-focal-images';
 	import { articleHref } from '$lib/article-links';
 	import type { Article } from '$lib/articles';
 	import ArticleBackgroundLayer from '$lib/components/ArticleBackgroundLayer.svelte';
@@ -23,6 +24,8 @@
 	let feedbackTimer: number | null = null;
 
 	const articleAccent = $derived(articleAccentColor(article));
+	const focalImage = $derived(articleFocalImage(article));
+	const pageStyle = $derived(`--article-accent: ${articleAccent}; ${articleFocalPageCssVars(article)}`);
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · Updated ${article.updatedDateLabel}`);
@@ -30,7 +33,7 @@
 	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
 	const description = $derived(article.summary || 'Technical blog drafts and production notes from Ryan Spice.');
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
-	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
+	const ogImage = $derived(focalImage?.src ?? new URL(`${base}/og-default.png`, page.url.origin).toString());
 	const articleFooterLinks = [
 		{ label: 'Home', href: `${base}/` },
 		{ label: 'RSS', href: `${base}/rss.xml` },
@@ -70,6 +73,7 @@
 					name: 'Ryan Spice',
 					url: new URL(`${base}/`, page.url.origin).toString()
 				},
+				image: ogImage,
 				keywords: article.tags.join(', '),
 				wordCount: article.wordCount,
 				timeRequired: `PT${article.readingMinutes}M`
@@ -206,12 +210,12 @@
 	<meta property="og:image" content={ogImage} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content={pageTitle} />
+	<meta property="og:image:alt" content={focalImage?.alt ?? pageTitle} />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={pageTitle} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
-	<meta name="twitter:image:alt" content={pageTitle} />
+	<meta name="twitter:image:alt" content={focalImage?.alt ?? pageTitle} />
 	<meta property="article:published_time" content={article.date} />
 	<meta property="article:modified_time" content={article.updatedDate} />
 	{#each article.tags as tag, index (tag + ':' + index)}
@@ -220,7 +224,7 @@
 	{@html jsonLdScriptHtml}
 </svelte:head>
 
-<div class={`article-page theme-${article.design.variant} has-command-bar`} style={`--article-accent: ${articleAccent}`}>
+<div class={`article-page theme-${article.design.variant} has-command-bar${focalImage ? ' has-focal-image' : ''}`} style={pageStyle}>
 	<ArticleBackgroundLayer {article} />
 	<div class="read-progress" style={`width: ${progress}%`}></div>
 	<SiteHeader brandLabel={article.design.brandLabel} navLinks={article.design.navLinks} />
@@ -249,26 +253,30 @@
 		</div>
 
 		<div class="article-hero-visual" aria-hidden="true">
-			<svg viewBox="0 0 420 560" focusable="false">
-				<defs>
-					<linearGradient id="hero-visual-line" x1="0%" y1="0%" x2="100%" y2="100%">
-						<stop offset="0%" stop-color="currentColor" stop-opacity="0.55" />
-						<stop offset="100%" stop-color="currentColor" stop-opacity="0.05" />
-					</linearGradient>
-					<radialGradient id="hero-visual-glow" cx="50%" cy="42%" r="58%">
-						<stop offset="0%" stop-color="currentColor" stop-opacity="0.2" />
-						<stop offset="100%" stop-color="currentColor" stop-opacity="0" />
-					</radialGradient>
-				</defs>
-				<rect x="34" y="78" width="306" height="382" rx="32" fill="url(#hero-visual-glow)" />
-				<g fill="none" stroke="url(#hero-visual-line)" stroke-linecap="round" stroke-linejoin="round">
-					<path d="M68 402V184l112-64 128 74v218l-116 66-124-76Z" stroke-width="1.7" />
-					<path d="M68 184l124 72 116-62M192 256v222" stroke-width="1.4" opacity="0.62" />
-					<path d="M104 374V232l78-44 90 52v142l-82 46-86-54Z" stroke-width="1.4" opacity="0.5" />
-					<path d="M132 350V260l52-30 60 35v90l-55 31-57-36Z" stroke-width="1.4" opacity="0.62" />
-					<path d="M66 116h206M92 98h148M238 464h106M262 486h66" stroke-width="1.2" opacity="0.42" />
-				</g>
-			</svg>
+			{#if focalImage}
+				<div class="article-focal-panel"></div>
+			{:else}
+				<svg viewBox="0 0 420 560" focusable="false">
+					<defs>
+						<linearGradient id="hero-visual-line" x1="0%" y1="0%" x2="100%" y2="100%">
+							<stop offset="0%" stop-color="currentColor" stop-opacity="0.55" />
+							<stop offset="100%" stop-color="currentColor" stop-opacity="0.05" />
+						</linearGradient>
+						<radialGradient id="hero-visual-glow" cx="50%" cy="42%" r="58%">
+							<stop offset="0%" stop-color="currentColor" stop-opacity="0.2" />
+							<stop offset="100%" stop-color="currentColor" stop-opacity="0" />
+						</radialGradient>
+					</defs>
+					<rect x="34" y="78" width="306" height="382" rx="32" fill="url(#hero-visual-glow)" />
+					<g fill="none" stroke="url(#hero-visual-line)" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M68 402V184l112-64 128 74v218l-116 66-124-76Z" stroke-width="1.7" />
+						<path d="M68 184l124 72 116-62M192 256v222" stroke-width="1.4" opacity="0.62" />
+						<path d="M104 374V232l78-44 90 52v142l-82 46-86-54Z" stroke-width="1.4" opacity="0.5" />
+						<path d="M132 350V260l52-30 60 35v90l-55 31-57-36Z" stroke-width="1.4" opacity="0.62" />
+						<path d="M66 116h206M92 98h148M238 464h106M262 486h66" stroke-width="1.2" opacity="0.42" />
+					</g>
+				</svg>
+			{/if}
 		</div>
 
 		<div class="article-hero-side">
@@ -279,6 +287,15 @@
 						<div class="status-pill"><span>{item.label}</span><strong>{item.value}</strong></div>
 					{/each}
 				</div>
+				{#if focalImage?.credit}
+					<p class="focal-credit">
+						{#if focalImage.sourceHref}
+							<a href={focalImage.sourceHref} rel="noreferrer" target="_blank">{focalImage.credit}</a>
+						{:else}
+							{focalImage.credit}
+						{/if}
+					</p>
+				{/if}
 			</aside>
 
 			{#if article.toc.length}
@@ -358,14 +375,17 @@
 					</div>
 					<div class="related-articles-grid">
 						{#each relatedArticles as related, index (related.slug + ':' + index)}
-							<a class="related-article-card article-card-link" href={articleHref(related)} style={`--article-accent: ${articleAccentColor(related)}`}>
-								<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
-								<h3>{related.title}</h3>
-								<p class="related-meta"><time datetime={related.date}>{related.dateLabel}</time><span>{related.readingMinutes} min read</span></p>
-								<p>{related.summary}</p>
-								<div class="tag-row compact" aria-label={`${related.title} tags`}>
-									{#each related.tags.slice(0, 4) as tag, index (tag + ':' + index)}<span class="tag">{tag}</span>{/each}
-								</div>
+							<a class={`related-article-card article-card-link${articleFocalImage(related) ? ' has-focal-image' : ''}`} href={articleHref(related)} style={`--article-accent: ${articleAccentColor(related)}; ${articleFocalCardCssVars(related)}`}>
+								{#if articleFocalImage(related)}<span class="article-card-focal" aria-hidden="true"></span>{/if}
+								<span class="article-card-content">
+									<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
+									<h3>{related.title}</h3>
+									<p class="related-meta"><time datetime={related.date}>{related.dateLabel}</time><span>{related.readingMinutes} min read</span></p>
+									<p>{related.summary}</p>
+									<div class="tag-row compact" aria-label={`${related.title} tags`}>
+										{#each related.tags.slice(0, 4) as tag, index (tag + ':' + index)}<span class="tag">{tag}</span>{/each}
+									</div>
+								</span>
 							</a>
 						{/each}
 					</div>
