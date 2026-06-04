@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { loadAuthState } from '$lib/auth';
 	import '../app.css';
+	import '../article-polish.css';
 
 	onNavigate((navigation) => {
 		if (typeof document.startViewTransition !== 'function') return;
