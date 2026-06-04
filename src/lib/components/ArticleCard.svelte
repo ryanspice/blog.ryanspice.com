@@ -28,21 +28,21 @@
 	{#if focalImage}
 		<span class="article-card-focal" aria-hidden="true"></span>
 	{/if}
-	<span class="article-card-content">
+	<div class="article-card-content">
 		<p class="card-kicker">{article.draftType.replaceAll('-', ' ')}</p>
 		<h2 style:view-transition-name={titleTransitionName}>{article.title}</h2>
-		<span class="card-meta" aria-label="Article metadata">
+		<div class="card-meta" aria-label="Article metadata">
 			<time datetime={article.date}>{article.dateLabel}</time>
 			<span>{article.readingMinutes} min read</span>
 			{#if article.releaseDateLabel}
 				<span>{article.status === 'draft' ? `Releases ${article.releaseDateLabel}` : article.releaseDateLabel}</span>
 			{/if}
-		</span>
+		</div>
 		<p>{article.summary}</p>
-		<span class="tag-row compact" aria-label="Tags">
+		<div class="tag-row compact" aria-label="Tags">
 			{#each article.tags.slice(0, 5) as tag, index (tag + ':' + index)}
 				<span class="tag">{tag}</span>
 			{/each}
-		</span>
-	</span>
+		</div>
+	</div>
 </a>
