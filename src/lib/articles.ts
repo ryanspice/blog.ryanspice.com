@@ -61,6 +61,8 @@ export type ArticleMeta = {
 	updatedDateLabel: string;
 	releaseDate?: string;
 	releaseDateLabel?: string;
+	version: string;
+	previousVersion: string | null;
 	visuals: ArticleVisuals;
 	credits: string[];
 	references: string[];
@@ -70,10 +72,17 @@ export type ArticleMeta = {
 
 export type Article = ArticleMeta & RenderedMarkdown & {
 	body: string;
+	previousBody: string | null;
 	toc: TocItem[];
 };
 
 const modules = import.meta.glob('./content/articles/*.md', {
+	eager: true,
+	query: '?raw',
+	import: 'default'
+}) as RawArticleModule;
+
+const versionModules = import.meta.glob('./content/articles/.versions/**/*.md', {
 	eager: true,
 	query: '?raw',
 	import: 'default'
@@ -188,6 +197,8 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const releaseDate = stringValue(frontmatter.release_date);
 	const releaseTime = frontmatterStringValue(frontmatter.release_time);
 	const releaseDateLabel = releaseDate ? formatArticleDate(releaseDate) : '';
+	const version = stringValue(frontmatter.version) || '1.0.0';
+	const previousVersion = stringValue(frontmatter.previous_version) || null;
 	const visuals = articleVisualsFromFrontmatter(frontmatter);
 	const credits = arrayValue(frontmatter.credits);
 	const linkTerms = arrayValue(frontmatter.link_terms)
@@ -211,6 +222,9 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		releaseDate: releaseDate || undefined,
 		releaseTime: releaseTime || undefined,
 		releaseDateLabel: releaseDateLabel || undefined,
+		version,
+		previousVersion,
+		previousBody: previousVersion ? loadPreviousBody(slug, previousVersion) : null,
 		visuals,
 		credits: credits.length ? credits : ['Ryan Spice'],
 		references: arrayValue(frontmatter.references),
@@ -218,6 +232,14 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		design: designFor({ slug, title, status, draftType, summary, tags, date, dateLabel, updatedDate, updatedDateLabel, releaseDate, releaseDateLabel }),
 		body
 	};
+}
+
+function loadPreviousBody(slug: string, version: string): string | null {
+	const versionPath = `./content/articles/.versions/${slug}/${version}.md`;
+	const raw = versionModules[versionPath];
+	if (!raw || typeof raw !== 'string') return null;
+	const { body } = splitFrontmatter(raw);
+	return body || null;
 }
 
 function designFor(

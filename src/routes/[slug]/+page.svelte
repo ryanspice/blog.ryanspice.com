@@ -1,9 +1,19 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import ArticleView from '$lib/components/ArticleView.svelte';
 	import { getArticle, getRelatedArticles, type Article, type ArticleDesign } from '$lib/articles';
+	import ArticleDiffView from '$lib/components/ArticleDiffView.svelte';
 
 	let { data } = $props();
+
+	let isDiff = $state(false);
+
+	$effect(() => {
+		if (browser) {
+			isDiff = page.url.searchParams.get('diff') === 'true';
+		}
+	});
 
 	const fallbackArticle = $derived.by(() => getArticle(page.params.slug ?? ''));
 	const sourceArticle = $derived.by(() => hasUsefulArticle(data.article) ? data.article : fallbackArticle);
@@ -120,4 +130,8 @@
 	}
 </script>
 
-<ArticleView article={safeArticle} relatedArticles={safeRelatedArticles} />
+{#if isDiff && safeArticle.previousBody}
+	<ArticleDiffView article={safeArticle} />
+{:else}
+	<ArticleView article={safeArticle} relatedArticles={safeRelatedArticles} />
+{/if}
