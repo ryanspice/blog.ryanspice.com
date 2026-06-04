@@ -4,7 +4,7 @@ slug: "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
 status: "published"
 draft_type: "agent-architecture"
 date: "2026-06-03"
-updated_date: "2026-06-03"
+updated_date: "2026-06-04"
 audience:
   - "developers building agentic coding workflows"
   - "technical leads comparing model orchestration patterns"
@@ -23,6 +23,13 @@ tags:
 credits:
   - "Ryan Spice"
   - "AI Wiki research notes"
+references:
+  - "https://api-docs.deepseek.com/quick_start/pricing"
+  - "https://api-docs.deepseek.com/news/news260424"
+  - "https://www.anthropic.com/engineering/multi-agent-research-system"
+  - "https://openai.github.io/openai-agents-python/handoffs/"
+  - "https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system"
+  - "https://deepmind.google/models/gemma/"
 link_terms:
   - "DeepSeek V4|https://api-docs.deepseek.com/news/news260424"
   - "DeepSeek pricing|https://api-docs.deepseek.com/quick_start/pricing"
@@ -30,19 +37,28 @@ link_terms:
   - "OpenAI Agents SDK handoffs|https://openai.github.io/openai-agents-python/handoffs/"
   - "Google Cloud agent design patterns|https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system"
   - "Gemma|https://deepmind.google/models/gemma/"
-summary: "A practical routing rule for mixing DeepSeek V4 Pro, DeepSeek V4 Flash, and local Gemma4-style agents without turning a coding workflow into an expensive committee."
+summary: "Part 1 of a practical series on mixing DeepSeek V4 Pro, DeepSeek V4 Flash, and local Gemma4-style agents without turning a coding workflow into an expensive committee."
 ---
 # Agent Mixing Without Theater: DeepSeek Pro, Flash, Gemma4, and the Law of Diminishing Returns
 
-The useful way to think about multi-agent work is not “more agents equals more intelligence.”
+**Published:** June 3, 2026  
+**Last updated:** June 4, 2026  
+**Series:** Agent mixing / Hermes routing, Part 1
 
-It is this:
+This article started as a blunt answer to one question: when you mix DeepSeek Pro as the orchestrator, DeepSeek Flash as parallel delegates, and Gemma4 as a local side channel, where does the law of diminishing returns kick in?
+
+The answer is still simple:
 
 > **More agents buy more independent context windows, more parallel search paths, and more chances to catch a mistake. They do not automatically buy better judgment.**
 
-That distinction matters when designing a Hermes-style workflow around DeepSeek V4 Pro, DeepSeek V4 Flash, and a local Gemma4 profile. The question is not whether you can spawn a room full of agents. The question is whether each extra agent gets a different job, a different slice of context, or a different failure mode to check.
+This is Part 1 of the series. It sets the baseline rule: Pro leads hard synthesis, Flash multiplies bounded work, and Gemma4 stays useful as a local junior-engineer sanity pass.
 
-If the answer is no, you are not scaling intelligence. You are scaling noise.
+Two follow-up drafts now extend the argument:
+
+* [Part 2 — What changes when GPT-5.5 is the orchestrator](/drafts/agent-mixing-part-2-gpt-55-as-orchestrator/)
+* [Part 3 — The expanded formula: Zen/M3, Puter panels, Gemma4, and specialist rotators](/drafts/agent-mixing-part-3-expanded-formula-zen-m3-puter-gemma4/)
+
+Those draft links are private until promoted. The public principle is already stable: if the next agent does not get a distinct job, the next agent is probably noise.
 
 ![Agent routing map showing DeepSeek Pro as lead, DeepSeek Flash as scouts, and Gemma4 as a local junior review pass](/img/articles/agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns/agent-routing-map.svg "A practical routing map: DeepSeek Pro leads hard synthesis, Flash handles bounded scouting and review, and Gemma4 provides a local junior-engineer sanity pass.")
 
@@ -75,7 +91,7 @@ That is the practical split.
 
 ## What changed with DeepSeek V4
 
-DeepSeek’s V4 release makes this question more interesting because both Pro and Flash now have a long-context, agent-capable shape. The official pricing page lists both V4 Flash and V4 Pro with 1M context, JSON output, tool calls, and thinking-mode support. As of June 3, 2026, the official prices are far apart enough to matter: Flash is listed at $0.14 per 1M cache-miss input tokens and $0.28 per 1M output tokens, while Pro is listed at $0.435 per 1M cache-miss input tokens and $0.87 per 1M output tokens.
+DeepSeek’s V4 release makes this question more interesting because both Pro and Flash now have a long-context, agent-capable shape. The official pricing page lists both V4 Flash and V4 Pro with 1M context, JSON output, tool calls, and thinking-mode support. As of this update, the official prices are far apart enough to matter: Flash is listed at $0.14 per 1M cache-miss input tokens and $0.28 per 1M output tokens, while Pro is listed at $0.435 per 1M cache-miss input tokens and $0.87 per 1M output tokens.
 
 So the temptation is obvious:
 
@@ -254,7 +270,7 @@ Give it jobs like:
 * propose small practical alternatives
 * notice if the workflow is overbuilt
 
-Gemma is useful precisely because it is local and cheap enough to use as a side-channel. Google DeepMind frames Gemma as a family of open models built for efficient deployment across cloud, laptops, phones, and other environments. That makes it a good fit for inexpensive second-pass thinking, not final authority.
+Gemma is useful precisely because it is local and cheap enough to use as a side-channel. Google DeepMind describes Gemma open models as deployable across cloud servers, laptops, and phones, which maps well to an inexpensive second-pass lane rather than final authority.
 
 ## The better orchestration pattern
 
@@ -295,7 +311,7 @@ profiles:
       - gemma4-e4b-local: junior_sanity_pass
 ```
 
-For your earlier formula:
+For the earlier formula:
 
 ```text
 C = Pro + Flash * x + G4 + ?Y
@@ -437,11 +453,27 @@ clear lead
 
 That is the point where multi-agent work becomes useful instead of theatrical.
 
+## Series navigation
+
+**Published:** June 3, 2026  
+**Last updated:** June 4, 2026
+
+This article is now Part 1 of a longer agent-routing series:
+
+* **Part 1:** Agent Mixing Without Theater — this baseline article.
+* **Part 2 draft:** [What changes when GPT-5.5 is the orchestrator](/drafts/agent-mixing-part-2-gpt-55-as-orchestrator/).
+* **Part 3 draft:** [The expanded formula: Zen/M3, Puter panels, Gemma4, and specialist rotators](/drafts/agent-mixing-part-3-expanded-formula-zen-m3-puter-gemma4/).
+* **Planned mini-note:** why the formula style is useful, but the corrected formula matters.
+* **Planned Part 4:** Cathedral Edition / Prompt Operations framing — how Hermes makes the pattern operational instead of theoretical.
+* **Planned Part 5:** field history, test runs, results, mistakes, and what changed after using the system for real.
+
+*Small footer note: links to Part 2 and Part 3 currently point at private draft previews. They should be switched to public article routes when those drafts are promoted.*
+
 ## Sources and further reading
 
-* DeepSeek API Docs — Models and pricing: https://api-docs.deepseek.com/quick_start/pricing
-* DeepSeek API Docs — DeepSeek V4 Preview Release: https://api-docs.deepseek.com/news/news260424
-* Anthropic Engineering — How we built our multi-agent research system: https://www.anthropic.com/engineering/multi-agent-research-system
-* OpenAI Agents SDK — Handoffs: https://openai.github.io/openai-agents-python/handoffs/
-* Google Cloud Architecture Center — Choose a design pattern for your agentic AI system: https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system
-* Google DeepMind — Gemma: https://deepmind.google/models/gemma/
+* [DeepSeek API Docs — Models and pricing](https://api-docs.deepseek.com/quick_start/pricing)
+* [DeepSeek API Docs — DeepSeek V4 Preview Release](https://api-docs.deepseek.com/news/news260424)
+* [Anthropic Engineering — How we built our multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system)
+* [OpenAI Agents SDK — Handoffs](https://openai.github.io/openai-agents-python/handoffs/)
+* [Google Cloud Architecture Center — Choose a design pattern for your agentic AI system](https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system)
+* [Google DeepMind — Gemma](https://deepmind.google/models/gemma/)
