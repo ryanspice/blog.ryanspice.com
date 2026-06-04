@@ -9,12 +9,12 @@ export const homepageArticles = [
 		status: 'published',
 		draftType: 'agent-architecture',
 		summary:
-			'A practical routing rule for mixing DeepSeek V4 Pro, DeepSeek V4 Flash, and local Gemma4-style agents without turning a coding workflow into an expensive committee.',
+			'Part 1 of a practical series on mixing DeepSeek V4 Pro, DeepSeek V4 Flash, and local Gemma4-style agents without turning a coding workflow into an expensive committee.',
 		tags: ['deepseek', 'gemma4', 'agent orchestration', 'ai coding', 'hermes', 'model routing', 'diminishing returns'],
 		date: '2026-06-03',
 		dateLabel: 'June 3, 2026',
-		updatedDate: '2026-06-03',
-		updatedDateLabel: 'June 3, 2026',
+		updatedDate: '2026-06-04',
+		updatedDateLabel: 'June 4, 2026',
 		readingMinutes: 11,
 		design: {
 			accent: '#38bdf8',
