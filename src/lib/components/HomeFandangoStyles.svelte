@@ -138,6 +138,7 @@
 
 	:global(#articles > .article-card:not(:first-of-type) p:not(.card-kicker):not(.card-meta)) {
 		display: -webkit-box;
+		line-clamp: 3;
 		-webkit-line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;

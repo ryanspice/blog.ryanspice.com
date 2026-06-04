@@ -6,8 +6,13 @@
 	};
 
 	let { article }: Props = $props();
-	let releaseDate = $state(article.releaseDate ?? '');
+	let releaseDate = $state('');
+	const sourceReleaseDate = $derived(article.releaseDate ?? '');
 	let copied = $state(false);
+
+	$effect(() => {
+		releaseDate = sourceReleaseDate;
+	});
 
 	const frontmatterSnippet = $derived.by(() => {
 		const status = releaseDate ? 'scheduled' : 'draft';

@@ -1,4 +1,11 @@
 import { renderMarkdown, slugify, type MarkdownLinkTerm, type RenderedMarkdown, type TocItem } from './markdown';
+import {
+	articleVisualsFromFrontmatter,
+	splitFrontmatter as parseFrontmatter,
+	type ArticleVisuals,
+	type Frontmatter,
+	stringValue as frontmatterStringValue
+} from './article-frontmatter';
 
 export type NavItem = {
 	label: string;
@@ -49,10 +56,12 @@ export type ArticleMeta = {
 	audience: string[];
 	date: string;
 	dateLabel: string;
+	releaseTime?: string;
 	updatedDate: string;
 	updatedDateLabel: string;
 	releaseDate?: string;
 	releaseDateLabel?: string;
+	visuals: ArticleVisuals;
 	credits: string[];
 	references: string[];
 	relatedPosts: string[];
@@ -164,7 +173,7 @@ export function getRelatedArticles(
 }
 
 async function parseArticle(path: string, raw: string): Promise<Article> {
-	const { frontmatter, body } = splitFrontmatter(raw);
+	const { frontmatter, body } = parseFrontmatter(raw);
 	const filename = path.split('/').pop()?.replace(/\.md$/, '') ?? 'article';
 	const title = stringValue(frontmatter.title) || firstHeading(body) || filename;
 	const slug = stringValue(frontmatter.slug) || slugify(title);
@@ -177,7 +186,9 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const updatedDate = stringValue(frontmatter.updated_date) || stringValue(frontmatter.modified_date) || date;
 	const updatedDateLabel = formatArticleDate(updatedDate);
 	const releaseDate = stringValue(frontmatter.release_date);
+	const releaseTime = frontmatterStringValue(frontmatter.release_time);
 	const releaseDateLabel = releaseDate ? formatArticleDate(releaseDate) : '';
+	const visuals = articleVisualsFromFrontmatter(frontmatter);
 	const credits = arrayValue(frontmatter.credits);
 	const linkTerms = arrayValue(frontmatter.link_terms)
 		.map(parseLinkTerm)
@@ -198,7 +209,9 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		updatedDate,
 		updatedDateLabel,
 		releaseDate: releaseDate || undefined,
+		releaseTime: releaseTime || undefined,
 		releaseDateLabel: releaseDateLabel || undefined,
+		visuals,
 		credits: credits.length ? credits : ['Ryan Spice'],
 		references: arrayValue(frontmatter.references),
 		relatedPosts: arrayValue(frontmatter.related_posts),
@@ -402,8 +415,6 @@ function designFor(
 function accentForSlug(slug: string): string {
 	return articleAccents[slug] ?? '#1e9bff';
 }
-
-type Frontmatter = Record<string, string | string[]>;
 
 function splitFrontmatter(raw: string): { frontmatter: Frontmatter; body: string } {
 	const normalized = raw.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n');

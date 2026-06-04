@@ -1,6 +1,8 @@
 import { contentTagsMatch, uniqueContentTags } from './tags';
+import { slugify } from './markdown';
 
 export type DevLogEntry = {
+	id: string;
 	date: string;
 	dateLabel: string;
 	title: string;
@@ -12,7 +14,7 @@ export type DevLogEntry = {
 	relatedArticleTags: string[];
 };
 
-type DevLogSeed = Omit<DevLogEntry, 'dateLabel'>;
+type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
@@ -83,6 +85,7 @@ const devLogSeeds: DevLogSeed[] = [
 
 export const devLogEntries: DevLogEntry[] = devLogSeeds
 	.map((entry) => ({
+		id: makeDevLogId(entry),
 		...entry,
 		tags: uniqueContentTags(entry.tags),
 		relatedArticleSlugs: Array.from(new Set(entry.relatedArticleSlugs ?? [])),
@@ -131,4 +134,8 @@ function normalizeSlug(value: string): string {
 		.replace(/\.[a-z0-9]+$/i, '')
 		.replace(/_/g, '-')
 		.replace(/\s+/g, '-');
+}
+
+function makeDevLogId(entry: DevLogSeed): string {
+	return `${entry.date}-${slugify(entry.title)}-${entry.title.length}`;
 }
