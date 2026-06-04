@@ -1,0 +1,24 @@
+{
+  "name": "blog-remotion-graphs",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Remotion source graphs for blog.ryanspice.com article diagrams.",
+  "scripts": {
+    "studio": "remotion studio src/index.tsx",
+    "render:diminishing": "remotion still src/index.tsx AgentDiminishingReturns out/agent-diminishing-returns.png --frame=120 --image-format=png --overwrite",
+    "render:routing": "remotion still src/index.tsx AgentRoutingMap out/agent-routing-map.png --frame=120 --image-format=png --overwrite",
+    "render:stills": "pnpm render:diminishing && pnpm render:routing",
+    "render:diminishing:video": "remotion render src/index.tsx AgentDiminishingReturns out/agent-diminishing-returns.mp4 --overwrite",
+    "render:routing:video": "remotion render src/index.tsx AgentRoutingMap out/agent-routing-map.mp4 --overwrite"
+  },
+  "dependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "remotion": "^4.0.426",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {}
+}
