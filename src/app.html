@@ -5,7 +5,55 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#070a0f" />
 		%sveltekit.head%
-		<link rel="stylesheet" href="/css/article-layout-fixes.css" />
+		<link rel="stylesheet" href="/css/article-layout-fixes.css?v=20260604-2" />
+		<style>
+			/* Late production guard: decorative article art must never crush prose/code columns. */
+			.article-column,
+			.article-shell,
+			.article-inner,
+			.article-section,
+			.article-section-body,
+			.table-wrap,
+			.code-block,
+			.mermaid-diagram,
+			.article-figure {
+				min-width: 0 !important;
+				max-width: 100% !important;
+			}
+
+			.code-block,
+			.mermaid-diagram,
+			.table-wrap {
+				width: 100% !important;
+			}
+
+			.code-block code {
+				white-space: pre-wrap !important;
+				overflow-wrap: anywhere !important;
+				word-break: normal !important;
+			}
+
+			@media (max-width: 1600px) {
+				.article-section--lead {
+					grid-template-columns: minmax(0, 1fr) !important;
+					gap: 18px !important;
+				}
+
+				.article-section--lead .article-section-art {
+					display: none !important;
+				}
+			}
+
+			@media (max-width: 1380px) {
+				.hero {
+					grid-template-columns: minmax(0, 1fr) minmax(320px, 420px) !important;
+				}
+
+				.article-hero-visual {
+					display: none !important;
+				}
+			}
+		</style>
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
