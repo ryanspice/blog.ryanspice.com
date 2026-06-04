@@ -2112,6 +2112,7 @@ th {
 }
 
 .home-dev-log-row {
+	grid-column: 1 / -1;
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 16px;
@@ -2163,6 +2164,20 @@ th {
 
 .dev-log-feed .section-head {
 	padding-top: 0;
+}
+
+.dev-log-feed-compact .section-head {
+	padding-top: 4px;
+}
+
+.dev-log-feed-compact .section-head h2,
+.dev-log-feed-compact .section-head p {
+	margin-top: 0;
+}
+
+.dev-log-feed-compact .dev-log-list-item {
+	padding: 12px 14px;
+	border-left-width: 3px;
 }
 
 .dev-log-list {

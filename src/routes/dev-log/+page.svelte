@@ -11,6 +11,8 @@
 	const description = 'A running log of site changes, AI Wiki notes, and the process hooks behind the blog.';
 	const selectedTag = $derived(browser ? (page.url.searchParams.get('tag') ?? '').trim() : '');
 	const selectedArticle = $derived(browser ? (page.url.searchParams.get('article') ?? '').trim() : '');
+	const selectedView = $derived(browser ? (page.url.searchParams.get('view') ?? '').trim().toLowerCase() : '');
+	const isCompactView = $derived(selectedView === 'compact');
 	const filteredEntries = $derived(
 		selectedTag || selectedArticle
 			? devLogEntries.filter((entry) => {
@@ -74,136 +76,138 @@
 	]}
 />
 
-<section class="home-hero">
-	<div class="home-hero-copy">
-		<p class="eyebrow">AI Wiki · blog process</p>
-		<h1>Dev log for the blog and the work that feeds it.</h1>
-		<p class="dek">
-			A small running history of site changes, AI Wiki notes, and the process hooks behind the
-			blog.
-		</p>
-		<dl class="meta-grid home-meta" aria-label="Dev log metadata">
-			<div>
-				<dt>Entries</dt>
-				<dd>{filteredEntries.length}</dd>
-			</div>
-			<div>
-				<dt>Latest</dt>
-				<dd><time datetime={latestEntry.date}>{latestEntry.dateLabel}</time></dd>
-			</div>
-			<div>
-				<dt>Mode</dt>
-				<dd>Weekday brief ready</dd>
-			</div>
-		</dl>
-		{#if selectedTag || selectedArticle}
-			<p class="dev-log-filter-note">
-				Filtered by
-				{#if selectedTag}<strong>{selectedTag}</strong>{/if}
-				{#if selectedTag && selectedArticle}<span>and</span>{/if}
-				{#if selectedArticle}<strong>{selectedArticleLabel}</strong>{/if}.
-				<a href={`${base}/dev-log/`}>Clear filter</a>
+{#if !isCompactView}
+	<section class="home-hero">
+		<div class="home-hero-copy">
+			<p class="eyebrow">AI Wiki · blog process</p>
+			<h1>Dev log for the blog and the work that feeds it.</h1>
+			<p class="dek">
+				A small running history of site changes, AI Wiki notes, and the process hooks behind the
+				blog.
 			</p>
-		{/if}
-	</div>
-
-	<aside
-		class="hero-card home-hero-card"
-		aria-label="Process hook"
-		style={`--article-accent: ${latestEntry.accent}`}
-	>
-		<strong>Process hook</strong>
-		<p>
-			This page now accepts privacy-safe summaries from the weekday brief loop when a run finds
-			enough signal to publish.
-		</p>
-		<dl class="hero-meta" aria-label="Dev log summary">
-			<div>
-				<dt>Source</dt>
-				<dd>AI Wiki</dd>
-			</div>
-			<div>
-				<dt>State</dt>
-				<dd>Automated intake</dd>
-			</div>
-			<div>
-				<dt>Scope</dt>
-				<dd>Blog + project signals</dd>
-			</div>
-		</dl>
-		<p class="home-hero-note">The point is traceability without exposing private source material.</p>
-	</aside>
-</section>
-
-<section class="dev-log-tags" aria-label="Dev log tags">
-	<div class="section-head compact-section-head">
-		<p class="eyebrow">Search hooks</p>
-		<h2>Dev-log tags</h2>
-		<p class="section-dek">
-			Tags connect process notes back to public article topics without exposing raw local evidence.
-		</p>
-	</div>
-
-	<div class="tag-row compact">
-		{#each devLogTags as tag, index (tag + ':' + index)}
-			<a class="tag tag-link" href={devLogTagHref(tag)}>{tag}</a>
-		{/each}
-	</div>
-</section>
-
-<section class="dev-log-featured" aria-label="Working notes">
-	<div class="section-head">
-		<p class="eyebrow">Working notes</p>
-		<h2>Latest changes</h2>
-		<p class="section-dek">
-			The newest note gets the most space. The two before it stay visible without taking over the
-			page.
-		</p>
-	</div>
-
-	<div class="dev-log-featured-grid">
-		{#if featuredEntries[0]}
-			<article id={featuredEntries[0].id} class="dev-log-card dev-log-card-large" style={`--article-accent: ${featuredEntries[0].accent}`}>
-				<p class="dev-log-meta">
-					<time datetime={featuredEntries[0].date}>{featuredEntries[0].dateLabel}</time>
-					<span>{featuredEntries[0].source}</span>
+			<dl class="meta-grid home-meta" aria-label="Dev log metadata">
+				<div>
+					<dt>Entries</dt>
+					<dd>{filteredEntries.length}</dd>
+				</div>
+				<div>
+					<dt>Latest</dt>
+					<dd><time datetime={latestEntry.date}>{latestEntry.dateLabel}</time></dd>
+				</div>
+				<div>
+					<dt>Mode</dt>
+					<dd>Weekday brief ready</dd>
+				</div>
+			</dl>
+			{#if selectedTag || selectedArticle}
+				<p class="dev-log-filter-note">
+					Filtered by
+					{#if selectedTag}<strong>{selectedTag}</strong>{/if}
+					{#if selectedTag && selectedArticle}<span>and</span>{/if}
+					{#if selectedArticle}<strong>{selectedArticleLabel}</strong>{/if}.
+					<a href={`${base}/dev-log/`}>Clear filter</a>
 				</p>
-				<h2>{featuredEntries[0].title}</h2>
-				<p>{featuredEntries[0].summary}</p>
-				<div class="tag-row compact" aria-label="Entry tags">
-					{#each featuredEntries[0].tags as tag, tagIndex (tag + ':' + tagIndex)}
-						<a class="tag tag-link" href={devLogTagHref(tag)}>{tag}</a>
-					{/each}
-				</div>
-				<div class="tag-row compact" aria-label="Related article tags">
-					{#each featuredEntries[0].relatedArticleTags as tag, tagIndex (tag + ':' + tagIndex)}
-						<a class="tag tag-link" href={articleIndexHref({ view: 'compact', tag })}>{tag}</a>
-					{/each}
-				</div>
-			</article>
-		{/if}
+			{/if}
+		</div>
 
-		<div class="dev-log-featured-stack">
-			{#each featuredEntries.slice(1) as entry, index (entry.date + ':' + entry.title + ':' + index)}
-				<article id={entry.id} class="dev-log-card dev-log-card-small" style={`--article-accent: ${entry.accent}`}>
+		<aside
+			class="hero-card home-hero-card"
+			aria-label="Process hook"
+			style={`--article-accent: ${latestEntry.accent}`}
+		>
+			<strong>Process hook</strong>
+			<p>
+				This page now accepts privacy-safe summaries from the weekday brief loop when a run finds
+				enough signal to publish.
+			</p>
+			<dl class="hero-meta" aria-label="Dev log summary">
+				<div>
+					<dt>Source</dt>
+					<dd>AI Wiki</dd>
+				</div>
+				<div>
+					<dt>State</dt>
+					<dd>Automated intake</dd>
+				</div>
+				<div>
+					<dt>Scope</dt>
+					<dd>Blog + project signals</dd>
+				</div>
+			</dl>
+			<p class="home-hero-note">The point is traceability without exposing private source material.</p>
+		</aside>
+	</section>
+
+	<section class="dev-log-tags" aria-label="Dev log tags">
+		<div class="section-head compact-section-head">
+			<p class="eyebrow">Search hooks</p>
+			<h2>Dev-log tags</h2>
+			<p class="section-dek">
+				Tags connect process notes back to public article topics without exposing raw local evidence.
+			</p>
+		</div>
+
+		<div class="tag-row compact">
+			{#each devLogTags as tag, index (tag + ':' + index)}
+				<a class="tag tag-link" href={devLogTagHref(tag)}>{tag}</a>
+			{/each}
+		</div>
+	</section>
+
+	<section class="dev-log-featured" aria-label="Working notes">
+		<div class="section-head">
+			<p class="eyebrow">Working notes</p>
+			<h2>Latest changes</h2>
+			<p class="section-dek">
+				The newest note gets the most space. The two before it stay visible without taking over the
+				page.
+			</p>
+		</div>
+
+		<div class="dev-log-featured-grid">
+			{#if featuredEntries[0]}
+				<article id={featuredEntries[0].id} class="dev-log-card dev-log-card-large" style={`--article-accent: ${featuredEntries[0].accent}`}>
 					<p class="dev-log-meta">
-						<time datetime={entry.date}>{entry.dateLabel}</time>
-						<span>{entry.source}</span>
+						<time datetime={featuredEntries[0].date}>{featuredEntries[0].dateLabel}</time>
+						<span>{featuredEntries[0].source}</span>
 					</p>
-					<h3>{entry.title}</h3>
-					<p>{entry.summary}</p>
+					<h2>{featuredEntries[0].title}</h2>
+					<p>{featuredEntries[0].summary}</p>
 					<div class="tag-row compact" aria-label="Entry tags">
-						{#each entry.tags as tag, tagIndex (tag + ':' + tagIndex)}
+						{#each featuredEntries[0].tags as tag, tagIndex (tag + ':' + tagIndex)}
 							<a class="tag tag-link" href={devLogTagHref(tag)}>{tag}</a>
 						{/each}
 					</div>
+					<div class="tag-row compact" aria-label="Related article tags">
+						{#each featuredEntries[0].relatedArticleTags as tag, tagIndex (tag + ':' + tagIndex)}
+							<a class="tag tag-link" href={articleIndexHref({ view: 'compact', tag })}>{tag}</a>
+						{/each}
+					</div>
 				</article>
-			{/each}
-		</div>
-	</div>
-</section>
+			{/if}
 
-<section class="dev-log-feed" aria-label="Logs and events">
+			<div class="dev-log-featured-stack">
+				{#each featuredEntries.slice(1) as entry, index (entry.date + ':' + entry.title + ':' + index)}
+					<article id={entry.id} class="dev-log-card dev-log-card-small" style={`--article-accent: ${entry.accent}`}>
+						<p class="dev-log-meta">
+							<time datetime={entry.date}>{entry.dateLabel}</time>
+							<span>{entry.source}</span>
+						</p>
+						<h3>{entry.title}</h3>
+						<p>{entry.summary}</p>
+						<div class="tag-row compact" aria-label="Entry tags">
+							{#each entry.tags as tag, tagIndex (tag + ':' + tagIndex)}
+								<a class="tag tag-link" href={devLogTagHref(tag)}>{tag}</a>
+							{/each}
+						</div>
+					</article>
+				{/each}
+			</div>
+		</div>
+	</section>
+{/if}
+
+<section class={`dev-log-feed${isCompactView ? ' dev-log-feed-compact' : ''}`} aria-label="Logs and events">
 	<div class="section-head">
 		<p class="eyebrow">Logs and events</p>
 		<h2>Readable history</h2>

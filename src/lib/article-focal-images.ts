@@ -9,6 +9,11 @@ export type ArticleFocalImage = {
 
 type ArticleLike = {
 	slug: string;
+	visuals?: {
+		focal?: ArticleFocalImage;
+		row?: ArticleFocalImage;
+		background?: ArticleFocalImage;
+	};
 };
 
 const focalImages: Record<string, ArticleFocalImage> = {
@@ -24,6 +29,7 @@ const focalImages: Record<string, ArticleFocalImage> = {
 
 export function articleFocalImage(article: ArticleLike | null | undefined): ArticleFocalImage | undefined {
 	if (!article?.slug) return undefined;
+	if (article.visuals?.focal?.src) return normalizeImage(article.visuals.focal);
 	return focalImages[article.slug];
 }
 
@@ -43,4 +49,43 @@ export const articleFocalCssVars = articleFocalCardCssVars;
 
 function focalCssVars(image: ArticleFocalImage, position: string): string {
 	return [`--article-focal-image: url("${image.src}")`, `--article-focal-position: ${position}`].join('; ');
+}
+
+export function articleRowImage(article: ArticleLike | null | undefined): ArticleFocalImage | undefined {
+	if (!article?.visuals?.row?.src) return undefined;
+
+	return normalizeImage(article.visuals.row);
+}
+
+export function articleCardBackgroundImage(article: ArticleLike | null | undefined): ArticleFocalImage | undefined {
+	if (!article?.visuals?.background?.src) return undefined;
+
+	return normalizeImage(article.visuals.background);
+}
+
+export function articleCardImage(article: ArticleLike | null | undefined): ArticleFocalImage | undefined {
+	return articleRowImage(article) ?? articleFocalImage(article);
+}
+
+export function articleCardCssVars(article: ArticleLike | null | undefined): string {
+	const image = articleRowImage(article);
+	if (!image) return articleFocalCardCssVars(article);
+	return rowCssVars(image);
+}
+
+function rowCssVars(image: ArticleFocalImage): string {
+	return [
+		`--article-row-image: url("${image.src}")`,
+		`--article-row-position: ${image.position ?? image.cardPosition ?? 'center center'}`
+	].join('; ');
+}
+
+function normalizeImage(image: ArticleFocalImage): ArticleFocalImage {
+	return {
+		src: image.src,
+		alt: image.alt || 'Article visual image',
+		...(image.credit ? { credit: image.credit } : {}),
+		...(image.sourceHref ? { sourceHref: image.sourceHref } : {}),
+		...(image.position ? { position: image.position } : {})
+	};
 }
