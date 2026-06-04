@@ -4,7 +4,7 @@ import type { Article } from './articles';
 // This prevents PHP-static hydration issues from blanking the article list on refresh.
 export const homepageArticles = [
 	{
-		title: 'OpenJarvis Is the Local AI Agent Project to Watch Right Now',
+		title: '#OpenJarvis Is the Local AI Agent Project to Watch Right Now',
 		slug: 'openjarvis-local-ai-personal-ai-on-your-pc',
 		status: 'published',
 		draftType: 'ai-news-analysis',
