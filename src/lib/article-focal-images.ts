@@ -27,11 +27,20 @@ export function articleFocalImage(article: ArticleLike | null | undefined): Arti
 	return focalImages[article.slug];
 }
 
-export function articleFocalCssVars(article: ArticleLike | null | undefined): string {
+export function articleFocalCardCssVars(article: ArticleLike | null | undefined): string {
 	const image = articleFocalImage(article);
 	if (!image) return '';
-	return [
-		`--article-focal-image: url("${image.src}")`,
-		`--article-focal-position: ${image.cardPosition ?? image.position ?? 'center center'}`
-	].join('; ');
+	return focalCssVars(image, image.cardPosition ?? image.position ?? 'center center');
+}
+
+export function articleFocalPageCssVars(article: ArticleLike | null | undefined): string {
+	const image = articleFocalImage(article);
+	if (!image) return '';
+	return focalCssVars(image, image.position ?? 'center center');
+}
+
+export const articleFocalCssVars = articleFocalCardCssVars;
+
+function focalCssVars(image: ArticleFocalImage, position: string): string {
+	return [`--article-focal-image: url("${image.src}")`, `--article-focal-position: ${position}`].join('; ');
 }
