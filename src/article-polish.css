@@ -179,7 +179,7 @@
 
 .article-card-focal {
 	position: absolute;
-	z-index: -1;
+	z-index: 0;
 	inset: 0 0 0 auto;
 	width: min(34%, 310px);
 	background:
