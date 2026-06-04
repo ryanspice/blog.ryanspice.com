@@ -2,6 +2,7 @@
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { articleAccentColor } from '$lib/article-accent';
+	import { articleFocalCardCssVars, articleFocalImage } from '$lib/article-focal-images';
 	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
 	import { homepageArticles } from '$lib/homepage-articles';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
@@ -19,10 +20,12 @@
 	const title = 'blog.ryanspice.com · Technical notes';
 	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';
 	const latestArticle = $derived.by(() => latestArticles[0] ?? null);
+	const latestArticleFocal = $derived.by(() => articleFocalImage(latestArticle));
 	const latestDate = $derived.by(() => (latestArticle ? latestArticle.date : '2026-05-28'));
 	const latestDateLabel = $derived.by(() => (latestArticle ? latestArticle.dateLabel : 'May 28, 2026'));
 	const latestArticleHref = $derived.by(() => (latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`));
 	const latestArticleAccent = $derived.by(() => (latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)'));
+	const latestArticleCardStyle = $derived.by(() => `--article-accent: ${latestArticleAccent}; ${articleFocalCardCssVars(latestArticle)}`);
 	const footerLinks = $derived.by(() => {
 		const links = [
 			{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
@@ -105,19 +108,24 @@
 		</dl>
 	</div>
 
-	<aside class="hero-card home-hero-card" aria-label="Latest article" style={`--article-accent: ${latestArticleAccent}`}>
-		<strong>Latest article</strong>
-		<h2><a href={latestArticleHref}>{latestArticle?.title ?? 'Latest article'}</a></h2>
-		<p>{latestArticle?.summary ?? 'Recent technical notes and comparisons.'}</p>
-		<dl class="hero-meta" aria-label="Latest article metadata">
-			<div><dt>Published</dt><dd><time datetime={latestDate}>{latestDateLabel}</time></dd></div>
-			<div><dt>Read time</dt><dd>{latestArticle?.readingMinutes ?? 0} min</dd></div>
-			<div><dt>Type</dt><dd>{latestArticle?.draftType?.replaceAll('-', ' ') ?? 'article'}</dd></div>
-		</dl>
-		<p class="home-hero-note">Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.</p>
-		<div class="home-hero-links" aria-label="Quick links">
-			<a href={hrefFor('/rss.xml')}>RSS feed</a>
-			<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>
+	<aside class={`hero-card home-hero-card${latestArticleFocal ? ' has-focal-image' : ''}`} aria-label="Latest article" style={latestArticleCardStyle}>
+		{#if latestArticleFocal}
+			<span class="article-card-focal" aria-hidden="true"></span>
+		{/if}
+		<div class="article-card-content">
+			<strong>Latest article</strong>
+			<h2><a href={latestArticleHref}>{latestArticle?.title ?? 'Latest article'}</a></h2>
+			<p>{latestArticle?.summary ?? 'Recent technical notes and comparisons.'}</p>
+			<dl class="hero-meta" aria-label="Latest article metadata">
+				<div><dt>Published</dt><dd><time datetime={latestDate}>{latestDateLabel}</time></dd></div>
+				<div><dt>Read time</dt><dd>{latestArticle?.readingMinutes ?? 0} min</dd></div>
+				<div><dt>Type</dt><dd>{latestArticle?.draftType?.replaceAll('-', ' ') ?? 'article'}</dd></div>
+			</dl>
+			<p class="home-hero-note">Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.</p>
+			<div class="home-hero-links" aria-label="Quick links">
+				<a href={hrefFor('/rss.xml')}>RSS feed</a>
+				<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>
+			</div>
 		</div>
 	</aside>
 </section>
