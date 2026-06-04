@@ -24,7 +24,7 @@
 	);
 
 	const visibleNavLinks = $derived.by(() => {
-		const merged = [...navLinks, { label: 'Dev log', href: '/dev-log' }];
+		const merged = [...navLinks, { label: 'Library', href: '/library' }, { label: 'Dev log', href: '/dev-log' }];
 		if (canAccessDrafts($authState)) {
 			merged.push({ label: 'Drafts', href: '/drafts' });
 		}
