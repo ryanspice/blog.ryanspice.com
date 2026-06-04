@@ -4,6 +4,24 @@ import type { Article } from './articles';
 // This prevents PHP-static hydration issues from blanking the article list on refresh.
 export const homepageArticles = [
 	{
+		title: 'OpenJarvis Is the Local AI Agent Project to Watch Right Now',
+		slug: 'openjarvis-local-ai-personal-ai-on-your-pc',
+		status: 'published',
+		draftType: 'ai-news-analysis',
+		summary:
+			'OpenJarvis is trending because it reframes the personal AI assistant as a local-first, measurable, editable agent stack instead of another cloud chat wrapper. Here is what matters, what is hype, and whether it can run on a normal developer PC.',
+		tags: ['OpenJarvis', 'local AI agent', 'open-source AI', 'AI agent framework', 'run AI locally', 'Ollama', 'personal AI', 'agentic workflows'],
+		date: '2026-06-04',
+		dateLabel: 'June 4, 2026',
+		updatedDate: '2026-06-04',
+		updatedDateLabel: 'June 4, 2026',
+		readingMinutes: 9,
+		design: {
+			accent: '#78d4ff',
+			tags: ['OpenJarvis', 'Local AI', 'Agent Framework', 'Ollama', 'Personal AI', 'Open Source']
+		}
+	},
+	{
 		title: 'Agent Mixing Without Theater: DeepSeek Pro, Flash, Gemma4, and the Law of Diminishing Returns',
 		slug: 'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',
 		status: 'published',
