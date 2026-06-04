@@ -13,12 +13,16 @@ possible_publication_targets:
   - "AI Wiki inbox"
   - "ryanspice.com"
 tags:
-  - openai
-  - chatgpt
-  - deep research
-  - deepseek
+  - OpenAI
+  - ChatGPT
+  - Deep Research
+  - DeepSeek
   - reasoning models
   - developer workflow
+related_posts:
+  - "openjarvis-local-ai-personal-ai-on-your-pc"
+  - "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
+  - "can-you-use-remotion-programmatic-video-react"
 credits:
   - "Ryan Spice"
   - "AI Wiki research notes"

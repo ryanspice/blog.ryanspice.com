@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
+	import { articleViewModeState } from '$lib/article-view-mode.svelte';
 	import type { NavItem } from '$lib/articles';
 	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
 
@@ -10,9 +11,10 @@
 	};
 
 	let { brandLabel = 'Ryan Spice / Canopy Digital', navLinks = [] }: Props = $props();
-	let readingMode = $state(false);
+	const readingMode = $derived(articleViewModeState.mode === 'classic');
 
 	onMount(() => {
+		articleViewModeState.init();
 		void loadAuthState();
 	});
 
@@ -26,6 +28,7 @@
 	const visibleNavLinks = $derived.by(() => {
 		const merged = [...navLinks, { label: 'Library', href: '/library' }, { label: 'Dev log', href: '/dev-log' }];
 		if (canAccessDrafts($authState)) {
+			merged.push({ label: 'Briefs', href: '/briefs' });
 			merged.push({ label: 'Drafts', href: '/drafts' });
 		}
 		return dedupeByHref(merged);
@@ -36,22 +39,9 @@
 		return `${base}${href}`;
 	}
 
-	function applyReadingMode(enabled: boolean): void {
-		if (typeof document === 'undefined') return;
-		document.documentElement.classList.toggle('reading-mode', enabled);
-	}
-
 	function toggleReadingMode(): void {
-		readingMode = !readingMode;
-		applyReadingMode(readingMode);
-		window.localStorage.setItem('blog-reading-mode', String(readingMode));
+		articleViewModeState.toggle();
 	}
-
-	onMount(() => {
-		const stored = window.localStorage.getItem('blog-reading-mode');
-		readingMode = stored === 'true';
-		applyReadingMode(readingMode);
-	});
 
 	function dedupeByHref(items: NavItem[]): NavItem[] {
 		const seen = new Set<string>();

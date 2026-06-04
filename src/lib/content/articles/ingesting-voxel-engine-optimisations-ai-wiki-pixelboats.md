@@ -18,6 +18,9 @@ tags:
   - "RLE"
   - "optimization"
   - "PixelBoats"
+related_posts:
+  - "phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game"
+  - "pixelboats-water-pipeline-pixi-webgl"
 summary: "A layered breakdown of voxel engine optimisations, with adoption guidance for AI Wiki ingestion and PixelBoats."
 ---
 

@@ -5,6 +5,7 @@
 	import { authState, canAccessDrafts, loadAuthState, signIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import ArticleView from '$lib/components/ArticleView.svelte';
+	import DraftMetadataControls from '$lib/components/DraftMetadataControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { Article } from '$lib/articles';
 
@@ -12,9 +13,16 @@
 		data: {
 			slug: string;
 		};
+		form?: {
+			metadataSave?: {
+				ok: boolean;
+				message: string;
+				fileName?: string;
+			};
+		} | null;
 	};
 
-	let { data }: Props = $props();
+	let { data, form = null }: Props = $props();
 	let article = $state<Article | null>(null);
 	let loadError = $state<string | null>(null);
 	let articleLoading = $state(true);
@@ -106,6 +114,9 @@
 			</aside>
 		</section>
 	{:else if article}
+		<section class="draft-detail-controls" style={`--article-accent: ${article.design.accent}`}>
+			<DraftMetadataControls {article} {form} />
+		</section>
 		<ArticleView {article} />
 	{:else}
 		<SiteHeader navLinks={[{ label: 'Drafts', href: '/drafts' }, { label: 'RSS', href: '/rss.xml' }]} />
@@ -161,3 +172,9 @@
 	</footer>
 {/if}
 
+<style>
+	.draft-detail-controls {
+		width: min(1120px, calc(100vw - 32px));
+		margin: 24px auto 0;
+	}
+</style>

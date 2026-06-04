@@ -19,6 +19,11 @@ tags:
   - "writing"
   - "design briefs"
   - "Hermes"
+related_posts:
+  - "how-chatgpt-performs-deep-research"
+  - "hermes-deepseek-setup"
+  - "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
+  - "openjarvis-local-ai-personal-ai-on-your-pc"
 summary: "A practical guide to using a DeepSeek API key as a creative production assistant for drafting, repurposing, planning, and visual briefs."
 ---
 

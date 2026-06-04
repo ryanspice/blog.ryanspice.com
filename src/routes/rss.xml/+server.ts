@@ -2,6 +2,7 @@ import { base } from '$app/paths';
 import { publishedArticles } from '$lib/articles';
 
 export const prerender = true;
+export const trailingSlash = 'never';
 
 function escapeXml(value: string): string {
 	return value

@@ -17,7 +17,7 @@ const config = {
 		},
 		prerender: {
 			origin: prerenderOrigin,
-			entries: ['*', '/robots.txt', '/sitemap.xml', '/rss.xml', '/status.json'],
+			entries: ['*', '/robots.txt', '/sitemap.xml', '/rss.xml', '/rss-reader/', '/status.json'],
 			handleHttpError: ({ path, message }) => {
 				if (path.startsWith('/.auth/')) return;
 				throw new Error(message);

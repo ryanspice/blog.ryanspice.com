@@ -21,7 +21,10 @@ tags:
   - "Colyseus"
   - "indie game dev"
   - "technical decision"
-related_posts: []
+related_posts:
+  - "pixelboats-water-pipeline-pixi-webgl"
+  - "pixelboats-networking-final-recommendation"
+  - "pixelboats-networking-player-hosted-php"
 ---
 
 # Phaser vs PixiJS in 2026: Why I Chose the Rendering Library Over the Game Framework

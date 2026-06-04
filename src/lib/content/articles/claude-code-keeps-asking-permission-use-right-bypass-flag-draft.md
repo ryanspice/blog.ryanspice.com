@@ -13,14 +13,16 @@ possible_publication_targets:
   - "ryanspice.com"
   - "Canopy Digital internal/process content"
 tags:
-  - claude-code
+  - Claude Code
   - permissions
-  - shell-tools
-  - windows
-  - powershell
-  - developer-workflow
-  - ai-assistants
-related_posts: []
+  - shell tools
+  - Windows
+  - PowerShell
+  - developer workflow
+  - AI assistants
+related_posts:
+  - "hermes-deepseek-setup"
+  - "editing-hermes-themes-without-losing-your-mind"
 summary: "A practical explanation of why Claude Code still prompts for approvals and the two flag patterns that actually enable skip-permission behavior in trusted repos."
 link_terms:
   - "Claude Code|https://www.anthropic.com"

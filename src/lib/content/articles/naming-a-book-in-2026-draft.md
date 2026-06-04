@@ -14,14 +14,15 @@ possible_publication_targets:
   - "ryanspice.com"
   - "Canopy Digital internal/process content"
 tags:
-  - book-marketing
-  - title-strategy
+  - book marketing
+  - title strategy
   - discoverability
   - publishing
   - AI
   - metadata
-  - product-naming
-related_posts: []
+  - product naming
+related_posts:
+  - "naming-a-book-in-2026"
 summary: "A practical, evidence-led framework for choosing a book title in 2026, balancing search, social discovery, metadata quality, and audience expectations."
 link_terms:
   - "Google Search Central|https://developers.google.com/search/docs"

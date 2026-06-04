@@ -13,12 +13,14 @@ audience:
 possible_publication_targets:
   - "ryanspice.com"
 tags:
-  - book-publishing
+  - book publishing
   - titling
   - metadata
   - naming
-  - AI-books
-  - technical-writing
+  - AI books
+  - technical writing
+related_posts:
+  - "naming-a-book-in-2026-draft"
 credits:
   - "Ryan Spice"
   - "ChatGPT deep research session"

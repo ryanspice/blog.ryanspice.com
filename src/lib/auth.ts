@@ -182,6 +182,26 @@ export async function signIn(returnTo = '/'): Promise<void> {
 	await app.loginRedirect(request);
 }
 
+export async function acquireOwnerAccessToken(): Promise<string> {
+	const app = await getMsalClient();
+	const account = getActiveAccount(app);
+
+	if (!account) {
+		throw new Error('Sign in before saving draft metadata.');
+	}
+
+	const result = await app.acquireTokenSilent({
+		account,
+		scopes: [...msalScopes]
+	});
+
+	if (!result.accessToken) {
+		throw new Error('Microsoft did not return an access token for the owner check.');
+	}
+
+	return result.accessToken;
+}
+
 export async function signOut(): Promise<void> {
 	const app = await getMsalClient();
 	const account = getActiveAccount(app);

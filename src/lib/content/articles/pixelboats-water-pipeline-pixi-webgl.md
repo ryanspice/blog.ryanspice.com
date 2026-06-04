@@ -18,6 +18,10 @@ tags:
   - "shaders"
   - "PixelBoats"
   - "game dev"
+related_posts:
+  - "phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game"
+  - "pixelboats-networking-final-recommendation"
+  - "pixelboats-networking-player-hosted-php"
 summary: "A practical Pixi/WebGL water pipeline plan mapped from the attached asset sheet and stage breakdown."
 ---
 

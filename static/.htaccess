@@ -1,17 +1,17 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 
-	# RSS feed aliases + slash normalization.
-	# Some clients guess /rss, /feed, or accidentally append a trailing slash.
+	# RSS feed aliases.
+	# /rss.xml is the machine-readable feed; /rss.xml/ is a human-friendly page.
 	#
 	# IMPORTANT: avoid relative redirect targets (like "rss.xml") here.
 	# In .htaccess context, relative substitutions can be prefixed by a filesystem path
 	# when RewriteBase is not set, producing malformed Location headers.
 	# Instead, build a root-relative target from the request URI prefix.
 
-	# Strip a trailing slash on the canonical feed path.
+	# Friendly browser page for people who accidentally add the trailing slash.
 	RewriteCond %{REQUEST_URI} ^(.*/)rss\.xml/$ [NC]
-	RewriteRule ^ %1rss.xml [R=301,L]
+	RewriteRule ^ %1rss-reader/ [QSA,L]
 
 	# Common guesses: /rss and /feed (with or without a trailing slash).
 	RewriteCond %{REQUEST_URI} ^(.*/)(rss|feed)/?$ [NC]

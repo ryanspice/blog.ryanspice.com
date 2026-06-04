@@ -14,15 +14,18 @@ possible_publication_targets:
   - "canopydigital.ca"
   - "Canopy Digital internal/process content"
 tags:
-  - gimp
-  - windows-11
-  - pixel-art
-  - photogimp
-  - gmic
-  - windhawk
-  - dll-debugging
-  - pixelboats
-  - creative-tooling
+  - GIMP
+  - GIMP 3
+  - Windows
+  - Pixel Art
+  - PhotoGIMP
+  - G'MIC
+  - Windhawk
+  - DLL debugging
+  - PixelBoats
+  - creative tooling
+related_posts:
+  - "debugging-gimp-3-python-plugin-failures-windows-windhawk"
 summary: "A real-world repair log and workflow writeup covering a broken GIMP 3.2 install, Windows DLL/runtime conflicts, Windhawk suspicion, PhotoGIMP, G'MIC-Qt, a Fluent-ish theme, and a PixelBoats-ready asset kit."
 link_terms:
   - "GIMP|https://en.wikipedia.org/wiki/GIMP"

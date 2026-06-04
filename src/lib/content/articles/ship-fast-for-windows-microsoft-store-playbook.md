@@ -18,6 +18,9 @@ tags:
   - "distribution"
   - "product strategy"
   - "AI"
+related_posts:
+  - "openjarvis-local-ai-personal-ai-on-your-pc"
+  - "can-you-use-remotion-programmatic-video-react"
 summary: "A Windows-focused adaptation of the mobile app factory playbook for the Microsoft Store."
 ---
 

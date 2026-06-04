@@ -19,6 +19,10 @@ tags:
   - "Windows"
   - "profiles"
   - "AI Wiki"
+related_posts:
+  - "editing-hermes-themes-without-losing-your-mind"
+  - "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
+  - "what-can-you-actually-do-with-a-deepseek-api-key"
 summary: "A two-profile Hermes setup that uses DeepSeek Flash for everyday work and DeepSeek Pro for deeper reasoning, plus an optional AI Wiki layer."
 ---
 

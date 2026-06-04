@@ -18,6 +18,10 @@ tags:
   - "server authority"
   - "WebSocket"
   - "WebTransport"
+related_posts:
+  - "phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game"
+  - "pixelboats-networking-player-hosted-php"
+  - "pixelboats-water-pipeline-pixi-webgl"
 summary: "A server-authoritative networking recommendation for PixelBoats that rejects primary lockstep in favor of prediction, reconciliation, AOI replication, and regional servers."
 ---
 

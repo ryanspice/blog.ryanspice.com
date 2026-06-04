@@ -19,6 +19,9 @@ tags:
   - "WebRTC"
   - "host election"
   - "networking"
+related_posts:
+  - "phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game"
+  - "pixelboats-networking-final-recommendation"
 summary: "A draft plan for player-hosted PixelBoats sessions with PHP handling accounts, signaling, and persistent validation."
 ---
 
