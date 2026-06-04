@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">OpenJarvis local-first personal AI stack</title>
+  <desc id="desc">A navy and gold technical illustration showing a personal computer running local AI with optional cloud fallback.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071321"/>
+      <stop offset="0.58" stop-color="#0b1f33"/>
+      <stop offset="1" stop-color="#10283f"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5d879"/>
+      <stop offset="1" stop-color="#b68a2d"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <style>
+      .label{font-family:Arial, Helvetica, sans-serif;font-size:34px;fill:#eaf6ff;letter-spacing:.02em}
+      .small{font-family:Arial, Helvetica, sans-serif;font-size:24px;fill:#9fb8cc}
+      .tiny{font-family:Arial, Helvetica, sans-serif;font-size:19px;fill:#87a2b8}
+      .line{stroke:#5caed6;stroke-width:4;fill:none;stroke-linecap:round;stroke-dasharray:10 14;opacity:.72}
+      .panel{fill:#0d2238;stroke:#2f6c8d;stroke-width:3;rx:26}
+      .chip{fill:#102d48;stroke:#78d4ff;stroke-width:3;rx:22}
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <g opacity=".22">
+    <path d="M0 168h1600M0 336h1600M0 504h1600M0 672h1600M200 0v900M400 0v900M600 0v900M800 0v900M1000 0v900M1200 0v900M1400 0v900" stroke="#79b9d9" stroke-width="1"/>
+  </g>
+  <text x="90" y="105" class="label" font-size="50">OpenJarvis: personal AI, on personal devices</text>
+  <text x="92" y="150" class="small">Local-first agents, memory, tools, telemetry, and optional cloud escalation.</text>
+
+  <g transform="translate(160 235)">
+    <rect class="panel" width="610" height="390" rx="34"/>
+    <rect x="52" y="62" width="506" height="228" rx="24" fill="#081726" stroke="#6fbbe2" stroke-width="4"/>
+    <circle cx="305" cy="176" r="76" fill="none" stroke="url(#gold)" stroke-width="9" filter="url(#glow)"/>
+    <path d="M255 176h100M305 126v100M275 146l60 60M335 146l-60 60" stroke="#f2d276" stroke-width="5" stroke-linecap="round"/>
+    <rect x="236" y="317" width="138" height="24" rx="12" fill="#35566b"/>
+    <rect x="178" y="352" width="254" height="28" rx="14" fill="#132e48" stroke="#5caed6" stroke-width="3"/>
+    <text x="56" y="42" class="small">Your workstation</text>
+    <text x="68" y="420" class="tiny">Private by default • lower marginal cost • offline-capable paths</text>
+  </g>
+
+  <g transform="translate(905 218)">
+    <rect class="chip" width="390" height="74"/>
+    <text x="28" y="48" class="small">Intelligence</text>
+    <rect class="chip" y="94" width="390" height="74"/>
+    <text x="28" y="142" class="small">Engine</text>
+    <rect class="chip" y="188" width="390" height="74"/>
+    <text x="28" y="236" class="small">Agents</text>
+    <rect class="chip" y="282" width="390" height="74"/>
+    <text x="28" y="330" class="small">Tools + Memory</text>
+    <rect class="chip" y="376" width="390" height="74"/>
+    <text x="28" y="424" class="small">Learning loop</text>
+  </g>
+
+  <path class="line" d="M770 430 C825 390 850 354 905 350"/>
+  <path class="line" d="M770 430 C840 430 845 443 905 443"/>
+  <path class="line" d="M770 430 C835 475 850 535 905 535"/>
+
+  <g transform="translate(1165 615)">
+    <path d="M45 72c-30 0-54-21-54-48 0-25 21-45 48-48 13-28 44-48 80-48 45 0 82 29 90 68 31 5 55 27 55 55 0 32-31 58-69 58H45z" fill="#122d47" stroke="#6fbbe2" stroke-width="4"/>
+    <text x="20" y="58" class="small">Cloud fallback</text>
+    <text x="21" y="91" class="tiny">optional, not the centre</text>
+  </g>
+  <path d="M1120 640 C1040 690 900 698 770 615" stroke="#d7b35c" stroke-width="5" fill="none" stroke-dasharray="12 12" opacity=".8"/>
+
+  <g transform="translate(88 745)">
+    <rect width="1415" height="74" rx="28" fill="#071725" stroke="#35566b" stroke-width="2"/>
+    <text x="32" y="47" class="small">The important shift: local AI is moving from model runners to full personal-agent operating stacks.</text>
+  </g>
+</svg>
