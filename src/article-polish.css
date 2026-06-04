@@ -161,7 +161,8 @@
 }
 
 .article-card.has-focal-image,
-.related-article-card.has-focal-image {
+.related-article-card.has-focal-image,
+.home-hero-card.has-focal-image {
 	position: relative;
 	overflow: hidden;
 	isolation: isolate;
@@ -170,6 +171,10 @@
 	background:
 		linear-gradient(90deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
 		#050505;
+}
+
+.home-hero-card.has-focal-image {
+	min-height: 100%;
 }
 
 .article-card-focal {
@@ -210,7 +215,9 @@
 .article-card.has-focal-image:hover .article-card-focal,
 .article-card.has-focal-image:focus-visible .article-card-focal,
 .related-article-card.has-focal-image:hover .article-card-focal,
-.related-article-card.has-focal-image:focus-visible .article-card-focal {
+.related-article-card.has-focal-image:focus-visible .article-card-focal,
+.home-hero-card.has-focal-image:hover .article-card-focal,
+.home-hero-card.has-focal-image:focus-within .article-card-focal {
 	opacity: 0.86;
 }
 
@@ -235,7 +242,8 @@
 
 @media (max-width: 700px) {
 	.article-card.has-focal-image,
-	.related-article-card.has-focal-image {
+	.related-article-card.has-focal-image,
+	.home-hero-card.has-focal-image {
 		padding-right: 18px;
 		padding-top: 130px;
 	}
