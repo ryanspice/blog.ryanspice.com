@@ -377,7 +377,7 @@
 						{#each relatedArticles as related, index (related.slug + ':' + index)}
 							<a class={`related-article-card article-card-link${articleFocalImage(related) ? ' has-focal-image' : ''}`} href={articleHref(related)} style={`--article-accent: ${articleAccentColor(related)}; ${articleFocalCardCssVars(related)}`}>
 								{#if articleFocalImage(related)}<span class="article-card-focal" aria-hidden="true"></span>{/if}
-								<span class="article-card-content">
+								<div class="article-card-content">
 									<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
 									<h3>{related.title}</h3>
 									<p class="related-meta"><time datetime={related.date}>{related.dateLabel}</time><span>{related.readingMinutes} min read</span></p>
@@ -385,7 +385,7 @@
 									<div class="tag-row compact" aria-label={`${related.title} tags`}>
 										{#each related.tags.slice(0, 4) as tag, index (tag + ':' + index)}<span class="tag">{tag}</span>{/each}
 									</div>
-								</span>
+								</div>
 							</a>
 						{/each}
 					</div>
