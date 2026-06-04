@@ -1,12 +1,8 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { onMount } from 'svelte';
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleCardCssVars, articleCardImage, articleFocalImage } from '$lib/article-focal-images';
-	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
 	import type { Article } from '$lib/articles';
-	import { homepageArticles } from '$lib/homepage-articles';
-	import { devLogEntries, type DevLogEntry } from '$lib/dev-log';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
@@ -15,31 +11,9 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
-	type HomeGridCard =
-		| { kind: 'article'; article: Article }
-		| { kind: 'dev-log'; entries: DevLogEntry[] };
 
-	const loadedPublishedArticles = $derived(Array.isArray(data.publishedArticles) ? data.publishedArticles : []);
-	const publishedArticles = $derived.by(() => (loadedPublishedArticles.length ? loadedPublishedArticles : homepageArticles));
+	const publishedArticles = $derived(Array.isArray(data.publishedArticles) ? data.publishedArticles as Article[] : []);
 	const latestArticles = $derived.by(() => publishedArticles.slice(0, 5));
-	const homeDevLogRows = $derived.by(() => devLogEntries.slice(0, 4).map((entry) => entry));
-	const homeCards = $derived.by(() => {
-		const rows = [] as HomeGridCard[];
-		let devLogIndex = 0;
-
-		for (let index = 0; index < latestArticles.length; index += 1) {
-			const article = latestArticles[index];
-			if (article) rows.push({ kind: 'article', article });
-
-			if ((index === 1 || index === 3) && devLogIndex < homeDevLogRows.length) {
-				const next = homeDevLogRows.slice(devLogIndex, devLogIndex + 2);
-				rows.push({ kind: 'dev-log', entries: next });
-				devLogIndex += next.length;
-			}
-		}
-
-		return rows;
-	});
 
 	const title = 'blog.ryanspice.com · Technical notes';
 	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';
@@ -51,29 +25,8 @@
 	const latestArticleHref = $derived.by(() => (latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`));
 	const latestArticleAccent = $derived.by(() => (latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)'));
 	const latestArticleCardStyle = $derived.by(() => `--article-accent: ${latestArticleAccent}; ${articleCardCssVars(latestArticle)}`);
-	const footerLinks = $derived.by(() => {
-		const links = [
-			{ label: 'ryanspice.com', href: 'https://ryanspice.com' },
-			{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
-			{ label: 'Dev log', href: '/dev-log' },
-			{ label: 'RSS feed', href: '/rss.xml' },
-			{ label: 'Sitemap', href: '/sitemap.xml' }
-		];
-
-		if (canAccessDrafts($authState)) {
-			links.push({ label: 'Drafts', href: '/drafts' });
-			links.push({ label: 'Status', href: '/status' });
-		}
-
-		return links;
-	});
-
 	const canonical = $derived(data.canonical);
 	const ogImage = $derived(data.ogImage);
-
-	onMount(() => {
-		void loadAuthState();
-	});
 
 	function hrefFor(href: string): string {
 		if (href.startsWith('#') || href.startsWith('http')) return href;
@@ -164,27 +117,9 @@
 		<p class="section-dek">The newest published technical notes, capped to the latest 5 posts.</p>
 	</div>
 
-	{#if homeCards.length}
-		{#each homeCards as homeItem, index (homeItem.kind === 'article' ? `article-${homeItem.article.slug}` : `home-dev-log-${index}`)}
-			{#if homeItem.kind === 'article'}
-				<ArticleCard article={homeItem.article} />
-			{:else}
-				<div class="home-dev-log-row home-dev-log-row--compact">
-					{#if homeItem.entries.length === 0}
-						<article class="home-dev-log-card article-dev-log-empty">
-							<p>No more dev log entries this week.</p>
-						</article>
-					{:else}
-						{#each homeItem.entries as devLogEntry, devLogIndex (devLogEntry.id + ':' + devLogIndex)}
-							<article class="home-dev-log-card" id={`home-devlog-${devLogEntry.id}`} style={`--article-accent: ${devLogEntry.accent}`}>
-								<p class="dev-log-meta"><time datetime={devLogEntry.date}>{devLogEntry.dateLabel}</time> · {devLogEntry.source}</p>
-								<h3><a href={`/dev-log/?tag=${encodeURIComponent(devLogEntry.tags?.[0] ?? '')}`}>{devLogEntry.title}</a></h3>
-								<p>{devLogEntry.summary}</p>
-							</article>
-						{/each}
-					{/if}
-				</div>
-			{/if}
+	{#if latestArticles.length}
+		{#each latestArticles as article, index (article.slug + ':' + index)}
+			<ArticleCard article={article} />
 		{/each}
 	{:else}
 		<div class="article-empty">
@@ -204,10 +139,12 @@
 		</div>
 
 		<div class="site-footer-links">
-			{#each footerLinks as link, index (link.href + ':' + index)}
-				<a href={hrefFor(link.href)} rel={link.href.startsWith('http') ? 'noreferrer' : undefined} target={link.href.startsWith('http') ? '_blank' : undefined}>{link.label}</a>
-			{/each}
-			<a href={hrefFor('#articles')}>Articles</a>
+			<a href="https://ryanspice.com" rel="noreferrer" target="_blank">ryanspice.com</a>
+			<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>
+			<a href="/dev-log">Dev log</a>
+			<a href="/rss.xml">RSS feed</a>
+			<a href="/sitemap.xml">Sitemap</a>
+			<a href="#articles">Articles</a>
 			<a href="https://canopydigital.ca" rel="noreferrer" target="_blank">Canopy Digital</a>
 			<FooterAuthControls returnTo="/drafts/" />
 		</div>
