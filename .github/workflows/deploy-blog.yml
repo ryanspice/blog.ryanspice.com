@@ -72,10 +72,13 @@ jobs:
           $target = "build/_protected/_page.php"
           if (Test-Path $target) {
             $content = Get-Content -Raw $target
-            $fixed = $content -replace "fn\(\$word\) => \$word !== '')", "fn(\$word) => \$word !== ''))"
+            # Literal string replace (not regex) — fixes the adapter's missing closing paren
+            $fixed = $content.Replace("fn(`$word) => `$word !== '')", "fn(`$word) => `$word !== ''))")
             if ($fixed -ne $content) {
-              Set-Content -Encoding UTF8 -Path $target -Value $fixed
+              Set-Content -Encoding UTF8 -NoNewline -Path $target -Value $fixed
               Write-Host "Fixed PHP syntax in $target"
+            } else {
+              Write-Host "No fix needed in $target"
             }
           }
 
