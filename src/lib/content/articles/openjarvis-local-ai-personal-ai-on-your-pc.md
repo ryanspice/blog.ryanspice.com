@@ -31,6 +31,8 @@ references:
   - "https://open-jarvis.github.io/OpenJarvis/getting-started/windows-native/"
   - "https://openrouter.ai/pricing"
   - "https://ai.google.dev/gemini-api/docs/pricing"
+  - "https://unsplash.com/s/photos/computer-chip"
+  - "https://unsplash.com/license"
 related_posts:
   - "how-chatgpt-performs-deep-research"
   - "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
