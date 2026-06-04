@@ -66,6 +66,19 @@ jobs:
         shell: pwsh
         run: pnpm run build:blog
 
+      - name: Fix adapter PHP codegen bug (missing close paren in arrow fn)
+        shell: pwsh
+        run: |
+          $target = "build/_protected/_page.php"
+          if (Test-Path $target) {
+            $content = Get-Content -Raw $target
+            $fixed = $content -replace "fn\(\$word\) => \$word !== '')", "fn(\$word) => \$word !== ''))"
+            if ($fixed -ne $content) {
+              Set-Content -Encoding UTF8 -Path $target -Value $fixed
+              Write-Host "Fixed PHP syntax in $target"
+            }
+          }
+
       - name: Audit PHP release
         run: pnpm run audit:seo
 
