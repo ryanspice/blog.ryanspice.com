@@ -4,6 +4,24 @@ import type { Article } from './articles';
 // This prevents PHP-static hydration issues from blanking the article list on refresh.
 export const homepageArticles = [
 	{
+		title: 'Agent Mixing Without Theater: DeepSeek Pro, Flash, Gemma4, and the Law of Diminishing Returns',
+		slug: 'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',
+		status: 'published',
+		draftType: 'agent-architecture',
+		summary:
+			'A practical routing rule for mixing DeepSeek V4 Pro, DeepSeek V4 Flash, and local Gemma4-style agents without turning a coding workflow into an expensive committee.',
+		tags: ['deepseek', 'gemma4', 'agent orchestration', 'ai coding', 'hermes', 'model routing', 'diminishing returns'],
+		date: '2026-06-03',
+		dateLabel: 'June 3, 2026',
+		updatedDate: '2026-06-03',
+		updatedDateLabel: 'June 3, 2026',
+		readingMinutes: 11,
+		design: {
+			accent: '#38bdf8',
+			tags: ['DeepSeek', 'Gemma4', 'Agent Orchestration', 'AI Coding', 'Hermes', 'Model Routing']
+		}
+	},
+	{
 		title: 'ChatGPT Deep Research vs. DeepSeek: What’s Actually Happening Under the Hood',
 		slug: 'how-chatgpt-performs-deep-research',
 		status: 'published',
@@ -105,24 +123,6 @@ export const homepageArticles = [
 		design: {
 			accent: '#ffcf77',
 			tags: ['GIMP', 'GIMP 3', 'Windows 11', 'Windhawk', 'DLL Debugging', 'Python', 'Troubleshooting']
-		}
-	},
-	{
-		title: 'Repairing a Broken GIMP 3 Install and Turning It Into a Pixel Art Workstation',
-		slug: 'gimp-3-repair-photogimp-pixelboats-workstation',
-		status: 'published',
-		draftType: 'technical-blog-post',
-		summary:
-			"A real-world repair log and workflow writeup covering a broken GIMP 3.2 install, Windows DLL/runtime conflicts, Windhawk suspicion, PhotoGIMP, G'MIC-Qt, a Fluent-ish theme, and a PixelBoats-ready asset kit.",
-		tags: ['gimp', 'windows-11', 'pixel-art', 'photogimp', 'gmic', 'windhawk', 'dll-debugging', 'pixelboats', 'creative-tooling'],
-		date: '2026-05-28',
-		dateLabel: 'May 28, 2026',
-		updatedDate: '2026-05-28',
-		updatedDateLabel: 'May 28, 2026',
-		readingMinutes: 5,
-		design: {
-			accent: '#f2d27c',
-			tags: ['GIMP', 'GIMP 3', 'Windows 11', 'Pixel Art', 'Windhawk', 'DLL Debugging', 'PhotoGIMP', "G'MIC", 'PixelBoats']
 		}
 	}
 ] as Article[];
