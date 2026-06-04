@@ -3,9 +3,42 @@
  *
  * Keep this small and loaded after the SvelteKit CSS bundle. It fixes article
  * templates where decorative art columns can steal width from prose/code on
- * mid-sized screens.
+ * mid-sized screens, and protects narrow mobile webviews from horizontal overflow.
  */
 
+html,
+body {
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+.site-header,
+.nav,
+.home-hero,
+.hero,
+.layout,
+.article-grid,
+.article-index-shell,
+.dev-log-featured,
+.dev-log-feed,
+.site-footer,
+.article-footer,
+.drafts-footer,
+.drafts-error {
+	max-width: 100%;
+}
+
+.nav,
+.nav-cluster,
+.nav-links,
+.nav-actions,
+.home-hero,
+.home-hero-copy,
+.home-hero-card,
+.article-card,
+.meta-grid,
+.hero-meta,
+.home-primary-actions,
 .article-column,
 .article-shell,
 .article-inner,
@@ -93,5 +126,81 @@
 	.section-head-art {
 		justify-self: start;
 		max-width: 180px;
+	}
+}
+
+@media (max-width: 760px) {
+	.nav,
+	.home-hero,
+	.hero,
+	.layout,
+	.article-grid,
+	.article-index-shell,
+	.dev-log-featured,
+	.dev-log-feed,
+	.site-footer,
+	.article-footer,
+	.drafts-footer,
+	.drafts-error {
+		width: calc(100vw - 32px) !important;
+	}
+
+	.nav {
+		align-items: flex-start;
+	}
+
+	.nav-branding,
+	.nav-cluster,
+	.nav-links,
+	.nav-actions {
+		width: 100%;
+		justify-content: flex-start;
+	}
+
+	.nav-links {
+		gap: 10px;
+		overflow-x: auto;
+		padding-bottom: 6px;
+	}
+
+	.home-hero h1,
+	.compact-section-head h1 {
+		max-width: 100%;
+		font-size: clamp(32px, 10vw, 44px);
+		line-height: 1.04;
+	}
+
+	.home-primary-actions {
+		display: grid !important;
+		grid-template-columns: minmax(0, 1fr);
+		width: 100%;
+	}
+
+	.home-primary-actions a,
+	.home-hero-links a,
+	.site-footer-links a,
+	.article-footer-links a {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.home-meta,
+	.article-meta,
+	.home-hero-card .hero-meta {
+		grid-template-columns: minmax(0, 1fr) !important;
+	}
+
+	.home-hero-card,
+	.article-card,
+	.related-article-card,
+	.article-empty,
+	.hero-card,
+	.rail-card {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	#articles.article-grid {
+		grid-template-columns: minmax(0, 1fr) !important;
 	}
 }
