@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-	<link rel="stylesheet" href={`${base}/tower-accent.php`} />
+	<link rel="stylesheet" href={`${base}/tower-accent.css`} />
 	<link rel="alternate" type="application/rss+xml" title="Ryan Spice · Technical notes" href={`${base}/rss.xml`} />
 </svelte:head>
 

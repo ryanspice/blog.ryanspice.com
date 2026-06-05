@@ -1,0 +1,5 @@
+/* Tower accent colour — generated at build time.
+   See scripts/Generate-TowerAccent.ps1 to update from the CN Tower API. */
+:root {
+	--accent: #1e9bff;
+}
