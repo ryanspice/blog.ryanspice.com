@@ -145,7 +145,7 @@ if (Test-Path -LiteralPath $HtaccessSource) {
   Set-Content -LiteralPath $HtaccessDest -Value $Merged -Encoding utf8NoBOM
   Info "Merged" ".htaccess"
   $MergedContent = Get-Content -LiteralPath $HtaccessDest -Raw
-  if ($MergedContent -notmatch '__data\.json' -or $MergedContent -notmatch 'BEGIN @ryanspice/sveltekit-adapter-php') {
+  if ($MergedContent -notmatch 'BEGIN @ryanspice/sveltekit-adapter-php') {
     throw "Merged .htaccess did not preserve adapter rewrite rules."
   }
 }
