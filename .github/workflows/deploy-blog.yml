@@ -7,8 +7,6 @@ on:
       - master
   workflow_dispatch:
   schedule:
-    # Rebuild once per day so draft frontmatter release_date values become public
-    # without a manual deploy. 05:15 UTC is safely after midnight in America/Toronto.
     - cron: '15 5 * * *'
 
 concurrency:
@@ -59,9 +57,32 @@ jobs:
       - name: Typecheck
         run: pnpm check
 
-      - name: Build static site
+      - name: Build PHP release
         shell: pwsh
         run: pnpm run build:blog
+
+      - name: Audit PHP release
+        run: pnpm run audit:seo
+
+      - name: Write deploy key
+        shell: pwsh
+        env:
+          BLOG_DEPLOY_KEY: ${{ secrets.BLOG_DEPLOY_KEY }}
+          BLOG_DEPLOY_KEY_B64: ${{ secrets.BLOG_DEPLOY_KEY_B64 }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:BLOG_DEPLOY_KEY) -and [string]::IsNullOrWhiteSpace($env:BLOG_DEPLOY_KEY_B64)) {
+            throw "Missing BLOG_DEPLOY_KEY secret."
+          }
+          $keyPath = Join-Path $env:RUNNER_TEMP "blog_deploy_key"
+          if (-not [string]::IsNullOrWhiteSpace($env:BLOG_DEPLOY_KEY_B64)) {
+            [System.IO.File]::WriteAllBytes($keyPath, [Convert]::FromBase64String($env:BLOG_DEPLOY_KEY_B64.Trim()))
+          } else {
+            $normalized = $env:BLOG_DEPLOY_KEY.Replace("`r`n", "`n").TrimEnd() + "`n"
+            [System.IO.File]::WriteAllText($keyPath, $normalized, [System.Text.UTF8Encoding]::new($false))
+          }
+          chmod 600 $keyPath
+          ssh-keygen -y -f $keyPath > $null
+          "BLOG_DEPLOY_KEY_PATH=$keyPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Deploy and activate production
         shell: pwsh

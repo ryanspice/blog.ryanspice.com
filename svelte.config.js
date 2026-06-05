@@ -1,11 +1,15 @@
-import adapter from '@sveltejs/adapter-static';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import adapter from './adapter/index.js';
 
 const basePath = process.env.PUBLIC_BASE_PATH ?? '';
 const prerenderOrigin = process.env.PUBLIC_SITE_URL ?? 'https://blog.ryanspice.com';
+const adapterFallback =
+	process.env.ADAPTER_FALLBACK === undefined
+		? false
+		: process.env.ADAPTER_FALLBACK === 'true'
+			? true
+			: process.env.ADAPTER_FALLBACK;
 
 const config = {
-	preprocess: vitePreprocess(),
 	kit: {
 		paths: {
 			base: basePath,
@@ -20,10 +24,14 @@ const config = {
 			}
 		},
 		adapter: adapter({
-			pages: 'build',
-			assets: 'build',
-			fallback: '404.html',
-			precompress: false,
+			mode: process.env.ADAPTER_MODE ?? 'php-static',
+			baseMode: process.env.ADAPTER_BASE_MODE ?? 'fixed',
+			basePath,
+			ssr: true,
+			out: process.env.ADAPTER_OUT ?? 'build',
+			assets: process.env.ADAPTER_ASSETS ?? 'build',
+			precompress: process.env.PRECOMPRESS === 'true',
+			fallback: adapterFallback,
 			strict: true
 		})
 	}

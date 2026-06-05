@@ -3,6 +3,7 @@
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleCardCssVars, articleCardImage, articleFocalImage } from '$lib/article-focal-images';
 	import type { Article } from '$lib/articles';
+	import { homepageArticles } from '$lib/homepage-articles';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
@@ -12,7 +13,8 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const publishedArticles = $derived(Array.isArray(data.publishedArticles) ? data.publishedArticles as Article[] : []);
+	const loadedPublishedArticles = $derived(Array.isArray(data.publishedArticles) ? data.publishedArticles as Article[] : []);
+	const publishedArticles = $derived.by(() => (loadedPublishedArticles.length ? loadedPublishedArticles : homepageArticles));
 	const latestArticles = $derived.by(() => publishedArticles.slice(0, 5));
 
 	const title = 'blog.ryanspice.com · Technical notes';
