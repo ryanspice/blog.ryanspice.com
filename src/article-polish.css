@@ -1,9 +1,7 @@
 /* Article polish overrides: Metro/Windows Phone rhythm, slimmer article body, source padding, and focal-image accents. */
 
 .article-page .layout {
-	grid-template-columns: minmax(230px, 300px) minmax(0, 880px);
 	justify-content: center;
-	gap: clamp(24px, 2.4vw, 40px);
 }
 
 .article-column {

@@ -134,6 +134,12 @@
 		setCommandFeedback(ok ? 'Link copied' : 'Copy failed');
 	}
 
+	function handleBackClick(event: MouseEvent) {
+		if (typeof window === 'undefined' || window.history.length <= 1) return;
+		event.preventDefault();
+		window.history.back();
+	}
+
 	async function enhanceMermaid() {
 		const diagrams = Array.from(document.querySelectorAll<HTMLElement>('.mermaid-diagram'));
 		if (!diagrams.length) return;
@@ -396,7 +402,7 @@
 
 	<div class="command-bar" aria-label="Commands">
 		<div class="command-inner">
-			<a class="cmd" href={`${base}/`}>Back</a>
+			<a class="cmd" href={`${base}/`} onclick={handleBackClick}>Back</a>
 			<a class="cmd" href={`${base}/rss.xml`}>RSS</a>
 			<button class="cmd" type="button" onclick={copyLink} aria-label="Copy link to clipboard">Copy link</button>
 			{#if commandFeedback}<span class="cmd-feedback" aria-live="polite">{commandFeedback}</span>{/if}
