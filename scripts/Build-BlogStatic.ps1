@@ -89,10 +89,20 @@ finally {
 $pagePhp = Join-Path $BuildDir "_protected" "_page.php"
 if (Test-Path $pagePhp) {
   $content = Get-Content -Raw $pagePhp
+
+  # Fix missing close paren
   $fixed = $content.Replace("fn(`$word) => `$word !== '')", "fn(`$word) => `$word !== ''))")
+
+  # Fix getcwd() path — use __DIR__ relative to build output so article .md
+  # files are found even when PHP's CWD is not the project root.
+  $fixed = $fixed.Replace(
+    "`$contentRoot = getcwd() . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'articles';",
+    "`$contentRoot = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'articles';"
+  )
+
   if ($fixed -ne $content) {
     Set-Content -Encoding UTF8 -NoNewline -Path $pagePhp -Value $fixed
-    Write-Host "Fixed PHP syntax in _protected/_page.php"
+    Write-Host "Fixed PHP syntax and path in _protected/_page.php"
   }
 }
 
