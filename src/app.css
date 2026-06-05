@@ -787,7 +787,7 @@ button.footer-auth-link {
 	width: var(--wide);
 	margin: 0 auto;
 	display: grid;
-	grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+	grid-template-columns: minmax(160px, 300px) minmax(0, 1fr);
 	gap: 32px;
 	align-items: start;
 	padding-bottom: 90px;
