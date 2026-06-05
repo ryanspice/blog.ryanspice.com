@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
+	import { page } from '$app/state';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { PageData } from './$types';
 
@@ -7,6 +8,35 @@
 
 	const title = 'RSS feed · blog.ryanspice.com';
 	const description = 'Human-friendly RSS feed page for blog.ryanspice.com.';
+	let copyFeedback = $state('');
+
+	function fallbackCopyText(text: string): boolean {
+		const textarea = document.createElement('textarea');
+		textarea.value = text;
+		textarea.setAttribute('readonly', '');
+		textarea.style.position = 'fixed';
+		textarea.style.left = '-9999px';
+		textarea.style.top = '0';
+		textarea.style.opacity = '0';
+		document.body.appendChild(textarea);
+		textarea.focus();
+		textarea.select();
+		try { return document.execCommand('copy'); }
+		catch { return false; }
+		finally { document.body.removeChild(textarea); }
+	}
+
+	async function copyFeedUrl() {
+		const url = data.feedUrl;
+		try {
+			await navigator.clipboard.writeText(url);
+			copyFeedback = 'Copied';
+		} catch {
+			const ok = fallbackCopyText(url);
+			copyFeedback = ok ? 'Copied' : 'Copy failed';
+		}
+		setTimeout(() => { copyFeedback = ''; }, 2000);
+	}
 </script>
 
 <svelte:head>
@@ -30,12 +60,13 @@
 		<p class="eyebrow">RSS feed</p>
 		<h1>Subscribe to the technical notes feed.</h1>
 		<p class="dek">
-			This page is the readable version of the feed. The real RSS document stays at
-			<a href={data.feedUrl}>/rss.xml</a>.
+			This page is the readable version of the feed. The raw RSS XML is at
+			<code>{data.feedUrl}</code>.
 		</p>
 
 		<div class="home-hero-links">
 			<a href={data.feedUrl}>Open RSS XML</a>
+			<button type="button" onclick={copyFeedUrl}>{copyFeedback || 'Copy feed URL'}</button>
 			<a href={`${base}/`}>Back to articles</a>
 		</div>
 	</section>

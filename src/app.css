@@ -366,6 +366,7 @@ a { color: var(--accent); }
 	opacity: 0.82;
 	overflow: hidden;
 	pointer-events: none;
+	order: -1;
 }
 
 .article-hero-visual svg {

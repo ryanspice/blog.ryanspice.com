@@ -37,6 +37,7 @@ credits:
 references:
   - "https://github.com/open-jarvis/OpenJarvis"
   - "https://arxiv.org/abs/2605.17172"
+  - "https://x.com/search?q=OpenJarvis"
   - "https://open-jarvis.github.io/OpenJarvis/getting-started/install/"
   - "https://open-jarvis.github.io/OpenJarvis/getting-started/windows-native/"
   - "https://openrouter.ai/pricing"
@@ -48,6 +49,7 @@ related_posts:
   - "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
   - "what-can-you-actually-do-with-a-deepseek-api-key"
 link_terms:
+  - "#OpenJarvis|https://x.com/search?q=OpenJarvis"
   - "OpenJarvis|https://github.com/open-jarvis/OpenJarvis"
   - "OpenJarvis paper|https://arxiv.org/abs/2605.17172"
   - "installation docs|https://open-jarvis.github.io/OpenJarvis/getting-started/install/"
@@ -59,7 +61,7 @@ summary: "OpenJarvis is trending because it reframes the personal AI assistant a
 # #OpenJarvis Is the Local AI Agent Project to Watch Right Now
 
 **Published:** June 4, 2026  
-**Topic:** OpenJarvis, local AI agents, on-device personal AI, agent frameworks
+**Topic:** [#OpenJarvis](https://x.com/search?q=OpenJarvis), local AI agents, on-device personal AI, agent frameworks
 
 OpenJarvis is not interesting because the name sounds like every Iron Man-inspired assistant demo from the last decade.
 
