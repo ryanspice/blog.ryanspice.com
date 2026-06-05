@@ -319,7 +319,7 @@ a { color: var(--accent); }
 
 .hero {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(160px, 300px) minmax(360px, 420px);
+	grid-template-columns: minmax(160px, 300px) minmax(0, 1fr) minmax(360px, 420px);
 	gap: clamp(20px, 2.2vw, 32px);
 }
 

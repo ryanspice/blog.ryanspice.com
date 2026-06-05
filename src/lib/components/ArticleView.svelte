@@ -230,28 +230,6 @@
 	<SiteHeader brandLabel={article.design.brandLabel} navLinks={article.design.navLinks} />
 
 	<section class="hero">
-		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
-			<div class="eyebrow">{article.design.eyebrow}</div>
-			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
-			<p class="article-byline"><time datetime={article.date}>{article.dateLabel}</time></p>
-
-			<dl class="meta-grid article-meta" aria-label="Article metadata">
-				<div><dt>Article info</dt><dd>{articleInfo}</dd></div>
-				<div><dt>Read time</dt><dd>{article.readingMinutes} min</dd></div>
-				<div><dt>Type</dt><dd>{article.draftType.replaceAll('-', ' ')}</dd></div>
-				{#if article.releaseDateLabel}
-					<div><dt>Release</dt><dd>{article.releaseDateLabel}</dd></div>
-				{/if}
-			</dl>
-
-			<p class="dek">{article.summary}</p>
-			<div class="tag-row" aria-label="Tags">
-				{#each article.design.tags as tag, index (tag + ':' + index)}
-					<a class="tag tag-link" href={articleTagIndexHref(tag, article.status as ArticleIndexStatus)}>{tag}</a>
-				{/each}
-			</div>
-		</div>
-
 		<div class="article-hero-visual" aria-hidden="true">
 			{#if focalImage}
 				<div class="article-focal-panel"></div>
@@ -277,6 +255,28 @@
 					</g>
 				</svg>
 			{/if}
+		</div>
+
+		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
+			<div class="eyebrow">{article.design.eyebrow}</div>
+			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
+			<p class="article-byline"><time datetime={article.date}>{article.dateLabel}</time></p>
+
+			<dl class="meta-grid article-meta" aria-label="Article metadata">
+				<div><dt>Article info</dt><dd>{articleInfo}</dd></div>
+				<div><dt>Read time</dt><dd>{article.readingMinutes} min</dd></div>
+				<div><dt>Type</dt><dd>{article.draftType.replaceAll('-', ' ')}</dd></div>
+				{#if article.releaseDateLabel}
+					<div><dt>Release</dt><dd>{article.releaseDateLabel}</dd></div>
+				{/if}
+			</dl>
+
+			<p class="dek">{article.summary}</p>
+			<div class="tag-row" aria-label="Tags">
+				{#each article.design.tags as tag, index (tag + ':' + index)}
+					<a class="tag tag-link" href={articleTagIndexHref(tag, article.status as ArticleIndexStatus)}>{tag}</a>
+				{/each}
+			</div>
 		</div>
 
 		<div class="article-hero-side">
