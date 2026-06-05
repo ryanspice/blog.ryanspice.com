@@ -14,7 +14,7 @@
 	let { data }: { data: PageData } = $props();
 
 	const loadedPublishedArticles = $derived(Array.isArray(data.publishedArticles) ? data.publishedArticles as Article[] : []);
-	const publishedArticles = $derived.by(() => (loadedPublishedArticles.length ? loadedPublishedArticles : homepageArticles));
+	const publishedArticles = $derived.by(() => (loadedPublishedArticles.length ? loadedPublishedArticles : homepageArticles as unknown as Article[]));
 	const latestArticles = $derived.by(() => publishedArticles.slice(0, 5));
 
 	const title = 'blog.ryanspice.com · Technical notes';

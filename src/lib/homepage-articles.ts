@@ -1,16 +1,29 @@
 import type { Article } from './articles';
 
-// Hydration guard for PHP-static cold loads.
-// The server load function returns publishedArticles from the markdown files,
-// but on a fresh page load the PHP-static adapter can fail to deserialize
-// the embedded JSON, leaving data.publishedArticles undefined.
-// This fallback ensures the homepage never shows empty on refresh.
-//
-// IMPORTANT: Keep this in sync with the actual published article data.
-// Any mismatch causes a DOM rewrite on hydration — flicker.
-// Run `pnpm exec tsx scripts/sync-homepage-articles.ts` after adding/publishing
-// an article to regenerate this file from source.
-export const homepageArticles: Article[] = [
+// Shared default design fields for the hydration fallback.
+// The homepage card component reads `accent`, `tags`, and `variant` from design.
+// The rest are required by the ArticleDesign type but unused in the fallback view.
+const defaultDesign = {
+	variant: 'default' as const,
+	brandLabel: 'Ryan Spice / Canopy Digital',
+	navLinks: [{ label: 'Articles', href: '#articles' }],
+	eyebrow: 'Technical blog · published',
+	heroCardTitle: 'Article profile',
+	heroCardAria: 'Article details',
+	statusItems: [{ label: 'Type', value: 'article' }, { label: 'Status', value: 'published' }],
+	tocTitle: 'Contents',
+	railTitle: 'Publishing notes',
+	railBodyHtml: 'This route is static-friendly and generated from local Markdown.',
+	railCalloutHtml: '<strong>Editorial angle:</strong> practical technical notes with durable source context.',
+	footerText: 'Static SvelteKit article generated from local Markdown.'
+};
+
+// Hydration guard for PHP-static cold loads — cast to Article[] since
+// these objects only need the fields used by homepage ArticleCard (title,
+// slug, design.accent, design.tags, date, readingMinutes, etc.). The
+// missing RenderedMarkdown fields (html, toc, wordCount) are never
+// accessed from this view.
+export const homepageArticles = [
 	{
 		title: '#OpenJarvis Is the Local AI Agent Project to Watch Right Now',
 		slug: 'openjarvis-local-ai-personal-ai-on-your-pc',
@@ -24,7 +37,15 @@ export const homepageArticles: Article[] = [
 		updatedDate: '2026-06-04',
 		updatedDateLabel: 'Jun 4, 2026',
 		readingMinutes: 1,
+		audience: [],
+		version: '1.1.0',
+		previousVersion: null,
+		visuals: {},
+		credits: ['Ryan Spice'],
+		references: [],
+		relatedPosts: [],
 		design: {
+			...defaultDesign,
 			accent: '#1e9bff',
 			tags: ['OpenJarvis', 'Local AI', 'Agent Framework', 'Ollama', 'Personal AI', 'Open Source']
 		}
@@ -43,6 +64,7 @@ export const homepageArticles: Article[] = [
 		updatedDateLabel: 'Jun 4, 2026',
 		readingMinutes: 1,
 		design: {
+			...defaultDesign,
 			accent: '#38bdf8',
 			tags: ['DeepSeek', 'Gemma4', 'Agent Orchestration', 'AI Coding', 'Hermes', 'Model Routing']
 		}
@@ -61,6 +83,7 @@ export const homepageArticles: Article[] = [
 		updatedDateLabel: 'May 30, 2026',
 		readingMinutes: 5,
 		design: {
+			...defaultDesign,
 			accent: '#7c5cff',
 			tags: ['ChatGPT', 'Deep Research', 'DeepSeek', 'Reasoning Models', 'LLMs', 'Agentic Workflows']
 		}
@@ -78,6 +101,7 @@ export const homepageArticles: Article[] = [
 		updatedDateLabel: 'May 30, 2026',
 		readingMinutes: 6,
 		design: {
+			...defaultDesign,
 			accent: '#53b8ff',
 			tags: ['Windows', 'Microsoft Store', 'Indie Apps', 'Distribution', 'Product Strategy', 'AI']
 		}
@@ -96,6 +120,7 @@ export const homepageArticles: Article[] = [
 		updatedDateLabel: 'May 29, 2026',
 		readingMinutes: 8,
 		design: {
+			...defaultDesign,
 			accent: '#87dac4',
 			tags: ['Phaser', 'PixiJS', 'WebGPU', 'Game Engine Comparison', '2.5D Rendering', 'Water Simulation', 'Multiplayer', 'Colyseus', 'Indie Game Dev']
 		}
@@ -114,6 +139,7 @@ export const homepageArticles: Article[] = [
 		updatedDateLabel: 'May 28, 2026',
 		readingMinutes: 5,
 		design: {
+			...defaultDesign,
 			accent: '#ffcf77',
 			tags: ['GIMP', 'GIMP 3', 'Windows 11', 'Windhawk', 'DLL Debugging', 'Python', 'Troubleshooting']
 		}
