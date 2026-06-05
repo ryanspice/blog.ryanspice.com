@@ -91,12 +91,22 @@
 
 	:global(.home-meta > div),
 	:global(.home-hero-card .hero-meta > div),
-	:global(.article-card),
 	:global(.site-footer-links a) {
 		background:
 			linear-gradient(135deg, rgba(23, 28, 36, 0.64), rgba(5, 7, 10, 0.48)),
 			rgba(255, 255, 255, 0.018);
 		border-color: rgba(255, 255, 255, 0.105);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.065);
+		backdrop-filter: blur(18px) saturate(1.08);
+		-webkit-backdrop-filter: blur(18px) saturate(1.08);
+	}
+
+	:global(.article-card) {
+		background:
+			linear-gradient(135deg, rgba(23, 28, 36, 0.64), rgba(5, 7, 10, 0.48)),
+			rgba(255, 255, 255, 0.018);
+		border-color: rgba(255, 255, 255, 0.105);
+		border-left-color: var(--article-accent, var(--accent));
 		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.065);
 		backdrop-filter: blur(18px) saturate(1.08);
 		-webkit-backdrop-filter: blur(18px) saturate(1.08);
