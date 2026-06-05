@@ -106,6 +106,10 @@ if (Test-Path $pagePhp) {
   }
 }
 
+# Post-build fix: embed prerendered hydration data directly instead of
+# re-executing the PHP load function at runtime. Prevents hydration flicker.
+& pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Embed-PrerenderedData.ps1") -BuildDir $BuildDir
+
 $requiredContract = @(
   "index.php",
   ".htaccess",
