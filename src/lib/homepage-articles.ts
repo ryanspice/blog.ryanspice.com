@@ -40,7 +40,22 @@ export const homepageArticles = [
 		audience: [],
 		version: '1.1.0',
 		previousVersion: null,
-		visuals: {},
+		visuals: {
+			focal: {
+				src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1800&q=80',
+				alt: 'A clean workstation setup with local AI tools and code visible on multiple monitors',
+				position: 'center 45%'
+			},
+			row: {
+				src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=2000&q=80',
+				alt: 'A modern desk running AI tooling and terminals',
+				position: 'center 38%'
+			},
+			background: {
+				src: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=2400&q=80',
+				alt: 'Abstract AI circuit and data visualization art'
+			}
+		},
 		credits: ['Ryan Spice'],
 		references: [],
 		relatedPosts: [],

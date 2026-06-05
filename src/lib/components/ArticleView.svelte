@@ -28,7 +28,7 @@
 	const pageStyle = $derived(`--article-accent: ${articleAccent}; ${articleFocalPageCssVars(article)}`);
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
-	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · Updated ${article.updatedDateLabel}`);
+	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · Published ${article.dateLabel}${article.updatedDate !== article.date ? ` · Updated ${article.updatedDateLabel}` : ''}`);
 	const articleReferences = $derived(article.references.filter(Boolean));
 	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
 	const description = $derived(article.summary || 'Technical blog drafts and production notes from Ryan Spice.');
