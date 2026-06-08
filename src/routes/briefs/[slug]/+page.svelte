@@ -2,7 +2,7 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { authState, canAccessDrafts, loadAuthState, signIn } from '$lib/auth';
+	import { authState, canAccessDrafts, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { MorningBrief } from '$lib/morning-briefs';
@@ -18,6 +18,7 @@
 	let loadError = $state<string | null>(null);
 	let briefLoading = $state(true);
 	let signingIn = $state(false);
+	let actionError = $state('');
 
 	const canViewBriefs = $derived(canAccessDrafts($authState));
 	const title = $derived(brief ? `${brief.title} · Morning Brief · blog.ryanspice.com` : 'blog.ryanspice.com · Morning Brief');
@@ -55,9 +56,10 @@
 
 	async function handleSignIn() {
 		signingIn = true;
+		actionError = '';
 
 		try {
-			await signIn(`/briefs/${data.slug}/`);
+			actionError = (await trySignIn(`/briefs/${data.slug}/`)) ?? '';
 		} finally {
 			signingIn = false;
 		}
@@ -173,7 +175,7 @@
 			<p class="eyebrow">Private morning brief · Microsoft sign-in required</p>
 			<h1>This brief stays behind the owner gate.</h1>
 			<p class="dek">
-				Sign in to open the private brief. Only spice.ryan@hotmail.com can read morning briefs on
+				Sign in to open the private brief. Only {ownerAccessLabel} can read morning briefs on
 				the website.
 			</p>
 		</div>
@@ -191,9 +193,11 @@
 			<p class="home-hero-note">
 				{#if $authState.loading}
 					Hold on while the auth gate responds.
+				{:else if actionError}
+					{actionError}
 				{:else if $authState.authenticated && !$authState.draftsAllowed}
 					Signed in as {$authState.userEmail ?? 'a Microsoft account'}, but briefs are reserved for
-					spice.ryan@hotmail.com.
+					{ownerAccessLabel}.
 				{:else}
 					The route exists in the static build, but the brief body is loaded only after the owner gate.
 				{/if}

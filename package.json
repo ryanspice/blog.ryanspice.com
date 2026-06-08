@@ -11,6 +11,9 @@
     "build": "svelte-kit sync && vite build",
     "build:blog": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Build-BlogStatic.ps1",
     "preview": "vite preview --host 127.0.0.1",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test:mobile": "pnpm run test:unit && pnpm run test:e2e --project=mobile",
     "audit:files": "node ./scripts/audit-files.mjs",
     "audit:seo": "node ./scripts/audit-prerender-output.mjs",
     "verify:seo": "pnpm run build:blog && pnpm run audit:seo",
@@ -26,10 +29,12 @@
     "mermaid": "^11.15.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.52.0",
     "@sveltejs/adapter-static": "^3.0.10",
     "@sveltejs/kit": "2.49.1",
     "@sveltejs/vite-plugin-svelte": "6.2.1",
     "@types/node": "^24.0.0",
+    "vitest": "^3.0.5",
     "rehype-pretty-code": "^0.14.0",
     "rehype-stringify": "^10.0.1",
     "remark-gfm": "^4.0.1",

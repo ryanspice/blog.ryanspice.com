@@ -183,4 +183,4 @@ The default choice (Phaser) was wrong for my project. But it would be right for 
 - **Svelte 5** for UI overlays (inventory, chat, HUD)
 - All open source, MIT licensed, zero proprietary lock-in
 
-The demo code is at `B:\Dev\pixi-wave-demo\` on my dev machine, and the full rationale is documented in the AI Wiki at `/02_Wiki/phaser-vs-pixi-deep-research-20260529.md`.
+The demo code lives in a local Pixi wave demo checkout, and the full rationale is documented in the AI Wiki at `/02_Wiki/phaser-vs-pixi-deep-research-20260529.md`.

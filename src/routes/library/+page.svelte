@@ -2,21 +2,26 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import ResearchLibraryCard from '$lib/components/ResearchLibraryCard.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
-	import { researchDomains, researchLibraryItems, sourceTypes } from '$lib/research-library';
+	import type { PageData } from './$types';
 
 	const title = 'blog.ryanspice.com · Research library';
 	const description = 'Research papers, technical references, and source material used across the blog.';
+	let { data }: { data: PageData } = $props();
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
-	const paperCount = $derived(researchLibraryItems.filter((item) => item.sourceType === 'paper').length);
+	const libraryItems = $derived(data.libraryItems ?? []);
+	const paperCount = $derived(data.paperCount ?? libraryItems.filter((item) => item.sourceType === 'paper').length);
+	const researchDomains = $derived(data.researchDomains ?? []);
+	const sourceTypes = $derived(data.sourceTypes ?? []);
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'CollectionPage',
 		name: title,
 		description,
 		url: canonical,
-		about: researchLibraryItems.map((item) => item.title)
+		about: libraryItems.map((item) => item.title)
 	});
 	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 </script>
@@ -57,7 +62,7 @@
 		<dl class="meta-grid home-meta" aria-label="Research library metadata">
 			<div>
 				<dt>Sources</dt>
-				<dd>{researchLibraryItems.length}</dd>
+				<dd>{libraryItems.length}</dd>
 			</div>
 			<div>
 				<dt>Papers</dt>
@@ -93,19 +98,8 @@
 		</p>
 	</div>
 
-	{#each researchLibraryItems as item, index (item.url + ':' + index)}
-		<article class="hero-card home-hero-card" style="--article-accent: #00aeef">
-			<strong>{item.sourceType.replaceAll('-', ' ')}</strong>
-			<h2><a href={item.url} rel="noreferrer" target="_blank">{item.title}</a></h2>
-			{#if item.authors || item.year}
-				<p>{[item.authors, item.year].filter(Boolean).join(' · ')}</p>
-			{/if}
-			<p>{item.note}</p>
-			<dl class="hero-meta" aria-label={`Metadata for ${item.title}`}>
-				<div><dt>Domains</dt><dd>{item.domains.join(', ')}</dd></div>
-				<div><dt>Used by</dt><dd>{item.usedBy.join(', ')}</dd></div>
-			</dl>
-		</article>
+	{#each libraryItems as item, index (item.url + ':' + index)}
+		<ResearchLibraryCard {item} />
 	{/each}
 </section>
 

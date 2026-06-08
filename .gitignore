@@ -9,5 +9,8 @@ dist/
 deploy.config.json
 *.local.json
 router.log
+devserver*.log
+test-results/
+playwright-report/
 .DS_Store
 Thumbs.db

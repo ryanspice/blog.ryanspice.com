@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { authState, loadAuthState, signIn, signOut } from '$lib/auth';
+	import { authState, loadAuthState, trySignIn, trySignOut } from '$lib/auth';
 
 	type Props = {
 		returnTo?: string;
@@ -8,6 +8,7 @@
 
 	let { returnTo = '/' }: Props = $props();
 	let busy = $state(false);
+	let actionError = $state('');
 
 	onMount(() => {
 		void loadAuthState();
@@ -16,12 +17,13 @@
 	async function handleAction() {
 		if (busy) return;
 		busy = true;
+		actionError = '';
 
 		try {
 			if ($authState.authenticated && $authState.draftsAllowed) {
-				await signOut();
+				actionError = (await trySignOut()) ?? '';
 			} else {
-				await signIn(returnTo);
+				actionError = (await trySignIn(returnTo)) ?? '';
 			}
 		} finally {
 			busy = false;
@@ -33,7 +35,12 @@
 	{#if $authState.loading}
 		<span class="footer-auth-state">Checking access</span>
 	{:else}
-		<button type="button" class="footer-auth-link" onclick={handleAction} disabled={busy}>
+		<button
+			type="button"
+			class="footer-auth-link"
+			onclick={handleAction}
+			disabled={busy || (!$authState.available && !$authState.authenticated)}
+		>
 			{busy
 				? $authState.authenticated && $authState.draftsAllowed
 					? 'Logging out…'
@@ -46,3 +53,6 @@
 		</button>
 	{/if}
 </div>
+{#if actionError || $authState.error}
+	<p class="footer-auth-error" role="status">{actionError || $authState.error}</p>
+{/if}

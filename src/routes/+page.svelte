@@ -3,6 +3,7 @@
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleCardCssVars, articleCardImage, articleFocalImage } from '$lib/article-focal-images';
 	import type { Article } from '$lib/articles';
+	import { articleHref } from '$lib/article-links';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
@@ -13,25 +14,22 @@
 	let { data }: { data: PageData } = $props();
 
 	const publishedArticles = $derived(Array.isArray(data.publishedArticles) ? data.publishedArticles as Article[] : []);
+	const copy = $derived(data.ui.home);
+	const navCopy = $derived(data.ui.nav);
 	const latestArticles = $derived.by(() => publishedArticles.slice(0, 5));
 
-	const title = 'blog.ryanspice.com · Technical notes';
-	const description = 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.';
+	const title = $derived(copy.title);
+	const description = $derived(copy.description);
 	const latestArticle = $derived.by(() => latestArticles[0] ?? null);
 	const latestArticleVisual = $derived.by(() => articleCardImage(latestArticle));
 	const latestArticleFocal = $derived.by(() => articleFocalImage(latestArticle));
 	const latestDate = $derived.by(() => (latestArticle ? latestArticle.date : '2026-05-28'));
 	const latestDateLabel = $derived.by(() => (latestArticle ? latestArticle.dateLabel : 'May 28, 2026'));
-	const latestArticleHref = $derived.by(() => (latestArticle ? `${base}/${latestArticle.slug}/` : `${base}/#articles`));
+	const latestArticleHref = $derived.by(() => (latestArticle ? articleHref(latestArticle) : `${base}${data.homePath}#articles`));
 	const latestArticleAccent = $derived.by(() => (latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)'));
 	const latestArticleCardStyle = $derived.by(() => `--article-accent: ${latestArticleAccent}; ${articleCardCssVars(latestArticle)}`);
 	const canonical = $derived(data.canonical);
 	const ogImage = $derived(data.ogImage);
-
-	function hrefFor(href: string): string {
-		if (href.startsWith('#') || href.startsWith('http')) return href;
-		return `${base}${href}`;
-	}
 </script>
 
 <HomeFandangoStyles />
@@ -40,6 +38,9 @@
 	<title>{title}</title>
 	<meta name="description" content={description} />
 	<link rel="canonical" href={canonical} />
+	{#each data.alternates as alternate (alternate.hreflang)}
+		<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+	{/each}
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
 	<meta property="og:url" content={canonical} />
@@ -55,33 +56,33 @@
 
 <SiteHeader
 	navLinks={[
-		{ label: 'Articles', href: '#articles' },
-		{ label: 'RSS', href: '/rss.xml' },
+		{ label: navCopy.articles, href: '#articles' },
+		{ label: navCopy.rss, href: data.rssPath },
 		{ label: 'ryanspice.com', href: 'https://ryanspice.com' }
 	]}
 />
 
 <section class="home-hero" style={`--article-accent: ${latestArticleAccent}`}>
 	<div class="home-hero-copy">
-		<p class="eyebrow">Ryan Spice · technical blog</p>
-		<h1>Practical field notes for tooling, web work, AI research, and weird Windows problems.</h1>
-		<p class="dek">A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.</p>
+		<p class="eyebrow">{copy.eyebrow}</p>
+		<h1>{copy.heading}</h1>
+		<p class="dek">{copy.dek}</p>
 		<div class="home-primary-actions" aria-label="Primary actions">
-			<a href={latestArticleHref}>Start with the latest article</a>
-			<a href="#articles">Browse the latest 5</a>
+			<a href={latestArticleHref}>{copy.startLatest}</a>
+			<a href="#articles">{copy.browseLatest}</a>
 		</div>
 		<dl class="meta-grid home-meta" aria-label="Site metadata">
 			<div>
-				<dt><ArticleIcon name="articles" class="meta-icon" /><span>Published notes</span></dt>
+				<dt><ArticleIcon name="articles" class="meta-icon" /><span>{copy.publishedNotes}</span></dt>
 				<dd>{publishedArticles.length}</dd>
 			</div>
 			<div>
-				<dt><ArticleIcon name="latest" class="meta-icon" /><span>Latest update</span></dt>
+				<dt><ArticleIcon name="latest" class="meta-icon" /><span>{copy.latestUpdate}</span></dt>
 				<dd><time datetime={latestDate}>{latestDateLabel}</time></dd>
 			</div>
 			<div>
-				<dt><ArticleIcon name="feed" class="meta-icon" /><span>Subscribe</span></dt>
-				<dd><a href={hrefFor('/rss.xml')}>RSS feed</a></dd>
+				<dt><ArticleIcon name="feed" class="meta-icon" /><span>{copy.subscribe}</span></dt>
+				<dd><a href={data.rssUrl}>{copy.rssFeed}</a></dd>
 			</div>
 		</dl>
 	</div>
@@ -93,18 +94,18 @@
 			<span class="article-card-focal" aria-hidden="true"></span>
 		{/if}
 		<div class="article-card-content">
-			<strong>Latest article</strong>
-			<h2><a href={latestArticleHref}>{latestArticle?.title ?? 'Latest article'}</a></h2>
-			<p>{latestArticle?.summary ?? 'Recent technical notes and comparisons.'}</p>
+			<strong>{copy.latestArticle}</strong>
+			<h2><a href={latestArticleHref}>{latestArticle?.title ?? copy.latestArticleFallback}</a></h2>
+			<p>{latestArticle?.summary ?? copy.recentNotesFallback}</p>
 			<dl class="hero-meta" aria-label="Latest article metadata">
-				<div><dt>Published</dt><dd><time datetime={latestDate}>{latestDateLabel}</time></dd></div>
-				<div><dt>Read time</dt><dd>{latestArticle?.readingMinutes ?? 0} min</dd></div>
-				<div><dt>Type</dt><dd>{latestArticle?.draftType?.replaceAll('-', ' ') ?? 'article'}</dd></div>
+				<div><dt>{copy.published}</dt><dd><time datetime={latestDate}>{latestDateLabel}</time></dd></div>
+				<div><dt>{copy.readTime}</dt><dd>{latestArticle?.readingMinutes ?? 0} min</dd></div>
+				<div><dt>{copy.type}</dt><dd>{latestArticle?.draftType?.replaceAll('-', ' ') ?? 'article'}</dd></div>
 			</dl>
-			<p class="home-hero-note">Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.</p>
-			<div class="home-hero-links" aria-label="Quick links">
-				<a href={hrefFor('/rss.xml')}>RSS feed</a>
-				<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>
+			<p class="home-hero-note">{copy.focusNote}</p>
+			<div class="home-hero-links" aria-label={copy.quickLinks}>
+				<a href={data.rssUrl}>{copy.rssFeed}</a>
+				<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">{navCopy.githubRepo}</a>
 			</div>
 		</div>
 	</aside>
@@ -112,9 +113,9 @@
 
 <section id="articles" class="article-grid" aria-label="Latest published articles">
 	<div class="section-head">
-		<p class="eyebrow">Latest articles</p>
-		<h2>Recent published posts</h2>
-		<p class="section-dek">The newest published technical notes, capped to the latest 5 posts.</p>
+		<p class="eyebrow">{copy.latestArticles}</p>
+		<h2>{copy.recentPosts}</h2>
+		<p class="section-dek">{copy.recentPostsDek}</p>
 	</div>
 
 	{#if latestArticles.length}
@@ -123,9 +124,9 @@
 		{/each}
 	{:else}
 		<div class="article-empty">
-			<p class="eyebrow">No articles</p>
-			<h2>No published articles are available yet.</h2>
-			<p class="section-dek">Check back after the next production deploy.</p>
+			<p class="eyebrow">{copy.noArticles}</p>
+			<h2>{copy.noArticlesHeading}</h2>
+			<p class="section-dek">{copy.noArticlesDek}</p>
 		</div>
 	{/if}
 </section>
@@ -133,26 +134,26 @@
 <footer class="site-footer" aria-label="Site footer">
 	<div class="site-footer-grid">
 		<div class="site-footer-copy">
-			<p class="eyebrow">Elsewhere</p>
-			<h2>Links and site info</h2>
-			<p class="site-footer-dek">A static SvelteKit blog for technical notes, repair logs, research writeups, and a lightweight dev log for site changes. The public surface stays small and easy to scan.</p>
+			<p class="eyebrow">{copy.elsewhere}</p>
+			<h2>{copy.linksInfo}</h2>
+			<p class="site-footer-dek">{copy.footerDek}</p>
 		</div>
 
 		<div class="site-footer-links">
 			<a href="https://ryanspice.com" rel="noreferrer" target="_blank">ryanspice.com</a>
-			<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>
-			<a href="/dev-log">Dev log</a>
-			<a href="/rss.xml">RSS feed</a>
-			<a href="/sitemap.xml">Sitemap</a>
-			<a href="#articles">Articles</a>
+			<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">{navCopy.githubRepo}</a>
+			<a href={`${base}/dev-log`}>{navCopy.devLog}</a>
+			<a href={data.rssPath}>{copy.rssFeed}</a>
+			<a href={`${base}/sitemap.xml`}>{navCopy.sitemap}</a>
+			<a href="#articles">{navCopy.articles}</a>
 			<a href="https://canopydigital.ca" rel="noreferrer" target="_blank">Canopy Digital</a>
 			<FooterAuthControls returnTo="/drafts/" />
 		</div>
 	</div>
 
 	<div class="site-footer-meta">
-		<span>{publishedArticles.length} posts</span>
+		<span>{publishedArticles.length} {copy.posts}</span>
 		<span>SvelteKit 2 / Svelte 5</span>
-		<span>Static site</span>
+		<span>{copy.staticSite}</span>
 	</div>
 </footer>

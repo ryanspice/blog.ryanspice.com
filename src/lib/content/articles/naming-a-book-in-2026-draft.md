@@ -35,7 +35,7 @@ link_terms:
   - "CIPO|https://www.ic.gc.ca/"
   - "ICANN|https://www.icann.org/"
 source_context:
-  source_attachment: "C:\\Users\\spice\\.codex\\attachments\\fd227966-e464-491b-b259-73f7e3aca50b\\pasted-text.txt"
+  source_attachment: "<CODEX_ATTACHMENT_EXPORT>\\pasted-text.txt"
 ---
 
 # Naming a Book in 2026

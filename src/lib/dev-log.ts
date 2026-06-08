@@ -18,6 +18,35 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-06-08',
+		title: 'Map the multilingual and gated blog surface',
+		summary:
+			'Added locale-aware routing and French pilot content, cataloged the site with desktop/mobile screenshots, and hardened owner-gated auth controls so runtime failures surface in-page instead of leaking into console-only errors.',
+		source: 'Blog i18n, catalog, and auth workflow',
+		accent: '#8cc8ff',
+		tags: ['blog', 'sveltekit-php', 'i18n', 'automation', 'privacy', 'testing'],
+		relatedArticleSlugs: [
+			'openjarvis-local-ai-personal-ai-on-your-pc',
+			'pixelboats-water-pipeline-pixi-webgl',
+			'ship-fast-for-windows-microsoft-store-playbook'
+		],
+		relatedArticleTags: ['SvelteKit', 'SEO', 'AI', 'developer workflow', 'PixelBoats']
+	},
+	{
+		date: '2026-06-05',
+		title: 'Stabilize the blog delivery surface',
+		summary:
+			'Tightened the static/PHP rendering path, chased down hydration flicker, restored homepage article accents, and kept the article/research lanes searchable without exposing private source material.',
+		source: 'Blog delivery and content workflow',
+		accent: '#7fd1b9',
+		tags: ['blog', 'sveltekit-php', 'frontend', 'automation', 'research'],
+		relatedArticleSlugs: [
+			'openjarvis-local-ai-personal-ai-on-your-pc',
+			'ship-fast-for-windows-microsoft-store-playbook'
+		],
+		relatedArticleTags: ['SvelteKit', 'AI', 'developer workflow', 'SEO']
+	},
+	{
 		date: '2026-06-04',
 		title: 'Ingest the PixelBoats rigging and sail-order lab',
 		summary:

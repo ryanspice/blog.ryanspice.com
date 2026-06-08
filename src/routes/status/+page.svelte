@@ -2,7 +2,7 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { authState, canAccessDrafts, getMsalClient, loadAuthState, signIn } from '$lib/auth';
+	import { authState, canAccessDrafts, getMsalClient, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { PageData } from './$types';
@@ -16,6 +16,7 @@
 	let authResolved = $state(false);
 	let signingIn = $state(false);
 	let authConnections = $state<number | null>(null);
+	let actionError = $state('');
 
 	type LiveStatus = {
 		ok: boolean;
@@ -81,8 +82,9 @@
 
 	async function handleSignIn() {
 		signingIn = true;
+		actionError = '';
 		try {
-			await signIn('/status/');
+			actionError = (await trySignIn('/status/')) ?? '';
 		} finally {
 			signingIn = false;
 		}
@@ -262,7 +264,7 @@
 					Hold on while the auth gate responds.
 				{:else if $authState.authenticated && !$authState.draftsAllowed}
 					Signed in as {$authState.userEmail ?? 'a Microsoft account'}, but status access is reserved
-					for spice.ryan@hotmail.com.
+					for {ownerAccessLabel}.
 				{:else}
 					Sign in to view deploy bucket counts and release/backups metadata.
 				{/if}
@@ -276,6 +278,9 @@
 							: 'Sign in with Microsoft'}
 				</button>
 			</div>
+			{#if actionError}
+				<p class="home-hero-note">{actionError}</p>
+			{/if}
 		</aside>
 	</section>
 {/if}

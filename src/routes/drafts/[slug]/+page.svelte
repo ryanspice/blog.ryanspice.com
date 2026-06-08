@@ -2,7 +2,7 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { authState, canAccessDrafts, loadAuthState, signIn } from '$lib/auth';
+	import { authState, canAccessDrafts, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import ArticleView from '$lib/components/ArticleView.svelte';
 	import DraftMetadataControls from '$lib/components/DraftMetadataControls.svelte';
@@ -27,6 +27,7 @@
 	let loadError = $state<string | null>(null);
 	let articleLoading = $state(true);
 	let signingIn = $state(false);
+	let actionError = $state('');
 	const canViewDrafts = $derived(canAccessDrafts($authState));
 
 	const title = $derived(article ? `${article.title} · Draft · blog.ryanspice.com` : 'blog.ryanspice.com · Draft');
@@ -65,9 +66,10 @@
 
 	async function handleSignIn() {
 		signingIn = true;
+		actionError = '';
 
 		try {
-			await signIn(`/drafts/${data.slug}/`);
+			actionError = (await trySignIn(`/drafts/${data.slug}/`)) ?? '';
 		} finally {
 			signingIn = false;
 		}
@@ -138,7 +140,7 @@
 			<h1>This draft stays behind the gate.</h1>
 			<p class="dek">
 				Sign in to open the draft preview. The public homepage does not surface this content.
-				Only spice.ryan@hotmail.com can open drafts.
+				Only {ownerAccessLabel} can open drafts.
 			</p>
 		</div>
 		<aside class="hero-card home-hero-card">
@@ -155,9 +157,11 @@
 			<p class="home-hero-note">
 				{#if $authState.loading}
 					Hold on while the auth gate responds.
+				{:else if actionError}
+					{actionError}
 				{:else if $authState.authenticated && !$authState.draftsAllowed}
 					Signed in as {$authState.userEmail ?? 'a Microsoft account'}, but drafts are reserved for
-					spice.ryan@hotmail.com.
+					{ownerAccessLabel}.
 				{:else}
 					The drafts preview is private even though the route exists in the static build.
 				{/if}

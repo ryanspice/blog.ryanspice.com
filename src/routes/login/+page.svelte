@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { authState, loadAuthState, signIn, signOut } from '$lib/auth';
+	import { authState, loadAuthState, ownerAccessLabel, trySignIn, trySignOut } from '$lib/auth';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 
 	const title = 'blog.ryanspice.com · Login';
@@ -40,7 +40,7 @@
 				actionError = '';
 
 				try {
-					await signOut();
+					actionError = (await trySignOut()) ?? '';
 				} catch (caught) {
 					if (!cancelled) {
 						actionError = caught instanceof Error ? caught.message : String(caught);
@@ -64,7 +64,7 @@
 				actionError = '';
 
 				try {
-					await signIn(returnTo);
+					actionError = (await trySignIn(returnTo)) ?? '';
 				} catch (caught) {
 					if (!cancelled) {
 						actionError = caught instanceof Error ? caught.message : String(caught);
@@ -87,7 +87,7 @@
 		actionError = '';
 
 		try {
-			await signIn(returnTo);
+			actionError = (await trySignIn(returnTo)) ?? '';
 		} catch (caught) {
 			actionError = caught instanceof Error ? caught.message : String(caught);
 		} finally {
@@ -100,7 +100,7 @@
 		actionError = '';
 
 		try {
-			await signOut();
+			actionError = (await trySignOut()) ?? '';
 		} catch (caught) {
 			actionError = caught instanceof Error ? caught.message : String(caught);
 		} finally {
@@ -139,7 +139,7 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
+	<script type="application/ld+json">{jsonLdEscaped}</script>
 </svelte:head>
 
 <SiteHeader navLinks={[{ label: 'Articles', href: '/#articles' }, { label: 'RSS', href: '/rss.xml' }]} />
@@ -178,7 +178,7 @@
 				{#if $authState.draftsAllowed}
 					This account can open drafts.
 				{:else}
-					Drafts are reserved for spice.ryan@hotmail.com.
+					Drafts are reserved for {ownerAccessLabel}.
 				{/if}
 			</p>
 			<div class="home-hero-links">
@@ -194,18 +194,13 @@
 				</button>
 			</div>
 		{:else}
-				<p>Use any Microsoft account to enter the draft queue.</p>
-				<div class="home-hero-links">
-					<button
-						type="button"
-						class="plain-action"
-						onclick={handleSignIn}
-						disabled={signing}
-					>
-						{signing ? 'Opening Microsoft…' : signInLabel}
-					</button>
-					<a href={returnTo}>Open drafts</a>
-				</div>
+			<p>Use any Microsoft account to enter the draft queue.</p>
+			<div class="home-hero-links">
+				<button type="button" class="plain-action" onclick={handleSignIn} disabled={signing}>
+					{signing ? 'Opening Microsoft…' : signInLabel}
+				</button>
+				<a href={returnTo}>Open drafts</a>
+			</div>
 		{/if}
 		<p class="home-hero-note">
 			{#if actionError}

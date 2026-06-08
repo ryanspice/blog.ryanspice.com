@@ -2,7 +2,7 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { authState, canAccessDrafts, loadAuthState, signIn } from '$lib/auth';
+	import { authState, canAccessDrafts, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import { articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
@@ -22,6 +22,7 @@
 	let searchQuery = $state('');
 	let selectedTag = $state('');
 	let signingIn = $state(false);
+	let actionError = $state('');
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
@@ -69,9 +70,10 @@
 
 	async function handleSignIn() {
 		signingIn = true;
+		actionError = '';
 
 		try {
-			await signIn('/drafts/');
+			actionError = (await trySignIn('/drafts/')) ?? '';
 		} finally {
 			signingIn = false;
 		}
@@ -256,7 +258,7 @@
 					Hold on while the auth gate responds.
 				{:else if $authState.authenticated && !$authState.draftsAllowed}
 					Signed in as {$authState.userEmail ?? 'a Microsoft account'}, but drafts are only open to
-					spice.ryan@hotmail.com. Use the footer button to switch accounts.
+					{ownerAccessLabel}. Use the footer button to switch accounts.
 				{:else}
 					The drafts area stays out of the public homepage. Use the Microsoft gateway to open the draft queue.
 				{/if}
@@ -271,8 +273,12 @@
 				</button>
 			</div>
 			<p class="home-hero-note">
-				Promotion remains file-based for now: set <code>status: "published"</code> to promote, or set
-				<code>release_date</code> in the article frontmatter to schedule a release.
+				{#if actionError}
+					{actionError}
+				{:else}
+					Promotion remains file-based for now: set <code>status: "published"</code> to promote, or set
+					<code>release_date</code> in the article frontmatter to schedule a release.
+				{/if}
 			</p>
 		</aside>
 	</section>

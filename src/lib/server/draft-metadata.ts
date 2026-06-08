@@ -1,4 +1,5 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import {
 	isHexColor,
@@ -11,7 +12,7 @@ import {
 } from '$lib/article-frontmatter';
 import { slugify } from '$lib/markdown';
 
-const ownerEmail = 'spice.ryan@hotmail.com';
+const defaultOwnerEmailSha256 = 'a02b9da8783774e58760bd375e9e5b570bea1a88bb5ad8928b7298332ddbe140';
 
 export type DraftMetadataSaveResult = {
 	slug: string;
@@ -38,8 +39,9 @@ export async function assertOwnerAccessToken(token: string): Promise<void> {
 
 	const profile = (await response.json()) as { mail?: string | null; userPrincipalName?: string | null };
 	const candidates = [profile.mail, profile.userPrincipalName].map((value) => normalizeEmail(value));
+	const ownerEmailSha256 = normalizeHash(process.env.BLOG_OWNER_EMAIL_SHA256) || defaultOwnerEmailSha256;
 
-	if (!candidates.includes(normalizeEmail(ownerEmail))) {
+	if (!candidates.some((candidate) => hashEmail(candidate) === ownerEmailSha256)) {
 		throw new Error('This Microsoft account is not allowed to edit draft metadata.');
 	}
 }
@@ -173,4 +175,13 @@ function todayToronto(): string {
 
 function normalizeEmail(value: string | null | undefined): string {
 	return (value ?? '').trim().toLowerCase();
+}
+
+function normalizeHash(value: string | null | undefined): string {
+	const normalized = (value ?? '').trim().toLowerCase().replace(/^sha256:/, '');
+	return /^[a-f0-9]{64}$/.test(normalized) ? normalized : '';
+}
+
+function hashEmail(value: string): string {
+	return value ? createHash('sha256').update(value).digest('hex') : '';
 }

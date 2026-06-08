@@ -225,11 +225,11 @@ function blog_draft_assert_owner_token(string $token): void {
 		throw new RuntimeException('Microsoft owner profile response was invalid.');
 	}
 
-	$allowed = blog_draft_email('spice.ryan@hotmail.com');
+	$allowed = blog_draft_owner_email_hash();
 	$mail = blog_draft_email($profile['mail'] ?? '');
 	$upn = blog_draft_email($profile['userPrincipalName'] ?? '');
 
-	if ($mail !== $allowed && $upn !== $allowed) {
+	if (!hash_equals($allowed, blog_draft_email_hash($mail)) && !hash_equals($allowed, blog_draft_email_hash($upn))) {
 		throw new RuntimeException('This Microsoft account is not allowed to edit draft metadata.');
 	}
 }
@@ -332,4 +332,18 @@ function blog_draft_today_toronto(): string {
 
 function blog_draft_email($value): string {
 	return strtolower(trim((string)$value));
+}
+
+function blog_draft_owner_email_hash(): string {
+	$configured = strtolower(trim((string)(getenv('BLOG_OWNER_EMAIL_SHA256') ?: '')));
+	$configured = preg_replace('/^sha256:/', '', $configured);
+	if (is_string($configured) && preg_match('/^[a-f0-9]{64}$/', $configured)) {
+		return $configured;
+	}
+
+	return 'a02b9da8783774e58760bd375e9e5b570bea1a88bb5ad8928b7298332ddbe140';
+}
+
+function blog_draft_email_hash(string $email): string {
+	return $email === '' ? '' : hash('sha256', $email);
 }

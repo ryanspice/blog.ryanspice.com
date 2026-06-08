@@ -1,5 +1,6 @@
 import { building } from '$app/environment';
 import type { Handle } from '@sveltejs/kit';
+import { localeToLanguageTag, resolveLocaleFromPathname } from '$lib/i18n/locales';
 import { renderRssFriendlyHtml } from '$lib/rss-friendly-html';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -12,5 +13,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 		});
 	}
 
-	return resolve(event);
+	const languageTag = localeToLanguageTag(resolveLocaleFromPathname(event.url.pathname));
+
+	return resolve(event, {
+		transformPageChunk: ({ html }) => html.replace('<html lang="en">', `<html lang="${languageTag}">`)
+	});
 };

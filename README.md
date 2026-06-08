@@ -31,7 +31,7 @@ SvelteKit 2 / Svelte 5 blog application built for PHP hosting with a vendored Sv
 
 ## Dependency policy
 
-This project is **pnpm-first**. The pnpm content-addressed store may live under `B:\AI-Wiki\.runtime`, but the pnpm virtual store must stay local to the worktree:
+This project is **pnpm-first**. The pnpm content-addressed store may live outside the synced project folder, but the pnpm virtual store must stay local to the worktree:
 
 ```txt
 07_Projects\blog.ryanspice.com\node_modules\.pnpm
@@ -61,7 +61,7 @@ VITE_MSAL_TENANT_ID="common"
 
 The login page at `/login` starts the Microsoft sign-in flow, and `/auth/callback` completes the redirect before sending you back to the requested draft route. The redirect URI is resolved from the current origin at runtime unless you pin `VITE_MSAL_REDIRECT_URI` explicitly.
 
-Draft navigation and the private draft queue are only exposed to the owner Microsoft account `spice.ryan@hotmail.com`; other signed-in accounts stay on the public surface.
+Draft navigation and the private draft queue are only exposed to the configured owner Microsoft account; other signed-in accounts stay on the public surface. The owner comparison uses a SHA-256 hash of the normalized owner email rather than publishing the raw account address.
 
 The GitHub deploy workflow also needs `VITE_MSAL_CLIENT_ID` available at build time so the production bundle carries the same Microsoft auth config as local development.
 
@@ -77,7 +77,7 @@ If you recreate it later, keep `User.Read` delegated permission attached as well
 ## Notes
 
 - The site now builds through the vendored PHP adapter in `adapter/index.js`.
-- `scripts/Sync-SvelteKitPhpAdapter.ps1` rebuilds/syncs the canonical adapter from `B:\Dev\sveltekit-php` and writes `adapter/source-manifest.json`.
+- `scripts/Sync-SvelteKitPhpAdapter.ps1` rebuilds/syncs the canonical adapter from the configured SvelteKit PHP adapter checkout and writes `adapter/source-manifest.json`.
 - `scripts/Build-BlogStatic.ps1` merges the host redirect overlay from `static/.htaccess` into the adapter-generated `.htaccess`.
 - Release flow: build, audit the PHP output contract, smoke the built site under PHP, then deploy.
 - Markdown is rendered through a small local renderer in `src/lib/markdown.ts` to avoid early dependency creep.
