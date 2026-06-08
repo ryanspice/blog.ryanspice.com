@@ -39,8 +39,8 @@ export function localePrefix(locale: SupportedLocale): '' | `/${RoutedLocale}` {
 }
 
 export function pathWithLocale(locale: SupportedLocale, path: string): string {
+	if (path.startsWith('#') || /^https?:\/\//.test(path)) return path;
 	const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-	if (normalizedPath.startsWith('#') || /^https?:\/\//.test(normalizedPath)) return path;
 	const prefix = localePrefix(locale);
 	if (!prefix) return normalizedPath;
 	if (normalizedPath === '/') return `${prefix}/`;

@@ -14,4 +14,9 @@ describe('locale routing helper', () => {
 		expect(pathWithLocale('fr', '/drafts/')).toBe('/fr/drafts/');
 		expect(pathWithLocale('fr', '/dev-log/')).toBe('/fr/dev-log/');
 	});
+
+	it('leaves hash and absolute URLs untouched', () => {
+		expect(pathWithLocale('fr', '#articles')).toBe('#articles');
+		expect(pathWithLocale('fr', 'https://example.com/feed.xml')).toBe('https://example.com/feed.xml');
+	});
 });
