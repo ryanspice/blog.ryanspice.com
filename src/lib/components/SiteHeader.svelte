@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
-	import { articleViewModeState } from '$lib/article-view-mode.svelte';
 	import type { NavItem } from '$lib/articles';
 	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
 	import { getDictionary } from '$lib/i18n/dictionaries';
@@ -16,10 +15,8 @@
 	let { brandLabel = 'Ryan Spice / Canopy Digital', navLinks = [] }: Props = $props();
 	const locale = $derived((page.data.locale === 'fr' ? 'fr' : 'en') as SupportedLocale);
 	const ui = $derived(getDictionary(locale));
-	const readingMode = $derived(articleViewModeState.mode === 'classic');
 
 	onMount(() => {
-		articleViewModeState.init();
 		void loadAuthState();
 	});
 
@@ -44,16 +41,12 @@
 		return `${base}${href}`;
 	}
 
-	function toggleReadingMode(): void {
-		articleViewModeState.toggle();
-	}
-
 	function dedupeByHref(items: NavItem[]): NavItem[] {
-		const seen = new Set<string>();
+		const seen: string[] = [];
 		return items.filter((item) => {
 			const key = normalizeHrefForLinkDedup(item.href);
-			if (seen.has(key)) return false;
-			seen.add(key);
+			if (seen.includes(key)) return false;
+			seen.push(key);
 			return true;
 		});
 	}
@@ -69,7 +62,7 @@
 	<nav class="nav" aria-label="Site">
 		<div class="nav-branding">
 			<a class="brand" href={`${base}${pathWithLocale(locale, '/')}`}>
-								<span class="brand-mark" aria-hidden="true"><span class="brand-mark-r">R</span><span class="brand-mark-s">S</span></span>
+				<span class="brand-mark" aria-hidden="true"><span class="brand-mark-r">R</span><span class="brand-mark-s">S</span></span>
 				<span class="brand-text">
 					<span class="brand-primary">{brandParts[0] ?? brandLabel}</span>
 					{#if brandParts[1]}
@@ -91,8 +84,8 @@
 			<button
 				class="nav-action"
 				type="button"
-				aria-pressed={readingMode}
-				onclick={toggleReadingMode}
+				aria-pressed="false"
+				data-reading-mode-toggle
 			>
 				<svg class="nav-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
 					<path
@@ -105,7 +98,7 @@
 					/>
 					<path d="M12 7v10.5M8 8.4h2.4M8 11h2.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
 				</svg>
-				<span>{readingMode ? ui.nav.readingOn : ui.nav.readingMode}</span>
+				<span data-reading-mode-label data-label-on={ui.nav.readingOn} data-label-off={ui.nav.readingMode}>{ui.nav.readingMode}</span>
 			</button>
 		</div>
 	</nav>

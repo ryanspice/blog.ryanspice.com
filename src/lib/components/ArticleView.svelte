@@ -21,10 +21,6 @@
 	};
 
 	let { article, relatedArticles = [], alternates = [] }: Props = $props();
-	let progress = $state(0);
-	let activeTocId = $state<string | null>(null);
-	let commandFeedback = $state<string | null>(null);
-	let feedbackTimer: number | null = null;
 
 	const articleAccent = $derived(articleAccentColor(article));
 	const focalImage = $derived(articleFocalImage(article));
@@ -90,34 +86,6 @@
 	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 	const jsonLdScriptHtml = $derived(`<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`);
 
-	function setCommandFeedback(message: string) {
-		commandFeedback = message;
-		if (feedbackTimer !== null) window.clearTimeout(feedbackTimer);
-		feedbackTimer = window.setTimeout(() => {
-			commandFeedback = null;
-		}, 1600);
-	}
-
-	function fallbackCopyText(text: string): boolean {
-		const textarea = document.createElement('textarea');
-		textarea.value = text;
-		textarea.setAttribute('readonly', '');
-		textarea.style.position = 'fixed';
-		textarea.style.left = '-9999px';
-		textarea.style.top = '0';
-		textarea.style.opacity = '0';
-		document.body.appendChild(textarea);
-		textarea.focus();
-		textarea.select();
-		try {
-			return document.execCommand('copy');
-		} catch {
-			return false;
-		} finally {
-			document.body.removeChild(textarea);
-		}
-	}
-
 	function formatReferenceLabel(value: string): string {
 		try {
 			const url = new URL(value);
@@ -126,35 +94,6 @@
 		} catch {
 			return value;
 		}
-	}
-
-	async function copyLink() {
-		try {
-			await navigator.clipboard.writeText(canonical);
-			setCommandFeedback(ui.article.linkCopied);
-			return;
-		} catch {
-			// fall through
-		}
-
-		const ok = fallbackCopyText(canonical);
-		setCommandFeedback(ok ? ui.article.linkCopied : ui.article.copyFailed);
-	}
-
-	function handleBackClick(event: MouseEvent) {
-		if (typeof window === 'undefined') return;
-
-		const referrer = document.referrer.trim();
-		if (!referrer) return;
-
-		try {
-			if (new URL(referrer).origin !== window.location.origin) return;
-		} catch {
-			return;
-		}
-
-		event.preventDefault();
-		window.history.back();
 	}
 
 	async function enhanceMermaid() {
@@ -184,40 +123,7 @@
 	}
 
 	onMount(() => {
-		const headings = Array.from(document.querySelectorAll<HTMLElement>('.article-inner h2[id], .article-inner h3[id]'));
-		let frame: number | null = null;
-
-		const update = () => {
-			if (frame !== null) cancelAnimationFrame(frame);
-			frame = requestAnimationFrame(() => {
-				const scrollTop = window.scrollY || document.documentElement.scrollTop;
-				const height = document.documentElement.scrollHeight - window.innerHeight;
-				progress = height > 0 ? Math.min(100, Math.max(0, (scrollTop / height) * 100)) : 0;
-
-				if (headings.length) {
-					const offset = 140;
-					let current: string | null = headings[0]?.id ?? null;
-					for (const heading of headings) {
-						const top = heading.getBoundingClientRect().top;
-						if (top - offset <= 0) current = heading.id;
-						else break;
-					}
-					if (current !== activeTocId) activeTocId = current;
-				}
-			});
-		};
-
-		update();
-		window.addEventListener('scroll', update, { passive: true });
-		window.addEventListener('resize', update);
 		void enhanceMermaid();
-
-		return () => {
-			if (frame !== null) cancelAnimationFrame(frame);
-			if (feedbackTimer !== null) window.clearTimeout(feedbackTimer);
-			window.removeEventListener('scroll', update);
-			window.removeEventListener('resize', update);
-		};
 	});
 </script>
 
@@ -252,7 +158,7 @@
 
 <div class={`article-page theme-${article.design.variant} has-command-bar${focalImage ? ' has-focal-image' : ''}`} style={pageStyle}>
 	<ArticleBackgroundLayer {article} />
-	<div class="read-progress" style={`width: ${progress}%`}></div>
+	<div class="read-progress" data-scroll-progress></div>
 	<SiteHeader brandLabel={article.design.brandLabel} navLinks={article.design.navLinks} />
 
 	<section class="hero">
@@ -329,7 +235,7 @@
 					<summary><span>{article.design.tocTitle}</span><strong>{article.toc.length} sections</strong></summary>
 					<div class="toc-accordion-panel">
 						{#each article.toc as item, index (item.id + ':' + index)}
-							<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} class:is-active={activeTocId === item.id} href={`#${item.id}`}>{item.text}</a>
+							<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} href={`#${item.id}`}>{item.text}</a>
 						{/each}
 					</div>
 				</details>
@@ -368,7 +274,7 @@
 		<aside class="toc article-toc article-toc--desktop" aria-label="Table of contents">
 			<h2>{article.design.tocTitle}</h2>
 			{#each article.toc as item, index (item.id + ':' + index)}
-				<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} class:is-active={activeTocId === item.id} href={`#${item.id}`}>{item.text}</a>
+				<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} href={`#${item.id}`}>{item.text}</a>
 			{/each}
 		</aside>
 
@@ -421,11 +327,20 @@
 	</main>
 
 	<div class="command-bar" aria-label="Commands">
-		<div class="command-inner">
-			<a class="cmd" href={localizedHomeHref} onclick={handleBackClick}>{ui.article.back}</a>
+		<div class="command-inner" data-copy-scope>
+			<a class="cmd" href={localizedHomeHref} data-back-same-origin>{ui.article.back}</a>
 			<a class="cmd" href={localizedRssHref}>{ui.article.rss}</a>
-			<button class="cmd" type="button" onclick={copyLink} aria-label={ui.article.copyLink}>{ui.article.copyLink}</button>
-			{#if commandFeedback}<span class="cmd-feedback" aria-live="polite">{commandFeedback}</span>{/if}
+			<button
+				class="cmd"
+				type="button"
+				aria-label={ui.article.copyLink}
+				data-copy-text={canonical}
+				data-copy-success={ui.article.linkCopied}
+				data-copy-failure={ui.article.copyFailed}
+			>
+				{ui.article.copyLink}
+			</button>
+			<span class="cmd-feedback" aria-live="polite" data-copy-feedback-target hidden></span>
 		</div>
 	</div>
 

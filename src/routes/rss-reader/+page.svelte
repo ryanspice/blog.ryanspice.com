@@ -9,35 +9,6 @@
 	const navCopy = $derived(data.ui.nav);
 	const title = $derived(copy.title);
 	const description = $derived(copy.description);
-	let copyFeedback = $state('');
-
-	function fallbackCopyText(text: string): boolean {
-		const textarea = document.createElement('textarea');
-		textarea.value = text;
-		textarea.setAttribute('readonly', '');
-		textarea.style.position = 'fixed';
-		textarea.style.left = '-9999px';
-		textarea.style.top = '0';
-		textarea.style.opacity = '0';
-		document.body.appendChild(textarea);
-		textarea.focus();
-		textarea.select();
-		try { return document.execCommand('copy'); }
-		catch { return false; }
-		finally { document.body.removeChild(textarea); }
-	}
-
-	async function copyFeedUrl() {
-		const url = data.feedUrl;
-		try {
-			await navigator.clipboard.writeText(url);
-			copyFeedback = copy.copied;
-		} catch {
-			const ok = fallbackCopyText(url);
-			copyFeedback = ok ? copy.copied : copy.copyFailed;
-		}
-		setTimeout(() => { copyFeedback = ''; }, 2000);
-	}
 </script>
 
 <svelte:head>
@@ -70,7 +41,7 @@
 
 		<div class="home-hero-links">
 			<a href={data.feedUrl}>{copy.openXml}</a>
-			<button type="button" onclick={copyFeedUrl}>{copyFeedback || copy.copyUrl}</button>
+			<button type="button" data-copy-text={data.feedUrl} data-copy-success={copy.copied} data-copy-failure={copy.copyFailed}>{copy.copyUrl}</button>
 			<a href={data.homeUrl}>{copy.backToArticles}</a>
 		</div>
 	</section>

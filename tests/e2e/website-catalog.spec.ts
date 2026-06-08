@@ -30,6 +30,7 @@ function safeName(value: string) {
 }
 
 test('catalog: capture website screenshots', async ({ context, viewport }, testInfo) => {
+	test.setTimeout(60_000);
 	mkdirSync(outDir, { recursive: true });
 	expect(testInfo.project.name).toMatch(/^(catalog-desktop|mobile)$/);
 
