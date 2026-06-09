@@ -18,6 +18,36 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-06-09',
+		title: 'Publish a DeepSeek GUI recovery guide',
+		summary:
+			'Turned a raw DeepSeek GUI update-recovery note into a public, backup-first Windows guide with sanitized paths, stock imagery, source links, and safer cleanup guidance for local-first AI workspace users.',
+		source: 'DeepSeek GUI recovery article release',
+		accent: '#10b981',
+		tags: ['blog', 'deepseek', 'windows', 'local-first', 'data recovery', 'developer workflow'],
+		relatedArticleSlugs: [
+			'recover-deepseek-gui-conversations-after-update',
+			'hermes-deepseek-setup',
+			'what-can-you-actually-do-with-a-deepseek-api-key'
+		],
+		relatedArticleTags: ['DeepSeek', 'Windows', 'AI agents', 'developer workflow']
+	},
+	{
+		date: '2026-06-09',
+		title: 'Shift public controls into the static runtime',
+		summary:
+			'Moved article reading controls, copy actions, same-origin back links, scroll progress, and table-of-contents state into a small prerender-friendly runtime, then tightened locale routing so hash links stay local while translated paths remain prefixed.',
+		source: 'Blog prerendered interactivity and locale routing',
+		accent: '#9ad7a5',
+		tags: ['blog', 'sveltekit-php', 'frontend', 'i18n', 'testing', 'automation'],
+		relatedArticleSlugs: [
+			'openjarvis-local-ai-personal-ai-on-your-pc',
+			'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game',
+			'pixelboats-water-pipeline-pixi-webgl'
+		],
+		relatedArticleTags: ['SvelteKit', 'SEO', 'developer workflow', 'PixelBoats']
+	},
+	{
 		date: '2026-06-08',
 		title: 'Map the multilingual and gated blog surface',
 		summary:
