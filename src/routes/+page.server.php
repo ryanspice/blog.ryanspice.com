@@ -39,6 +39,163 @@ function blog_home_url(string $path): string {
 	return blog_home_origin() . blog_home_base_path() . $path;
 }
 
+function blog_home_language_tag(string $locale): string {
+	return $locale === 'fr' ? 'fr-CA' : 'en';
+}
+
+function blog_home_locale_prefix(string $locale): string {
+	return $locale === 'fr' ? '/fr' : '';
+}
+
+function blog_home_path_with_locale(string $locale, string $path): string {
+	$path = trim($path);
+	if ($path === '') $path = '/';
+	if (substr($path, 0, 1) !== '/') $path = '/' . $path;
+	$prefix = blog_home_locale_prefix($locale);
+	if ($prefix === '') return $path;
+	return $path === '/' ? $prefix . '/' : $prefix . $path;
+}
+
+function blog_home_request_path(): string {
+	$requestUri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+	$path = parse_url($requestUri, PHP_URL_PATH);
+	if (!is_string($path) || $path === '') return '/';
+
+	$base = blog_home_base_path();
+	if ($base !== '' && ($path === $base || str_starts_with($path, $base . '/'))) {
+		$path = substr($path, strlen($base));
+	}
+
+	return $path === '' ? '/' : $path;
+}
+
+function blog_home_locale_from_request(): string {
+	$path = trim(blog_home_request_path(), '/');
+	$first = $path === '' ? '' : explode('/', $path)[0];
+	return strtolower($first) === 'fr' ? 'fr' : 'en';
+}
+
+function blog_home_localized_alternates(string $path): array {
+	return [
+		[
+			'locale' => 'en',
+			'hreflang' => 'en',
+			'href' => blog_home_url(blog_home_path_with_locale('en', $path))
+		],
+		[
+			'locale' => 'fr',
+			'hreflang' => 'fr-CA',
+			'href' => blog_home_url(blog_home_path_with_locale('fr', $path))
+		]
+	];
+}
+
+function blog_home_dictionary(string $locale): array {
+	if ($locale === 'fr') {
+		return [
+			'nav' => [
+				'articles' => 'Articles',
+				'rss' => 'RSS',
+				'rssXml' => 'RSS XML',
+				'devLog' => 'Journal dev',
+				'library' => 'Bibliotheque',
+				'briefs' => 'Briefs',
+				'drafts' => 'Brouillons',
+				'githubRepo' => 'Depot GitHub',
+				'sitemap' => 'Plan du site',
+				'readingMode' => 'Mode lecture',
+				'readingOn' => 'Lecture active'
+			],
+			'home' => [
+				'title' => 'blog.ryanspice.com · Notes techniques',
+				'description' => 'Articles techniques, notes de production et journal de developpement leger de Ryan Spice.',
+				'eyebrow' => 'Ryan Spice · blogue technique',
+				'heading' => 'Notes pratiques sur les outils, le web, la recherche IA et les problemes Windows etranges.',
+				'dek' => 'Un blogue SvelteKit prepare dans AI Wiki, avec journaux de reparation, notes de debogage, comparaisons de recherche et un journal de developpement ancre dans le vrai flux de travail.',
+				'startLatest' => 'Lire le plus recent article',
+				'browseLatest' => 'Voir les 5 plus recents',
+				'publishedNotes' => 'Notes publiees',
+				'latestUpdate' => 'Derniere mise a jour',
+				'subscribe' => 'Abonnement',
+				'rssFeed' => 'Flux RSS',
+				'latestArticle' => 'Article le plus recent',
+				'latestArticleFallback' => 'Article le plus recent',
+				'recentNotesFallback' => 'Notes techniques et comparaisons recentes.',
+				'published' => 'Publie',
+				'readTime' => 'Temps de lecture',
+				'type' => 'Type',
+				'focusNote' => 'Priorite actuelle: journaux de reparation avec sources, travail web pratique et notes de recherche qui restent lisibles plus tard.',
+				'quickLinks' => 'Liens rapides',
+				'latestArticles' => 'Articles recents',
+				'recentPosts' => 'Publications recentes',
+				'recentPostsDek' => 'Les plus recentes notes techniques publiees, limitees aux 5 dernieres publications.',
+				'noArticles' => 'Aucun article',
+				'noArticlesHeading' => 'Aucun article publie n est disponible pour le moment.',
+				'noArticlesDek' => 'Revenez apres le prochain deploiement de production.',
+				'elsewhere' => 'Ailleurs',
+				'linksInfo' => 'Liens et information du site',
+				'footerDek' => 'Un blogue SvelteKit statique pour notes techniques, journaux de reparation, recherches et changements de site. La surface publique reste petite et facile a parcourir.',
+				'posts' => 'articles',
+				'staticSite' => 'Site statique'
+			],
+			'rss' => [
+				'channelTitle' => 'Ryan Spice · Notes techniques'
+			]
+		];
+	}
+
+	return [
+		'nav' => [
+			'articles' => 'Articles',
+			'rss' => 'RSS',
+			'rssXml' => 'RSS XML',
+			'devLog' => 'Dev log',
+			'library' => 'Library',
+			'briefs' => 'Briefs',
+			'drafts' => 'Drafts',
+			'githubRepo' => 'GitHub repo',
+			'sitemap' => 'Sitemap',
+			'readingMode' => 'Reading mode',
+			'readingOn' => 'Reading on'
+		],
+		'home' => [
+			'title' => 'blog.ryanspice.com · Technical notes',
+			'description' => 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.',
+			'eyebrow' => 'Ryan Spice · technical blog',
+			'heading' => 'Practical field notes for tooling, web work, AI research, and weird Windows problems.',
+			'dek' => 'A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.',
+			'startLatest' => 'Start with the latest article',
+			'browseLatest' => 'Browse the latest 5',
+			'publishedNotes' => 'Published notes',
+			'latestUpdate' => 'Latest update',
+			'subscribe' => 'Subscribe',
+			'rssFeed' => 'RSS feed',
+			'latestArticle' => 'Latest article',
+			'latestArticleFallback' => 'Latest article',
+			'recentNotesFallback' => 'Recent technical notes and comparisons.',
+			'published' => 'Published',
+			'readTime' => 'Read time',
+			'type' => 'Type',
+			'focusNote' => 'Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.',
+			'quickLinks' => 'Quick links',
+			'latestArticles' => 'Latest articles',
+			'recentPosts' => 'Recent published posts',
+			'recentPostsDek' => 'The newest published technical notes, capped to the latest 5 posts.',
+			'noArticles' => 'No articles',
+			'noArticlesHeading' => 'No published articles are available yet.',
+			'noArticlesDek' => 'Check back after the next production deploy.',
+			'elsewhere' => 'Elsewhere',
+			'linksInfo' => 'Links and site info',
+			'footerDek' => 'A static SvelteKit blog for technical notes, repair logs, research writeups, and a lightweight dev log for site changes. The public surface stays small and easy to scan.',
+			'posts' => 'posts',
+			'staticSite' => 'Static site'
+		],
+		'rss' => [
+			'channelTitle' => 'Ryan Spice · Technical notes'
+		]
+	];
+}
+
 function blog_home_design(string $accent, array $tags): array {
 	return [
 		'accent' => $accent,
@@ -138,7 +295,7 @@ function blog_home_extract_body(string $raw): string {
 	return ltrim(substr($normalized, $end + 4), "\n");
 }
 
-function blog_home_format_date(?string $date): string {
+function blog_home_format_date(?string $date, string $locale = 'en'): string {
 	$value = blog_home_scalar($date);
 	if ($value === '') return '';
 
@@ -147,6 +304,24 @@ function blog_home_format_date(?string $date): string {
 		$datetime = new DateTimeImmutable($value . 'T00:00:00Z', new DateTimeZone('UTC'));
 	}
 	if (!$datetime) return $value;
+
+	if ($locale === 'fr') {
+		$months = [
+			1 => 'janv.',
+			2 => 'fevr.',
+			3 => 'mars',
+			4 => 'avr.',
+			5 => 'mai',
+			6 => 'juin',
+			7 => 'juill.',
+			8 => 'aout',
+			9 => 'sept.',
+			10 => 'oct.',
+			11 => 'nov.',
+			12 => 'dec.'
+		];
+		return $datetime->format('j') . ' ' . ($months[(int) $datetime->format('n')] ?? $datetime->format('M')) . ' ' . $datetime->format('Y');
+	}
 
 	return $datetime->format('M j, Y');
 }
@@ -182,11 +357,14 @@ function blog_home_title_from_frontmatter(array $frontmatter, string $body, stri
 	return preg_replace('/\.md$/i', '', basename($path));
 }
 
-function blog_home_published_articles(): array {
+function blog_home_published_articles(string $locale = 'en'): array {
 	$root = blog_home_content_root();
 	if (!is_dir($root)) return [];
 
-	$files = glob($root . DIRECTORY_SEPARATOR . '*.md') ?: [];
+	$scanRoot = $locale === 'fr' ? $root . DIRECTORY_SEPARATOR . 'fr' : $root;
+	if (!is_dir($scanRoot)) return [];
+
+	$files = glob($scanRoot . DIRECTORY_SEPARATOR . '*.md') ?: [];
 	if (!$files) return [];
 
 	$accents = [
@@ -217,6 +395,9 @@ function blog_home_published_articles(): array {
 
 		if (empty($frontmatter)) continue;
 
+		$articleLocale = blog_home_scalar($frontmatter['locale'] ?? ($locale === 'fr' ? 'fr' : 'en'));
+		if ($articleLocale !== $locale) continue;
+
 		$status = blog_home_status(blog_home_scalar($frontmatter['status'] ?? 'draft'));
 		$releaseDate = blog_home_scalar($frontmatter['release_date'] ?? '');
 		$dateValue = blog_home_scalar($frontmatter['date'] ?? '');
@@ -240,9 +421,9 @@ function blog_home_published_articles(): array {
 		$draftType = blog_home_scalar($frontmatter['draft_type'] ?? 'technical-blog-post');
 		$tags = blog_home_parse_list($frontmatter['tags'] ?? []);
 		$updatedDate = blog_home_scalar($frontmatter['updated_date'] ?? $frontmatter['modified_date'] ?? $dateValue);
-		$dateLabel = blog_home_format_date($publishDate);
-		$updatedDateLabel = blog_home_format_date($updatedDate);
-		$releaseDateLabel = blog_home_format_date($releaseDate);
+		$dateLabel = blog_home_format_date($publishDate, $locale);
+		$updatedDateLabel = blog_home_format_date($updatedDate, $locale);
+		$releaseDateLabel = blog_home_format_date($releaseDate, $locale);
 		$readingMinutes = blog_home_reading_minutes($body, $summary);
 		$accent = blog_home_scalar($frontmatter['accent'] ?: $frontmatter['design_accent'] ?? '');
 		if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accent)) {
@@ -259,6 +440,12 @@ function blog_home_published_articles(): array {
 		$parsedArticles[] = [
 			'title' => $title,
 			'slug' => $slug,
+			'locale' => $locale,
+			'languageTag' => blog_home_language_tag($locale),
+			'translationOf' => blog_home_scalar($frontmatter['translation_of'] ?? '') ?: null,
+			'translationStatus' => blog_home_scalar($frontmatter['translation_status'] ?? '') ?: null,
+			'canonicalSlug' => blog_home_scalar($frontmatter['canonical_slug'] ?? $slug),
+			'translations' => $locale === 'fr' ? ['en' => blog_home_scalar($frontmatter['translation_of'] ?? $slug)] : [],
 			'status' => $status,
 			'draftType' => $draftType,
 			'summary' => $summary,
@@ -295,7 +482,7 @@ function blog_home_reading_minutes(string $body, string $summary): int {
 	$source = $summary ?: $body;
 	$normalized = preg_replace('/[#>*`\[\]\(\)]/', ' ', $source);
 	$normalized = preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($normalized), ENT_QUOTES, 'UTF-8') ?? '');
-	$words = array_values(array_filter(explode(' ', trim((string) $normalized)), fn($word) => $word !== '');
+	$words = array_values(array_filter(explode(' ', trim((string) $normalized)), fn($word) => $word !== ''));
 	return max(1, (int) ceil(count($words) / 220));
 }
 
@@ -315,8 +502,34 @@ function blog_home_parse_visual(array $frontmatter, string $key): array {
 function blog_home_fallback_published_articles(): array {
 	return [
 		[
+			'title' => '#OpenJarvis Is the Local AI Agent Project to Watch Right Now',
+			'slug' => 'openjarvis-local-ai-personal-ai-on-your-pc',
+			'locale' => 'en',
+			'languageTag' => 'en',
+			'translationOf' => null,
+			'translationStatus' => null,
+			'canonicalSlug' => 'openjarvis-local-ai-personal-ai-on-your-pc',
+			'translations' => [],
+			'status' => 'published',
+			'draftType' => 'ai-news-analysis',
+			'summary' => 'OpenJarvis is trending because it reframes the personal AI assistant as a local-first, measurable, editable agent stack instead of another cloud chat wrapper. Here is what matters, what is hype, and whether it can run on a normal developer PC.',
+			'tags' => ['OpenJarvis', 'local AI agent', 'open-source AI', 'AI agent framework', 'run AI locally'],
+			'date' => '2026-06-04',
+			'dateLabel' => 'June 4, 2026',
+			'updatedDate' => '2026-06-04',
+			'updatedDateLabel' => 'June 4, 2026',
+			'readingMinutes' => 1,
+			'design' => blog_home_design('#78d4ff', ['OpenJarvis', 'Local AI Agents', 'Personal AI', 'Ollama', 'Agent Frameworks'])
+		],
+		[
 			'title' => 'Agent Mixing Without Theater: DeepSeek Pro, Flash, Gemma4, and the Law of Diminishing Returns',
 			'slug' => 'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',
+			'locale' => 'en',
+			'languageTag' => 'en',
+			'translationOf' => null,
+			'translationStatus' => null,
+			'canonicalSlug' => 'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',
+			'translations' => [],
 			'status' => 'published',
 			'draftType' => 'agent-architecture',
 			'summary' => 'Part 1 of a practical series on mixing DeepSeek V4 Pro, DeepSeek V4 Flash, and local Gemma4-style agents without turning a coding workflow into an expensive committee.',
@@ -325,12 +538,18 @@ function blog_home_fallback_published_articles(): array {
 			'dateLabel' => 'June 3, 2026',
 			'updatedDate' => '2026-06-04',
 			'updatedDateLabel' => 'June 4, 2026',
-			'readingMinutes' => 11,
+			'readingMinutes' => 1,
 			'design' => blog_home_design('#38bdf8', ['DeepSeek', 'Gemma4', 'Agent Orchestration', 'AI Coding', 'Hermes', 'Model Routing'])
 		],
 		[
 			'title' => 'ChatGPT Deep Research vs. DeepSeek: What’s Actually Happening Under the Hood',
 			'slug' => 'how-chatgpt-performs-deep-research',
+			'locale' => 'en',
+			'languageTag' => 'en',
+			'translationOf' => null,
+			'translationStatus' => null,
+			'canonicalSlug' => 'how-chatgpt-performs-deep-research',
+			'translations' => [],
 			'status' => 'published',
 			'draftType' => 'research-analysis',
 			'summary' => 'A practical comparison of ChatGPT Deep Research and DeepSeek-style reasoning APIs, focused on workflow, retrieval, transparency, and what builders should actually take away.',
@@ -339,12 +558,18 @@ function blog_home_fallback_published_articles(): array {
 			'dateLabel' => 'May 30, 2026',
 			'updatedDate' => '2026-05-30',
 			'updatedDateLabel' => 'May 30, 2026',
-			'readingMinutes' => 5,
+			'readingMinutes' => 1,
 			'design' => blog_home_design('#7c5cff', ['ChatGPT', 'Deep Research', 'DeepSeek', 'Reasoning Models', 'LLMs', 'Agentic Workflows'])
 		],
 		[
 			'title' => 'Ship Fast, But for Windows: Adapting the Mobile App Factory Playbook to the Microsoft Store',
 			'slug' => 'ship-fast-for-windows-microsoft-store-playbook',
+			'locale' => 'en',
+			'languageTag' => 'en',
+			'translationOf' => null,
+			'translationStatus' => null,
+			'canonicalSlug' => 'ship-fast-for-windows-microsoft-store-playbook',
+			'translations' => [],
 			'status' => 'published',
 			'draftType' => 'product-strategy',
 			'summary' => 'A Windows-focused adaptation of the mobile app factory playbook for the Microsoft Store.',
@@ -353,12 +578,18 @@ function blog_home_fallback_published_articles(): array {
 			'dateLabel' => 'May 30, 2026',
 			'updatedDate' => '2026-05-30',
 			'updatedDateLabel' => 'May 30, 2026',
-			'readingMinutes' => 6,
+			'readingMinutes' => 1,
 			'design' => blog_home_design('#53b8ff', ['Windows', 'Microsoft Store', 'Indie Apps', 'Distribution', 'Product Strategy', 'AI'])
 		],
 		[
 			'title' => 'Phaser vs PixiJS in 2026: Why I Chose the Rendering Library Over the Game Framework for a Water-Heavy 2.5D Seafaring Game',
 			'slug' => 'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game',
+			'locale' => 'en',
+			'languageTag' => 'en',
+			'translationOf' => null,
+			'translationStatus' => null,
+			'canonicalSlug' => 'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game',
+			'translations' => [],
 			'status' => 'published',
 			'draftType' => 'technical-decision-log',
 			'summary' => 'A detailed comparison of Phaser 4.1 and PixiJS 8.18 for a browser-based multiplayer roguelike sailing game with custom water rendering. Why the default choice (Phaser) turned out to be wrong for this project, and how PixiJS\'s lower-level rendering primitives map more directly to what I\'m actually building.',
@@ -367,22 +598,8 @@ function blog_home_fallback_published_articles(): array {
 			'dateLabel' => 'May 29, 2026',
 			'updatedDate' => '2026-05-29',
 			'updatedDateLabel' => 'May 29, 2026',
-			'readingMinutes' => 8,
+			'readingMinutes' => 1,
 			'design' => blog_home_design('#87dac4', ['Phaser', 'PixiJS', 'WebGPU', '2.5D Rendering', 'Water Simulation', 'Multiplayer', 'Colyseus', 'Indie Game Dev'])
-		],
-		[
-			'title' => 'Debugging GIMP 3 Python Plug-in Failures on Windows: When the Culprit Wasn’t GIMP',
-			'slug' => 'debugging-gimp-3-python-plugin-failures-windows-windhawk',
-			'status' => 'published',
-			'draftType' => 'technical-blog-post',
-			'summary' => 'A companion debugging article about GIMP 3 Python plugin failures on Windows, the misleading libgraphite2/_Unwind_Resume symptom, Pango/GI failures, PATH/DLL pollution, and the Windhawk hook layer.',
-			'tags' => ['gimp', 'gimp-3', 'windows-11', 'windhawk', 'python-plugins', 'pango', 'dll-debugging', 'desktop-tooling', 'troubleshooting', 'pixelboats'],
-			'date' => '2026-05-28',
-			'dateLabel' => 'May 28, 2026',
-			'updatedDate' => '2026-05-28',
-			'updatedDateLabel' => 'May 28, 2026',
-			'readingMinutes' => 5,
-			'design' => blog_home_design('#ffcf77', ['GIMP', 'GIMP 3', 'Windows 11', 'Windhawk', 'DLL Debugging', 'Python', 'Troubleshooting'])
 		]
 	];
 }
@@ -397,16 +614,26 @@ function blog_home_is_published(array $frontmatter, DateTimeImmutable $now): boo
 }
 
 function load($event): array {
-	$publishedArticles = blog_home_published_articles();
-	if (!$publishedArticles) {
+	$locale = blog_home_locale_from_request();
+	$homePath = blog_home_path_with_locale($locale, '/');
+	$rssPath = blog_home_path_with_locale($locale, '/rss.xml');
+	$publishedArticles = blog_home_published_articles($locale);
+	if (!$publishedArticles && $locale === 'en') {
 		$publishedArticles = blog_home_fallback_published_articles();
 	}
 
 	return [
-		'canonical' => blog_home_url('/'),
-		'rssUrl' => blog_home_url('/rss.xml'),
+		'locale' => $locale,
+		'languageTag' => blog_home_language_tag($locale),
+		'ui' => blog_home_dictionary($locale),
+		'canonical' => blog_home_url($homePath),
+		'alternates' => blog_home_localized_alternates('/'),
+		'rssUrl' => blog_home_url($rssPath),
+		'rssPath' => $rssPath,
+		'homePath' => $homePath,
 		'ogImage' => blog_home_url('/og-default.png'),
 		'publishedArticles' => $publishedArticles,
+		'recentPublishedArticles' => array_slice($publishedArticles, 0, 5),
 		'publishedArticleTags' => blog_home_article_tags($publishedArticles)
 	];
 }

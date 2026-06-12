@@ -204,3 +204,31 @@ body {
 		grid-template-columns: minmax(0, 1fr) !important;
 	}
 }
+/* Article layout overlap guards:
+   keep right-column content from visually overlaying article content
+   when long tokens or sticky columns are present. */
+.article-page .article-hero-side,
+.article-page .toc,
+.article-page .toc-accordion-panel,
+.article-page .rail-card {
+	min-width: 0;
+	max-width: 100%;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+}
+
+.article-page .layout {
+	position: relative;
+	isolation: isolate;
+}
+
+.article-page .article-column {
+	position: relative;
+	z-index: 3;
+}
+
+.article-page .toc,
+.article-page .article-hero-side,
+.article-page .rail-card {
+	z-index: 2;
+}

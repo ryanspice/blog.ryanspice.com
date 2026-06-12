@@ -2,7 +2,7 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { authState, canAccessDrafts, loadAuthState, signIn } from '$lib/auth';
+	import { authState, canAccessDrafts, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { MorningBrief } from '$lib/morning-briefs';
@@ -17,6 +17,7 @@
 	let selectedTag = $state('');
 	let searchQuery = $state('');
 	let signingIn = $state(false);
+	let actionError = $state('');
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
@@ -77,9 +78,10 @@
 
 	async function handleSignIn() {
 		signingIn = true;
+		actionError = '';
 
 		try {
-			await signIn('/briefs/');
+			actionError = (await trySignIn('/briefs/')) ?? '';
 		} finally {
 			signingIn = false;
 		}
@@ -225,7 +227,7 @@
 			<h1>Briefs stay behind the owner gate.</h1>
 			<p class="dek">
 				Sign in with Microsoft to open the private weekday focus notes. Only
-				spice.ryan@hotmail.com can read this lane on the website.
+				{ownerAccessLabel} can read this lane on the website.
 			</p>
 			<dl class="meta-grid home-meta" aria-label="Brief gate metadata">
 				<div>
@@ -250,7 +252,7 @@
 					Hold on while the auth gate responds.
 				{:else if $authState.authenticated && !$authState.draftsAllowed}
 					Signed in as {$authState.userEmail ?? 'a Microsoft account'}, but briefs are only open to
-					spice.ryan@hotmail.com. Use the footer button to switch accounts.
+					{ownerAccessLabel}. Use the footer button to switch accounts.
 				{:else}
 					The brief archive is not part of public navigation or search indexing.
 				{/if}
@@ -264,6 +266,9 @@
 							: 'Sign in with Microsoft'}
 				</button>
 			</div>
+			{#if actionError}
+				<p class="home-hero-note">{actionError}</p>
+			{/if}
 		</aside>
 	</section>
 {/if}

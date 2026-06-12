@@ -1,12 +1,16 @@
-import { publishedArticles } from './articles';
+import { getPublishedArticlesForLocale } from './articles';
+import { getDictionary } from './i18n/dictionaries';
+import { resolveLocaleFromPathname } from './i18n/locales';
 
 export function renderRssFriendlyHtml(url: URL): string {
+	const locale = resolveLocaleFromPathname(url.pathname);
+	const copy = getDictionary(locale).rss;
 	const prefix = url.pathname.slice(0, -'/rss.xml/'.length);
 	const basePath = prefix === '' ? '' : prefix;
 	const feedPath = `${basePath}/rss.xml`;
 	const homePath = `${basePath}/`;
 	const readerPath = `${basePath}/rss-reader/`;
-	const latestItems = publishedArticles
+	const latestItems = getPublishedArticlesForLocale(locale)
 		.slice(0, 5)
 		.map((article) => {
 			const articlePath = `${basePath}/${article.slug}/`;
@@ -27,14 +31,14 @@ export function renderRssFriendlyHtml(url: URL): string {
 		.join('');
 
 	return `<!doctype html>
-<html lang="en">
+<html lang="${escapeHtml(locale === 'fr' ? 'fr-CA' : 'en')}">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,follow">
-	<title>RSS feed · blog.ryanspice.com</title>
+	<title>${escapeHtml(copy.title)}</title>
 	<link rel="canonical" href="${escapeHtml(new URL(`${basePath}/rss.xml/`, url.origin).toString())}">
-	<link rel="alternate" type="application/rss+xml" title="Ryan Spice technical notes" href="${escapeHtml(feedPath)}">
+	<link rel="alternate" type="application/rss+xml" title="${escapeHtml(copy.channelTitle)}" href="${escapeHtml(feedPath)}">
 	<style>
 		:root { color-scheme: dark; }
 		* { box-sizing: border-box; }
@@ -62,15 +66,15 @@ export function renderRssFriendlyHtml(url: URL): string {
 </head>
 <body>
 	<main>
-		<p>RSS feed</p>
-		<h1>Subscribe to the technical notes feed.</h1>
-		<p class="dek">This is the readable version of the feed. The machine-readable RSS document stays at <a href="${escapeHtml(feedPath)}">/rss.xml</a>.</p>
+		<p>${escapeHtml(copy.feedLabel)}</p>
+		<h1>${escapeHtml(copy.heading)}</h1>
+		<p class="dek">${escapeHtml(copy.readerDek)} <a href="${escapeHtml(feedPath)}">/rss.xml</a>.</p>
 		<div class="actions">
-			<a href="${escapeHtml(feedPath)}">Open RSS XML</a>
-			<a href="${escapeHtml(readerPath)}">Open friendly feed page</a>
-			<a href="${escapeHtml(homePath)}">Back to articles</a>
+			<a href="${escapeHtml(feedPath)}">${escapeHtml(copy.openXml)}</a>
+			<a href="${escapeHtml(readerPath)}">${escapeHtml(copy.openFriendlyPage)}</a>
+			<a href="${escapeHtml(homePath)}">${escapeHtml(copy.backToArticles)}</a>
 		</div>
-		<section aria-label="Latest feed items">
+		<section aria-label="${escapeHtml(copy.latestItems)}">
 			${latestItems}
 		</section>
 	</main>

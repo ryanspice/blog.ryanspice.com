@@ -21,6 +21,11 @@ export type FrontmatterUpdate = Record<string, string | undefined>;
 
 const managedScalarKeys = [
 	'status',
+	'locale',
+	'translation_of',
+	'translation_status',
+	'canonical_slug',
+	'translated_slug',
 	'date',
 	'updated_date',
 	'publish_at',
@@ -49,6 +54,11 @@ const preferredScalarOrder = [
 	'title',
 	'slug',
 	'status',
+	'locale',
+	'translation_of',
+	'translation_status',
+	'canonical_slug',
+	'translated_slug',
 	'draft_type',
 	'date',
 	'updated_date',

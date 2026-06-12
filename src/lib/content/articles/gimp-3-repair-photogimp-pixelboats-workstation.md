@@ -39,7 +39,7 @@ references:
 source_context:
   gimp_install_path: "<USER_HOME>\\AppData\\Local\\Programs\\GIMP 3\\bin\\gimp-3.exe"
   active_gimp_profile: "<USER_HOME>\\AppData\\Roaming\\GIMP\\3.2"
-  repair_doc: "B:\\Temp\\@Browser\\gimp-repair-shindig.md"
+  repair_doc: "<TEMP_WORKSPACE>\\gimp-repair-shindig.md"
   pixelboats_kit_path: "<USER_HOME>\\AppData\\Roaming\\GIMP\\3.2\\pixelboats-kit"
 ---
 

@@ -1,10 +1,11 @@
 # Dev Log Automation
 
-This is the operating contract for the weekday blog dev-log and morning-brief run.
+This is the operating contract for the blog dev-log and owner-gated morning-brief run.
 
 ## Schedule
 
-- Run once on weekday mornings at 8:15 AM America/Toronto.
+- Run the primary owner-gated weekly brief on Monday mornings at about 8:00 AM America/Toronto.
+- Additional weekday runs can still create short briefs or dev-log entries when an automation wakeup asks for them and there are useful work signals.
 - Skip publishing a dev-log entry when there are fewer than two meaningful work signals or when the only signals are routine file churn.
 - Still write a private morning brief when there is useful focus guidance, even if the public dev log is not updated.
 
@@ -12,8 +13,8 @@ This is the operating contract for the weekday blog dev-log and morning-brief ru
 
 - The current blog repository: source files, docs, package scripts, and recent git history.
 - Codex memory summaries and rollout summaries that are already readable in the local Codex memory folder.
-- AI Wiki notes and Hermes output only through non-interactive helper surfaces that work in the automation shell.
-- Claude, ChatGPT, or GPT conversation material only when it exists as an explicit local export or readable project memory. Do not scrape browser profiles, session stores, cookies, or credential-backed app databases.
+- AI Wiki notes, Hermes output, Hermes profile or skill docs, and local agent-runtime docs only through readable files or non-interactive helper surfaces that work in the automation shell.
+- Claude, ChatGPT, GPT, DeepSeek, or other assistant conversation material only when it exists as an explicit local export or readable project memory. Do not scrape browser profiles, session stores, cookies, credential-backed app databases, app credentials, or private runtime storage.
 - Public web research when a brief needs current external context. Prefer official docs, primary sources, release notes, standards, and project repositories.
 
 ## Privacy rules

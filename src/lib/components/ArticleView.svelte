@@ -7,6 +7,8 @@
 	import { articleFocalCardCssVars, articleFocalImage, articleFocalPageCssVars } from '$lib/article-focal-images';
 	import { articleHref } from '$lib/article-links';
 	import type { Article } from '$lib/articles';
+	import { getDictionary } from '$lib/i18n/dictionaries';
+	import { pathWithLocale } from '$lib/i18n/locales';
 	import ArticleBackgroundLayer from '$lib/components/ArticleBackgroundLayer.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
@@ -15,31 +17,32 @@
 	type Props = {
 		article: Article;
 		relatedArticles?: Article[];
+		alternates?: Array<{ hreflang: string; href: string }>;
 	};
 
-	let { article, relatedArticles = [] }: Props = $props();
-	let progress = $state(0);
-	let activeTocId = $state<string | null>(null);
-	let commandFeedback = $state<string | null>(null);
-	let feedbackTimer: number | null = null;
+	let { article, relatedArticles = [], alternates = [] }: Props = $props();
 
 	const articleAccent = $derived(articleAccentColor(article));
 	const focalImage = $derived(articleFocalImage(article));
 	const pageStyle = $derived(`--article-accent: ${articleAccent}; ${articleFocalPageCssVars(article)}`);
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
-	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · Published ${article.dateLabel}${article.updatedDate !== article.date ? ` · Updated ${article.updatedDateLabel}` : ''}`);
+	const ui = $derived(getDictionary(article.locale));
+	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
 	const articleReferences = $derived(article.references.filter(Boolean));
 	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
 	const description = $derived(article.summary || 'Technical blog drafts and production notes from Ryan Spice.');
-	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
+	const canonical = $derived(new URL(articleHref(article), page.url.origin).toString());
 	const ogImage = $derived(focalImage?.src ?? new URL(`${base}/og-default.png`, page.url.origin).toString());
-	const articleFooterLinks = [
-		{ label: 'Home', href: `${base}/` },
-		{ label: 'RSS', href: `${base}/rss.xml` },
-		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
-		{ label: 'Dev log', href: `${base}/dev-log/` }
-	];
+	const localizedHomeHref = $derived(`${base}${pathWithLocale(article.locale, '/')}`);
+	const localizedRssHref = $derived(`${base}${pathWithLocale(article.locale, '/rss.xml')}`);
+	const localizedDevLogHref = $derived(`${base}/dev-log/`);
+	const articleFooterLinks = $derived([
+		{ label: ui.article.home, href: localizedHomeHref },
+		{ label: ui.article.rss, href: localizedRssHref },
+		{ label: ui.article.githubRepo, href: 'https://github.com/ryanspice/blog.ryanspice.com' },
+		{ label: ui.article.devLog, href: localizedDevLogHref }
+	]);
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -50,8 +53,8 @@
 					{
 						'@type': 'ListItem',
 						position: 1,
-						name: 'Home',
-						item: new URL(`${base}/`, page.url.origin).toString()
+						name: ui.article.home,
+						item: new URL(localizedHomeHref, page.url.origin).toString()
 					},
 					{
 						'@type': 'ListItem',
@@ -83,34 +86,6 @@
 	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 	const jsonLdScriptHtml = $derived(`<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`);
 
-	function setCommandFeedback(message: string) {
-		commandFeedback = message;
-		if (feedbackTimer !== null) window.clearTimeout(feedbackTimer);
-		feedbackTimer = window.setTimeout(() => {
-			commandFeedback = null;
-		}, 1600);
-	}
-
-	function fallbackCopyText(text: string): boolean {
-		const textarea = document.createElement('textarea');
-		textarea.value = text;
-		textarea.setAttribute('readonly', '');
-		textarea.style.position = 'fixed';
-		textarea.style.left = '-9999px';
-		textarea.style.top = '0';
-		textarea.style.opacity = '0';
-		document.body.appendChild(textarea);
-		textarea.focus();
-		textarea.select();
-		try {
-			return document.execCommand('copy');
-		} catch {
-			return false;
-		} finally {
-			document.body.removeChild(textarea);
-		}
-	}
-
 	function formatReferenceLabel(value: string): string {
 		try {
 			const url = new URL(value);
@@ -119,25 +94,6 @@
 		} catch {
 			return value;
 		}
-	}
-
-	async function copyLink() {
-		try {
-			await navigator.clipboard.writeText(canonical);
-			setCommandFeedback('Link copied');
-			return;
-		} catch {
-			// fall through
-		}
-
-		const ok = fallbackCopyText(canonical);
-		setCommandFeedback(ok ? 'Link copied' : 'Copy failed');
-	}
-
-	function handleBackClick(event: MouseEvent) {
-		if (typeof window === 'undefined' || window.history.length <= 1) return;
-		event.preventDefault();
-		window.history.back();
 	}
 
 	async function enhanceMermaid() {
@@ -167,40 +123,7 @@
 	}
 
 	onMount(() => {
-		const headings = Array.from(document.querySelectorAll<HTMLElement>('.article-inner h2[id], .article-inner h3[id]'));
-		let frame: number | null = null;
-
-		const update = () => {
-			if (frame !== null) cancelAnimationFrame(frame);
-			frame = requestAnimationFrame(() => {
-				const scrollTop = window.scrollY || document.documentElement.scrollTop;
-				const height = document.documentElement.scrollHeight - window.innerHeight;
-				progress = height > 0 ? Math.min(100, Math.max(0, (scrollTop / height) * 100)) : 0;
-
-				if (headings.length) {
-					const offset = 140;
-					let current: string | null = headings[0]?.id ?? null;
-					for (const heading of headings) {
-						const top = heading.getBoundingClientRect().top;
-						if (top - offset <= 0) current = heading.id;
-						else break;
-					}
-					if (current !== activeTocId) activeTocId = current;
-				}
-			});
-		};
-
-		update();
-		window.addEventListener('scroll', update, { passive: true });
-		window.addEventListener('resize', update);
 		void enhanceMermaid();
-
-		return () => {
-			if (frame !== null) cancelAnimationFrame(frame);
-			if (feedbackTimer !== null) window.clearTimeout(feedbackTimer);
-			window.removeEventListener('scroll', update);
-			window.removeEventListener('resize', update);
-		};
 	});
 </script>
 
@@ -208,6 +131,9 @@
 	<title>{pageTitle}</title>
 	<meta name="description" content={description} />
 	<link rel="canonical" href={canonical} />
+	{#each alternates as alternate (alternate.hreflang)}
+		<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+	{/each}
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={description} />
 	<meta property="og:url" content={canonical} />
@@ -232,7 +158,7 @@
 
 <div class={`article-page theme-${article.design.variant} has-command-bar${focalImage ? ' has-focal-image' : ''}`} style={pageStyle}>
 	<ArticleBackgroundLayer {article} />
-	<div class="read-progress" style={`width: ${progress}%`}></div>
+	<div class="read-progress" data-scroll-progress></div>
 	<SiteHeader brandLabel={article.design.brandLabel} navLinks={article.design.navLinks} />
 
 	<section class="hero">
@@ -269,16 +195,16 @@
 			<p class="article-byline"><time datetime={article.date}>{article.dateLabel}</time></p>
 
 			<dl class="meta-grid article-meta" aria-label="Article metadata">
-				<div><dt>Article info</dt><dd>{articleInfo}</dd></div>
-				<div><dt>Read time</dt><dd>{article.readingMinutes} min</dd></div>
-				<div><dt>Type</dt><dd>{article.draftType.replaceAll('-', ' ')}</dd></div>
+				<div><dt>{ui.article.articleInfo}</dt><dd>{articleInfo}</dd></div>
+				<div><dt>{ui.article.readTime}</dt><dd>{article.readingMinutes} min</dd></div>
+				<div><dt>{ui.article.type}</dt><dd>{article.draftType.replaceAll('-', ' ')}</dd></div>
 				{#if article.releaseDateLabel}
-					<div><dt>Release</dt><dd>{article.releaseDateLabel}</dd></div>
+					<div><dt>{ui.article.release}</dt><dd>{article.releaseDateLabel}</dd></div>
 				{/if}
 			</dl>
 
 			<p class="dek">{article.summary}</p>
-			<div class="tag-row" aria-label="Tags">
+			<div class="tag-row" aria-label={ui.article.tags}>
 				{#each article.design.tags as tag, index (tag + ':' + index)}
 					<a class="tag tag-link" href={articleTagIndexHref(tag, article.status as ArticleIndexStatus)}>{tag}</a>
 				{/each}
@@ -309,7 +235,7 @@
 					<summary><span>{article.design.tocTitle}</span><strong>{article.toc.length} sections</strong></summary>
 					<div class="toc-accordion-panel">
 						{#each article.toc as item, index (item.id + ':' + index)}
-							<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} class:is-active={activeTocId === item.id} href={`#${item.id}`}>{item.text}</a>
+							<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} href={`#${item.id}`}>{item.text}</a>
 						{/each}
 					</div>
 				</details>
@@ -348,7 +274,7 @@
 		<aside class="toc article-toc article-toc--desktop" aria-label="Table of contents">
 			<h2>{article.design.tocTitle}</h2>
 			{#each article.toc as item, index (item.id + ':' + index)}
-				<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} class:is-active={activeTocId === item.id} href={`#${item.id}`}>{item.text}</a>
+				<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} href={`#${item.id}`}>{item.text}</a>
 			{/each}
 		</aside>
 
@@ -356,12 +282,12 @@
 			<article class="article-shell"><div class="article-inner">{@html article.html}</div></article>
 
 			{#if articleReferences.length}
-				<section class="article-references" aria-label="Sources and further reading">
+				<section class="article-references" aria-label={ui.article.sourcesHeading}>
 					<div class="section-head section-head-with-art">
 						<div class="section-head-copy">
-							<p class="eyebrow">Sources</p>
-							<h2>Sources and further reading</h2>
-							<p class="section-dek">External documentation and source material linked for the parts of the article that need it.</p>
+							<p class="eyebrow">{ui.article.sources}</p>
+							<h2>{ui.article.sourcesHeading}</h2>
+							<p class="section-dek">{ui.article.sourcesDek}</p>
 						</div>
 					</div>
 					<ul class="reference-list">
@@ -373,11 +299,11 @@
 			{/if}
 
 			{#if relatedArticles.length}
-				<section class="related-articles" aria-label="Related articles">
+				<section class="related-articles" aria-label={ui.article.related}>
 					<div class="section-head">
-						<p class="eyebrow">Related articles</p>
-						<h2>More like this</h2>
-						<p class="section-dek">Articles with overlapping tags, explicit references, or the same line of work.</p>
+						<p class="eyebrow">{ui.article.related}</p>
+						<h2>{ui.article.relatedHeading}</h2>
+						<p class="section-dek">{ui.article.relatedDek}</p>
 					</div>
 					<div class="related-articles-grid">
 						{#each relatedArticles as related, index (related.slug + ':' + index)}
@@ -386,7 +312,7 @@
 								<div class="article-card-content">
 									<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
 									<h3>{related.title}</h3>
-									<p class="related-meta"><time datetime={related.date}>{related.dateLabel}</time><span>{related.readingMinutes} min read</span></p>
+									<p class="related-meta"><time datetime={related.date}>{related.dateLabel}</time><span>{related.readingMinutes} {ui.article.minRead}</span></p>
 									<p>{related.summary}</p>
 									<div class="tag-row compact" aria-label={`${related.title} tags`}>
 										{#each related.tags.slice(0, 4) as tag, index (tag + ':' + index)}<span class="tag">{tag}</span>{/each}
@@ -401,11 +327,20 @@
 	</main>
 
 	<div class="command-bar" aria-label="Commands">
-		<div class="command-inner">
-			<a class="cmd" href={`${base}/`} onclick={handleBackClick}>Back</a>
-			<a class="cmd" href={`${base}/rss.xml`}>RSS</a>
-			<button class="cmd" type="button" onclick={copyLink} aria-label="Copy link to clipboard">Copy link</button>
-			{#if commandFeedback}<span class="cmd-feedback" aria-live="polite">{commandFeedback}</span>{/if}
+		<div class="command-inner" data-copy-scope>
+			<a class="cmd" href={localizedHomeHref} data-back-same-origin>{ui.article.back}</a>
+			<a class="cmd" href={localizedRssHref}>{ui.article.rss}</a>
+			<button
+				class="cmd"
+				type="button"
+				aria-label={ui.article.copyLink}
+				data-copy-text={canonical}
+				data-copy-success={ui.article.linkCopied}
+				data-copy-failure={ui.article.copyFailed}
+			>
+				{ui.article.copyLink}
+			</button>
+			<span class="cmd-feedback" aria-live="polite" data-copy-feedback-target hidden></span>
 		</div>
 	</div>
 

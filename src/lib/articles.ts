@@ -6,6 +6,13 @@ import {
 	type Frontmatter,
 	stringValue as frontmatterStringValue
 } from './article-frontmatter';
+import {
+	DEFAULT_LOCALE,
+	localeToLanguageTag,
+	pathWithLocale,
+	resolveLocale,
+	type SupportedLocale
+} from './i18n/locales';
 
 export type NavItem = {
 	label: string;
@@ -49,6 +56,13 @@ type RawArticleModule = Record<string, string>;
 export type ArticleMeta = {
 	title: string;
 	slug: string;
+	locale: SupportedLocale;
+	languageTag: string;
+	translationOf?: string;
+	translationStatus?: string;
+	canonicalSlug: string;
+	translatedSlug?: string;
+	translations: Partial<Record<SupportedLocale, string>>;
 	status: string;
 	draftType: string;
 	summary: string;
@@ -82,6 +96,12 @@ const modules = import.meta.glob('./content/articles/*.md', {
 	import: 'default'
 }) as RawArticleModule;
 
+const localizedModules = import.meta.glob('./content/articles/fr/*.md', {
+	eager: true,
+	query: '?raw',
+	import: 'default'
+}) as RawArticleModule;
+
 const versionModules = import.meta.glob('./content/articles/.versions/**/*.md', {
 	eager: true,
 	query: '?raw',
@@ -106,21 +126,52 @@ const buildDate = new Date();
 
 // NOTE: renderMarkdown is async (unified pipeline + server-only Shiki highlighting), so article parsing is async as well.
 // Top-level await is supported by Vite/SvelteKit and keeps the export contract unchanged.
-export const articles: Article[] = (await Promise.all(Object.entries(modules).map(([path, raw]) => parseArticle(path, raw))))
+export const articles: Article[] = (await Promise.all([...Object.entries(modules), ...Object.entries(localizedModules)].map(([path, raw]) => parseArticle(path, raw))))
 	.sort((a, b) => effectivePublishDate(b).localeCompare(effectivePublishDate(a)) || a.title.localeCompare(b.title));
 
-export const publishedArticles = articles.filter(isPublicArticle);
+export const allPublishedArticles = articles.filter(isPublicArticle);
+export const publishedArticles = getPublishedArticlesForLocale(DEFAULT_LOCALE);
 export const draftArticles = articles.filter((article) => !isPublicArticle(article));
 export const scheduledArticles = draftArticles.filter((article) => article.releaseDate && article.status !== 'published');
-export const publishedArticleTags = Array.from(new Set(publishedArticles.flatMap((article) => article.tags))).sort((left, right) =>
-	left.localeCompare(right)
-);
+export const publishedArticleTags = getPublishedArticleTagsForLocale(DEFAULT_LOCALE);
 export const articleTags = Array.from(new Set(articles.flatMap((article) => article.tags))).sort((left, right) =>
 	left.localeCompare(right)
 );
 
-export function getArticle(slug: string): Article | undefined {
-	return articles.find((article) => article.slug === slug);
+export function getArticlesForLocale(locale: SupportedLocale = DEFAULT_LOCALE): Article[] {
+	return articles.filter((article) => article.locale === locale);
+}
+
+export function getPublishedArticlesForLocale(locale: SupportedLocale = DEFAULT_LOCALE): Article[] {
+	return allPublishedArticles.filter((article) => article.locale === locale);
+}
+
+export function getPublishedArticleTagsForLocale(locale: SupportedLocale = DEFAULT_LOCALE): string[] {
+	return Array.from(new Set(getPublishedArticlesForLocale(locale).flatMap((article) => article.tags))).sort((left, right) =>
+		left.localeCompare(right)
+	);
+}
+
+export function getArticle(slug: string, locale: SupportedLocale = DEFAULT_LOCALE): Article | undefined {
+	return articles.find((article) => article.locale === locale && article.slug === slug);
+}
+
+export function getArticleTranslationGroup(article: ArticleMeta): Article[] {
+	const key = translationGroupKey(article);
+	return allPublishedArticles
+		.filter((candidate) => translationGroupKey(candidate) === key)
+		.sort((left, right) => left.locale.localeCompare(right.locale));
+}
+
+export function getArticleAlternates(article: ArticleMeta): Array<{ locale: SupportedLocale; hreflang: string; path: string }> {
+	const variants = getArticleTranslationGroup(article);
+	if (variants.length < 2) return [];
+
+	return variants.map((variant) => ({
+		locale: variant.locale,
+		hreflang: localeToLanguageTag(variant.locale),
+		path: pathWithLocale(variant.locale, `/${variant.slug}/`)
+	}));
 }
 
 export function isPublicArticle(article: Pick<ArticleMeta, 'status' | 'releaseDate'>): boolean {
@@ -136,7 +187,8 @@ export function getRelatedArticles(
 	article: Pick<ArticleMeta, 'slug' | 'status' | 'tags' | 'relatedPosts' | 'draftType'>,
 	limit = 3
 ): Article[] {
-	const pool = isPublicArticle(article) ? publishedArticles : articles;
+	const locale = 'locale' in article ? resolveLocale((article as Pick<ArticleMeta, 'locale'>).locale) : DEFAULT_LOCALE;
+	const pool = isPublicArticle(article) ? getPublishedArticlesForLocale(locale) : getArticlesForLocale(locale);
 	const explicitTargets = new Set(article.relatedPosts.map((target) => normalizeRelatedTarget(target)));
 	const articleTags = new Set(article.tags.map((tag) => tag.toLowerCase()));
 
@@ -184,19 +236,26 @@ export function getRelatedArticles(
 async function parseArticle(path: string, raw: string): Promise<Article> {
 	const { frontmatter, body } = parseFrontmatter(raw);
 	const filename = path.split('/').pop()?.replace(/\.md$/, '') ?? 'article';
+	const pathLocale = path.includes('/content/articles/fr/') ? 'fr' : DEFAULT_LOCALE;
+	const locale = resolveLocale(stringValue(frontmatter.locale) || pathLocale);
 	const title = stringValue(frontmatter.title) || firstHeading(body) || filename;
 	const slug = stringValue(frontmatter.slug) || slugify(title);
+	const translationOf = stringValue(frontmatter.translation_of);
+	const canonicalSlug = stringValue(frontmatter.canonical_slug) || translationOf || slug;
+	const translatedSlug = stringValue(frontmatter.translated_slug);
+	const translationStatus = stringValue(frontmatter.translation_status);
+	const translations = parseTranslations(arrayValue(frontmatter.translations));
 	const status = stringValue(frontmatter.status) || 'draft';
 	const draftType = stringValue(frontmatter.draft_type) || 'technical-blog-post';
 	const summary = stringValue(frontmatter.summary) || '';
 	const tags = arrayValue(frontmatter.tags);
 	const date = stringValue(frontmatter.date) || filename.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || '2026-05-28';
-	const dateLabel = formatArticleDate(date);
+	const dateLabel = formatArticleDate(date, locale);
 	const updatedDate = stringValue(frontmatter.updated_date) || stringValue(frontmatter.modified_date) || date;
-	const updatedDateLabel = formatArticleDate(updatedDate);
+	const updatedDateLabel = formatArticleDate(updatedDate, locale);
 	const releaseDate = stringValue(frontmatter.release_date);
 	const releaseTime = frontmatterStringValue(frontmatter.release_time);
-	const releaseDateLabel = releaseDate ? formatArticleDate(releaseDate) : '';
+	const releaseDateLabel = releaseDate ? formatArticleDate(releaseDate, locale) : '';
 	const version = stringValue(frontmatter.version) || '1.0.0';
 	const previousVersion = stringValue(frontmatter.previous_version) || null;
 	const visuals = articleVisualsFromFrontmatter(frontmatter);
@@ -210,6 +269,13 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		...rendered,
 		title,
 		slug,
+		locale,
+		languageTag: localeToLanguageTag(locale),
+		...(translationOf ? { translationOf } : {}),
+		...(translationStatus ? { translationStatus } : {}),
+		canonicalSlug,
+		...(translatedSlug ? { translatedSlug } : {}),
+		translations,
 		status,
 		draftType,
 		summary,
@@ -229,7 +295,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		credits: credits.length ? credits : ['Ryan Spice'],
 		references: arrayValue(frontmatter.references),
 		relatedPosts: arrayValue(frontmatter.related_posts),
-		design: designFor({ slug, title, status, draftType, summary, tags, date, dateLabel, updatedDate, updatedDateLabel, releaseDate, releaseDateLabel }),
+		design: designFor({ slug, locale, title, status, draftType, summary, tags, date, dateLabel, updatedDate, updatedDateLabel, releaseDate, releaseDateLabel }),
 		body
 	};
 }
@@ -245,12 +311,13 @@ function loadPreviousBody(slug: string, version: string): string | null {
 function designFor(
 	article: Pick<
 		ArticleMeta,
-		'slug' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date' | 'dateLabel' | 'updatedDate' | 'updatedDateLabel' | 'releaseDate' | 'releaseDateLabel'
+		'slug' | 'locale' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date' | 'dateLabel' | 'updatedDate' | 'updatedDateLabel' | 'releaseDate' | 'releaseDateLabel'
 	>
 ): ArticleDesign {
+	const isFrench = article.locale === 'fr';
 	const common = {
 		brandLabel: 'Ryan Spice / Canopy Digital',
-		tocTitle: 'Contents',
+		tocTitle: isFrench ? 'Sommaire' : 'Contents',
 		accent: accentForSlug(article.slug)
 	};
 
@@ -399,25 +466,27 @@ function designFor(
 	return {
 		...common,
 		variant: 'default',
-		eyebrow: `Technical blog · ${isDraft ? article.status : 'published'}`,
+		eyebrow: isFrench ? `Blogue technique · ${isDraft ? article.status : 'publie'}` : `Technical blog · ${isDraft ? article.status : 'published'}`,
 		tags: article.tags,
 		cardPalette: {
 			label: 'Blog palette',
 			colors: ['#1e9bff', '#0b0f14', '#53b8ff', '#f2d27c', '#ff00ff']
 		},
-		navLinks: [{ label: 'Articles', href: '/#articles' }],
-		heroCardTitle: 'Article profile',
-		heroCardAria: 'Article details',
+		navLinks: [{ label: 'Articles', href: article.locale === 'fr' ? '/fr/#articles' : '/#articles' }],
+		heroCardTitle: isFrench ? "Profil de l'article" : 'Article profile',
+		heroCardAria: isFrench ? "Details de l'article" : 'Article details',
 		statusItems: [
-			{ label: 'Type', value: article.draftType.replaceAll('-', ' ') },
-			{ label: 'Status', value: isDraft ? article.status : 'published' },
+			{ label: isFrench ? 'Type' : 'Type', value: article.draftType.replaceAll('-', ' ') },
+			{ label: isFrench ? 'Statut' : 'Status', value: isFrench ? (isDraft ? article.status : 'publie') : isDraft ? article.status : 'published' },
 			{ label: 'Date', value: article.dateLabel },
-			...(article.releaseDateLabel ? [{ label: 'Release', value: article.releaseDateLabel }] : [])
+			...(article.releaseDateLabel ? [{ label: isFrench ? 'Publication' : 'Release', value: article.releaseDateLabel }] : [])
 		],
-		railTitle: isDraft ? 'Publishing tool' : 'Publishing notes',
+		railTitle: isFrench ? (isDraft ? 'Outil de publication' : 'Notes de publication') : isDraft ? 'Publishing tool' : 'Publishing notes',
 		railBodyHtml: isDraft
 			? 'Set the release date, pin the publish window, and keep the draft parked until the final review passes.'
-			: 'This route is static-friendly and generated from local Markdown.',
+			: isFrench
+				? 'Cette route est compatible avec le rendu statique et generee depuis Markdown local.'
+				: 'This route is static-friendly and generated from local Markdown.',
 		railStatusItems: isDraft
 			? [
 					{ label: 'Schedule date', value: article.releaseDateLabel ?? 'Choose a date' },
@@ -426,11 +495,15 @@ function designFor(
 					{ label: 'Target', value: 'ryanspice.com' }
 				]
 			: undefined,
-		railChips: isDraft ? undefined : ['Static SvelteKit', 'Local Markdown', 'pnpm'],
+		railChips: isDraft ? undefined : isFrench ? ['SvelteKit statique', 'Markdown local', 'pnpm'] : ['Static SvelteKit', 'Local Markdown', 'pnpm'],
 		railCalloutHtml: isDraft
 			? '<strong>Editorial angle:</strong> turn the draft into a release plan before the final pass.'
-			: '<strong>Editorial angle:</strong> practical technical notes with durable source context.',
-		footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
+			: isFrench
+				? '<strong>Angle editorial:</strong> notes techniques pratiques avec contexte source durable.'
+				: '<strong>Editorial angle:</strong> practical technical notes with durable source context.',
+		footerText: isFrench
+			? `Mis a jour le ${article.updatedDateLabel} · Article SvelteKit statique genere depuis Markdown local.`
+			: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
 	};
 }
 
@@ -498,11 +571,11 @@ function parseLinkTerm(value: string): MarkdownLinkTerm | null {
 	return { label: cleanedLabel, href };
 }
 
-function formatArticleDate(value: string): string {
+function formatArticleDate(value: string, locale: SupportedLocale = DEFAULT_LOCALE): string {
 	const parsed = new Date(`${value}T00:00:00Z`);
 	if (Number.isNaN(parsed.getTime())) return value;
 
-	return new Intl.DateTimeFormat('en-US', {
+	return new Intl.DateTimeFormat(locale === 'fr' ? 'fr-CA' : 'en-US', {
 		month: 'short',
 		day: 'numeric',
 		year: 'numeric',
@@ -528,4 +601,20 @@ function normalizeRelatedTarget(value: string): string {
 			.replace(/^\d{4}-\d{2}-\d{2}-/, '')
 			.trim()
 	);
+}
+
+function parseTranslations(values: string[]): Partial<Record<SupportedLocale, string>> {
+	const translations: Partial<Record<SupportedLocale, string>> = {};
+
+	for (const value of values) {
+		const [locale, slug] = value.split('|').map((part) => part.trim());
+		const resolvedLocale = resolveLocale(locale);
+		if (resolvedLocale && slug) translations[resolvedLocale] = slug;
+	}
+
+	return translations;
+}
+
+function translationGroupKey(article: Pick<ArticleMeta, 'translationOf' | 'canonicalSlug' | 'slug'>): string {
+	return article.translationOf || article.canonicalSlug || article.slug;
 }

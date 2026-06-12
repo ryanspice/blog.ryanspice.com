@@ -24,6 +24,7 @@
 		return fallbackArticle ? getRelatedArticles(fallbackArticle, 3) : [];
 	});
 	const safeRelatedArticles = $derived(sourceRelatedArticles.map(toSafeArticle));
+	const safeAlternates = $derived(Array.isArray(data.alternates) ? data.alternates : []);
 
 	function hasUsefulArticle(value: unknown): boolean {
 		const article = toObject(value);
@@ -106,6 +107,13 @@
 			...(article as Partial<Article>),
 			title,
 			slug,
+			locale: (article.locale === 'fr' ? 'fr' : 'en') as Article['locale'],
+			languageTag: toString(article.languageTag, article.locale === 'fr' ? 'fr-CA' : 'en'),
+			canonicalSlug: toString(article.canonicalSlug, slug),
+			translationOf: toString(article.translationOf) || undefined,
+			translationStatus: toString(article.translationStatus) || undefined,
+			translatedSlug: toString(article.translatedSlug) || undefined,
+			translations: toObject(article.translations) as Article['translations'],
 			status,
 			draftType,
 			summary: toString(article.summary, ''),
@@ -133,5 +141,5 @@
 {#if isDiff && safeArticle.previousBody}
 	<ArticleDiffView article={safeArticle} />
 {:else}
-	<ArticleView article={safeArticle} relatedArticles={safeRelatedArticles} />
+	<ArticleView article={safeArticle} relatedArticles={safeRelatedArticles} alternates={safeAlternates} />
 {/if}

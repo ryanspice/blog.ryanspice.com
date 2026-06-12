@@ -23,12 +23,15 @@ export type AuthState = {
 };
 
 const storageKey = 'blog-auth-return-to';
-const draftsAccessEmail = 'spice.ryan@hotmail.com';
+const defaultOwnerEmailSha256 = 'a02b9da8783774e58760bd375e9e5b570bea1a88bb5ad8928b7298332ddbe140';
 
 export const msalClientId = normalizeValue(import.meta.env.VITE_MSAL_CLIENT_ID as string | undefined);
 export const msalTenantId = normalizeValue(import.meta.env.VITE_MSAL_TENANT_ID as string | undefined) || 'common';
 export const msalAuthority = `https://login.microsoftonline.com/${msalTenantId}`;
 export const msalScopes = ['User.Read'];
+export const ownerAccessEmailSha256 =
+	normalizeHash(import.meta.env.VITE_OWNER_EMAIL_SHA256 as string | undefined) || defaultOwnerEmailSha256;
+export const ownerAccessLabel = normalizeValue(import.meta.env.VITE_OWNER_ACCESS_LABEL as string | undefined) || 'the site owner account';
 
 const initialState: AuthState = {
 	loading: true,
@@ -133,7 +136,7 @@ export async function refreshAuthState(): Promise<AuthState> {
 		}
 
 		const activeAccount = getActiveAccount(app);
-		const next = activeAccount ? buildAuthenticatedState(activeAccount) : buildUnauthenticatedState(true);
+		const next = activeAccount ? await buildAuthenticatedState(activeAccount) : buildUnauthenticatedState(true);
 		authState.set(next);
 		return next;
 	} catch (error_) {
@@ -182,6 +185,15 @@ export async function signIn(returnTo = '/'): Promise<void> {
 	await app.loginRedirect(request);
 }
 
+export async function trySignIn(returnTo = '/'): Promise<string | null> {
+	try {
+		await signIn(returnTo);
+		return null;
+	} catch (error_) {
+		return setAuthError(error_);
+	}
+}
+
 export async function acquireOwnerAccessToken(): Promise<string> {
 	const app = await getMsalClient();
 	const account = getActiveAccount(app);
@@ -214,18 +226,27 @@ export async function signOut(): Promise<void> {
 	await app.logoutRedirect(request);
 }
 
+export async function trySignOut(): Promise<string | null> {
+	try {
+		await signOut();
+		return null;
+	} catch (error_) {
+		return setAuthError(error_);
+	}
+}
+
 export function getActiveAccount(app?: PublicClientApplication): AccountInfo | null {
 	if (!app) return null;
 	return app.getActiveAccount() ?? app.getAllAccounts()[0] ?? null;
 }
 
-function buildAuthenticatedState(account: AccountInfo): AuthState {
+async function buildAuthenticatedState(account: AccountInfo): Promise<AuthState> {
 	const userEmail = account.username?.trim() || null;
 	return {
 		loading: false,
 		available: true,
 		authenticated: true,
-		draftsAllowed: canAccessDraftMailbox(userEmail),
+		draftsAllowed: await canAccessDraftMailbox(userEmail),
 		userName: account.name?.trim() || account.username?.trim() || null,
 		userEmail,
 		identityProvider: account.environment || account.tenantId || 'Microsoft',
@@ -270,12 +291,31 @@ function normalizeValue(value: string | undefined): string {
 	return typeof value === 'string' ? value.trim() : '';
 }
 
-function canAccessDraftMailbox(email: string | null): boolean {
-	return normalizeEmail(email) === normalizeEmail(draftsAccessEmail);
+async function canAccessDraftMailbox(email: string | null): Promise<boolean> {
+	const normalizedEmail = normalizeEmail(email);
+	if (!normalizedEmail || !ownerAccessEmailSha256) return false;
+
+	try {
+		return (await sha256Hex(normalizedEmail)) === ownerAccessEmailSha256;
+	} catch {
+		return false;
+	}
 }
 
 function normalizeEmail(value: string | null): string {
 	return (value ?? '').trim().toLowerCase();
+}
+
+function normalizeHash(value: string | undefined): string {
+	const normalized = normalizeValue(value).toLowerCase().replace(/^sha256:/, '');
+	return /^[a-f0-9]{64}$/.test(normalized) ? normalized : '';
+}
+
+async function sha256Hex(value: string): Promise<string> {
+	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+	return Array.from(new Uint8Array(digest))
+		.map((byte) => byte.toString(16).padStart(2, '0'))
+		.join('');
 }
 
 function getMsalRedirectUri(): string {
@@ -288,4 +328,15 @@ function getMsalRedirectUri(): string {
 function errorMessage(error: unknown): string {
 	if (error instanceof Error) return error.message;
 	return 'Microsoft sign-in failed.';
+}
+
+function setAuthError(error: unknown): string {
+	const message = errorMessage(error);
+	authState.update((state) => ({
+		...state,
+		loading: false,
+		available: Boolean(msalClientId),
+		error: message
+	}));
+	return message;
 }

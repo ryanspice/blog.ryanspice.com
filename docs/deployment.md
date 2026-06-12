@@ -94,7 +94,7 @@ Use this order before any commit/push/deploy:
 To refresh the vendored adapter from the canonical source:
 
 ```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Sync-SvelteKitPhpAdapter.ps1 -AdapterRoot "B:\Dev\sveltekit-php"
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Sync-SvelteKitPhpAdapter.ps1 -AdapterRoot "<SVELTEKIT_PHP_ADAPTER_ROOT>"
 ```
 
 ## Upload parallel release
@@ -133,7 +133,7 @@ The v0.1.0 installer tried to create `node_modules` as a junction before pnpm ra
 pnpm run setup:runtime
 ```
 
-This keeps the heavy pnpm store in `B:\AI-Wiki\.runtime\projects\blog.ryanspice.com`, while keeping `node_modules\.pnpm` local to the worktree. The virtual store must not cross drives because SvelteKit/Rollup uses dependency realpaths when naming SSR entries.
+This keeps the heavy pnpm store outside the synced project folder, while keeping `node_modules\.pnpm` local to the worktree. The virtual store must not cross drives because SvelteKit/Rollup uses dependency realpaths when naming SSR entries.
 
 ## GitHub production deploy
 
@@ -155,7 +155,7 @@ Optional repository secrets:
 - `PUBLIC_SITE_URL`
 - `PUBLIC_BASE_PATH`
 
-The workflow uses the committed vendored `adapter/` artifact. GitHub Actions cannot access `B:\Dev\sveltekit-php`, so sync the adapter locally before committing adapter changes.
+The workflow uses the committed vendored `adapter/` artifact. GitHub Actions cannot access your local adapter checkout, so sync the adapter locally before committing adapter changes.
 
 ## Remote path safety
 

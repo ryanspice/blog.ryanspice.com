@@ -1,0 +1,132 @@
+[
+  {
+    "name": "Home",
+    "path": "/",
+    "title": "blog.ryanspice.com · Technical notes",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/home-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "French home",
+    "path": "/fr/",
+    "title": "blog.ryanspice.com · Notes techniques",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/french-home-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Dev log",
+    "path": "/dev-log/",
+    "title": "blog.ryanspice.com · Dev log",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/dev-log-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Research library",
+    "path": "/library/",
+    "title": "blog.ryanspice.com · Research library",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/research-library-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Briefs",
+    "path": "/briefs/",
+    "title": "blog.ryanspice.com · Morning Briefs",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/briefs-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Brief 2026-06-05",
+    "path": "/briefs/2026-06-05-blog-delivery-surface/",
+    "title": "blog.ryanspice.com · Morning Brief",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/brief-2026-06-05-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Auth status",
+    "path": "/status",
+    "title": "blog.ryanspice.com · Status",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/auth-status-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "RSS reader",
+    "path": "/rss-reader/",
+    "title": "RSS feed · blog.ryanspice.com",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/rss-reader-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Article: Pro/Flash/Gemma4",
+    "path": "/agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns/",
+    "title": "Agent Mixing Without Theater: DeepSeek Pro, Flash, Gemma4, and the Law of Diminishing Returns · blog.ryanspice.com",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/article-pro-flash-gemma4-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Article: GIMP repair",
+    "path": "/gimp-3-repair-photogimp-pixelboats-workstation/",
+    "title": "Repairing a Broken GIMP 3 Install and Turning It Into a Pixel Art Workstation · blog.ryanspice.com",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/article-gimp-repair-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Article: Deep research",
+    "path": "/how-chatgpt-performs-deep-research/",
+    "title": "ChatGPT Deep Research vs. DeepSeek: What’s Actually Happening Under the Hood · blog.ryanspice.com",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/article-deep-research-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Article: Phaser vs Pixi",
+    "path": "/phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game/",
+    "title": "Phaser vs PixiJS in 2026: Why I Chose the Rendering Library Over the Game Framework for a Water-Heavy 2.5D Seafaring Game · blog.ryanspice.com",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/article-phaser-vs-pixi-1600x2200.png",
+    "viewport": "1600x2200"
+  },
+  {
+    "name": "Article: OpenJarvis",
+    "path": "/openjarvis-local-ai-personal-ai-on-your-pc/",
+    "title": "#OpenJarvis Is the Local AI Agent Project to Watch Right Now · blog.ryanspice.com",
+    "status": 200,
+    "ok": true,
+    "bodyVisible": true,
+    "file": "./screenshots/article-openjarvis-1600x2200.png",
+    "viewport": "1600x2200"
+  }
+]

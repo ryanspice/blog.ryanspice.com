@@ -1,42 +1,14 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { page } from '$app/state';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	const title = 'RSS feed · blog.ryanspice.com';
-	const description = 'Human-friendly RSS feed page for blog.ryanspice.com.';
-	let copyFeedback = $state('');
-
-	function fallbackCopyText(text: string): boolean {
-		const textarea = document.createElement('textarea');
-		textarea.value = text;
-		textarea.setAttribute('readonly', '');
-		textarea.style.position = 'fixed';
-		textarea.style.left = '-9999px';
-		textarea.style.top = '0';
-		textarea.style.opacity = '0';
-		document.body.appendChild(textarea);
-		textarea.focus();
-		textarea.select();
-		try { return document.execCommand('copy'); }
-		catch { return false; }
-		finally { document.body.removeChild(textarea); }
-	}
-
-	async function copyFeedUrl() {
-		const url = data.feedUrl;
-		try {
-			await navigator.clipboard.writeText(url);
-			copyFeedback = 'Copied';
-		} catch {
-			const ok = fallbackCopyText(url);
-			copyFeedback = ok ? 'Copied' : 'Copy failed';
-		}
-		setTimeout(() => { copyFeedback = ''; }, 2000);
-	}
+	const copy = $derived(data.ui.rss);
+	const navCopy = $derived(data.ui.nav);
+	const title = $derived(copy.title);
+	const description = $derived(copy.description);
 </script>
 
 <svelte:head>
@@ -44,46 +16,49 @@
 	<meta name="description" content={description} />
 	<meta name="robots" content="noindex,follow" />
 	<link rel="canonical" href={data.canonical} />
-	<link rel="alternate" type="application/rss+xml" title="Ryan Spice technical notes" href={data.feedUrl} />
+	{#each data.alternates as alternate (alternate.hreflang)}
+		<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+	{/each}
+	<link rel="alternate" type="application/rss+xml" title={copy.channelTitle} href={data.feedUrl} />
 </svelte:head>
 
 <SiteHeader
 	navLinks={[
-		{ label: 'Articles', href: '/#articles' },
-		{ label: 'Dev log', href: '/dev-log/' },
-		{ label: 'RSS XML', href: '/rss.xml' }
+		{ label: navCopy.articles, href: data.homeUrl + '#articles' },
+		{ label: navCopy.devLog, href: '/dev-log/' },
+		{ label: navCopy.rssXml, href: data.feedPath }
 	]}
 />
 
 <main class="rss-friendly-shell">
 	<section class="rss-friendly-hero">
-		<p class="eyebrow">RSS feed</p>
-		<h1>Subscribe to the technical notes feed.</h1>
+		<p class="eyebrow">{copy.feedLabel}</p>
+		<h1>{copy.heading}</h1>
 		<p class="dek">
-			This page is the readable version of the feed. The raw RSS XML is at
+			{copy.readerDek}
 			<code>{data.feedUrl}</code>.
 		</p>
 
 		<div class="home-hero-links">
-			<a href={data.feedUrl}>Open RSS XML</a>
-			<button type="button" onclick={copyFeedUrl}>{copyFeedback || 'Copy feed URL'}</button>
-			<a href={`${base}/`}>Back to articles</a>
+			<a href={data.feedUrl}>{copy.openXml}</a>
+			<button type="button" data-copy-text={data.feedUrl} data-copy-success={copy.copied} data-copy-failure={copy.copyFailed}>{copy.copyUrl}</button>
+			<a href={data.homeUrl}>{copy.backToArticles}</a>
 		</div>
 	</section>
 
-	<section class="rss-friendly-list" aria-label="Latest feed items">
+	<section class="rss-friendly-list" aria-label={copy.latestItems}>
 		<div class="section-head">
-			<p class="eyebrow">Latest items</p>
-			<h2>Recent feed entries</h2>
-			<p class="section-dek">The feed includes the latest published public articles.</p>
+			<p class="eyebrow">{copy.latestItems}</p>
+			<h2>{copy.recentEntries}</h2>
+			<p class="section-dek">{copy.recentEntriesDek}</p>
 		</div>
 
 		<div class="rss-friendly-items">
 			{#each data.latestArticles as article (article.slug)}
-				<a class="rss-friendly-item" href={`${base}/${article.slug}/`}>
+				<a class="rss-friendly-item" href={`${base}${article.href}`}>
 					<p class="dev-log-meta">
 						<time datetime={article.date}>{article.dateLabel}</time>
-						<span>{article.readingMinutes} min read</span>
+						<span>{article.readingMinutes} {data.ui.article.minRead}</span>
 					</p>
 					<h2>{article.title}</h2>
 					<p>{article.summary}</p>

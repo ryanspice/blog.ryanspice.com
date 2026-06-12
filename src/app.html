@@ -4,8 +4,16 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#070a0f" />
+		<script>
+			try {
+				const mode = localStorage.getItem('blog-article-view-mode');
+				const legacy = localStorage.getItem('blog-reading-mode') === 'true';
+				if (mode === 'classic' || (!mode && legacy)) document.documentElement.classList.add('reading-mode');
+			} catch {}
+		</script>
 		%sveltekit.head%
 		<link rel="stylesheet" href="/css/article-layout-fixes.css?v=20260604-2" />
+		<script src="/site-runtime.js?v=20260608-1" defer></script>
 		<style>
 			/* Late production guard: decorative article art must never crush prose/code columns. */
 			.article-column,

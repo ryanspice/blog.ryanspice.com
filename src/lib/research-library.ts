@@ -1,3 +1,19 @@
+export type ResearchLibraryImagePresentation = 'row' | 'focal';
+
+export type ResearchLibraryVisual = {
+	src: string;
+	alt: string;
+	credit?: string;
+	sourceHref?: string;
+	position?: string;
+	cardPosition?: string;
+	presentation?: ResearchLibraryImagePresentation;
+};
+
+export type ResearchLibraryVisuals = {
+	image?: ResearchLibraryVisual;
+};
+
 export type ResearchLibraryItem = {
 	title: string;
 	authors?: string;
@@ -7,6 +23,7 @@ export type ResearchLibraryItem = {
 	domains: string[];
 	usedBy: string[];
 	note: string;
+	visuals?: ResearchLibraryVisuals;
 };
 
 export const researchLibraryItems: ResearchLibraryItem[] = [

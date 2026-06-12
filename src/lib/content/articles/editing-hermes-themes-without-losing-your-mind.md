@@ -134,8 +134,8 @@ So Hermes had a configured skin name, but not a loadable skin file.
 I started by writing the skin to the obvious global locations:
 
 ```text
-C:\Users\spice\.hermes\skins\metro-needle.yaml
-C:\Users\spice\AppData\Local\hermes\skins\metro-needle.yaml
+<USER_HOME>\.hermes\skins\metro-needle.yaml
+<USER_LOCAL_APPDATA>\hermes\skins\metro-needle.yaml
 ```
 
 Those are sensible places to try.
@@ -145,7 +145,7 @@ They were not enough for this profile.
 The active Hermes profile was telling me it wanted the custom skin here:
 
 ```text
-C:\Users\spice\AppData\Local\hermes\profiles\gpt-55-deepseek-pro-g4-plus\skins\metro-needle.yaml
+<USER_LOCAL_APPDATA>\hermes\profiles\<profile-name>\skins\metro-needle.yaml
 ```
 
 That was the path that mattered.

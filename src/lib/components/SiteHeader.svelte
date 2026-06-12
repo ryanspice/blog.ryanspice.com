@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
-	import { articleViewModeState } from '$lib/article-view-mode.svelte';
+	import { page } from '$app/state';
 	import type { NavItem } from '$lib/articles';
 	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
+	import { getDictionary } from '$lib/i18n/dictionaries';
+	import { pathWithLocale, type SupportedLocale } from '$lib/i18n/locales';
 
 	type Props = {
 		brandLabel?: string;
@@ -11,10 +13,10 @@
 	};
 
 	let { brandLabel = 'Ryan Spice / Canopy Digital', navLinks = [] }: Props = $props();
-	const readingMode = $derived(articleViewModeState.mode === 'classic');
+	const locale = $derived((page.data.locale === 'fr' ? 'fr' : 'en') as SupportedLocale);
+	const ui = $derived(getDictionary(locale));
 
 	onMount(() => {
-		articleViewModeState.init();
 		void loadAuthState();
 	});
 
@@ -26,10 +28,10 @@
 	);
 
 	const visibleNavLinks = $derived.by(() => {
-		const merged = [...navLinks, { label: 'Library', href: '/library' }, { label: 'Dev log', href: '/dev-log' }];
+		const merged = [...navLinks, { label: ui.nav.library, href: '/library' }, { label: ui.nav.devLog, href: '/dev-log' }];
 		if (canAccessDrafts($authState)) {
-			merged.push({ label: 'Briefs', href: '/briefs' });
-			merged.push({ label: 'Drafts', href: '/drafts' });
+			merged.push({ label: ui.nav.briefs, href: '/briefs' });
+			merged.push({ label: ui.nav.drafts, href: '/drafts' });
 		}
 		return dedupeByHref(merged);
 	});
@@ -39,16 +41,12 @@
 		return `${base}${href}`;
 	}
 
-	function toggleReadingMode(): void {
-		articleViewModeState.toggle();
-	}
-
 	function dedupeByHref(items: NavItem[]): NavItem[] {
-		const seen = new Set<string>();
+		const seen: string[] = [];
 		return items.filter((item) => {
 			const key = normalizeHrefForLinkDedup(item.href);
-			if (seen.has(key)) return false;
-			seen.add(key);
+			if (seen.includes(key)) return false;
+			seen.push(key);
 			return true;
 		});
 	}
@@ -63,8 +61,8 @@
 <header class="site-header">
 	<nav class="nav" aria-label="Site">
 		<div class="nav-branding">
-			<a class="brand" href={`${base}/`}>
-								<span class="brand-mark" aria-hidden="true"><span class="brand-mark-r">R</span><span class="brand-mark-s">S</span></span>
+			<a class="brand" href={`${base}${pathWithLocale(locale, '/')}`}>
+				<span class="brand-mark" aria-hidden="true"><span class="brand-mark-r">R</span><span class="brand-mark-s">S</span></span>
 				<span class="brand-text">
 					<span class="brand-primary">{brandParts[0] ?? brandLabel}</span>
 					{#if brandParts[1]}
@@ -86,8 +84,8 @@
 			<button
 				class="nav-action"
 				type="button"
-				aria-pressed={readingMode}
-				onclick={toggleReadingMode}
+				aria-pressed="false"
+				data-reading-mode-toggle
 			>
 				<svg class="nav-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
 					<path
@@ -100,7 +98,7 @@
 					/>
 					<path d="M12 7v10.5M8 8.4h2.4M8 11h2.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
 				</svg>
-				<span>{readingMode ? 'Reading on' : 'Reading mode'}</span>
+				<span data-reading-mode-label data-label-on={ui.nav.readingOn} data-label-off={ui.nav.readingMode}>{ui.nav.readingMode}</span>
 			</button>
 		</div>
 	</nav>

@@ -32,7 +32,7 @@ link_terms:
   - "Bypass permissions|https://www.anthropic.com"
   - "JSON schema|https://json.schemastore.org/claude-code-settings.json"
 source_context:
-  repo_root: "S:\\OneDrive\\Obsidan\\AI-Wiki\\07_Projects\\blog.ryanspice.com"
+  repo_root: "<BLOG_REPO>"
 ---
 
 # Claude Code Keeps Asking for Permission? Use the Right Bypass Flag
@@ -69,7 +69,7 @@ Both are for trusted repos where you are comfortable letting Claude edit files a
 For a trusted repo:
 
 ```powershell
-cd "B:\Dev\YourRepo"
+cd "<DEV_ROOT>\YourRepo"
 claude --dangerously-skip-permissions
 ```
 
@@ -110,7 +110,7 @@ Get-Content $SettingsPath
 Then launch Claude Code normally from the repo:
 
 ```powershell
-cd "B:\Dev\YourRepo"
+cd "<DEV_ROOT>\YourRepo"
 claude
 ```
 
@@ -119,7 +119,7 @@ claude
 If you only want this behavior for one repo, put a local settings file inside the project:
 
 ```powershell
-cd "B:\Dev\YourRepo"
+cd "<DEV_ROOT>\YourRepo"
 
 New-Item -ItemType Directory -Force ".claude" | Out-Null
 
@@ -172,7 +172,7 @@ If that is set by managed or higher-priority settings, bypass mode may be blocke
 Use this when you want Claude Code to actually go in bypass mode inside a trusted repo:
 
 ```powershell
-cd "B:\YourRepo"
+cd "<WORKSPACE_ROOT>\YourRepo"
 claude --dangerously-skip-permissions
 ```
 
