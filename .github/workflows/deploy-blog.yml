@@ -3,11 +3,8 @@ name: Deploy blog.ryanspice.com
 on:
   push:
     branches:
-      - main
-      - master
+      - production
   workflow_dispatch:
-  schedule:
-    - cron: '15 5 * * *'
 
 concurrency:
   group: deploy-blog-production
@@ -19,6 +16,12 @@ jobs:
     env:
       PUBLIC_SITE_URL: ${{ secrets.PUBLIC_SITE_URL || 'https://blog.ryanspice.com' }}
       PUBLIC_BASE_PATH: ${{ secrets.PUBLIC_BASE_PATH }}
+      VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
+      VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID || 'common' }}
+      VITE_MSAL_REDIRECT_URI: ${{ secrets.VITE_MSAL_REDIRECT_URI }}
+      VITE_OWNER_EMAIL_SHA256: ${{ secrets.VITE_OWNER_EMAIL_SHA256 }}
+      VITE_OWNER_ACCESS_LABEL: ${{ secrets.VITE_OWNER_ACCESS_LABEL || 'the site owner account' }}
+      BLOG_OWNER_EMAIL_SHA256: ${{ secrets.BLOG_OWNER_EMAIL_SHA256 || secrets.VITE_OWNER_EMAIL_SHA256 }}
       BLOG_DEPLOY_HOST: ${{ secrets.BLOG_DEPLOY_HOST }}
       BLOG_DEPLOY_USER: ${{ secrets.BLOG_DEPLOY_USER }}
       BLOG_DEPLOY_PORT: ${{ secrets.BLOG_DEPLOY_PORT }}
@@ -53,6 +56,28 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Validate production configuration
+        shell: pwsh
+        run: |
+          $required = @(
+            "BLOG_DEPLOY_HOST",
+            "BLOG_DEPLOY_USER",
+            "BLOG_DEPLOY_PATH",
+            "VITE_MSAL_CLIENT_ID"
+          )
+          foreach ($name in $required) {
+            $value = [Environment]::GetEnvironmentVariable($name)
+            if ([string]::IsNullOrWhiteSpace($value)) {
+              throw "Missing required production deploy environment value: $name"
+            }
+          }
+
+      - name: Audit source contract
+        run: pnpm run audit:files
+
+      - name: Unit tests
+        run: pnpm run test:unit
 
       - name: Typecheck
         run: pnpm check

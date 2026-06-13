@@ -65,7 +65,7 @@ pnpm run deploy:test
 pnpm run build:blog
 ```
 
-This builds the PHP-hosted release with `PUBLIC_BASE_PATH=""` by default. To build for a subpath, pass a base path:
+This runs a clean PHP-hosted release build with `PUBLIC_BASE_PATH=""` by default and uses the committed vendored adapter. To build for a subpath, pass a base path:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-BlogStatic.ps1 -BasePath "/blog" -Clean
@@ -78,9 +78,9 @@ It also verifies the PHP adapter contract: `router.php`, `_runtime/compat.php`, 
 
 Use this order before any commit/push/deploy:
 
-1. `pnpm run build:blog`
-2. `pnpm run audit:seo`
-3. Smoke the build with PHP against `build/router.php` and check `/`, a representative article route, `/rss.xml`, `/sitemap.xml`, `/_app/version.json`, one missing route, and one protected runtime denial
+1. `pnpm run verify:production`
+2. Smoke the build with PHP against `build/router.php` and check `/`, a representative article route, `/rss.xml`, `/sitemap.xml`, `/_app/version.json`, one missing route, and one protected runtime denial
+3. For the full local gate, also run `pnpm run test:e2e` and `pnpm run deploy:test`
 4. Confirm the contract files exist:
    - `index.php`
    - `.htaccess`
@@ -91,10 +91,11 @@ Use this order before any commit/push/deploy:
    - `adapter/route-manifest.php`
 5. Deploy with the checked-in vendored adapter artifact only
 
-To refresh the vendored adapter from the canonical source:
+To refresh the vendored adapter from the canonical source, pass the adapter root explicitly or set `SVELTEKIT_PHP_ADAPTER_ROOT`. The default build path does not touch a local adapter checkout, which keeps GitHub Actions and local release builds deterministic.
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Sync-SvelteKitPhpAdapter.ps1 -AdapterRoot "<SVELTEKIT_PHP_ADAPTER_ROOT>"
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-BlogStatic.ps1 -AdapterRoot "<SVELTEKIT_PHP_ADAPTER_ROOT>" -Clean
 ```
 
 ## Upload parallel release
@@ -137,25 +138,32 @@ This keeps the heavy pnpm store outside the synced project folder, while keeping
 
 ## GitHub production deploy
 
-The workflow at `.github/workflows/deploy-blog.yml` deploys on pushes to `main`/`master` and can also be run manually with `workflow_dispatch`.
+The workflow at `.github/workflows/deploy-blog.yml` deploys on pushes to `production` and can also be run manually with `workflow_dispatch`.
+
+Merge release PRs into `production` to deploy. `main` no longer deploys automatically, and there is no scheduled default-branch deploy.
 
 Required repository secrets:
 
 - `BLOG_DEPLOY_HOST`
 - `BLOG_DEPLOY_USER`
-- `BLOG_DEPLOY_KEY_B64`
 - `BLOG_DEPLOY_PATH`
+- `VITE_MSAL_CLIENT_ID`
+- one of `BLOG_DEPLOY_KEY_B64` or `BLOG_DEPLOY_KEY`
 
 Optional repository secrets:
 
 - `BLOG_DEPLOY_PORT`
-- `BLOG_DEPLOY_KEY` (raw multiline fallback if `BLOG_DEPLOY_KEY_B64` is not set)
+- `VITE_MSAL_TENANT_ID` (defaults to `common`)
+- `VITE_MSAL_REDIRECT_URI`
+- `VITE_OWNER_EMAIL_SHA256`
+- `VITE_OWNER_ACCESS_LABEL`
+- `BLOG_OWNER_EMAIL_SHA256`
 - `BLOG_PUBLIC_URL`
 - `BLOG_BASE_PATH`
 - `PUBLIC_SITE_URL`
 - `PUBLIC_BASE_PATH`
 
-The workflow uses the committed vendored `adapter/` artifact. GitHub Actions cannot access your local adapter checkout, so sync the adapter locally before committing adapter changes.
+The workflow validates required production config, runs `audit:files`, unit tests, typecheck, the PHP build, and the PHP output audit before writing the deploy key. It uses the committed vendored `adapter/` artifact; GitHub Actions cannot access your local adapter checkout, so sync the adapter locally before committing adapter changes.
 
 ## Remote path safety
 
