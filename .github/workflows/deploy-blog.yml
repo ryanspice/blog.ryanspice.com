@@ -76,11 +76,11 @@ jobs:
       - name: Audit source contract
         run: pnpm run audit:files
 
-      - name: Unit tests
-        run: pnpm run test:unit
-
       - name: Typecheck
         run: pnpm check
+
+      - name: Unit tests
+        run: pnpm run test:unit
 
       - name: Build PHP release
         shell: pwsh
