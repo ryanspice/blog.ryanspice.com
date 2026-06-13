@@ -17,6 +17,26 @@ This is the operating contract for the blog dev-log and owner-gated morning-brie
 - Claude, ChatGPT, GPT, DeepSeek, or other assistant conversation material only when it exists as an explicit local export or readable project memory. Do not scrape browser profiles, session stores, cookies, credential-backed app databases, app credentials, or private runtime storage.
 - Public web research when a brief needs current external context. Prefer official docs, primary sources, release notes, standards, and project repositories.
 
+### Local agent memory surfaces
+
+Treat these local agent roots as source candidates for the weekday dev-log and morning-brief workflow, but default to metadata, inventory, generated summaries, project memory, skills, plugins, and explicit exports. Do not mine private runtime databases or credential-bearing files for publishable material.
+
+- Claude user root: settings, sessions/history metadata, skills, plugins, and project memory, including PixelBoats project memory.
+- Hermes user root: config, skills, skins, dashboard themes, and non-secret project notes.
+- Hermes local data root: profiles, sessions/log metadata, memories, hooks, cron, launchers, `SOUL.md`, `USER.md`, and non-secret config summaries.
+- Codex user root: sessions/rollout summaries, memories, skills, automations, plugins, and non-secret agent instructions.
+- AI Wiki hidden/runtime folders: `.claude`, `.deepseekgui`, explicit ChatGPT/GPT exports, GPT bridge outputs, curated project-source bundles, and project memory notes.
+
+Use these as strict no-go files unless the user explicitly asks for a separate private recovery/security task:
+
+- Claude credentials and raw credential stores.
+- Hermes `.env`, auth stores, and large state databases.
+- Codex auth files, browser data, logs/state/memory SQLite databases, and credential-like config.
+- Raw browser profiles, cookies, session stores, local storage, cache folders, and credential-backed app databases.
+- Raw assistant conversation bodies from sessions/history unless they were explicitly exported or curated as project memory.
+
+For routine automation, it is acceptable to count files, extensions, sizes, timestamps, and project/workspace metadata. Public or website-readable briefs must summarize these sources as coarse labels such as `Claude local memory`, `Hermes local memory`, `Codex memory`, `AI Wiki`, `PixelBoats project memory`, or `DeepSeek GUI metadata`; do not publish exact local paths.
+
 ## Privacy rules
 
 - Do not publish secrets, token names with values, `.env` contents, private keys, account IDs, emails, or raw private messages.

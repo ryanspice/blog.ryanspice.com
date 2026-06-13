@@ -68,7 +68,7 @@
 		liveError = null;
 
 		try {
-			const response = await fetch(liveEndpoint, { cache: 'no-store' });
+			const response = await window.fetch(liveEndpoint, { cache: 'no-store' });
 			if (!response.ok) {
 				throw new Error(`Live status unavailable (${response.status})`);
 			}
@@ -125,7 +125,7 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
+	<script type="application/ld+json">{jsonLdEscaped}</script>
 </svelte:head>
 
 <SiteHeader

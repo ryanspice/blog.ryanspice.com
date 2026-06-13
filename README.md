@@ -8,15 +8,14 @@ SvelteKit 2 / Svelte 5 blog application built for PHP hosting with a vendored Sv
 
 ## What this includes
 
-- `src/lib/content/articles/` — the two normalized Markdown blog drafts.
-- `src/routes/[slug]` — prerendered article pages.
-- `src/routes/+page.svelte` — article index.
-- `src/routes/login` and `src/routes/auth/callback` — Microsoft sign-in flow for the private draft queue.
-- `src/app.css` — UI adapted from the two attached HTML article demos.
+- `src/lib/content/articles/` — published, scheduled, localized, and draft Markdown articles.
+- `src/lib/content/morning-briefs/` — owner-gated morning brief Markdown entries.
+- `src/routes/[slug]` and `src/routes/[lang=lang]/[slug]` — prerendered article pages.
+- `src/routes/briefs`, `src/routes/dev-log`, `src/routes/library`, `src/routes/rss-reader`, and `src/routes/status` — supporting blog surfaces.
+- `src/routes/login` and `src/routes/auth/callback` — Microsoft sign-in flow for private surfaces.
 - `adapter/` — vendored SvelteKit PHP adapter entrypoint and PHP runtime helper.
-- `context/source-articles/` — source Markdown copies.
-- `context/source-html/` — source HTML demo copies.
-- `context/source-skills/` — uploaded skill references used for this scaffold.
+- `scripts/Build-BlogStatic.ps1` and `scripts/Deploy-BlogStatic.ps1` — production build and SSH activation path.
+- `docs/website-catalog/` — Playwright-generated catalog screenshots and route inventory.
 - `.ai/skills/blog-ryanspice-com/SKILL.md` — project-local pointer skill notes.
 - `.thoughts` — project state and continuation note.
 
@@ -44,9 +43,7 @@ Do not recreate `node_modules` as a junction. SvelteKit/Rollup can generate inva
 ```powershell
 cd "<AI_WIKI_ROOT>\07_Projects\blog.ryanspice.com"
 pnpm install
-pnpm check
-pnpm run build:blog
-pnpm run audit:seo
+pnpm run verify:production
 pnpm dev
 ```
 
@@ -63,7 +60,7 @@ The login page at `/login` starts the Microsoft sign-in flow, and `/auth/callbac
 
 Draft navigation and the private draft queue are only exposed to the configured owner Microsoft account; other signed-in accounts stay on the public surface. The owner comparison uses a SHA-256 hash of the normalized owner email rather than publishing the raw account address.
 
-The GitHub deploy workflow also needs `VITE_MSAL_CLIENT_ID` available at build time so the production bundle carries the same Microsoft auth config as local development.
+The GitHub deploy workflow also needs `VITE_MSAL_CLIENT_ID` available at build time so the production bundle carries the same Microsoft auth config as local development. `VITE_MSAL_TENANT_ID`, `VITE_MSAL_REDIRECT_URI`, `VITE_OWNER_EMAIL_SHA256`, `VITE_OWNER_ACCESS_LABEL`, and `BLOG_OWNER_EMAIL_SHA256` can be supplied as repository secrets when production should override the local defaults.
 
 The app registration I created for this repo is `blog.ryanspice.com draft auth`, with SPA redirect URIs for:
 
@@ -77,9 +74,10 @@ If you recreate it later, keep `User.Read` delegated permission attached as well
 ## Notes
 
 - The site now builds through the vendored PHP adapter in `adapter/index.js`.
+- `scripts/Build-BlogStatic.ps1` uses the committed vendored adapter by default. It only syncs the canonical adapter when `-AdapterRoot` or `SVELTEKIT_PHP_ADAPTER_ROOT` is provided.
 - `scripts/Sync-SvelteKitPhpAdapter.ps1` rebuilds/syncs the canonical adapter from the configured SvelteKit PHP adapter checkout and writes `adapter/source-manifest.json`.
 - `scripts/Build-BlogStatic.ps1` merges the host redirect overlay from `static/.htaccess` into the adapter-generated `.htaccess`.
-- Release flow: build, audit the PHP output contract, smoke the built site under PHP, then deploy.
+- Release flow: `pnpm run verify:production`, smoke the built site under PHP, then deploy.
 - Markdown is rendered through a small local renderer in `src/lib/markdown.ts` to avoid early dependency creep.
 - Deployment expects `blog.ryanspice.com` at the domain root by default; override `PUBLIC_BASE_PATH` / `PUBLIC_SITE_URL` (or `deploy.config.json`) if you need to serve from a subpath.
 - SSH deploy requires an authorized public key (cPanel typically: SSH Access → Manage SSH Keys → Import Key → Authorize), plus the correct `deploy.config.json` `user` (usually the cPanel account username) and `remotePath` (the domain/subdomain document root).

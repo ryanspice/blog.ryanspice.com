@@ -39,23 +39,32 @@ if ([string]::IsNullOrWhiteSpace($BasePath)) {
   $BasePath = if ($env:BLOG_BASE_PATH) { $env:BLOG_BASE_PATH } elseif ($env:PUBLIC_BASE_PATH) { $env:PUBLIC_BASE_PATH } else { "" }
 }
 $BasePath = Normalize-BasePath $BasePath
-if ([string]::IsNullOrWhiteSpace($AdapterRoot)) {
-  $AdapterRoot = if ($env:SVELTEKIT_PHP_ADAPTER_ROOT) { $env:SVELTEKIT_PHP_ADAPTER_ROOT } else { "B:\Dev\sveltekit-php" }
+
+$AdapterRootSource = "none"
+if (-not [string]::IsNullOrWhiteSpace($AdapterRoot)) {
+  $AdapterRootSource = "parameter"
+} elseif (-not [string]::IsNullOrWhiteSpace($env:SVELTEKIT_PHP_ADAPTER_ROOT)) {
+  $AdapterRoot = $env:SVELTEKIT_PHP_ADAPTER_ROOT
+  $AdapterRootSource = "environment"
 }
 
 Step "Resolve paths"
 Info "ProjectRoot" $ProjectRoot
 Info "BuildDir" $BuildDir
 Info "BasePath" $(if ($BasePath) { $BasePath } else { "(root)" })
-Info "AdapterRoot" $AdapterRoot
+Info "AdapterRoot" $(if ($AdapterRoot) { $AdapterRoot } else { "(committed vendored adapter)" })
 
-if (-not $SkipAdapterSync) {
+if ($SkipAdapterSync) {
+  Info "Adapter sync" "Skipped by -SkipAdapterSync"
+} elseif ([string]::IsNullOrWhiteSpace($AdapterRoot)) {
+  Info "Adapter sync" "Skipped; no AdapterRoot or SVELTEKIT_PHP_ADAPTER_ROOT configured"
+} else {
   if (Test-PathSafe $AdapterRoot) {
     Step "Sync canonical PHP adapter"
     & pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Sync-SvelteKitPhpAdapter.ps1") -AdapterRoot $AdapterRoot
     if ($LASTEXITCODE -ne 0) { throw "Adapter sync failed with exit code $LASTEXITCODE" }
   } else {
-    Info "Adapter sync" "Skipped; AdapterRoot not found, using committed vendored adapter"
+    throw "AdapterRoot from $AdapterRootSource not found: $AdapterRoot"
   }
 }
 
