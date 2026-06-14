@@ -1,5 +1,5 @@
 ---
-title: "If Fable 5 Is Gone, Your Agent Stack Needs an Exit Plan"
+title: "If Claude Fable 5 Is Gone, Your Agent Stack Needs an Exit Plan"
 slug: "if-fable-5-is-gone-agent-stack-fallback-plan"
 status: "published"
 draft_type: "agent-architecture"
@@ -34,20 +34,20 @@ related_posts:
   - "hermes-deepseek-setup"
 image: "/img/articles/if-fable-5-is-gone-agent-stack-fallback-plan/fable-lane-fallback-map.svg"
 image_alt: "Routing diagram showing the Fable 5 premium source-grounding lane falling back to Claude Code, DeepSeek Pro, Gemma4, and deterministic checks."
-summary: "A practical note on what changes when Claude Fable 5 disappears from a serious coding and source-grounding workflow."
+summary: "A practical note on what Claude Fable 5's sudden departure changes for serious coding and source-grounding workflows."
 ---
-# If Fable 5 Is Gone, Your Agent Stack Needs an Exit Plan
+# If Claude Fable 5 Is Gone, Your Agent Stack Needs an Exit Plan
 
 **Published:** June 13, 2026  
 **Series:** Agent mixing / Hermes routing
 
-**Correction:** An earlier version of this post said "Flash 5." That was wrong. The intended subject is **Claude Fable 5**.
+Claude Fable 5 arrived with the shape of a model teams could quietly build operating procedures around.
 
-This matters because Flash and Fable are not the same operational role.
+Anthropic launched it on June 9, 2026 as its most capable broadly available model: a long-context, high-reasoning Claude lane for software engineering, source-heavy knowledge work, vision inspection, and long-horizon agent tasks.
 
-Flash is a cheap delegate lane. Fable 5 was the premium Claude lane: the model you reached for when the job needed long-horizon code reasoning, source-grounded verification, vision-heavy inspection, or a serious pre-code review before touching a production system.
+Three days later, Anthropic said a U.S. export-control directive forced it to suspend access to Fable 5 and Mythos 5 for customers.
 
-So the impact is bigger than losing a cheap helper.
+That is not a normal model deprecation. That is a sudden removal of a model lane people had every reason to treat as operationally important.
 
 > **If Fable 5 is gone from your stack, you did not just lose speed. You lost a high-trust decision boundary.**
 
