@@ -126,12 +126,35 @@
 	font-size: clamp(17px, 1.5vw, 22px);
 	line-height: 1.14;
 	letter-spacing: -0.025em;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	overflow: hidden;
 }
 
 .related-article-card > p,
 .related-article-card .article-card-content > p:not(.related-kicker):not(.related-meta) {
 	font-size: 14px;
 	line-height: 1.55;
+}
+
+.related-article-card > p:not(.related-kicker):not(.related-meta),
+.related-article-card .article-card-content > p:not(.related-kicker):not(.related-meta) {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	overflow: hidden;
+}
+
+.related-article-card .article-card-content {
+	align-content: start;
+}
+
+.related-article-card .tag-row.compact {
+	max-height: 4.5rem;
+	overflow: hidden;
 }
 
 .article-focal-panel {
@@ -169,6 +192,19 @@
 	background:
 		linear-gradient(90deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
 		#050505;
+}
+
+.related-article-card.has-focal-image {
+	min-height: auto;
+	padding-right: 18px;
+}
+
+.related-article-card.has-focal-image .article-card-focal {
+	display: none;
+}
+
+.related-article-card.has-focal-image .tag-row {
+	max-width: 100%;
 }
 
 .home-hero-card.has-focal-image {
@@ -240,7 +276,6 @@
 
 @media (max-width: 700px) {
 	.article-card.has-focal-image,
-	.related-article-card.has-focal-image,
 	.home-hero-card.has-focal-image {
 		padding-right: 18px;
 		padding-top: 130px;

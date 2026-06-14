@@ -62,8 +62,9 @@
 		z-index: 0;
 		pointer-events: none;
 		overflow: hidden;
-		opacity: 0.115;
-		filter: saturate(0.95) blur(34px);
+		opacity: 0.105;
+		filter: saturate(0.92) blur(24px);
+		contain: paint;
 		mask-image:
 			radial-gradient(circle at 50% 10%, black 0%, black 20%, transparent 58%),
 			linear-gradient(180deg, black 0%, black 32%, transparent 74%);
@@ -91,7 +92,7 @@
 		opacity: 0.42;
 	}
 
-	:global(.article-page > :not(.article-bg-image)) {
+	:global(.article-page > :not(.article-bg-image):not(.command-bar)) {
 		position: relative;
 		z-index: 1;
 	}
@@ -139,13 +140,30 @@
 
 	@media (max-width: 760px) {
 		.article-bg-image {
-			opacity: 0.075;
-			filter: saturate(0.9) blur(38px);
+			opacity: 0.055;
+			filter: saturate(0.86) blur(16px);
 		}
 
 		:global(.article-page .article-shell) {
 			padding: clamp(18px, 5vw, 26px);
 			border-radius: 22px;
+		}
+	}
+
+	@media (max-width: 760px), (prefers-reduced-transparency: reduce) {
+		:global(.article-page .article-shell),
+		:global(.article-page .hero-card),
+		:global(.article-page .rail-card),
+		:global(.article-page .toc),
+		:global(.article-page .article-toc--mobile),
+		:global(.article-page .article-references),
+		:global(.article-page .related-article-card),
+		:global(.article-page .meta-grid > div),
+		:global(.article-page .hero-meta > div),
+		:global(.article-page .status-pill),
+		:global(.article-page .tag) {
+			backdrop-filter: none;
+			-webkit-backdrop-filter: none;
 		}
 	}
 </style>
