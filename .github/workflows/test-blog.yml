@@ -1,0 +1,63 @@
+name: Test blog
+
+on:
+  pull_request:
+    branches:
+      - main
+      - production
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: test-blog-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_SITE_ID: ryan
+      PUBLIC_SITE_URL: https://blog.ryanspice.com
+      VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID || '00000000-0000-0000-0000-000000000000' }}
+      VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID || 'common' }}
+      VITE_MSAL_REDIRECT_URI: ${{ secrets.VITE_MSAL_REDIRECT_URI }}
+      VITE_OWNER_EMAIL_SHA256: ${{ secrets.VITE_OWNER_EMAIL_SHA256 }}
+      BLOG_OWNER_EMAIL_SHA256: ${{ secrets.BLOG_OWNER_EMAIL_SHA256 || secrets.VITE_OWNER_EMAIL_SHA256 }}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Normalize pnpm config for CI
+        shell: pwsh
+        run: |
+          @(
+            "node-linker=isolated",
+            "strict-peer-dependencies=false",
+            "store-dir=${{ runner.temp }}/pnpm-store",
+            "virtual-store-dir=node_modules/.pnpm"
+          ) | Set-Content -LiteralPath .npmrc -Encoding utf8NoBOM
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit source contract
+        run: pnpm run audit:files
+
+      - name: Typecheck
+        run: pnpm check
+
+      - name: Unit tests
+        run: pnpm run test:unit

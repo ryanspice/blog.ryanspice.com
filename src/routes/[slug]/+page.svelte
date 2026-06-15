@@ -4,16 +4,11 @@
 	import ArticleView from '$lib/components/ArticleView.svelte';
 	import { getArticle, getRelatedArticles, type Article, type ArticleDesign } from '$lib/articles';
 	import ArticleDiffView from '$lib/components/ArticleDiffView.svelte';
+	import { siteConfigs } from '$lib/site-config';
 
 	let { data } = $props();
 
-	let isDiff = $state(false);
-
-	$effect(() => {
-		if (browser) {
-			isDiff = page.url.searchParams.get('diff') === 'true';
-		}
-	});
+	const isDiff = $derived(browser && page.url.searchParams.get('diff') === 'true');
 
 	const fallbackArticle = $derived.by(() => getArticle(page.params.slug ?? ''));
 	const sourceArticle = $derived.by(() => hasUsefulArticle(data.article) ? data.article : fallbackArticle);
@@ -25,6 +20,7 @@
 	});
 	const safeRelatedArticles = $derived(sourceRelatedArticles.map(toSafeArticle));
 	const safeAlternates = $derived(Array.isArray(data.alternates) ? data.alternates : []);
+	const safeSite = $derived(data.site ?? siteConfigs.ryan);
 
 	function hasUsefulArticle(value: unknown): boolean {
 		const article = toObject(value);
@@ -141,5 +137,5 @@
 {#if isDiff && safeArticle.previousBody}
 	<ArticleDiffView article={safeArticle} />
 {:else}
-	<ArticleView article={safeArticle} relatedArticles={safeRelatedArticles} alternates={safeAlternates} />
+	<ArticleView article={safeArticle} relatedArticles={safeRelatedArticles} alternates={safeAlternates} site={safeSite} />
 {/if}

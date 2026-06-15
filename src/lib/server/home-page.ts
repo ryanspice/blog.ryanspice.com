@@ -1,5 +1,4 @@
 import { base } from '$app/paths';
-import { getDictionary } from '$lib/i18n/dictionaries';
 import {
 	DEFAULT_LOCALE,
 	localeToHreflang,
@@ -8,6 +7,7 @@ import {
 	type SupportedLocale
 } from '$lib/i18n/locales';
 import { getPublishedArticleTagsForLocale, getPublishedArticlesForLocale } from '$lib/articles';
+import { getSiteConfig, getSiteDictionary } from './site';
 
 export function absoluteLocalizedUrl(url: URL, locale: SupportedLocale, path: string): string {
 	return new URL(`${base}${pathWithLocale(locale, path)}`, url.origin).toString();
@@ -23,6 +23,7 @@ export function localizedPageAlternates(url: URL, path: string) {
 
 export function loadHomePage(url: URL, localeValue?: string | null) {
 	const locale = resolveLocale(localeValue);
+	const site = getSiteConfig();
 	const publishedArticles = getPublishedArticlesForLocale(locale);
 	const recentPublishedArticles = publishedArticles.slice(0, 5);
 	const localizedHomePath = pathWithLocale(locale, '/');
@@ -31,13 +32,14 @@ export function loadHomePage(url: URL, localeValue?: string | null) {
 	return {
 		locale,
 		languageTag: localeToHreflang(locale),
-		ui: getDictionary(locale),
+		site,
+		ui: getSiteDictionary(locale, site),
 		canonical: new URL(`${base}${localizedHomePath}`, url.origin).toString(),
 		alternates: localizedPageAlternates(url, '/'),
 		rssUrl: new URL(`${base}${localizedRssPath}`, url.origin).toString(),
 		rssPath: localizedRssPath,
 		homePath: localizedHomePath,
-		ogImage: new URL(`${base}/og-default.png`, url.origin).toString(),
+		ogImage: new URL(`${base}${site.defaultOgImage}`, url.origin).toString(),
 		publishedArticles,
 		recentPublishedArticles,
 		publishedArticleTags: getPublishedArticleTagsForLocale(locale)

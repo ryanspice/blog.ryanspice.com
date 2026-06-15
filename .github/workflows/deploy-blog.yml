@@ -1,4 +1,4 @@
-name: Deploy blog.ryanspice.com
+name: Deploy production blogs
 
 on:
   push:
@@ -7,14 +7,13 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: deploy-blog-production
+  group: deploy-blogs-production
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      PUBLIC_SITE_URL: ${{ secrets.PUBLIC_SITE_URL || 'https://blog.ryanspice.com' }}
       PUBLIC_BASE_PATH: ${{ secrets.PUBLIC_BASE_PATH }}
       VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
       VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID || 'common' }}
@@ -28,6 +27,12 @@ jobs:
       BLOG_DEPLOY_PATH: ${{ secrets.BLOG_DEPLOY_PATH }}
       BLOG_PUBLIC_URL: ${{ secrets.BLOG_PUBLIC_URL || secrets.PUBLIC_SITE_URL || 'https://blog.ryanspice.com/' }}
       BLOG_BASE_PATH: ${{ secrets.BLOG_BASE_PATH || secrets.PUBLIC_BASE_PATH }}
+      CANOPY_BLOG_DEPLOY_HOST: ${{ secrets.CANOPY_BLOG_DEPLOY_HOST || secrets.BLOG_DEPLOY_HOST }}
+      CANOPY_BLOG_DEPLOY_USER: ${{ secrets.CANOPY_BLOG_DEPLOY_USER || secrets.BLOG_DEPLOY_USER }}
+      CANOPY_BLOG_DEPLOY_PORT: ${{ secrets.CANOPY_BLOG_DEPLOY_PORT || secrets.BLOG_DEPLOY_PORT }}
+      CANOPY_BLOG_DEPLOY_PATH: ${{ secrets.CANOPY_BLOG_DEPLOY_PATH || 'domains/blog.canopydigital.ca/public_html' }}
+      CANOPY_BLOG_PUBLIC_URL: ${{ secrets.CANOPY_BLOG_PUBLIC_URL || 'https://blog.canopydigital.ca/' }}
+      CANOPY_BLOG_BASE_PATH: ${{ secrets.CANOPY_BLOG_BASE_PATH }}
 
     steps:
       - name: Check out repo
@@ -64,6 +69,9 @@ jobs:
             "BLOG_DEPLOY_HOST",
             "BLOG_DEPLOY_USER",
             "BLOG_DEPLOY_PATH",
+            "CANOPY_BLOG_DEPLOY_HOST",
+            "CANOPY_BLOG_DEPLOY_USER",
+            "CANOPY_BLOG_DEPLOY_PATH",
             "VITE_MSAL_CLIENT_ID"
           )
           foreach ($name in $required) {
@@ -72,6 +80,12 @@ jobs:
               throw "Missing required production deploy environment value: $name"
             }
           }
+
+      - name: Create shared release id
+        shell: pwsh
+        run: |
+          $releaseId = (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ")
+          "BLOG_RELEASE_ID=$releaseId" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Audit source contract
         run: pnpm run audit:files
@@ -82,14 +96,18 @@ jobs:
       - name: Unit tests
         run: pnpm run test:unit
 
-      - name: Build PHP release
+      - name: Build Ryan PHP release
         shell: pwsh
-        run: pnpm run build:blog
+        run: |
+          $env:PUBLIC_SITE_ID = "ryan"
+          $env:BLOG_SITE_ID = "ryan"
+          $env:PUBLIC_SITE_URL = $env:BLOG_PUBLIC_URL.TrimEnd("/")
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Build-BlogStatic.ps1 -Clean -SiteId ryan -PublicSiteUrl $env:PUBLIC_SITE_URL
 
-      - name: Audit PHP release
+      - name: Audit Ryan PHP release
         run: pnpm run audit:seo
 
-      - name: Write deploy key
+      - name: Write shared deploy key
         shell: pwsh
         env:
           BLOG_DEPLOY_KEY: ${{ secrets.BLOG_DEPLOY_KEY }}
@@ -109,6 +127,37 @@ jobs:
           ssh-keygen -y -f $keyPath > $null
           "BLOG_DEPLOY_KEY_PATH=$keyPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
-      - name: Deploy and activate production
+      - name: Deploy and activate Ryan production
         shell: pwsh
-        run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Apply -Activate
+        run: |
+          $env:PUBLIC_SITE_ID = "ryan"
+          $env:BLOG_SITE_ID = "ryan"
+          $env:PUBLIC_SITE_URL = $env:BLOG_PUBLIC_URL.TrimEnd("/")
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Apply -Activate -ReleaseId $env:BLOG_RELEASE_ID
+
+      - name: Build Canopy PHP release
+        shell: pwsh
+        run: |
+          $env:PUBLIC_SITE_ID = "canopy"
+          $env:BLOG_SITE_ID = "canopy"
+          $env:PUBLIC_SITE_URL = $env:CANOPY_BLOG_PUBLIC_URL.TrimEnd("/")
+          $env:BLOG_BASE_PATH = $env:CANOPY_BLOG_BASE_PATH
+          $env:PUBLIC_BASE_PATH = $env:CANOPY_BLOG_BASE_PATH
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Build-BlogStatic.ps1 -Clean -SiteId canopy -PublicSiteUrl $env:PUBLIC_SITE_URL
+
+      - name: Audit Canopy PHP release
+        run: pnpm run audit:seo
+
+      - name: Deploy and activate Canopy production
+        shell: pwsh
+        run: |
+          $env:PUBLIC_SITE_ID = "canopy"
+          $env:BLOG_SITE_ID = "canopy"
+          $env:PUBLIC_SITE_URL = $env:CANOPY_BLOG_PUBLIC_URL.TrimEnd("/")
+          $env:BLOG_DEPLOY_HOST = $env:CANOPY_BLOG_DEPLOY_HOST
+          $env:BLOG_DEPLOY_USER = $env:CANOPY_BLOG_DEPLOY_USER
+          $env:BLOG_DEPLOY_PORT = $env:CANOPY_BLOG_DEPLOY_PORT
+          $env:BLOG_DEPLOY_PATH = $env:CANOPY_BLOG_DEPLOY_PATH
+          $env:BLOG_PUBLIC_URL = $env:CANOPY_BLOG_PUBLIC_URL
+          $env:BLOG_BASE_PATH = $env:CANOPY_BLOG_BASE_PATH
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Apply -Activate -ReleaseId $env:BLOG_RELEASE_ID

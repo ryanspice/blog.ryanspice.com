@@ -1,6 +1,8 @@
 param(
   [string]$BasePath = "",
   [string]$AdapterRoot = "",
+  [string]$SiteId = "",
+  [string]$PublicSiteUrl = "",
   [switch]$Clean,
   [switch]$SkipAdapterSync
 )
@@ -39,6 +41,23 @@ if ([string]::IsNullOrWhiteSpace($BasePath)) {
   $BasePath = if ($env:BLOG_BASE_PATH) { $env:BLOG_BASE_PATH } elseif ($env:PUBLIC_BASE_PATH) { $env:PUBLIC_BASE_PATH } else { "" }
 }
 $BasePath = Normalize-BasePath $BasePath
+if ([string]::IsNullOrWhiteSpace($SiteId)) {
+  $SiteId = if ($env:PUBLIC_SITE_ID) { $env:PUBLIC_SITE_ID } elseif ($env:BLOG_SITE_ID) { $env:BLOG_SITE_ID } else { "ryan" }
+}
+$SiteId = $SiteId.Trim().ToLowerInvariant()
+if ($SiteId -notin @("ryan", "canopy")) {
+  throw "Unsupported SiteId '$SiteId'. Expected 'ryan' or 'canopy'."
+}
+if ([string]::IsNullOrWhiteSpace($PublicSiteUrl)) {
+  $PublicSiteUrl = if ($env:PUBLIC_SITE_URL) {
+    $env:PUBLIC_SITE_URL
+  } elseif ($SiteId -eq "canopy") {
+    "https://blog.canopydigital.ca"
+  } else {
+    "https://blog.ryanspice.com"
+  }
+}
+$PublicSiteUrl = $PublicSiteUrl.TrimEnd("/")
 
 $AdapterRootSource = "none"
 if (-not [string]::IsNullOrWhiteSpace($AdapterRoot)) {
@@ -52,6 +71,8 @@ Step "Resolve paths"
 Info "ProjectRoot" $ProjectRoot
 Info "BuildDir" $BuildDir
 Info "BasePath" $(if ($BasePath) { $BasePath } else { "(root)" })
+Info "SiteId" $SiteId
+Info "PublicSiteUrl" $PublicSiteUrl
 Info "AdapterRoot" $(if ($AdapterRoot) { $AdapterRoot } else { "(committed vendored adapter)" })
 
 if ($SkipAdapterSync) {
@@ -77,6 +98,9 @@ Step "Build blog with PHP adapter"
 Push-Location -LiteralPath $ProjectRoot
 try {
   $env:PUBLIC_BASE_PATH = $BasePath
+  $env:PUBLIC_SITE_ID = $SiteId
+  $env:BLOG_SITE_ID = $SiteId
+  $env:PUBLIC_SITE_URL = $PublicSiteUrl
   $env:SK_BASE_PATH = $BasePath
   $env:DEPLOY_BASE = $BasePath
   if (-not $env:ADAPTER_MODE) { $env:ADAPTER_MODE = "php-static" }
@@ -155,10 +179,21 @@ $WellKnownDest = Join-Path $BuildDir ".well-known"
 if (Test-Path -LiteralPath $HtaccessSource) {
   $Overlay = Get-Content -LiteralPath $HtaccessSource -Raw
   $Generated = Get-Content -LiteralPath $HtaccessDest -Raw
+  $HostOverlayLabel = if ($SiteId -eq "canopy") { "blog.canopydigital.ca host overlay" } else { "blog.ryanspice.com host overlay" }
+  $OverlaySections = @($Overlay.Trim())
+  if ($SiteId -eq "canopy") {
+    $OverlaySections += @"
+# Canopy public build: block Ryan-only owner and utility surfaces at the edge.
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteRule ^(auth|briefs|dev-log|drafts|library|login|status)(/|$) - [R=404,L]
+</IfModule>
+"@.Trim()
+  }
   $Merged = @(
-    "# BEGIN blog.ryanspice.com host overlay"
-    $Overlay.Trim()
-    "# END blog.ryanspice.com host overlay"
+    "# BEGIN $HostOverlayLabel"
+    ($OverlaySections -join "`n`n")
+    "# END $HostOverlayLabel"
     ""
     "# BEGIN @ryanspice/sveltekit-adapter-php"
     $Generated.Trim()
@@ -183,3 +218,4 @@ Step "Receipt"
 Info "Built" $BuildDir
 Info "Mode" $env:ADAPTER_MODE
 Info "BasePath" $(if ($BasePath) { $BasePath } else { "(root)" })
+Info "SiteId" $SiteId

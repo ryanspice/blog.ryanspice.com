@@ -1,14 +1,24 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
+	import { siteConfigs } from '$lib/site-config';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
 	const copy = $derived(data.ui.rss);
 	const navCopy = $derived(data.ui.nav);
+	const site = $derived(data.site ?? siteConfigs.ryan);
 	const title = $derived(copy.title);
 	const description = $derived(copy.description);
+	const headerLinks = $derived.by(() => {
+		const links = [
+			{ label: navCopy.articles, href: data.homeUrl + '#articles' },
+			{ label: navCopy.rssXml, href: data.feedPath }
+		];
+		if (site.showDevLogLinks) links.splice(1, 0, { label: navCopy.devLog, href: '/dev-log/' });
+		return links;
+	});
 </script>
 
 <svelte:head>
@@ -23,11 +33,12 @@
 </svelte:head>
 
 <SiteHeader
-	navLinks={[
-		{ label: navCopy.articles, href: data.homeUrl + '#articles' },
-		{ label: navCopy.devLog, href: '/dev-log/' },
-		{ label: navCopy.rssXml, href: data.feedPath }
-	]}
+	brandLabel={site.brandLabel}
+	brandInitials={site.brandInitials}
+	showLibraryLink={site.showLibraryLinks}
+	showDevLogLink={site.showDevLogLinks}
+	showOwnerLinks={site.showOwnerControls}
+	navLinks={headerLinks}
 />
 
 <main class="rss-friendly-shell">

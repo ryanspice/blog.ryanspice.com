@@ -1,6 +1,7 @@
 import { base } from '$app/paths';
 import { allPublishedArticles, getArticleAlternates, type Article } from '$lib/articles';
 import { pathWithLocale, SUPPORTED_LOCALES, type SupportedLocale } from '$lib/i18n/locales';
+import { getSiteConfig } from '$lib/server/site';
 
 export const prerender = true;
 
@@ -106,6 +107,7 @@ function renderEntry(entry: SitemapEntry): string {
 }
 
 export const GET = ({ url }: { url: URL }) => {
+	const site = getSiteConfig();
 	const entries: SitemapEntry[] = [
 		...localizedPageEntries(url.origin, '/', {
 			changefreq: 'weekly',
@@ -115,16 +117,11 @@ export const GET = ({ url }: { url: URL }) => {
 			changefreq: 'weekly',
 			priority: 0.5
 		}),
-		{
-			loc: absoluteUrl(url.origin, '/library/'),
-			changefreq: 'monthly',
-			priority: 0.6
-		},
-		{
-			loc: absoluteUrl(url.origin, '/dev-log/'),
-			changefreq: 'weekly',
-			priority: 0.6
-		},
+		...site.indexedUtilityRoutes.map((route) => ({
+			loc: absoluteUrl(url.origin, route.path),
+			changefreq: route.changefreq,
+			priority: route.priority
+		})),
 		...allPublishedArticles.map<SitemapEntry>((article) => ({
 			loc: absoluteUrl(url.origin, articlePath(article)),
 			lastmod: normalizeIsoDate(article.updatedDate || article.date),

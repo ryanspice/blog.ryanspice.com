@@ -14,6 +14,7 @@
 	let { data }: { data: PageData } = $props();
 
 	const publishedArticles = $derived(Array.isArray(data.publishedArticles) ? data.publishedArticles as Article[] : []);
+	const site = $derived(data.site);
 	const copy = $derived(data.ui.home);
 	const navCopy = $derived(data.ui.nav);
 	const latestArticles = $derived.by(() => publishedArticles.slice(0, 5));
@@ -30,6 +31,7 @@
 	const latestArticleCardStyle = $derived.by(() => `--article-accent: ${latestArticleAccent}; ${articleCardCssVars(latestArticle)}`);
 	const canonical = $derived(data.canonical);
 	const ogImage = $derived(data.ogImage);
+	const footerExternalLinks = $derived(site.footerExternalLinks);
 </script>
 
 <HomeFandangoStyles />
@@ -45,7 +47,7 @@
 	<meta property="og:description" content={description} />
 	<meta property="og:url" content={canonical} />
 	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="blog.ryanspice.com" />
+	<meta property="og:site_name" content={site.siteName} />
 	<meta property="og:image" content={ogImage} />
 	<meta property="og:image:alt" content={title} />
 	<meta name="twitter:card" content="summary_large_image" />
@@ -55,10 +57,15 @@
 </svelte:head>
 
 <SiteHeader
+	brandLabel={site.brandLabel}
+	brandInitials={site.brandInitials}
+	showLibraryLink={site.showLibraryLinks}
+	showDevLogLink={site.showDevLogLinks}
+	showOwnerLinks={site.showOwnerControls}
 	navLinks={[
 		{ label: navCopy.articles, href: '#articles' },
 		{ label: navCopy.rss, href: data.rssPath },
-		{ label: 'ryanspice.com', href: 'https://ryanspice.com' }
+		site.primaryExternalLink
 	]}
 />
 
@@ -105,7 +112,9 @@
 			<p class="home-hero-note">{copy.focusNote}</p>
 			<div class="home-hero-links" aria-label={copy.quickLinks}>
 				<a href={data.rssUrl}>{copy.rssFeed}</a>
-				<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">{navCopy.githubRepo}</a>
+				{#if site.repositoryLink}
+					<a href={site.repositoryLink.href} rel="noreferrer" target="_blank">{site.repositoryLink.label}</a>
+				{/if}
 			</div>
 		</div>
 	</aside>
@@ -140,14 +149,21 @@
 		</div>
 
 		<div class="site-footer-links">
-			<a href="https://ryanspice.com" rel="noreferrer" target="_blank">ryanspice.com</a>
-			<a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">{navCopy.githubRepo}</a>
-			<a href={`${base}/dev-log`}>{navCopy.devLog}</a>
+			{#each footerExternalLinks as link (link.href)}
+				<a href={link.href} rel="noreferrer" target="_blank">{link.label}</a>
+			{/each}
+			{#if site.repositoryLink}
+				<a href={site.repositoryLink.href} rel="noreferrer" target="_blank">{site.repositoryLink.label}</a>
+			{/if}
+			{#if site.showDevLogLinks}
+				<a href={`${base}/dev-log`}>{navCopy.devLog}</a>
+			{/if}
 			<a href={data.rssPath}>{copy.rssFeed}</a>
 			<a href={`${base}/sitemap.xml`}>{navCopy.sitemap}</a>
 			<a href="#articles">{navCopy.articles}</a>
-			<a href="https://canopydigital.ca" rel="noreferrer" target="_blank">Canopy Digital</a>
-			<FooterAuthControls returnTo="/drafts/" />
+			{#if site.showOwnerControls}
+				<FooterAuthControls returnTo="/drafts/" />
+			{/if}
 		</div>
 	</div>
 

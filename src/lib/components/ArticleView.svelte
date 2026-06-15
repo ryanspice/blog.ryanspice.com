@@ -9,6 +9,7 @@
 	import type { Article } from '$lib/articles';
 	import { getDictionary } from '$lib/i18n/dictionaries';
 	import { pathWithLocale } from '$lib/i18n/locales';
+	import { siteConfigs, type SiteConfig } from '$lib/site-config';
 	import ArticleBackgroundLayer from '$lib/components/ArticleBackgroundLayer.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
@@ -18,9 +19,10 @@
 		article: Article;
 		relatedArticles?: Article[];
 		alternates?: Array<{ hreflang: string; href: string }>;
+		site?: SiteConfig;
 	};
 
-	let { article, relatedArticles = [], alternates = [] }: Props = $props();
+	let { article, relatedArticles = [], alternates = [], site = siteConfigs.ryan }: Props = $props();
 
 	const articleAccent = $derived(articleAccentColor(article));
 	const focalImage = $derived(articleFocalImage(article));
@@ -31,19 +33,22 @@
 	const ui = $derived(getDictionary(article.locale));
 	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
 	const articleReferences = $derived(article.references.filter(Boolean));
-	const pageTitle = $derived(`${article.title} · blog.ryanspice.com`);
-	const description = $derived(article.summary || 'Technical blog drafts and production notes from Ryan Spice.');
+	const pageTitle = $derived(`${article.title} · ${site.titleSuffix}`);
+	const description = $derived(article.summary || site.description);
 	const canonical = $derived(new URL(articleHref(article), page.url.origin).toString());
-	const ogImage = $derived(focalImage?.src ?? new URL(`${base}/og-default.png`, page.url.origin).toString());
+	const ogImage = $derived(focalImage?.src ?? new URL(`${base}${site.defaultOgImage}`, page.url.origin).toString());
 	const localizedHomeHref = $derived(`${base}${pathWithLocale(article.locale, '/')}`);
 	const localizedRssHref = $derived(`${base}${pathWithLocale(article.locale, '/rss.xml')}`);
 	const localizedDevLogHref = $derived(`${base}/dev-log/`);
-	const articleFooterLinks = $derived([
-		{ label: ui.article.home, href: localizedHomeHref },
-		{ label: ui.article.rss, href: localizedRssHref },
-		{ label: ui.article.githubRepo, href: 'https://github.com/ryanspice/blog.ryanspice.com' },
-		{ label: ui.article.devLog, href: localizedDevLogHref }
-	]);
+	const articleFooterLinks = $derived.by(() => {
+		const links = [
+			{ label: ui.article.home, href: localizedHomeHref },
+			{ label: ui.article.rss, href: localizedRssHref }
+		];
+		if (site.repositoryLink) links.push({ label: site.repositoryLink.label, href: site.repositoryLink.href });
+		if (site.showDevLogLinks) links.push({ label: ui.article.devLog, href: localizedDevLogHref });
+		return links;
+	});
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -73,10 +78,17 @@
 				datePublished: article.date,
 				dateModified: article.updatedDate,
 				author: {
-					'@type': 'Person',
-					name: 'Ryan Spice',
-					url: new URL(`${base}/`, page.url.origin).toString()
+					'@type': site.author.type,
+					name: site.author.name,
+					url: site.author.url
 				},
+				publisher: site.publisher
+					? {
+							'@type': site.publisher.type,
+							name: site.publisher.name,
+							url: site.publisher.url
+						}
+					: undefined,
 				image: ogImage,
 				keywords: article.tags.join(', '),
 				wordCount: article.wordCount,
@@ -139,7 +151,7 @@
 	<meta property="og:description" content={description} />
 	<meta property="og:url" content={canonical} />
 	<meta property="og:type" content="article" />
-	<meta property="og:site_name" content="blog.ryanspice.com" />
+	<meta property="og:site_name" content={site.siteName} />
 	<meta property="og:image" content={ogImage} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
@@ -160,7 +172,14 @@
 <div class={`article-page theme-${article.design.variant} has-command-bar${focalImage ? ' has-focal-image' : ''}`} style={pageStyle}>
 	<ArticleBackgroundLayer {article} />
 	<div class="read-progress" data-scroll-progress></div>
-	<SiteHeader brandLabel={article.design.brandLabel} navLinks={article.design.navLinks} />
+	<SiteHeader
+		brandLabel={site.brandLabel}
+		brandInitials={site.brandInitials}
+		navLinks={article.design.navLinks}
+		showLibraryLink={site.showLibraryLinks}
+		showDevLogLink={site.showDevLogLinks}
+		showOwnerLinks={site.showOwnerControls}
+	/>
 
 	<section class="hero">
 		<div class="article-hero-visual" aria-hidden="true">
@@ -351,7 +370,9 @@
 			{#each articleFooterLinks as link, index (link.href + ':' + index)}
 				<a href={link.href}>{link.label}</a>
 			{/each}
-			<FooterAuthControls returnTo="/drafts/" />
+			{#if site.showOwnerControls}
+				<FooterAuthControls returnTo="/drafts/" />
+			{/if}
 		</div>
 	</footer>
 </div>

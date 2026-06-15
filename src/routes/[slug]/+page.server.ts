@@ -3,6 +3,7 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getArticle, getArticleAlternates, getRelatedArticles, isPublicArticle, publishedArticles } from '$lib/articles';
 import { localeToHreflang } from '$lib/i18n/locales';
+import { getSiteConfig } from '$lib/server/site';
 
 export function entries() {
 	return publishedArticles.map((article) => ({ slug: article.slug }));
@@ -17,6 +18,7 @@ export const load: PageServerLoad = ({ params, url }) => {
 
 	return {
 		locale: article.locale,
+		site: getSiteConfig(),
 		article,
 		alternates: getArticleAlternates(article).map((alternate) => ({
 			...alternate,

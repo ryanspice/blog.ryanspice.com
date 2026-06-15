@@ -1,17 +1,17 @@
 import { base } from '$app/paths';
+import { getSiteConfig } from '$lib/server/site';
 
 export const prerender = true;
 
 export const GET = ({ url }: { url: URL }) => {
+	const site = getSiteConfig();
 	const sitemapUrl = new URL(`${base}/sitemap.xml`, url.origin).toString();
 
 	const robots = [
 		'User-agent: *',
 		'Allow: /',
 		'',
-		'Disallow: /_incoming/',
-		'Disallow: /_releases/',
-		'Disallow: /_backups/',
+		...site.robotsDisallow.map((path) => `Disallow: ${path}`),
 		'',
 		`Sitemap: ${sitemapUrl}`
 	].join('\n');
@@ -23,4 +23,3 @@ export const GET = ({ url }: { url: URL }) => {
 		}
 	});
 };
-

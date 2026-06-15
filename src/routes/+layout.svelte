@@ -6,6 +6,7 @@
 	import { pathWithLocale } from '$lib/i18n/locales';
 	import '../app.css';
 	import '../article-polish.css';
+	import '../canopy-theme.css';
 
 	onNavigate((navigation) => {
 		if (typeof document.startViewTransition !== 'function') return;
@@ -28,10 +29,12 @@
 	});
 
 	let { children, data } = $props();
+	const siteTheme = $derived(data?.site?.themeClass ?? 'ryan');
 
 	$effect(() => {
-		if (typeof document !== 'undefined' && data?.languageTag) {
-			document.documentElement.lang = data.languageTag;
+		if (typeof document !== 'undefined') {
+			if (data?.languageTag) document.documentElement.lang = data.languageTag;
+			document.documentElement.dataset.site = siteTheme;
 		}
 	});
 </script>
@@ -41,6 +44,6 @@
 	<link rel="alternate" type="application/rss+xml" title={data?.ui?.rss?.channelTitle ?? 'Ryan Spice · Technical notes'} href={`${base}${pathWithLocale(data?.locale ?? 'en', '/rss.xml')}`} />
 </svelte:head>
 
-<div class="site-shell">
+<div class={`site-shell site-shell--${siteTheme}`}>
 	{@render children()}
 </div>

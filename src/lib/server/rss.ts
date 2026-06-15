@@ -1,6 +1,5 @@
 import { base } from '$app/paths';
 import { getPublishedArticlesForLocale } from '$lib/articles';
-import { getDictionary } from '$lib/i18n/dictionaries';
 import {
 	localeToHreflang,
 	pathWithLocale,
@@ -8,6 +7,7 @@ import {
 	type SupportedLocale
 } from '$lib/i18n/locales';
 import { localizedPageAlternates } from './home-page';
+import { getSiteConfig, getSiteDictionary } from './site';
 
 export const RSS_READER_PATH = '/rss-reader/';
 
@@ -28,7 +28,8 @@ function toRfc822Date(value: string): string {
 
 export function renderRssXml(url: URL, localeValue?: string | null): Response {
 	const locale = resolveLocale(localeValue);
-	const copy = getDictionary(locale).rss;
+	const site = getSiteConfig();
+	const copy = getSiteDictionary(locale, site).rss;
 	const channelUrl = new URL(`${base}${pathWithLocale(locale, '/')}`, url.origin).toString();
 	const selfUrl = new URL(`${base}${pathWithLocale(locale, '/rss.xml')}`, url.origin).toString();
 	const sorted = getPublishedArticlesForLocale(locale)
@@ -59,7 +60,7 @@ export function renderRssXml(url: URL, localeValue?: string | null): Response {
 	<description>${escapeXml(copy.channelDescription)}</description>
 	<language>${escapeXml(localeToHreflang(locale))}</language>
 	<lastBuildDate>${escapeXml(lastBuildDate)}</lastBuildDate>
-	<generator>blog.ryanspice.com</generator>
+	<generator>${escapeXml(site.generator)}</generator>
 	<atom:link href="${escapeXml(selfUrl)}" rel="self" type="application/rss+xml" />
 ${items ? `\n${items}\n` : '\n'}
 </channel>
@@ -75,7 +76,8 @@ ${items ? `\n${items}\n` : '\n'}
 
 export function loadRssReaderPage(url: URL, localeValue?: string | null) {
 	const locale = resolveLocale(localeValue);
-	const copy = getDictionary(locale);
+	const site = getSiteConfig();
+	const copy = getSiteDictionary(locale, site);
 	const feedPath = pathWithLocale(locale, '/rss.xml');
 	const readerPath = pathWithLocale(locale, RSS_READER_PATH);
 	const latestArticles = getPublishedArticlesForLocale(locale)
@@ -93,6 +95,7 @@ export function loadRssReaderPage(url: URL, localeValue?: string | null) {
 
 	return {
 		locale,
+		site,
 		ui: copy,
 		canonical: new URL(`${base}${readerPath}`, url.origin).toString(),
 		alternates: localizedPageAlternates(url, RSS_READER_PATH),

@@ -7,6 +7,8 @@ dist/
 .env.*
 !.env.example
 deploy.config.json
+deploy.*.config.json
+!deploy.*.config.example.json
 *.local.json
 router.log
 devserver*.log

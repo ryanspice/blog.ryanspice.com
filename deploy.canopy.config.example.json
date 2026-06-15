@@ -1,0 +1,18 @@
+{
+  "host": "<ssh-host>",
+  "user": "<ssh-username>",
+  "port": 22,
+  "remotePath": "domains/blog.canopydigital.ca/public_html",
+  "publicUrl": "https://blog.canopydigital.ca/",
+  "keyPath": "",
+  "basePath": "",
+  "keepNames": [
+    "_incoming",
+    "_releases",
+    "_backups",
+    ".well-known",
+    "cgi-bin"
+  ],
+  "keepReleases": 1,
+  "keepBackups": 0
+}

@@ -9,12 +9,24 @@
 
 	type Props = {
 		brandLabel?: string;
+		brandInitials?: string;
 		navLinks?: NavItem[];
+		showLibraryLink?: boolean;
+		showDevLogLink?: boolean;
+		showOwnerLinks?: boolean;
 	};
 
-	let { brandLabel = 'Ryan Spice / Canopy Digital', navLinks = [] }: Props = $props();
+	let {
+		brandLabel = 'Ryan Spice / Canopy Digital',
+		brandInitials = 'RS',
+		navLinks = [],
+		showLibraryLink = true,
+		showDevLogLink = true,
+		showOwnerLinks = true
+	}: Props = $props();
 	const locale = $derived((page.data.locale === 'fr' ? 'fr' : 'en') as SupportedLocale);
 	const ui = $derived(getDictionary(locale));
+	const initials = $derived((brandInitials.trim().slice(0, 2).toUpperCase() || 'RS').padEnd(2, ' '));
 
 	onMount(() => {
 		void loadAuthState();
@@ -28,8 +40,10 @@
 	);
 
 	const visibleNavLinks = $derived.by(() => {
-		const merged = [...navLinks, { label: ui.nav.library, href: '/library' }, { label: ui.nav.devLog, href: '/dev-log' }];
-		if (canAccessDrafts($authState)) {
+		const merged = [...navLinks];
+		if (showLibraryLink) merged.push({ label: ui.nav.library, href: '/library' });
+		if (showDevLogLink) merged.push({ label: ui.nav.devLog, href: '/dev-log' });
+		if (showOwnerLinks && canAccessDrafts($authState)) {
 			merged.push({ label: ui.nav.briefs, href: '/briefs' });
 			merged.push({ label: ui.nav.drafts, href: '/drafts' });
 		}
@@ -62,7 +76,7 @@
 	<nav class="nav" aria-label="Site">
 		<div class="nav-branding">
 			<a class="brand" href={`${base}${pathWithLocale(locale, '/')}`}>
-				<span class="brand-mark" aria-hidden="true"><span class="brand-mark-r">R</span><span class="brand-mark-s">S</span></span>
+				<span class="brand-mark" aria-hidden="true"><span class="brand-mark-r">{initials[0]}</span><span class="brand-mark-s">{initials[1]}</span></span>
 				<span class="brand-text">
 					<span class="brand-primary">{brandParts[0] ?? brandLabel}</span>
 					{#if brandParts[1]}

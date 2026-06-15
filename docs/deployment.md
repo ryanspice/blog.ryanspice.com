@@ -1,6 +1,13 @@
-# blog.ryanspice.com deployment notes
+# Blog deployment notes
 
 Version: 0.1.0
+
+This repo builds two production targets from the same content source:
+
+- `blog.ryanspice.com` uses the Ryan-themed shell.
+- `blog.canopydigital.ca` uses the lightweight Canopy-themed shell.
+
+The SvelteKit routes, Markdown articles, RSS, sitemap generation, and PHP-static adapter are shared. The build flavor is selected at build time with `PUBLIC_SITE_ID`.
 
 ## Setup
 
@@ -10,6 +17,13 @@ Copy the example config and edit only local values:
 cd "<AI_WIKI_ROOT>\07_Projects\blog.ryanspice.com"
 Copy-Item .\deploy.config.example.json .\deploy.config.json -Force
 notepad .\deploy.config.json
+```
+
+For the Canopy subdomain, use a separate ignored local config:
+
+```powershell
+Copy-Item .\deploy.canopy.config.example.json .\deploy.canopy.config.local.json -Force
+notepad .\deploy.canopy.config.local.json
 ```
 
 `deploy.config.json` is ignored by git. Do not commit keys, passwords, or host secrets.
@@ -45,10 +59,11 @@ Two values must be correct in `deploy.config.json`:
   - Usually your **cPanel account username** (not an email address).
   - In cPanel, it’s commonly shown in the sidebar / “General Information”.
 - `remotePath`
-  - The **document root** for `blog.ryanspice.com`.
+  - The **document root** for the target domain.
   - This is often shown in cPanel **relative to your home directory**, so it may look like `domains/ryanspice.com/public_html/blog` (no leading `/`).
   - Common values look like `public_html/blog` or `domains/ryanspice.com/public_html/blog`.
-  - In cPanel: Domains → find `blog.ryanspice.com` → read “Document Root”.
+  - In cPanel: Domains → find `blog.ryanspice.com` or `blog.canopydigital.ca` → read “Document Root”.
+  - The current Canopy target should use `domains/blog.canopydigital.ca/public_html` unless cPanel shows a different relative path.
 
 ## Test SSH connection
 
@@ -64,6 +79,15 @@ pnpm run deploy:test
 ```powershell
 pnpm run build:blog
 ```
+
+## Build for `https://blog.canopydigital.ca/` (domain root)
+
+```powershell
+pnpm run build:blog:canopy
+pnpm run audit:seo
+```
+
+This sets `PUBLIC_SITE_ID=canopy` during the build and rewrites public site metadata to `https://blog.canopydigital.ca`. It does not duplicate the article source.
 
 This runs a clean PHP-hosted release build with `PUBLIC_BASE_PATH=""` by default and uses the committed vendored adapter. To build for a subpath, pass a base path:
 
@@ -114,6 +138,15 @@ https://blog.ryanspice.com/_releases/<release-id>/
 
 It does **not** overwrite the live blog root.
 
+For a local Canopy parallel upload after building the Canopy target:
+
+```powershell
+pnpm run build:blog:canopy
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\Deploy-BlogStatic.ps1 -ConfigPath .\deploy.canopy.config.local.json -Apply
+```
+
+Add `-Activate` only after checking the parallel release URL. While DNS/SSL is still settling, use the hosting control panel path and release folder to verify files instead of assuming the public hostname resolves.
+
 ## Activate uploaded release
 
 After checking the parallel release:
@@ -136,11 +169,17 @@ pnpm run setup:runtime
 
 This keeps the heavy pnpm store outside the synced project folder, while keeping `node_modules\.pnpm` local to the worktree. The virtual store must not cross drives because SvelteKit/Rollup uses dependency realpaths when naming SSR entries.
 
-## GitHub production deploy
+## GitHub branches and production deploy
 
 The workflow at `.github/workflows/deploy-blog.yml` deploys on pushes to `production` and can also be run manually with `workflow_dispatch`.
 
-Merge release PRs into `production` to deploy. `main` no longer deploys automatically, and there is no scheduled default-branch deploy.
+Branch rules:
+
+- `main` is the working integration branch.
+- Feature work branches from `main`.
+- `main` and pull requests run tests only through `.github/workflows/test-blog.yml`.
+- Production deploys happen only after code reaches `production`.
+- A `production` deploy builds and activates both `blog.ryanspice.com` and `blog.canopydigital.ca` with the same release id.
 
 Required repository secrets:
 
@@ -149,6 +188,15 @@ Required repository secrets:
 - `BLOG_DEPLOY_PATH`
 - `VITE_MSAL_CLIENT_ID`
 - one of `BLOG_DEPLOY_KEY_B64` or `BLOG_DEPLOY_KEY`
+
+Required for Canopy only if it does not share the Ryan SSH host/user:
+
+- `CANOPY_BLOG_DEPLOY_HOST`
+- `CANOPY_BLOG_DEPLOY_USER`
+
+The Canopy deploy path defaults to `domains/blog.canopydigital.ca/public_html`, but you can override it with:
+
+- `CANOPY_BLOG_DEPLOY_PATH`
 
 Optional repository secrets:
 
@@ -162,8 +210,11 @@ Optional repository secrets:
 - `BLOG_BASE_PATH`
 - `PUBLIC_SITE_URL`
 - `PUBLIC_BASE_PATH`
+- `CANOPY_BLOG_DEPLOY_PORT`
+- `CANOPY_BLOG_PUBLIC_URL`
+- `CANOPY_BLOG_BASE_PATH`
 
-The workflow validates required production config, runs `audit:files`, unit tests, typecheck, the PHP build, and the PHP output audit before writing the deploy key. It uses the committed vendored `adapter/` artifact; GitHub Actions cannot access your local adapter checkout, so sync the adapter locally before committing adapter changes.
+The workflow validates required production config, runs `audit:files`, unit tests, typecheck, the Ryan PHP build/audit/deploy, then the Canopy PHP build/audit/deploy. It uses the committed vendored `adapter/` artifact; GitHub Actions cannot access your local adapter checkout, so sync the adapter locally before committing adapter changes.
 
 ## Remote path safety
 
