@@ -24,6 +24,7 @@
 
 	const articleAccent = $derived(articleAccentColor(article));
 	const focalImage = $derived(articleFocalImage(article));
+	const focalImageIsDiagram = $derived(Boolean(focalImage?.src.toLowerCase().includes('.svg')));
 	const pageStyle = $derived(`--article-accent: ${articleAccent}; ${articleFocalPageCssVars(article)}`);
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
@@ -164,7 +165,7 @@
 	<section class="hero">
 		<div class="article-hero-visual" aria-hidden="true">
 			{#if focalImage}
-				<div class="article-focal-panel"></div>
+				<div class="article-focal-panel" class:article-focal-panel--diagram={focalImageIsDiagram}></div>
 			{:else}
 				<svg viewBox="0 0 420 560" focusable="false">
 					<defs>

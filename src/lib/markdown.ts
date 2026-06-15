@@ -619,6 +619,11 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 					if (stack.some((tag) => LINK_EXCLUDED_TAGS.has(tag))) return;
 					const words = node.value.split(/\s+/).filter(Boolean).length;
 					count += words;
+					return;
+				}
+
+				for (const child of node.children ?? []) {
+					walk(child, stack);
 				}
 			}
 

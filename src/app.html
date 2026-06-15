@@ -61,6 +61,18 @@
 					display: none !important;
 				}
 			}
+
+			@media (max-width: 1050px) {
+				.hero {
+					grid-template-columns: minmax(0, 1fr) !important;
+				}
+
+				.article-hero-copy,
+				.article-hero-side {
+					grid-column: 1 / -1 !important;
+					width: 100% !important;
+				}
+			}
 		</style>
 	</head>
 	<body data-sveltekit-preload-data="hover">

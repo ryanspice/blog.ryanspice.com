@@ -171,6 +171,15 @@
 	box-shadow: 0 0 58px color-mix(in srgb, var(--article-accent, var(--accent)) 18%, transparent);
 }
 
+.article-focal-panel--diagram {
+	background-size: auto, auto, contain;
+	background-repeat: no-repeat;
+	background-position:
+		center center,
+		center center,
+		var(--article-focal-position, center center);
+}
+
 .focal-credit {
 	margin: 12px 0 0;
 	font-size: 12px;

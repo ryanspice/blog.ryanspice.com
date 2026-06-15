@@ -18,6 +18,24 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-06-15',
+		title: 'Ship the fallback article and release lane',
+		summary:
+			'Published the Fable fallback plan, corrected the article lane, tightened production verification around the PHP-static release path, and polished the site motion layer without turning private agent notes into public source material.',
+		source: 'Weekend blog publishing and release hardening',
+		accent: '#8cc8ff',
+		tags: ['blog', 'automation', 'privacy', 'ai-wiki', 'sveltekit-php', 'developer workflow', 'frontend'],
+		relatedArticleSlugs: [
+			'if-fable-5-is-gone-agent-stack-fallback-plan',
+			'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',
+			'hermes-deepseek-setup',
+			'recover-deepseek-gui-conversations-after-update',
+			'openjarvis-local-ai-personal-ai-on-your-pc',
+			'pixelboats-water-pipeline-pixi-webgl'
+		],
+		relatedArticleTags: ['AI agents', 'DeepSeek', 'AI Wiki', 'SvelteKit', 'developer workflow', 'PixelBoats']
+	},
+	{
 		date: '2026-06-09',
 		title: 'Publish a DeepSeek GUI recovery guide',
 		summary:
