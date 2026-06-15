@@ -41,6 +41,7 @@ function Read-DeployConfig([string]$Path) {
     port = if ($env:BLOG_DEPLOY_PORT) { [int]$env:BLOG_DEPLOY_PORT } else { 22 }
     remotePath = if ($env:BLOG_DEPLOY_PATH) { $env:BLOG_DEPLOY_PATH } else { "blog" }
     publicUrl = if ($env:BLOG_PUBLIC_URL) { $env:BLOG_PUBLIC_URL } elseif ($env:PUBLIC_SITE_URL) { $env:PUBLIC_SITE_URL } else { "https://blog.ryanspice.com/" }
+    siteId = if ($env:PUBLIC_SITE_ID) { $env:PUBLIC_SITE_ID } elseif ($env:BLOG_SITE_ID) { $env:BLOG_SITE_ID } else { "" }
     keyPath = $env:BLOG_DEPLOY_KEY_PATH
     keepNames = @("_incoming", "_releases", "_backups", ".well-known", "cgi-bin")
     basePath = if ($env:BLOG_BASE_PATH) { $env:BLOG_BASE_PATH } elseif ($env:PUBLIC_BASE_PATH) { $env:PUBLIC_BASE_PATH } else { "" }
@@ -54,6 +55,19 @@ function ShellQuote([string]$Value) {
 function Normalize-PublicUrl([string]$Url) {
   if ([string]::IsNullOrWhiteSpace($Url)) { return "" }
   return $Url.TrimEnd('/') + '/'
+}
+
+function Resolve-SiteId([string]$Value, [string]$PublicUrl) {
+  $normalized = if ([string]::IsNullOrWhiteSpace($Value)) { "" } else { $Value.Trim().ToLowerInvariant() }
+  if ($normalized -in @("canopy", "canopydigital", "blog.canopydigital.ca")) { return "canopy" }
+  if ($normalized -in @("ryan", "ryanspice", "blog.ryanspice.com")) { return "ryan" }
+  if (-not [string]::IsNullOrWhiteSpace($normalized)) {
+    throw "Unsupported siteId '$Value'. Expected 'ryan' or 'canopy'."
+  }
+
+  $normalizedUrl = if ([string]::IsNullOrWhiteSpace($PublicUrl)) { "" } else { $PublicUrl.Trim().ToLowerInvariant() }
+  if ($normalizedUrl -match "canopydigital\.ca") { return "canopy" }
+  return "ryan"
 }
 
 function Assert-SafeRemotePath([string]$Path) {
@@ -80,6 +94,8 @@ $UserName = [string]$Config.user
 $Port = if ($Config.port) { [string]$Config.port } else { "22" }
 $RemotePath = if ($Config.remotePath) { ([string]$Config.remotePath).TrimEnd('/') } else { "blog" }
 $PublicUrl = Normalize-PublicUrl ([string]$Config.publicUrl)
+$ConfiguredSiteId = if ($Config.PSObject.Properties["siteId"] -and $Config.siteId) { [string]$Config.siteId } elseif ($env:PUBLIC_SITE_ID) { $env:PUBLIC_SITE_ID } elseif ($env:BLOG_SITE_ID) { $env:BLOG_SITE_ID } else { "" }
+$SiteId = Resolve-SiteId -Value $ConfiguredSiteId -PublicUrl $PublicUrl
 $KeyPath = if ($Config.keyPath) { [string]$Config.keyPath } else { "" }
 $BasePath = if ($Config.basePath -ne $null) { [string]$Config.basePath } else { "" }
 $KeepNames = if ($Config.keepNames) { @($Config.keepNames) } else { @("_incoming", "_releases", "_backups", ".well-known", "cgi-bin") }
@@ -104,6 +120,7 @@ Info "User" $(if ($UserName) { $UserName } else { "<missing>" })
 Info "RemotePath" $RemotePath
 Info "ReleaseId" $ReleaseId
 Info "PublicUrl" $PublicUrl
+Info "SiteId" $SiteId
 Info "AdapterMode" $AdapterMode
 Info "Mode" $(if ($Apply) { if ($Activate) { "UPLOAD + ACTIVATE" } else { "PARALLEL UPLOAD" } } else { "DRY RUN" })
 
@@ -122,13 +139,15 @@ Require-Command scp
 Require-Command tar
 
 if ($Build) {
-  Step "Build blog for $BasePath"
-  & pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Build-BlogStatic.ps1") -BasePath $BasePath -Clean
+  Step "Build $SiteId blog for $BasePath"
+  $BuildPublicUrl = $PublicUrl.TrimEnd("/")
+  & pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Build-BlogStatic.ps1") -BasePath $BasePath -Clean -SiteId $SiteId -PublicSiteUrl $BuildPublicUrl
   if ($LASTEXITCODE -ne 0) { throw "Build failed." }
 }
 
 if (-not (Test-Path -LiteralPath (Join-Path $BuildPath "index.php"))) {
-  throw "Build output missing index.php: $BuildPath. Run pnpm run build:blog first."
+  $BuildCommandHint = if ($SiteId -eq "canopy") { "pnpm run build:blog:canopy" } else { "pnpm run build:blog" }
+  throw "Build output missing index.php: $BuildPath. Run $BuildCommandHint first."
 }
 
 $RequiredContract = @(
