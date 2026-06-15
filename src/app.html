@@ -1,10 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-site="ryan">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#070a0f" />
 		<script>
+			try {
+				const host = window.location.hostname.toLowerCase();
+				const isCanopy = host === 'blog.canopydigital.ca' || host.endsWith('.canopydigital.ca');
+				if (isCanopy) {
+					document.documentElement.dataset.site = 'canopy';
+					document.documentElement.style.colorScheme = 'light';
+					document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#f5f1e6');
+				}
+			} catch {}
+
 			try {
 				const mode = localStorage.getItem('blog-article-view-mode');
 				const legacy = localStorage.getItem('blog-reading-mode') === 'true';

@@ -118,13 +118,18 @@ finally {
   Pop-Location
 }
 
-# Post-build fix: adapter codegen bug — missing close paren in nested arrow fn
+# Post-build compatibility fixes for older generated PHP variants.
 $pagePhp = Join-Path $BuildDir "_protected" "_page.php"
 if (Test-Path $pagePhp) {
   $content = Get-Content -Raw $pagePhp
 
-  # Fix missing close paren
-  $fixed = $content.Replace("fn(`$word) => `$word !== '')", "fn(`$word) => `$word !== ''))")
+  $readingMinutesGood = '$words = array_values(array_filter(explode('' '', trim((string) $normalized)), fn($word) => $word !== ''''));'
+  $readingMinutesMissingParen = '$words = array_values(array_filter(explode('' '', trim((string) $normalized)), fn($word) => $word !== '''');'
+  $readingMinutesExtraParen = '$words = array_values(array_filter(explode('' '', trim((string) $normalized)), fn($word) => $word !== '''')));'
+
+  $fixed = $content.
+    Replace($readingMinutesMissingParen, $readingMinutesGood).
+    Replace($readingMinutesExtraParen, $readingMinutesGood)
 
   # Fix getcwd() path — use __DIR__ relative to build output so article .md
   # files are found even when PHP's CWD is not the project root.
@@ -142,6 +147,32 @@ if (Test-Path $pagePhp) {
 # Post-build fix: embed prerendered hydration data directly instead of
 # re-executing the PHP load function at runtime. Prevents hydration flicker.
 & pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Embed-PrerenderedData.ps1") -BuildDir $BuildDir
+
+# Stamp the selected site onto generated document shells so the root theme is
+# correct before hydration and without relying only on host-detection script.
+$DocumentSiteId = if ($SiteId -eq "canopy") { "canopy" } else { "ryan" }
+$ThemeColor = if ($DocumentSiteId -eq "canopy") { "#f5f1e6" } else { "#070a0f" }
+$DocumentFiles = Get-ChildItem -LiteralPath $BuildDir -Recurse -File -Include "*.php", "*.html"
+foreach ($file in $DocumentFiles) {
+  $content = Get-Content -LiteralPath $file.FullName -Raw
+  if ($content -notmatch '<html\b' -and $content -notmatch 'name="theme-color"') { continue }
+
+  $stamped = $content.
+    Replace('<html lang="en" data-site="ryan">', "<html lang=`"en`" data-site=`"$DocumentSiteId`">").
+    Replace('<html lang="en" data-site="canopy">', "<html lang=`"en`" data-site=`"$DocumentSiteId`">").
+    Replace('<html lang="en">', "<html lang=`"en`" data-site=`"$DocumentSiteId`">")
+
+  $stamped = [regex]::Replace(
+    $stamped,
+    '<meta name="theme-color" content="[^"]*" />',
+    "<meta name=`"theme-color`" content=`"$ThemeColor`" />"
+  )
+
+  if ($stamped -ne $content) {
+    Set-Content -LiteralPath $file.FullName -Value $stamped -Encoding utf8NoBOM
+  }
+}
+Info "Stamped site theme" $DocumentSiteId
 
 $requiredContract = @(
   "index.php",

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { afterNavigate, invalidateAll, onNavigate } from '$app/navigation';
+	import { onNavigate } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { loadAuthState } from '$lib/auth';
@@ -17,11 +17,6 @@
 				await navigation.complete;
 			});
 		});
-	});
-
-	afterNavigate((navigation) => {
-		if (navigation.type === 'enter') return;
-		void invalidateAll();
 	});
 
 	onMount(() => {

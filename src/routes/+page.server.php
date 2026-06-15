@@ -233,7 +233,10 @@ function blog_home_scalar($value): string {
 		$value = reset($value);
 	}
 	$clean = trim((string) $value);
-	return mb_substr($clean, 0, 3000);
+	if (function_exists('mb_substr')) {
+		return mb_substr($clean, 0, 3000);
+	}
+	return substr($clean, 0, 3000);
 }
 
 function blog_home_parse_list($value): array {
@@ -425,7 +428,7 @@ function blog_home_published_articles(string $locale = 'en'): array {
 		$updatedDateLabel = blog_home_format_date($updatedDate, $locale);
 		$releaseDateLabel = blog_home_format_date($releaseDate, $locale);
 		$readingMinutes = blog_home_reading_minutes($body, $summary);
-		$accent = blog_home_scalar($frontmatter['accent'] ?: $frontmatter['design_accent'] ?? '');
+		$accent = blog_home_scalar(($frontmatter['accent'] ?? '') ?: ($frontmatter['design_accent'] ?? ''));
 		if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accent)) {
 			$accent = $accents[$slug] ?? '#1e9bff';
 		}
