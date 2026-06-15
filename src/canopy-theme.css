@@ -1,180 +1,510 @@
 html[data-site='canopy'] {
 	color-scheme: light;
-	background:
-		linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(241, 247, 240, 0.94)),
-		#f4f8f2;
+	background: linear-gradient(135deg, #f5f1e6 0%, #e9f1e3 100%);
 }
 
 html[data-site='canopy'] body {
-	background: #f4f8f2;
-	color: #17231d;
+	background: #f5f1e6;
+	color: #2c3e2f;
+	font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	letter-spacing: 0;
 }
 
 html[data-site='canopy'] body::before {
-	opacity: 0.2;
-	background-image:
-		linear-gradient(rgba(18, 86, 65, 0.05) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(18, 86, 65, 0.045) 1px, transparent 1px);
-	mask-image: linear-gradient(180deg, black, transparent 82%);
+	opacity: 0;
+	background-image: none;
+	mask-image: none;
 }
 
 .site-shell--canopy {
-	--metro-bg: #f4f8f2;
+	--canopy-evergreen: #0b5345;
+	--canopy-sage: #87a878;
+	--canopy-neutral: #f5f1e6;
+	--canopy-cream: #fffaf0;
+	--canopy-mist: #e9f1e3;
+	--canopy-accent: #e58f65;
+	--canopy-dark: #2c3e2f;
+	--canopy-text-soft: #5e6c61;
+	--canopy-line: rgba(44, 62, 47, 0.13);
+	--metro-bg: var(--canopy-neutral);
 	--metro-surface: #ffffff;
-	--metro-surface-2: #edf5ee;
-	--metro-line: rgba(33, 66, 51, 0.18);
-	--metro-line-soft: rgba(33, 66, 51, 0.1);
-	--metro-text: #17231d;
-	--metro-text-soft: #4d655b;
-	--metro-text-dim: #71857a;
-	--metro-accent: #0d7657;
-	--gold: #b78a30;
-	--gold-2: #876020;
-	--amber: #d9972d;
-	--blue: #0f6f8f;
-	--blue-2: #3f8fb0;
-	--pink: #b03f75;
-	--green: #0d7657;
+	--metro-surface-2: var(--canopy-mist);
+	--metro-line: rgba(44, 62, 47, 0.18);
+	--metro-line-soft: rgba(44, 62, 47, 0.1);
+	--metro-text: var(--canopy-dark);
+	--metro-text-soft: var(--canopy-text-soft);
+	--metro-text-dim: #788a7b;
+	--metro-accent: var(--canopy-accent);
+	--gold: var(--canopy-accent);
+	--gold-2: var(--canopy-evergreen);
+	--amber: #eab48f;
+	--blue: #0b5345;
+	--blue-2: #87a878;
+	--pink: #c76f55;
+	--green: var(--canopy-evergreen);
 	--danger: #b84c3a;
 	--bg: var(--metro-bg);
 	--bg-2: var(--metro-surface-2);
 	--panel: var(--metro-surface);
-	--panel-strong: #f8fbf6;
+	--panel-strong: #ffffff;
 	--text: var(--metro-text);
 	--muted: var(--metro-text-soft);
 	--soft: var(--metro-text-dim);
 	--line: var(--metro-line);
-	--accent: var(--metro-accent);
-	--shadow: 0 16px 44px rgba(31, 57, 44, 0.1);
-	--radius: 8px;
+	--accent: var(--canopy-accent);
+	--article-accent: var(--canopy-evergreen) !important;
+	--shadow: 0 18px 44px rgba(28, 58, 43, 0.12);
+	--radius: 15px;
+	position: relative;
+	isolation: isolate;
 	min-height: 100vh;
 	color: var(--text);
-	background:
-		linear-gradient(135deg, rgba(13, 118, 87, 0.09), transparent 42rem),
-		linear-gradient(315deg, rgba(15, 111, 143, 0.08), transparent 38rem),
-		var(--bg);
+	background: linear-gradient(135deg, rgba(245, 241, 230, 0.96) 0%, rgba(233, 241, 227, 0.96) 100%);
+}
+
+.site-shell--canopy .home-hero,
+.site-shell--canopy .article-page,
+.site-shell--canopy [style*='--article-accent'] {
+	--article-accent: var(--canopy-evergreen) !important;
+}
+
+.site-shell--canopy::before {
+	content: "";
+	position: fixed;
+	z-index: -1;
+	inset: 0;
+	pointer-events: none;
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600"><path fill="%230B5345" fill-opacity="0.035" d="M0,0 Q300,150 600,0 T1200,0 V600 H0 Z"/><path fill="%2387A878" fill-opacity="0.028" d="M0,100 Q400,250 800,100 T1600,100 V600 H0 Z" transform="translate(-200, 0)"/></svg>');
+	background-position: top center;
+	background-size: min(1200px, 100vw) auto;
+	background-repeat: repeat-x;
 }
 
 .site-shell--canopy a {
-	color: #0a6d85;
+	color: var(--canopy-evergreen);
+	text-decoration-color: color-mix(in srgb, var(--canopy-accent) 58%, transparent);
+	text-underline-offset: 0.16em;
+}
+
+.site-shell--canopy h1,
+.site-shell--canopy h2,
+.site-shell--canopy h3,
+.site-shell--canopy h4,
+.site-shell--canopy h5,
+.site-shell--canopy .brand-primary,
+.site-shell--canopy .hero-card > strong,
+.site-shell--canopy .home-hero-card .article-card-content > strong {
+	font-family: "Montserrat", "Segoe UI", system-ui, sans-serif;
+	letter-spacing: 0;
+}
+
+.site-shell--canopy h1,
+.site-shell--canopy h2,
+.site-shell--canopy h3 {
+	color: var(--canopy-dark);
+	font-weight: 700;
 }
 
 .site-shell--canopy .site-header {
-	background: rgba(248, 251, 246, 0.92);
-	border-bottom: 1px solid var(--metro-line-soft);
-	box-shadow: 0 10px 28px rgba(32, 54, 44, 0.06);
+	background: rgba(255, 255, 255, 0.94);
+	border-bottom: 1px solid var(--canopy-line);
+	box-shadow: 0 10px 28px rgba(44, 62, 47, 0.08);
 	backdrop-filter: blur(18px) saturate(1.08);
 	-webkit-backdrop-filter: blur(18px) saturate(1.08);
 }
 
-.site-shell--canopy .brand-mark {
-	background: #0d7657;
-	color: #ffffff;
-	box-shadow: inset 0 -12px 0 rgba(0, 0, 0, 0.08);
+.site-shell--canopy .brand {
+	color: var(--canopy-evergreen);
 }
 
-.site-shell--canopy .brand-secondary,
-.site-shell--canopy .eyebrow,
-.site-shell--canopy .card-kicker,
-.site-shell--canopy .related-kicker,
-.site-shell--canopy .dev-log-meta,
-.site-shell--canopy .dev-log-list-meta {
-	color: var(--muted);
+.site-shell--canopy .brand-mark,
+.site-shell--canopy .article-page .brand-mark {
+	position: relative;
+	width: 32px;
+	height: 32px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--canopy-sage) 18%, white);
+	box-shadow: inset 0 0 0 1px rgba(11, 83, 69, 0.1);
+}
+
+.site-shell--canopy .brand-mark-r,
+.site-shell--canopy .brand-mark-s {
+	display: none;
+}
+
+.site-shell--canopy .brand-mark::before {
+	content: "";
+	position: absolute;
+	left: 9px;
+	top: 7px;
+	width: 14px;
+	height: 18px;
+	border-radius: 14px 0 14px 0;
+	background: var(--canopy-sage);
+	transform: rotate(38deg);
+	box-shadow: 4px 4px 0 color-mix(in srgb, var(--canopy-evergreen) 18%, transparent);
+}
+
+.site-shell--canopy .brand-primary {
+	font-size: 1.18rem;
+	font-weight: 700;
+	color: var(--canopy-evergreen);
+}
+
+.site-shell--canopy .brand-secondary {
+	color: var(--canopy-text-soft);
 }
 
 .site-shell--canopy .nav-links a,
 .site-shell--canopy .nav-action,
 .site-shell--canopy .home-primary-actions a,
+.site-shell--canopy .home-hero-links a,
 .site-shell--canopy .site-footer-links a,
-.site-shell--canopy .cmd {
-	border-color: var(--metro-line);
-	background: rgba(255, 255, 255, 0.78);
-	color: var(--text);
-	box-shadow: 0 8px 22px rgba(27, 53, 42, 0.06);
+.site-shell--canopy .cmd,
+.site-shell--canopy .rss-friendly-hero button {
+	border-radius: 999px;
+	border: 1px solid rgba(11, 83, 69, 0.24);
+	background: #ffffff;
+	color: var(--canopy-evergreen);
+	box-shadow: none;
+	font-weight: 600;
+	letter-spacing: 0;
 }
 
-.site-shell--canopy .home-primary-actions a:first-child {
-	background: #0d7657;
-	border-color: #0d7657;
+.site-shell--canopy .nav-links a[href^='https://canopydigital.ca/#contact'],
+.site-shell--canopy .home-primary-actions a:first-child,
+.site-shell--canopy .site-footer-links a[href^='https://canopydigital.ca/#contact'] {
+	background: var(--canopy-accent);
+	border-color: var(--canopy-accent);
 	color: #ffffff;
+	box-shadow: 0 10px 24px rgba(229, 143, 101, 0.22);
 }
 
-.site-shell--canopy .home-primary-actions a:hover,
-.site-shell--canopy .home-primary-actions a:focus-visible,
+.site-shell--canopy .home-primary-actions a:nth-child(2),
+.site-shell--canopy .home-hero-links a,
+.site-shell--canopy .cmd {
+	border-width: 2px;
+}
+
 .site-shell--canopy .nav-links a:hover,
 .site-shell--canopy .nav-links a:focus-visible,
+.site-shell--canopy .nav-action:hover,
+.site-shell--canopy .nav-action:focus-visible,
+.site-shell--canopy .home-primary-actions a:hover,
+.site-shell--canopy .home-primary-actions a:focus-visible,
+.site-shell--canopy .home-hero-links a:hover,
+.site-shell--canopy .home-hero-links a:focus-visible,
 .site-shell--canopy .site-footer-links a:hover,
 .site-shell--canopy .site-footer-links a:focus-visible,
 .site-shell--canopy .cmd:hover,
-.site-shell--canopy .cmd:focus-visible {
-	border-color: var(--accent);
-	color: var(--accent);
+.site-shell--canopy .cmd:focus-visible,
+.site-shell--canopy .rss-friendly-hero button:hover,
+.site-shell--canopy .rss-friendly-hero button:focus-visible {
+	border-color: var(--canopy-evergreen);
+	background: var(--canopy-evergreen);
+	color: #ffffff;
+	transform: translateY(-1px);
 }
 
 .site-shell--canopy .home-primary-actions a:first-child:hover,
-.site-shell--canopy .home-primary-actions a:first-child:focus-visible {
-	background: #0a6049;
-	border-color: #0a6049;
-	color: #ffffff;
+.site-shell--canopy .home-primary-actions a:first-child:focus-visible,
+.site-shell--canopy .nav-links a[href^='https://canopydigital.ca/#contact']:hover,
+.site-shell--canopy .nav-links a[href^='https://canopydigital.ca/#contact']:focus-visible {
+	background: color-mix(in srgb, var(--canopy-accent) 88%, #000000);
+	border-color: color-mix(in srgb, var(--canopy-accent) 88%, #000000);
+}
+
+.site-shell--canopy .eyebrow,
+.site-shell--canopy .card-kicker,
+.site-shell--canopy .related-kicker,
+.site-shell--canopy .dev-log-meta,
+.site-shell--canopy .dev-log-list-meta {
+	color: var(--canopy-evergreen);
+	font-weight: 700;
+	letter-spacing: 0;
+}
+
+.site-shell--canopy .dek,
+.site-shell--canopy .section-dek,
+.site-shell--canopy .site-footer-dek,
+.site-shell--canopy .article-byline,
+.site-shell--canopy .related-meta,
+.site-shell--canopy .card-meta,
+.site-shell--canopy .home-hero-note {
+	color: var(--canopy-text-soft);
+}
+
+.site-shell--canopy .article-page .article-byline,
+.site-shell--canopy .article-page .article-byline time {
+	color: var(--canopy-evergreen);
+}
+
+.site-shell--canopy .home-hero,
+.site-shell--canopy .hero {
+	position: relative;
+}
+
+.site-shell--canopy .home-hero h1 {
+	font-size: clamp(2.55rem, 5vw, 4.75rem);
+	line-height: 1.05;
+	max-width: 880px;
+}
+
+.site-shell--canopy .home-hero h1::after,
+.site-shell--canopy .section-head h2::after,
+.site-shell--canopy .site-footer-copy h2::after {
+	content: "";
+	display: block;
+	width: 78px;
+	height: 3px;
+	margin-top: 18px;
+	border-radius: 999px;
+	background: var(--canopy-accent);
+}
+
+.site-shell--canopy .section-head h2::after,
+.site-shell--canopy .site-footer-copy h2::after {
+	margin-top: 12px;
 }
 
 .site-shell--canopy .hero-card,
 .site-shell--canopy .rail-card,
+.site-shell--canopy .toc,
 .site-shell--canopy .article-shell,
 .site-shell--canopy .article-card,
 .site-shell--canopy .related-article-card,
 .site-shell--canopy .rss-friendly-item,
 .site-shell--canopy .article-references,
 .site-shell--canopy .home-meta > div,
-.site-shell--canopy .home-hero-card .hero-meta > div {
-	background:
-		linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(248, 251, 246, 0.84)),
-		color-mix(in srgb, var(--article-accent, var(--accent)) 4%, transparent);
-	border-color: var(--metro-line);
+.site-shell--canopy .home-hero-card .hero-meta > div,
+.site-shell--canopy .article-empty {
+	background: rgba(255, 255, 255, 0.94);
+	border: 1px solid rgba(44, 62, 47, 0.1);
+	border-top: 5px solid var(--canopy-evergreen);
 	box-shadow: var(--shadow);
+}
+
+.site-shell--canopy .hero-card,
+.site-shell--canopy .rail-card,
+.site-shell--canopy .toc,
+.site-shell--canopy .article-card,
+.site-shell--canopy .related-article-card,
+.site-shell--canopy .rss-friendly-item,
+.site-shell--canopy .article-references,
+.site-shell--canopy .article-empty {
+	border-radius: 15px;
 }
 
 .site-shell--canopy .home-hero-card,
 .site-shell--canopy .article-card {
-	border-radius: 8px;
+	border-left-width: 1px;
+	border-left-color: rgba(44, 62, 47, 0.1);
+}
+
+.site-shell--canopy .home-hero-card::before {
+	display: none;
+	background: none;
+	background-image: none;
+}
+
+.site-shell--canopy .home-hero-card > strong,
+.site-shell--canopy .home-hero-card .article-card-content > strong,
+.site-shell--canopy .home-hero-card h2,
+.site-shell--canopy .home-hero-card h2 a,
+.site-shell--canopy .hero-card > strong,
+.site-shell--canopy .hero-card h2,
+.site-shell--canopy .rail-card h2,
+.site-shell--canopy .article-card h2,
+.site-shell--canopy .related-article-card h3,
+.site-shell--canopy .rss-friendly-item h2 {
+	color: var(--canopy-dark);
+}
+
+.site-shell--canopy .article-card:hover,
+.site-shell--canopy .article-card:focus-visible,
+.site-shell--canopy .related-article-card:hover,
+.site-shell--canopy .related-article-card:focus-visible,
+.site-shell--canopy .rss-friendly-item:hover,
+.site-shell--canopy .rss-friendly-item:focus-visible {
+	border-top-color: var(--canopy-accent);
+	box-shadow: 0 22px 52px rgba(28, 58, 43, 0.16);
+	transform: translateY(-2px);
+}
+
+.site-shell--canopy .article-card.has-row-image,
+.site-shell--canopy .home-hero-card.has-row-image,
+.site-shell--canopy .article-card.has-focal-image,
+.site-shell--canopy .home-hero-card.has-focal-image {
+	background: #ffffff;
+}
+
+.site-shell--canopy .home-hero-card.has-row-image .article-card-image {
+	opacity: 0.16;
+}
+
+.site-shell--canopy .home-hero-card.has-row-image:hover .article-card-image,
+.site-shell--canopy .home-hero-card.has-row-image:focus-within .article-card-image {
+	opacity: 0.22;
+}
+
+.site-shell--canopy .article-card-image::after,
+.site-shell--canopy .home-hero-card.has-row-image .article-card-image::after {
+	background:
+		linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.96) 44%, rgba(255, 255, 255, 0.66) 78%, rgba(255, 255, 255, 0.32) 100%),
+		linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.94));
+}
+
+.site-shell--canopy .article-card-focal::after {
+	background:
+		linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.76) 54%, rgba(255, 255, 255, 0.18) 100%),
+		radial-gradient(circle at 82% 12%, rgba(229, 143, 101, 0.18), transparent 42%);
 }
 
 .site-shell--canopy .article-page {
 	background:
-		linear-gradient(180deg, rgba(244, 248, 242, 0.82), rgba(244, 248, 242, 1)),
-		var(--bg);
+		linear-gradient(180deg, rgba(245, 241, 230, 0.82), rgba(245, 241, 230, 1)),
+		var(--canopy-neutral);
 }
 
-.site-shell--canopy .article-background {
-	opacity: 0.42;
+.site-shell--canopy .article-bg-image {
+	opacity: 0.06;
+	filter: saturate(0.82) contrast(0.96) blur(18px);
+}
+
+.site-shell--canopy .article-focal-panel {
+	border-color: rgba(11, 83, 69, 0.24);
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(11, 83, 69, 0.22)),
+		var(--article-focal-image);
+	background-size: cover;
+	background-position: var(--article-focal-position, center center);
+	box-shadow: 0 24px 58px rgba(28, 58, 43, 0.16);
+}
+
+.site-shell--canopy .article-focal-panel--diagram {
+	background-size: auto, contain;
+	background-repeat: no-repeat;
+	background-position:
+		center center,
+		var(--article-focal-position, center center);
 }
 
 .site-shell--canopy .article-inner {
 	font-weight: 400;
+	color: #2c3e2f;
+}
+
+.site-shell--canopy .article-page .eyebrow::before,
+.site-shell--canopy .article-inner h2::before {
+	background: var(--canopy-accent);
+	box-shadow: none;
+}
+
+.site-shell--canopy .article-inner h2::after,
+.site-shell--canopy .section-head h2::after {
+	background: linear-gradient(90deg, var(--canopy-accent), color-mix(in srgb, var(--canopy-accent) 38%, transparent));
+	box-shadow: none;
+}
+
+.site-shell--canopy .article-inner h3,
+.site-shell--canopy .article-inner a,
+.site-shell--canopy .reference-list a {
+	color: var(--canopy-evergreen);
+}
+
+.site-shell--canopy .article-inner p,
+.site-shell--canopy .article-inner li {
+	color: #33493a;
+}
+
+.site-shell--canopy .article-inner blockquote {
+	border-left-color: var(--canopy-accent);
+	background: rgba(255, 255, 255, 0.72);
+	color: var(--canopy-dark);
+}
+
+.site-shell--canopy .callout,
+.site-shell--canopy .article-inner .callout,
+.site-shell--canopy .article-inner blockquote.article-callout {
+	border-color: rgba(11, 83, 69, 0.16);
+	border-left-color: var(--canopy-accent);
+	background:
+		linear-gradient(90deg, color-mix(in srgb, var(--canopy-accent) 10%, transparent), transparent 74%),
+		#fffaf0;
+	color: var(--canopy-dark);
+}
+
+.site-shell--canopy .callout strong,
+.site-shell--canopy .article-inner .callout-title,
+.site-shell--canopy .article-inner details.callout > summary,
+.site-shell--canopy .article-inner blockquote.article-callout strong {
+	color: var(--canopy-evergreen);
 }
 
 .site-shell--canopy .article-inner code,
 .site-shell--canopy .article-inner pre,
 .site-shell--canopy code {
-	background: #eef5f0;
-	color: #153329;
+	background: #fffaf0;
+	color: #234438;
+	border-color: rgba(11, 83, 69, 0.14);
 }
 
 .site-shell--canopy .tag,
 .site-shell--canopy .debug-chip,
 .site-shell--canopy .status-pill {
-	border-color: rgba(13, 118, 87, 0.18);
-	background: rgba(13, 118, 87, 0.08);
-	color: #234034;
+	border-color: rgba(11, 83, 69, 0.18);
+	background: color-mix(in srgb, var(--canopy-sage) 13%, white);
+	color: #234438;
+}
+
+.site-shell--canopy .status-pill span,
+.site-shell--canopy .hero-meta dt,
+.site-shell--canopy .home-meta dt,
+.site-shell--canopy .article-page .article-meta dt {
+	color: var(--canopy-evergreen);
+}
+
+.site-shell--canopy .status-pill strong,
+.site-shell--canopy .hero-meta dd,
+.site-shell--canopy .home-meta dd {
+	color: var(--canopy-dark);
 }
 
 .site-shell--canopy .read-progress {
-	background: linear-gradient(90deg, #0d7657, #0f6f8f);
+	background: linear-gradient(90deg, var(--canopy-evergreen), var(--canopy-accent));
+	box-shadow: 0 0 20px rgba(229, 143, 101, 0.34);
 }
 
 .site-shell--canopy .article-footer,
 .site-shell--canopy .site-footer,
-.site-shell--canopy #articles.article-grid {
-	border-color: var(--metro-line-soft);
+.site-shell--canopy #articles.article-grid,
+.site-shell--canopy .related-articles,
+.site-shell--canopy .rss-friendly-list {
+	border-color: rgba(44, 62, 47, 0.1);
+}
+
+.site-shell--canopy .site-footer {
+	background: rgba(255, 255, 255, 0.54);
+	border-radius: 24px 24px 0 0;
+}
+
+.site-shell--canopy .site-footer-meta {
+	color: #6c7a6e;
+	letter-spacing: 0.04em;
+}
+
+@media (max-width: 700px) {
+	.site-shell--canopy .home-hero h1 {
+		font-size: clamp(2.25rem, 12vw, 3.2rem);
+	}
+
+	.site-shell--canopy .nav-links a,
+	.site-shell--canopy .nav-action,
+	.site-shell--canopy .home-primary-actions a,
+	.site-shell--canopy .home-hero-links a,
+	.site-shell--canopy .site-footer-links a,
+	.site-shell--canopy .cmd {
+		width: auto;
+		min-width: 0;
+	}
 }

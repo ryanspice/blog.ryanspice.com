@@ -40,6 +40,11 @@
 </script>
 
 <svelte:head>
+	{#if siteTheme === 'canopy'}
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&display=swap" />
+	{/if}
 	<link rel="stylesheet" href={`${base}/tower-accent.css`} />
 	<link rel="alternate" type="application/rss+xml" title={data?.ui?.rss?.channelTitle ?? 'Ryan Spice · Technical notes'} href={`${base}${pathWithLocale(data?.locale ?? 'en', '/rss.xml')}`} />
 </svelte:head>

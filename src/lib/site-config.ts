@@ -93,7 +93,7 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 		siteName: 'Canopy Digital Blog',
 		domain: 'blog.canopydigital.ca',
 		titleSuffix: 'Canopy Digital Blog',
-		description: 'Technical notes, implementation writeups, and production research from Canopy Digital.',
+		description: 'Web design, local SEO, maintenance, and practical technology notes from Canopy Digital.',
 		generator: 'blog.canopydigital.ca',
 		defaultOgImage: '/og-default.png',
 		author: {
@@ -107,10 +107,16 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 			url: 'https://canopydigital.ca'
 		},
 		primaryExternalLink: {
-			label: 'canopydigital.ca',
-			href: 'https://canopydigital.ca'
+			label: 'Book a Consult',
+			href: 'https://canopydigital.ca/#contact'
 		},
-		footerExternalLinks: [{ label: 'Canopy Digital', href: 'https://canopydigital.ca' }],
+		footerExternalLinks: [
+			{ label: 'Main site', href: 'https://canopydigital.ca' },
+			{ label: 'Services', href: 'https://canopydigital.ca/#services' },
+			{ label: 'Pricing', href: 'https://canopydigital.ca/#pricing' },
+			{ label: 'About', href: 'https://canopydigital.ca/#about' },
+			{ label: 'Book a Consult', href: 'https://canopydigital.ca/#contact' }
+		],
 		showOwnerControls: false,
 		showDevLogLinks: false,
 		showLibraryLinks: false,

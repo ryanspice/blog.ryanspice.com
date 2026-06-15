@@ -138,6 +138,67 @@
 		-webkit-backdrop-filter: blur(16px) saturate(1.08);
 	}
 
+	:global(.site-shell--canopy .article-page .article-shell) {
+		border: 1px solid rgba(44, 62, 47, 0.1);
+		border-top: 5px solid var(--canopy-evergreen);
+		border-radius: 15px;
+		background: rgba(255, 255, 255, 0.95);
+		box-shadow: var(--shadow);
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+
+	:global(.site-shell--canopy .article-page .hero-card),
+	:global(.site-shell--canopy .article-page .rail-card),
+	:global(.site-shell--canopy .article-page .toc),
+	:global(.site-shell--canopy .article-page .article-toc--mobile),
+	:global(.site-shell--canopy .article-page .article-references),
+	:global(.site-shell--canopy .article-page .related-article-card) {
+		border: 1px solid rgba(44, 62, 47, 0.1);
+		border-top: 5px solid var(--canopy-evergreen);
+		border-radius: 15px;
+		background: rgba(255, 255, 255, 0.95);
+		box-shadow: var(--shadow);
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+
+	:global(.site-shell--canopy .article-page .hero-card),
+	:global(.site-shell--canopy .article-page .article-toc--mobile),
+	:global(.site-shell--canopy .article-page .article-references) {
+		border-left: 1px solid rgba(44, 62, 47, 0.1);
+	}
+
+	:global(.site-shell--canopy .article-page .meta-grid > div),
+	:global(.site-shell--canopy .article-page .hero-meta > div),
+	:global(.site-shell--canopy .article-page .status-pill),
+	:global(.site-shell--canopy .article-page .tag) {
+		background: color-mix(in srgb, var(--canopy-sage) 13%, white);
+		border-color: rgba(11, 83, 69, 0.18);
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+
+	:global(.site-shell--canopy .article-page .toc a),
+	:global(.site-shell--canopy .article-page .toc-accordion-panel a) {
+		border-bottom-color: rgba(44, 62, 47, 0.1);
+		color: var(--canopy-text-soft);
+	}
+
+	:global(.site-shell--canopy .article-page .toc a:hover),
+	:global(.site-shell--canopy .article-page .toc a:focus-visible),
+	:global(.site-shell--canopy .article-page .toc a.is-active),
+	:global(.site-shell--canopy .article-page .toc-accordion-panel a:hover),
+	:global(.site-shell--canopy .article-page .toc-accordion-panel a:focus-visible),
+	:global(.site-shell--canopy .article-page .toc-accordion-panel a.is-active) {
+		color: var(--canopy-evergreen);
+	}
+
+	:global(.site-shell--canopy .article-page .toc a.is-active::before),
+	:global(.site-shell--canopy .article-page .toc-accordion-panel a.is-active::before) {
+		background: var(--canopy-accent);
+	}
+
 	@media (max-width: 760px) {
 		.article-bg-image {
 			opacity: 0.055;

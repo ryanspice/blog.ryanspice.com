@@ -40,6 +40,9 @@
 	const localizedHomeHref = $derived(`${base}${pathWithLocale(article.locale, '/')}`);
 	const localizedRssHref = $derived(`${base}${pathWithLocale(article.locale, '/rss.xml')}`);
 	const localizedDevLogHref = $derived(`${base}/dev-log/`);
+	const headerNavLinks = $derived.by(() =>
+		site.id === 'canopy' ? [...article.design.navLinks, site.primaryExternalLink] : article.design.navLinks
+	);
 	const articleFooterLinks = $derived.by(() => {
 		const links = [
 			{ label: ui.article.home, href: localizedHomeHref },
@@ -175,7 +178,7 @@
 	<SiteHeader
 		brandLabel={site.brandLabel}
 		brandInitials={site.brandInitials}
-		navLinks={article.design.navLinks}
+		navLinks={headerNavLinks}
 		showLibraryLink={site.showLibraryLinks}
 		showDevLogLink={site.showDevLogLinks}
 		showOwnerLinks={site.showOwnerControls}

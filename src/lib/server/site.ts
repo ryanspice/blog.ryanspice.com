@@ -36,21 +36,21 @@ const canopyEnglishOverrides: DictionaryOverrides = {
 		githubRepo: 'Source repo'
 	},
 	home: {
-		title: 'Canopy Digital Blog · Technical notes',
-		description: 'Technical notes, implementation writeups, and production research from Canopy Digital.',
+		title: 'Canopy Digital Blog · Web design and technology notes',
+		description: 'Web design, local SEO, maintenance, and practical technology notes from Canopy Digital.',
 		eyebrow: 'Canopy Digital · technical blog',
-		heading: 'Practical notes on web platforms, AI tooling, local-first systems, and production delivery.',
+		heading: 'Practical web design, SEO, and technology notes for London businesses.',
 		dek:
-			'A lightweight publishing surface for Canopy Digital research and implementation notes, generated from the same source-of-truth content pipeline as Ryan\'s technical blog.',
-		focusNote: 'Current focus: durable web systems, AI-assisted delivery, and deployment patterns that survive real constraints.',
+			'Field notes from the same practical delivery mindset behind Canopy Digital: clear websites, local visibility, care plans, and the technology choices that keep small-business web systems maintainable.',
+		focusNote: 'Current focus: durable websites, local SEO, AI-assisted delivery, and launch patterns that survive real constraints.',
 		quickLinks: 'Canopy links',
 		latestArticles: 'Latest articles',
 		recentPosts: 'Recent published posts',
-		recentPostsDek: 'The newest public technical notes, capped to the latest 5 posts.',
+		recentPostsDek: 'The newest public notes on web infrastructure, delivery workflow, tooling, and small-business technology decisions.',
 		elsewhere: 'Canopy Digital',
 		linksInfo: 'Links and site info',
 		footerDek:
-			'A static SvelteKit publishing surface for technical notes, repair logs, and research writeups. The Canopy build keeps the same content source with a lighter client-facing skin.',
+			'A static SvelteKit publishing surface for technical notes and implementation writeups, skinned to match the Canopy Digital service site.',
 		staticSite: 'Static build'
 	},
 	rss: {
@@ -68,21 +68,21 @@ const canopyFrenchOverrides: DictionaryOverrides = {
 		githubRepo: 'Depot source'
 	},
 	home: {
-		title: 'Canopy Digital Blog · Notes techniques',
-		description: 'Notes techniques, comptes rendus de mise en oeuvre et recherche de production de Canopy Digital.',
+		title: 'Canopy Digital Blog · Design web et notes techniques',
+		description: 'Design web, SEO local, maintenance et notes techniques pratiques de Canopy Digital.',
 		eyebrow: 'Canopy Digital · blogue technique',
-		heading: 'Notes pratiques sur les plateformes web, les outils IA, les systemes local-first et la livraison production.',
+		heading: 'Notes pratiques sur le design web, le SEO et la technologie pour les entreprises de London.',
 		dek:
-			'Une surface de publication legere pour la recherche et les notes de mise en oeuvre de Canopy Digital, generee depuis le meme pipeline de contenu source que le blogue technique de Ryan.',
-		focusNote: 'Priorite actuelle: systemes web durables, livraison assistee par IA et deploiements qui tiennent sous contraintes reelles.',
+			'Notes de terrain issues de la meme approche pratique que Canopy Digital: sites clairs, visibilite locale, plans de maintenance et choix techniques maintenables.',
+		focusNote: 'Priorite actuelle: sites web durables, SEO local, livraison assistee par IA et lancements qui tiennent sous contraintes reelles.',
 		quickLinks: 'Liens Canopy',
 		latestArticles: 'Articles recents',
 		recentPosts: 'Publications recentes',
-		recentPostsDek: 'Les plus recentes notes techniques publiques, limitees aux 5 dernieres publications.',
+		recentPostsDek: 'Les plus recentes notes publiques sur infrastructure web, livraison, outils et decisions techniques pour petites entreprises.',
 		elsewhere: 'Canopy Digital',
 		linksInfo: 'Liens et information du site',
 		footerDek:
-			'Une surface SvelteKit statique pour notes techniques, journaux de reparation et recherches. La version Canopy garde la meme source de contenu avec une interface client plus legere.',
+			'Une surface SvelteKit statique pour notes techniques et comptes rendus, avec une interface alignee sur le site de services Canopy Digital.',
 		staticSite: 'Build statique'
 	},
 	rss: {
