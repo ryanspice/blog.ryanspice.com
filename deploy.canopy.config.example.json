@@ -4,6 +4,7 @@
   "port": 22,
   "remotePath": "domains/blog.canopydigital.ca/public_html",
   "publicUrl": "https://blog.canopydigital.ca/",
+  "siteId": "canopy",
   "keyPath": "",
   "basePath": "",
   "keepNames": [

@@ -2,12 +2,25 @@ import adapter from './adapter/index.js';
 
 const basePath = process.env.PUBLIC_BASE_PATH ?? '';
 const prerenderOrigin = process.env.PUBLIC_SITE_URL ?? 'https://blog.ryanspice.com';
+const siteId = (process.env.PUBLIC_SITE_ID ?? process.env.BLOG_SITE_ID ?? 'ryan').trim().toLowerCase();
 const adapterFallback =
 	process.env.ADAPTER_FALLBACK === undefined
 		? false
 		: process.env.ADAPTER_FALLBACK === 'true'
 			? true
 			: process.env.ADAPTER_FALLBACK;
+const buildIdentity =
+	siteId === 'canopy'
+		? {
+				name: 'canopy-static-skin',
+				required: ['site-shell--canopy'],
+				forbidden: ['site-shell--ryan', 'themeClass:"ryan"']
+			}
+		: {
+				name: 'ryan-static-skin',
+				required: ['site-shell--ryan'],
+				forbidden: ['site-shell--canopy', 'themeClass:"canopy"']
+			};
 
 const config = {
 	kit: {
@@ -32,7 +45,8 @@ const config = {
 			assets: process.env.ADAPTER_ASSETS ?? 'build',
 			precompress: process.env.PRECOMPRESS === 'true',
 			fallback: adapterFallback,
-			strict: true
+			strict: true,
+			buildIdentity
 		})
 	}
 };
