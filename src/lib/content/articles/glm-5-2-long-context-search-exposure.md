@@ -4,7 +4,7 @@ slug: "glm-5-2-long-context-search-exposure"
 status: "published"
 draft_type: "model-research-analysis"
 date: "2026-06-17"
-updated_date: "2026-06-17"
+updated_date: "2026-06-18"
 summary: "A practical look at GLM-5.2, why its 1M-context claim matters, how IndexShare changes sparse-attention search, and what builders should do differently when exposing sources to coding agents."
 accent: "#22c55e"
 image: "/img/articles/glm-5-2-long-context-search-exposure/glm-5-2-search-map.svg"
@@ -66,6 +66,17 @@ That is the part I care about.
 Search exposure is the practical layer between your source material and the model. It is the set of files, docs, issues, browser pages, logs, tests, diffs, and constraints you decide to put in front of an agent. GLM-5.2 matters because it makes that layer more powerful, but also easier to abuse.
 
 ![Diagram showing source exposure, retrieval policy, GLM-5.2 long context, sparse attention token search, and verification](/img/articles/glm-5-2-long-context-search-exposure/glm-5-2-search-map.svg "GLM-5.2 does not remove the search layer. It raises the bar for source exposure, retrieval policy, and verification.")
+
+## Update - June 18, 2026
+
+I re-checked the public GLM-5.2 sources after publishing this note. The core read still holds, but the provider-limit warning is the part I would underline harder now.
+
+- [Z.ai's GLM-5.2 docs](https://docs.z.ai/guides/llm/glm-5.2) still frame the flagship model as a 1M-context text model with a 128K maximum output window.
+- [Hugging Face](https://huggingface.co/zai-org/GLM-5.2) presents the open-weight release under an MIT license, and the launch article currently lists the model at 753B parameters.
+- [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/models/glm-5.2/) is a different hosted product surface: it currently lists `@cf/zai-org/glm-5.2` with a 262,144-token context window, function calling, reasoning support, and Cloudflare-specific pricing.
+- [IndexCache](https://arxiv.org/abs/2603.12201) is still the paper to read if you want the technical reason IndexShare matters: it is about reducing repeated sparse-attention index work across nearby layers.
+
+So the practical rule is unchanged: treat GLM-5.2 as a serious long-context coding model, but pin every claim to the exact endpoint and date you are using. For agents, the real work is still source policy, verification, and proving the model used the right evidence.
 
 ## The short version
 

@@ -18,6 +18,38 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-06-18',
+		title: 'Publish the GLM search-exposure note',
+		summary:
+			'Published a source-grounded GLM-5.2 article about long-context coding agents, search exposure, provider limits, and retrieval discipline, then refined the Canopy theme so the second public surface keeps a clearer branded reading lane.',
+		source: 'Model research article and Canopy theme polish',
+		accent: '#22c55e',
+		tags: ['blog', 'automation', 'ai', 'research', 'seo', 'canopy', 'developer workflow'],
+		relatedArticleSlugs: [
+			'glm-5-2-long-context-search-exposure',
+			'how-chatgpt-performs-deep-research',
+			'if-fable-5-is-gone-agent-stack-fallback-plan',
+			'a-love-of-digital-technology-bridges-canopy-into-the-fold'
+		],
+		relatedArticleTags: ['AI', 'AI agents', 'developer workflow', 'SEO', 'SvelteKit']
+	},
+	{
+		date: '2026-06-16',
+		title: 'Add the Canopy build identity lane',
+		summary:
+			'Added a Canopy-branded blog build with its own article, theme, deploy examples, RSS/sitemap identity handling, and PHP-static guardrails so the same content engine can ship a second public surface without mixing owner-only notes into the release lane.',
+		source: 'Canopy blog build and PHP-static identity hardening',
+		accent: '#7fd1b9',
+		tags: ['blog', 'automation', 'sveltekit-php', 'canopy', 'seo', 'release', 'developer workflow'],
+		relatedArticleSlugs: [
+			'a-love-of-digital-technology-bridges-canopy-into-the-fold',
+			'if-fable-5-is-gone-agent-stack-fallback-plan',
+			'ship-fast-for-windows-microsoft-store-playbook',
+			'openjarvis-local-ai-personal-ai-on-your-pc'
+		],
+		relatedArticleTags: ['SvelteKit', 'SEO', 'developer workflow', 'AI', 'Windows Store']
+	},
+	{
 		date: '2026-06-15',
 		title: 'Ship the fallback article and release lane',
 		summary:
