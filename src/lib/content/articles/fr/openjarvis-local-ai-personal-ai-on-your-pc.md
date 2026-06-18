@@ -60,6 +60,7 @@ link_terms:
   - "tarifs OpenRouter|https://openrouter.ai/pricing"
   - "tarifs de l'API Gemini|https://ai.google.dev/gemini-api/docs/pricing"
 summary: "OpenJarvis attire l'attention parce qu'il deplace l'assistant IA personnel vers une pile locale, mesurable et modifiable, plutot qu'un simple emballage autour d'un chat cloud. Voici ce qui compte, ce qui releve du battage, et comment penser a son usage sur un PC de developpeur."
+seo_description: "OpenJarvis deplace l'assistant IA personnel vers une pile locale et modifiable. Voici ce qui compte pour un PC de developpeur."
 ---
 # #OpenJarvis est le projet d'agent IA local a surveiller
 

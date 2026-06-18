@@ -57,6 +57,7 @@ link_terms:
   - "OpenRouter pricing|https://openrouter.ai/pricing"
   - "Gemini API pricing|https://ai.google.dev/gemini-api/docs/pricing"
 summary: "OpenJarvis is trending because it reframes the personal AI assistant as a local-first, measurable, editable agent stack instead of another cloud chat wrapper. Here is what matters, what is hype, and whether it can run on a normal developer PC."
+seo_description: "OpenJarvis reframes personal AI as a local-first agent stack. Here is what matters, what is hype, and how it fits developer PCs."
 ---
 # #OpenJarvis Is the Local AI Agent Project to Watch Right Now
 
