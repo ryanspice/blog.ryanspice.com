@@ -17,11 +17,38 @@
 	const sourceTypes = $derived(data.sourceTypes ?? []);
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
-		'@type': 'CollectionPage',
-		name: title,
-		description,
-		url: canonical,
-		about: libraryItems.map((item) => item.title)
+		'@graph': [
+			{
+				'@type': ['WebPage', 'CollectionPage'],
+				'@id': `${canonical}#webpage`,
+				name: title,
+				description,
+				url: canonical,
+				isPartOf: {
+					'@type': 'Blog',
+					name: 'blog.ryanspice.com',
+					url: page.url.origin
+				},
+				about: libraryItems.map((item) => item.title)
+			},
+			{
+				'@type': 'BreadcrumbList',
+				itemListElement: [
+					{
+						'@type': 'ListItem',
+						position: 1,
+						name: 'Articles',
+						item: page.url.origin
+					},
+					{
+						'@type': 'ListItem',
+						position: 2,
+						name: 'Research library',
+						item: canonical
+					}
+				]
+			}
+		]
 	});
 	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 </script>
@@ -40,7 +67,7 @@
 	<meta name="twitter:title" content={title} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
+	{@html `<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`}
 </svelte:head>
 
 <SiteHeader

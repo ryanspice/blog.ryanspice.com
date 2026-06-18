@@ -29,6 +29,42 @@
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
+	const jsonLd = $derived({
+		'@context': 'https://schema.org',
+		'@graph': [
+			{
+				'@type': ['WebPage', 'CollectionPage'],
+				'@id': `${canonical}#webpage`,
+				name: title,
+				description,
+				url: canonical,
+				isPartOf: {
+					'@type': 'Blog',
+					name: 'blog.ryanspice.com',
+					url: page.url.origin
+				},
+				about: devLogTags.slice(0, 16)
+			},
+			{
+				'@type': 'BreadcrumbList',
+				itemListElement: [
+					{
+						'@type': 'ListItem',
+						position: 1,
+						name: 'Articles',
+						item: page.url.origin
+					},
+					{
+						'@type': 'ListItem',
+						position: 2,
+						name: 'Dev log',
+						item: canonical
+					}
+				]
+			}
+		]
+	});
+	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 
 	function devLogTagHref(tag: string): string {
 		const params = new URLSearchParams({ tag });
@@ -57,15 +93,7 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	<script type="application/ld+json">
-		{
-			"@context": "https://schema.org",
-			"@type": "CollectionPage",
-			"name": "blog.ryanspice.com · Dev log",
-			"description": "A running log of site changes, AI Wiki notes, and the process hooks behind the blog.",
-			"url": "https://blog.ryanspice.com/dev-log/"
-		}
-	</script>
+	{@html `<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`}
 </svelte:head>
 
 <SiteHeader

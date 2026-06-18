@@ -12,6 +12,46 @@
 	const title = $derived(copy.title);
 	const description = $derived(copy.description);
 	const ogImage = $derived(new URL(`${base}/og-default.png`, data.canonical).toString());
+	const jsonLd = $derived({
+		'@context': 'https://schema.org',
+		'@graph': [
+			{
+				'@type': ['WebPage', 'CollectionPage'],
+				'@id': `${data.canonical}#webpage`,
+				name: title,
+				url: data.canonical,
+				description,
+				isPartOf: {
+					'@type': 'Blog',
+					name: site.siteName,
+					url: data.homeUrl
+				},
+				about: {
+					'@type': 'DataFeed',
+					name: copy.channelTitle,
+					url: data.feedUrl
+				}
+			},
+			{
+				'@type': 'BreadcrumbList',
+				itemListElement: [
+					{
+						'@type': 'ListItem',
+						position: 1,
+						name: site.brandLabel,
+						item: data.homeUrl
+					},
+					{
+						'@type': 'ListItem',
+						position: 2,
+						name: title,
+						item: data.canonical
+					}
+				]
+			}
+		]
+	});
+	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 	const headerLinks = $derived.by(() => {
 		const links = [
 			{ label: navCopy.articles, href: data.homeUrl + '#articles' },
@@ -48,25 +88,7 @@
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
-	{#if site.id === 'canopy'}
-		{#if data.locale === 'fr'}
-			<script type="application/ld+json">
-				{"@context":"https://schema.org","@type":"CollectionPage","name":"Flux RSS du Canopy Digital Blog","url":"https://blog.canopydigital.ca/fr/rss-reader/","description":"Page RSS lisible pour les notes de design web, SEO local, maintenance et technologie de Canopy Digital."}
-			</script>
-		{:else}
-			<script type="application/ld+json">
-				{"@context":"https://schema.org","@type":"CollectionPage","name":"Canopy Digital Blog RSS feed","url":"https://blog.canopydigital.ca/rss-reader/","description":"Readable RSS subscription page for Canopy Digital web design, local SEO, maintenance, and technology notes."}
-			</script>
-		{/if}
-	{:else if data.locale === 'fr'}
-		<script type="application/ld+json">
-			{"@context":"https://schema.org","@type":"CollectionPage","name":"Flux RSS de blog.ryanspice.com","url":"https://blog.ryanspice.com/fr/rss-reader/","description":"Page RSS lisible pour les notes techniques, articles recents et comptes rendus publics de Ryan Spice."}
-		</script>
-	{:else}
-		<script type="application/ld+json">
-			{"@context":"https://schema.org","@type":"CollectionPage","name":"blog.ryanspice.com RSS feed","url":"https://blog.ryanspice.com/rss-reader/","description":"Readable RSS subscription page for Ryan Spice technical notes, recent articles, and public production writeups."}
-		</script>
-	{/if}
+	{@html `<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`}
 </svelte:head>
 
 <SiteHeader
