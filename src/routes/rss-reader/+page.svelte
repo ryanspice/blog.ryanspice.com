@@ -11,6 +11,7 @@
 	const site = $derived(data.site ?? siteConfigs.ryan);
 	const title = $derived(copy.title);
 	const description = $derived(copy.description);
+	const ogImage = $derived(new URL(`${base}/og-default.png`, data.canonical).toString());
 	const headerLinks = $derived.by(() => {
 		const links = [
 			{ label: navCopy.articles, href: data.homeUrl + '#articles' },
@@ -24,12 +25,27 @@
 <svelte:head>
 	<title>{title}</title>
 	<meta name="description" content={description} />
-	<meta name="robots" content="noindex,follow" />
 	<link rel="canonical" href={data.canonical} />
 	{#each data.alternates as alternate (alternate.hreflang)}
 		<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
 	{/each}
 	<link rel="alternate" type="application/rss+xml" title={copy.channelTitle} href={data.feedUrl} />
+
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:url" content={data.canonical} />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content={site.siteName} />
+	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content={title} />
+
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
+	<meta name="twitter:image" content={ogImage} />
+	<meta name="twitter:image:alt" content={title} />
 </svelte:head>
 
 <SiteHeader
