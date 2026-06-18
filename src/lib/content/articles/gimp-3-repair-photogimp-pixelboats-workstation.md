@@ -1,5 +1,6 @@
 ---
 title: "Repairing a Broken GIMP 3 Install and Turning It Into a Pixel Art Workstation"
+seo_title: "Repair GIMP 3 Into a Pixel Art Workstation"
 slug: "gimp-3-repair-photogimp-pixelboats-workstation"
 status: "published"
 draft_type: "technical-blog-post"
@@ -27,6 +28,7 @@ tags:
 related_posts:
   - "debugging-gimp-3-python-plugin-failures-windows-windhawk"
 summary: "A real-world repair log and workflow writeup covering a broken GIMP 3.2 install, Windows DLL/runtime conflicts, Windhawk suspicion, PhotoGIMP, G'MIC-Qt, a Fluent-ish theme, and a PixelBoats-ready asset kit."
+seo_description: "A GIMP 3 repair log covering Windows DLL conflicts, PhotoGIMP, G'MIC-Qt, theme cleanup, and a PixelBoats-ready asset workflow."
 link_terms:
   - "GIMP|https://en.wikipedia.org/wiki/GIMP"
   - "PixelBoats|/?view=compact&tag=PixelBoats"

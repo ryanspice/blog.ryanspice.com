@@ -55,6 +55,7 @@ type RawArticleModule = Record<string, string>;
 
 export type ArticleMeta = {
 	title: string;
+	seoTitle?: string;
 	slug: string;
 	locale: SupportedLocale;
 	languageTag: string;
@@ -66,6 +67,7 @@ export type ArticleMeta = {
 	status: string;
 	draftType: string;
 	summary: string;
+	seoDescription?: string;
 	tags: string[];
 	audience: string[];
 	date: string;
@@ -239,7 +241,8 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const pathLocale = path.includes('/content/articles/fr/') ? 'fr' : DEFAULT_LOCALE;
 	const locale = resolveLocale(stringValue(frontmatter.locale) || pathLocale);
 	const title = stringValue(frontmatter.title) || firstHeading(body) || filename;
-	const renderedBody = stripLeadingTitleHeading(body, title);
+	const seoTitle = stringValue(frontmatter.seo_title) || stringValue(frontmatter.seoTitle);
+	const renderedBody = stripLeadingTitleHeading(body);
 	const slug = stringValue(frontmatter.slug) || slugify(title);
 	const translationOf = stringValue(frontmatter.translation_of);
 	const canonicalSlug = stringValue(frontmatter.canonical_slug) || translationOf || slug;
@@ -249,6 +252,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const status = stringValue(frontmatter.status) || 'draft';
 	const draftType = stringValue(frontmatter.draft_type) || 'technical-blog-post';
 	const summary = stringValue(frontmatter.summary) || '';
+	const seoDescription = stringValue(frontmatter.seo_description) || stringValue(frontmatter.seoDescription);
 	const tags = arrayValue(frontmatter.tags);
 	const date = stringValue(frontmatter.date) || filename.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || '2026-05-28';
 	const dateLabel = formatArticleDate(date, locale);
@@ -270,6 +274,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	return {
 		...rendered,
 		title,
+		...(seoTitle ? { seoTitle } : {}),
 		slug,
 		locale,
 		languageTag: localeToLanguageTag(locale),
@@ -281,6 +286,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		status,
 		draftType,
 		summary,
+		...(seoDescription ? { seoDescription } : {}),
 		tags,
 		audience: arrayValue(frontmatter.audience),
 		date,
@@ -292,7 +298,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		releaseDateLabel: releaseDateLabel || undefined,
 		version,
 		previousVersion,
-		previousBody: previousBody ? stripLeadingTitleHeading(previousBody, title) : null,
+		previousBody: previousBody ? stripLeadingTitleHeading(previousBody) : null,
 		visuals,
 		credits: credits.length ? credits : ['Ryan Spice'],
 		references: arrayValue(frontmatter.references),
@@ -596,19 +602,8 @@ function firstHeading(body: string): string | undefined {
 	return body.match(/^#\s+(.+)$/m)?.[1]?.trim();
 }
 
-function stripLeadingTitleHeading(body: string, title: string): string {
-	const normalizedTitle = normalizeHeadingText(title);
-	return body.replace(/^\s*#\s+(.+?)[ \t]*\n+/, (match, heading) => {
-		return normalizeHeadingText(heading) === normalizedTitle ? '' : match;
-	});
-}
-
-function normalizeHeadingText(value: string): string {
-	return value
-		.trim()
-		.toLowerCase()
-		.replace(/[`*_~[\]()]/g, '')
-		.replace(/\s+/g, ' ');
+function stripLeadingTitleHeading(body: string): string {
+	return body.replace(/^\s*#\s+.+?[ \t]*\n+/, '');
 }
 
 function normalizeRelatedTarget(value: string): string {

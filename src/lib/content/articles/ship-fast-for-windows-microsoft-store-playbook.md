@@ -1,5 +1,6 @@
 ---
 title: "Ship Fast, But for Windows: Adapting the Mobile App Factory Playbook to the Microsoft Store"
+seo_title: "Ship Fast on Windows for the Microsoft Store"
 slug: "ship-fast-for-windows-microsoft-store-playbook"
 status: "published"
 draft_type: "product-strategy"

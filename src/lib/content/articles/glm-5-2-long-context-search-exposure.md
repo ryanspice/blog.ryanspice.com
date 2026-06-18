@@ -1,11 +1,13 @@
 ---
 title: "GLM-5.2, Search Exposure, and the New Long-Context Coding Agent Problem"
+seo_title: "GLM-5.2 Long-Context Coding Agent Problem"
 slug: "glm-5-2-long-context-search-exposure"
 status: "published"
 draft_type: "model-research-analysis"
 date: "2026-06-17"
 updated_date: "2026-06-18"
 summary: "A practical look at GLM-5.2, why its 1M-context claim matters, how IndexShare changes sparse-attention search, and what builders should do differently when exposing sources to coding agents."
+seo_description: "How GLM-5.2's long context and IndexShare search change source exposure, coding agents, and retrieval design."
 accent: "#22c55e"
 image: "/img/articles/glm-5-2-long-context-search-exposure/glm-5-2-search-map.svg"
 image_alt: "Diagram showing source exposure, retrieval policy, GLM-5.2 long context, sparse attention token search, and verification."

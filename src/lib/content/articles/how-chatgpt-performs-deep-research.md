@@ -1,5 +1,6 @@
 ---
 title: "ChatGPT Deep Research vs. DeepSeek: What’s Actually Happening Under the Hood"
+seo_title: "ChatGPT Deep Research vs DeepSeek Internals"
 slug: "how-chatgpt-performs-deep-research"
 status: "published"
 draft_type: "research-analysis"
@@ -31,6 +32,7 @@ link_terms:
   - "DeepSeek|https://api-docs.deepseek.com/"
   - "reasoning models|https://platform.openai.com/docs/guides/reasoning-best-practices"
 summary: "A practical comparison of ChatGPT Deep Research and DeepSeek-style reasoning APIs, focused on workflow, retrieval, transparency, and what builders should actually take away."
+seo_description: "A builder-focused comparison of ChatGPT Deep Research and DeepSeek-style reasoning, covering retrieval, transparency, and workflow fit."
 ---
 # ChatGPT Deep Research vs. DeepSeek: What’s Actually Happening Under the Hood
 

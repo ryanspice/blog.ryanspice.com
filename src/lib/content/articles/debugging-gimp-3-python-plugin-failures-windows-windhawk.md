@@ -1,5 +1,6 @@
 ---
 title: "Debugging GIMP 3 Python Plug-in Failures on Windows: When the Culprit Wasn’t GIMP"
+seo_title: "Debugging GIMP 3 Python Plug-ins on Windows"
 slug: "debugging-gimp-3-python-plugin-failures-windows-windhawk"
 status: "published"
 draft_type: "technical-blog-post"
@@ -28,6 +29,7 @@ tags:
 related_posts:
   - "gimp-3-repair-photogimp-pixelboats-workstation"
 summary: "A companion debugging article about GIMP 3 Python plug-in failures on Windows, the misleading libgraphite2/_Unwind_Resume symptom, Pango/GI failures, PATH/DLL pollution, and the Windhawk hook layer."
+seo_description: "A Windows GIMP 3 plug-in debugging log covering Pango/GI failures, DLL pollution, libgraphite2 symptoms, and Windhawk hooks."
 link_terms:
   - "GIMP|https://en.wikipedia.org/wiki/GIMP"
   - "PixelBoats|/?view=compact&tag=PixelBoats"
@@ -406,6 +408,5 @@ When publishing both posts, do not duplicate/canonicalize them as the same artic
 This debugging article has a companion production workflow post focused on repairing GIMP into a PixelBoats art workstation with PhotoGIMP, G'MIC-Qt, palettes, templates, and safer restore rules:
 
 - [[2026-05-28-gimp-3-repair-photogimp-pixelboats-workstation|Repairing a Broken GIMP 3 Install and Turning It Into a Pixel Art Workstation]]
-
 
 

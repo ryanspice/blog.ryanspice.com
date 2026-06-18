@@ -1,5 +1,6 @@
 ---
 title: "Agent Mixing Without Theater: DeepSeek Pro, Flash, Gemma4, and the Law of Diminishing Returns"
+seo_title: "Agent Mixing: DeepSeek Pro, Flash, and Gemma4"
 slug: "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
 status: "published"
 draft_type: "agent-architecture"
@@ -38,6 +39,7 @@ link_terms:
   - "Google Cloud agent design patterns|https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system"
   - "Gemma|https://deepmind.google/models/gemma/"
 summary: "Part 1 of a practical series on mixing DeepSeek V4 Pro, DeepSeek V4 Flash, and local Gemma4-style agents without turning a coding workflow into an expensive committee."
+seo_description: "A practical look at mixing DeepSeek Pro, Flash, and local Gemma-style agents without turning coding work into a committee."
 ---
 # Agent Mixing Without Theater: DeepSeek Pro, Flash, Gemma4, and the Law of Diminishing Returns
 

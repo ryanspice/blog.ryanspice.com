@@ -39,8 +39,8 @@
 	const ui = $derived(getDictionary(article.locale));
 	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
 	const articleReferences = $derived(article.references.filter(Boolean));
-	const pageTitle = $derived(formatPageTitle(article.title, site.titleSuffix));
-	const description = $derived(article.summary || site.description);
+	const pageTitle = $derived(formatPageTitle(article.seoTitle || article.title, site.titleSuffix));
+	const description = $derived(article.seoDescription || article.summary || site.description);
 	const canonical = $derived(new URL(articleHref(article), page.url.origin).toString());
 	const shareImagePath = $derived(articleShareImagePath(article, site));
 	const ogImage = $derived(new URL(`${base}${shareImagePath}`, page.url.origin).toString());
