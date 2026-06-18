@@ -239,6 +239,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const pathLocale = path.includes('/content/articles/fr/') ? 'fr' : DEFAULT_LOCALE;
 	const locale = resolveLocale(stringValue(frontmatter.locale) || pathLocale);
 	const title = stringValue(frontmatter.title) || firstHeading(body) || filename;
+	const renderedBody = stripLeadingTitleHeading(body, title);
 	const slug = stringValue(frontmatter.slug) || slugify(title);
 	const translationOf = stringValue(frontmatter.translation_of);
 	const canonicalSlug = stringValue(frontmatter.canonical_slug) || translationOf || slug;
@@ -263,7 +264,8 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const linkTerms = arrayValue(frontmatter.link_terms)
 		.map(parseLinkTerm)
 		.filter((term): term is MarkdownLinkTerm => term !== null);
-	const rendered = await renderMarkdown(body, { linkTerms });
+	const rendered = await renderMarkdown(renderedBody, { linkTerms });
+	const previousBody = previousVersion ? loadPreviousBody(slug, previousVersion) : null;
 
 	return {
 		...rendered,
@@ -290,13 +292,13 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		releaseDateLabel: releaseDateLabel || undefined,
 		version,
 		previousVersion,
-		previousBody: previousVersion ? loadPreviousBody(slug, previousVersion) : null,
+		previousBody: previousBody ? stripLeadingTitleHeading(previousBody, title) : null,
 		visuals,
 		credits: credits.length ? credits : ['Ryan Spice'],
 		references: arrayValue(frontmatter.references),
 		relatedPosts: arrayValue(frontmatter.related_posts),
 		design: designFor({ slug, locale, title, status, draftType, summary, tags, date, dateLabel, updatedDate, updatedDateLabel, releaseDate, releaseDateLabel }),
-		body
+		body: renderedBody
 	};
 }
 
@@ -592,6 +594,21 @@ function isDateReached(value: string, now: Date): boolean {
 
 function firstHeading(body: string): string | undefined {
 	return body.match(/^#\s+(.+)$/m)?.[1]?.trim();
+}
+
+function stripLeadingTitleHeading(body: string, title: string): string {
+	const normalizedTitle = normalizeHeadingText(title);
+	return body.replace(/^\s*#\s+(.+?)[ \t]*\n+/, (match, heading) => {
+		return normalizeHeadingText(heading) === normalizedTitle ? '' : match;
+	});
+}
+
+function normalizeHeadingText(value: string): string {
+	return value
+		.trim()
+		.toLowerCase()
+		.replace(/[`*_~[\]()]/g, '')
+		.replace(/\s+/g, ' ');
 }
 
 function normalizeRelatedTarget(value: string): string {

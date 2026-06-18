@@ -37,6 +37,8 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content={site.siteName} />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content={title} />
@@ -46,6 +48,25 @@
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
+	{#if site.id === 'canopy'}
+		{#if data.locale === 'fr'}
+			<script type="application/ld+json">
+				{"@context":"https://schema.org","@type":"CollectionPage","name":"Flux RSS du Canopy Digital Blog","url":"https://blog.canopydigital.ca/fr/rss-reader/","description":"Page RSS lisible pour les notes de design web, SEO local, maintenance et technologie de Canopy Digital."}
+			</script>
+		{:else}
+			<script type="application/ld+json">
+				{"@context":"https://schema.org","@type":"CollectionPage","name":"Canopy Digital Blog RSS feed","url":"https://blog.canopydigital.ca/rss-reader/","description":"Readable RSS subscription page for Canopy Digital web design, local SEO, maintenance, and technology notes."}
+			</script>
+		{/if}
+	{:else if data.locale === 'fr'}
+		<script type="application/ld+json">
+			{"@context":"https://schema.org","@type":"CollectionPage","name":"Flux RSS de blog.ryanspice.com","url":"https://blog.ryanspice.com/fr/rss-reader/","description":"Page RSS lisible pour les notes techniques, articles recents et comptes rendus publics de Ryan Spice."}
+		</script>
+	{:else}
+		<script type="application/ld+json">
+			{"@context":"https://schema.org","@type":"CollectionPage","name":"blog.ryanspice.com RSS feed","url":"https://blog.ryanspice.com/rss-reader/","description":"Readable RSS subscription page for Ryan Spice technical notes, recent articles, and public production writeups."}
+		</script>
+	{/if}
 </svelte:head>
 
 <SiteHeader

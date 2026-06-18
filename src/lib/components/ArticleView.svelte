@@ -6,6 +6,12 @@
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleFocalCardCssVars, articleFocalImage, articleFocalPageCssVars } from '$lib/article-focal-images';
 	import { articleHref } from '$lib/article-links';
+	import {
+		ARTICLE_SHARE_IMAGE_HEIGHT,
+		ARTICLE_SHARE_IMAGE_WIDTH,
+		articleShareImageAlt,
+		articleShareImagePath
+	} from '$lib/article-social-images';
 	import type { Article } from '$lib/articles';
 	import { getDictionary } from '$lib/i18n/dictionaries';
 	import { pathWithLocale } from '$lib/i18n/locales';
@@ -33,10 +39,12 @@
 	const ui = $derived(getDictionary(article.locale));
 	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
 	const articleReferences = $derived(article.references.filter(Boolean));
-	const pageTitle = $derived(`${article.title} · ${site.titleSuffix}`);
+	const pageTitle = $derived(formatPageTitle(article.title, site.titleSuffix));
 	const description = $derived(article.summary || site.description);
 	const canonical = $derived(new URL(articleHref(article), page.url.origin).toString());
-	const ogImage = $derived(focalImage?.src ?? new URL(`${base}${site.defaultOgImage}`, page.url.origin).toString());
+	const shareImagePath = $derived(articleShareImagePath(article, site));
+	const ogImage = $derived(new URL(`${base}${shareImagePath}`, page.url.origin).toString());
+	const ogImageAlt = $derived(articleShareImageAlt(article, site));
 	const localizedHomeHref = $derived(`${base}${pathWithLocale(article.locale, '/')}`);
 	const localizedRssHref = $derived(`${base}${pathWithLocale(article.locale, '/rss.xml')}`);
 	const localizedDevLogHref = $derived(`${base}/dev-log/`);
@@ -92,7 +100,13 @@
 							url: site.publisher.url
 						}
 					: undefined,
-				image: ogImage,
+				image: {
+					'@type': 'ImageObject',
+					url: ogImage,
+					width: ARTICLE_SHARE_IMAGE_WIDTH,
+					height: ARTICLE_SHARE_IMAGE_HEIGHT,
+					caption: ogImageAlt
+				},
 				keywords: article.tags.join(', '),
 				wordCount: article.wordCount,
 				timeRequired: `PT${article.readingMinutes}M`
@@ -110,6 +124,11 @@
 		} catch {
 			return value;
 		}
+	}
+
+	function formatPageTitle(title: string, suffix: string): string {
+		const fullTitle = `${title} · ${suffix}`;
+		return fullTitle.length > 65 ? title : fullTitle;
 	}
 
 	async function enhanceMermaid() {
@@ -156,14 +175,16 @@
 	<meta property="og:type" content="article" />
 	<meta property="og:site_name" content={site.siteName} />
 	<meta property="og:image" content={ogImage} />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content={focalImage?.alt ?? pageTitle} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
+	<meta property="og:image:width" content={String(ARTICLE_SHARE_IMAGE_WIDTH)} />
+	<meta property="og:image:height" content={String(ARTICLE_SHARE_IMAGE_HEIGHT)} />
+	<meta property="og:image:alt" content={ogImageAlt} />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={pageTitle} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
-	<meta name="twitter:image:alt" content={focalImage?.alt ?? pageTitle} />
+	<meta name="twitter:image:alt" content={ogImageAlt} />
 	<meta property="article:published_time" content={article.date} />
 	<meta property="article:modified_time" content={article.updatedDate} />
 	{#each article.tags as tag, index (tag + ':' + index)}

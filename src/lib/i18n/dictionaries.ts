@@ -34,6 +34,16 @@ export type UiDictionary = {
 		type: string;
 		focusNote: string;
 		quickLinks: string;
+		assuranceHeading: string;
+		assuranceDek: string;
+		assuranceFreshLabel: string;
+		assuranceFreshValue: string;
+		assuranceFeedLabel: string;
+		assuranceFeedValue: string;
+		assuranceArchiveLabel: string;
+		assuranceArchiveValue: string;
+		assuranceBuildLabel: string;
+		assuranceBuildValue: string;
 		latestArticles: string;
 		recentPosts: string;
 		recentPostsDek: string;
@@ -106,14 +116,14 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			readingOn: 'Reading on'
 		},
 		home: {
-			title: 'blog.ryanspice.com · Technical notes',
+			title: 'Practical technical notes · blog.ryanspice.com',
 			description: 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.',
 			eyebrow: 'Ryan Spice · technical blog',
 			heading: 'Practical field notes for tooling, web work, AI research, and weird Windows problems.',
 			dek:
 				'A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.',
 			startLatest: 'Start with the latest article',
-			browseLatest: 'Browse the latest 5',
+			browseLatest: 'Browse all articles',
 			publishedNotes: 'Published notes',
 			latestUpdate: 'Latest update',
 			subscribe: 'Subscribe',
@@ -127,9 +137,19 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			focusNote:
 				'Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.',
 			quickLinks: 'Quick links',
+			assuranceHeading: 'What is current here',
+			assuranceDek: 'A compact map of the public archive, feed, and build surface.',
+			assuranceFreshLabel: 'Freshest note',
+			assuranceFreshValue: 'Updated from the latest published article',
+			assuranceFeedLabel: 'Feed-ready',
+			assuranceFeedValue: 'Readable RSS page plus raw XML',
+			assuranceArchiveLabel: 'Public archive',
+			assuranceArchiveValue: 'All published notes stay indexed',
+			assuranceBuildLabel: 'Static build',
+			assuranceBuildValue: 'SvelteKit output for shared hosting',
 			latestArticles: 'Latest articles',
 			recentPosts: 'Recent published posts',
-			recentPostsDek: 'The newest published technical notes, capped to the latest 5 posts.',
+			recentPostsDek: 'All currently published public technical notes, newest first.',
 			noArticles: 'No articles',
 			noArticlesHeading: 'No published articles are available yet.',
 			noArticlesDek: 'Check back after the next production deploy.',
@@ -141,8 +161,8 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			staticSite: 'Static site'
 		},
 		rss: {
-			title: 'RSS feed · blog.ryanspice.com',
-			description: 'Human-friendly RSS feed page for blog.ryanspice.com.',
+			title: 'Subscribe to the technical notes feed · blog.ryanspice.com',
+			description: 'Readable RSS subscription page for Ryan Spice technical notes, recent articles, and public production writeups.',
 			channelTitle: 'Ryan Spice · Technical notes',
 			channelDescription: 'Published technical notes and production notes from Ryan Spice.',
 			feedLabel: 'RSS feed',
@@ -198,14 +218,14 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			readingOn: 'Lecture active'
 		},
 		home: {
-			title: 'blog.ryanspice.com · Notes techniques',
+			title: 'Notes techniques pratiques · blog.ryanspice.com',
 			description: 'Articles techniques, notes de production et journal de developpement leger de Ryan Spice.',
 			eyebrow: 'Ryan Spice · blogue technique',
 			heading: 'Notes pratiques sur les outils, le web, la recherche IA et les problemes Windows etranges.',
 			dek:
 				'Un blogue SvelteKit prepare dans AI Wiki, avec journaux de reparation, notes de debogage, comparaisons de recherche et un journal de developpement ancre dans le vrai flux de travail.',
 			startLatest: 'Lire le plus recent article',
-			browseLatest: 'Voir les 5 plus recents',
+			browseLatest: 'Voir tous les articles',
 			publishedNotes: 'Notes publiees',
 			latestUpdate: 'Derniere mise a jour',
 			subscribe: 'Abonnement',
@@ -219,9 +239,19 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			focusNote:
 				'Priorite actuelle: journaux de reparation avec sources, travail web pratique et notes de recherche qui restent lisibles plus tard.',
 			quickLinks: 'Liens rapides',
+			assuranceHeading: 'Ce qui est actuel ici',
+			assuranceDek: 'Carte compacte des archives publiques, du flux et de la surface de build.',
+			assuranceFreshLabel: 'Note la plus recente',
+			assuranceFreshValue: 'Mise a jour depuis le dernier article publie',
+			assuranceFeedLabel: 'Pret pour le flux',
+			assuranceFeedValue: 'Page RSS lisible et XML brut',
+			assuranceArchiveLabel: 'Archive publique',
+			assuranceArchiveValue: 'Toutes les notes publiees restent indexees',
+			assuranceBuildLabel: 'Build statique',
+			assuranceBuildValue: 'Sortie SvelteKit pour hebergement partage',
 			latestArticles: 'Articles recents',
 			recentPosts: 'Publications recentes',
-			recentPostsDek: 'Les plus recentes notes techniques publiees, limitees aux 5 dernieres publications.',
+			recentPostsDek: 'Toutes les notes techniques publiques actuellement publiees, de la plus recente a la plus ancienne.',
 			noArticles: 'Aucun article',
 			noArticlesHeading: 'Aucun article publie n est disponible pour le moment.',
 			noArticlesDek: 'Revenez apres le prochain deploiement de production.',
@@ -233,8 +263,8 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			staticSite: 'Site statique'
 		},
 		rss: {
-			title: 'Flux RSS · blog.ryanspice.com',
-			description: 'Page RSS lisible pour blog.ryanspice.com.',
+			title: 'Abonnement au flux des notes techniques · blog.ryanspice.com',
+			description: 'Page RSS lisible pour les notes techniques, articles recents et comptes rendus publics de Ryan Spice.',
 			channelTitle: 'Ryan Spice · Notes techniques',
 			channelDescription: 'Notes techniques publiees et notes de production de Ryan Spice.',
 			feedLabel: 'Flux RSS',

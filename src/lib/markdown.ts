@@ -442,10 +442,16 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 
 	function standardizeMarkdownImage(node: any) {
 		node.properties ??= {};
+		const src = typeof node.properties.src === 'string' ? node.properties.src : '';
 		node.properties.loading ??= 'lazy';
 		node.properties.decoding ??= 'async';
 		node.properties.sizes ??= '(min-width: 1040px) 760px, calc(100vw - 32px)';
-		const responsiveSrcset = markdownResponsiveSrcset(typeof node.properties.src === 'string' ? node.properties.src : '');
+		const dimensions = markdownImageDimensions(src);
+		if (dimensions) {
+			node.properties.width ??= dimensions.width;
+			node.properties.height ??= dimensions.height;
+		}
+		const responsiveSrcset = markdownResponsiveSrcset(src);
 		if (responsiveSrcset) node.properties.srcSet ??= responsiveSrcset;
 		setClass(node, 'article-image');
 	}
@@ -455,6 +461,35 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 		if (!match) return undefined;
 		const [, base, ext] = match;
 		return [900, 1200, 1600].map((width) => `${base}-${width}w.${ext} ${width}w`).join(', ');
+	}
+
+	function markdownImageDimensions(src: string): { width: string; height: string } | undefined {
+		const knownDimensions: Array<[RegExp, number, number]> = [
+			[/glm-5-2-search-map\.svg$/i, 1200, 675],
+			[/fable-lane-fallback-map\.svg$/i, 1200, 720],
+			[/agent-routing-map\.svg$/i, 1600, 900],
+			[/diminishing-returns-curve\.svg$/i, 1600, 900],
+			[/openjarvis-local-ai-stack\.svg$/i, 1600, 900],
+			[/openjarvis-five-parts\.svg$/i, 1200, 675]
+		];
+
+		for (const [pattern, width, height] of knownDimensions) {
+			if (pattern.test(src)) return { width: String(width), height: String(height) };
+		}
+
+		const responsiveMatch = src.match(/-(900|1200|1600)w\.(webp|jpe?g|png)$/i);
+		if (responsiveMatch) {
+			const width = Number(responsiveMatch[1]);
+			return { width: String(width), height: String(Math.round(width * 0.5625)) };
+		}
+
+		const queryWidth = src.match(/[?&]w=(\d{3,4})\b/i);
+		if (queryWidth) {
+			const width = Number(queryWidth[1]);
+			return { width: String(width), height: String(Math.round(width * 0.6667)) };
+		}
+
+		return undefined;
 	}
 
 	function articleImageFigure(node: any) {

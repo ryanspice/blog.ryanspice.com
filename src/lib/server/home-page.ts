@@ -28,6 +28,7 @@ export function loadHomePage(url: URL, localeValue?: string | null) {
 	const recentPublishedArticles = publishedArticles.slice(0, 5);
 	const localizedHomePath = pathWithLocale(locale, '/');
 	const localizedRssPath = pathWithLocale(locale, '/rss.xml');
+	const localizedRssReaderPath = pathWithLocale(locale, '/rss-reader/');
 
 	return {
 		locale,
@@ -38,6 +39,8 @@ export function loadHomePage(url: URL, localeValue?: string | null) {
 		alternates: localizedPageAlternates(url, '/'),
 		rssUrl: new URL(`${base}${localizedRssPath}`, url.origin).toString(),
 		rssPath: localizedRssPath,
+		rssReaderUrl: new URL(`${base}${localizedRssReaderPath}`, url.origin).toString(),
+		rssReaderPath: localizedRssReaderPath,
 		homePath: localizedHomePath,
 		ogImage: new URL(`${base}${site.defaultOgImage}`, url.origin).toString(),
 		publishedArticles,

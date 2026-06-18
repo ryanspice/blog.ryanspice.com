@@ -53,7 +53,7 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 		titleSuffix: 'blog.ryanspice.com',
 		description: 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.',
 		generator: 'blog.ryanspice.com',
-		defaultOgImage: '/og-default.png',
+		defaultOgImage: '/img/social/ryan/home.png',
 		author: {
 			type: 'Person',
 			name: 'Ryan Spice',
@@ -95,7 +95,7 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 		titleSuffix: 'Canopy Digital Blog',
 		description: 'Web design, local SEO, maintenance, and practical technology notes from Canopy Digital.',
 		generator: 'blog.canopydigital.ca',
-		defaultOgImage: '/og-default.png',
+		defaultOgImage: '/img/social/canopy/home.png',
 		author: {
 			type: 'Person',
 			name: 'Ryan Spice',

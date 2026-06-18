@@ -9,6 +9,7 @@
     "dev:host": "vite --host 0.0.0.0",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "build": "svelte-kit sync && vite build",
+    "generate:social-images": "node ./scripts/Generate-SocialImages.mjs",
     "build:blog": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Build-BlogStatic.ps1 -Clean -SiteId ryan",
     "build:blog:ryan": "pnpm run build:blog",
     "build:blog:canopy": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Build-BlogStatic.ps1 -Clean -SiteId canopy -PublicSiteUrl https://blog.canopydigital.ca",

@@ -18,6 +18,7 @@
 	const copy = $derived(data.ui.home);
 	const navCopy = $derived(data.ui.nav);
 	const latestArticles = $derived.by(() => publishedArticles.slice(0, 5));
+	const indexedArticles = $derived.by(() => publishedArticles);
 
 	const title = $derived(copy.title);
 	const description = $derived(copy.description);
@@ -32,6 +33,31 @@
 	const canonical = $derived(data.canonical);
 	const ogImage = $derived(data.ogImage);
 	const footerExternalLinks = $derived(site.footerExternalLinks);
+	const assuranceCards = $derived.by(() => [
+		{
+			label: copy.assuranceFreshLabel,
+			value: latestDateLabel,
+			text: copy.assuranceFreshValue,
+			href: latestArticleHref
+		},
+		{
+			label: copy.assuranceFeedLabel,
+			value: copy.rssFeed,
+			text: copy.assuranceFeedValue,
+			href: data.rssReaderPath
+		},
+		{
+			label: copy.assuranceArchiveLabel,
+			value: `${publishedArticles.length} ${copy.posts}`,
+			text: copy.assuranceArchiveValue,
+			href: '#articles'
+		},
+		{
+			label: copy.assuranceBuildLabel,
+			value: copy.staticSite,
+			text: copy.assuranceBuildValue
+		}
+	]);
 </script>
 
 <HomeFandangoStyles />
@@ -49,11 +75,35 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content={site.siteName} />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content={title} />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={title} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
+	<meta name="twitter:image:alt" content={title} />
+	{#if site.id === 'canopy'}
+		{#if data.locale === 'fr'}
+			<script type="application/ld+json">
+				{"@context":"https://schema.org","@type":"Blog","name":"Canopy Digital Blog","url":"https://blog.canopydigital.ca/fr/","description":"Design web, SEO local, maintenance et notes techniques pratiques de Canopy Digital.","publisher":{"@type":"Organization","name":"Canopy Digital","url":"https://canopydigital.ca"}}
+			</script>
+		{:else}
+			<script type="application/ld+json">
+				{"@context":"https://schema.org","@type":"Blog","name":"Canopy Digital Blog","url":"https://blog.canopydigital.ca/","description":"Web design, local SEO, maintenance, and practical technology notes from Canopy Digital.","publisher":{"@type":"Organization","name":"Canopy Digital","url":"https://canopydigital.ca"}}
+			</script>
+		{/if}
+	{:else if data.locale === 'fr'}
+		<script type="application/ld+json">
+			{"@context":"https://schema.org","@type":"Blog","name":"blog.ryanspice.com","url":"https://blog.ryanspice.com/fr/","description":"Articles techniques, notes de production et journal de developpement leger de Ryan Spice.","author":{"@type":"Person","name":"Ryan Spice","url":"https://ryanspice.com"},"publisher":{"@type":"Organization","name":"Canopy Digital","url":"https://canopydigital.ca"}}
+		</script>
+	{:else}
+		<script type="application/ld+json">
+			{"@context":"https://schema.org","@type":"Blog","name":"blog.ryanspice.com","url":"https://blog.ryanspice.com/","description":"Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.","author":{"@type":"Person","name":"Ryan Spice","url":"https://ryanspice.com"},"publisher":{"@type":"Organization","name":"Canopy Digital","url":"https://canopydigital.ca"}}
+		</script>
+	{/if}
 </svelte:head>
 
 <SiteHeader
@@ -120,6 +170,31 @@
 	</aside>
 </section>
 
+<section class="home-assurance" aria-labelledby="home-assurance-heading">
+	<div class="home-assurance-copy">
+		<p class="eyebrow">{copy.quickLinks}</p>
+		<h2 id="home-assurance-heading">{copy.assuranceHeading}</h2>
+		<p>{copy.assuranceDek}</p>
+	</div>
+	<div class="home-assurance-grid">
+		{#each assuranceCards as card, index (card.label + ':' + index)}
+			{#if card.href}
+				<a class="home-assurance-card" href={card.href}>
+					<span>{card.label}</span>
+					<strong>{card.value}</strong>
+					<small>{card.text}</small>
+				</a>
+			{:else}
+				<div class="home-assurance-card">
+					<span>{card.label}</span>
+					<strong>{card.value}</strong>
+					<small>{card.text}</small>
+				</div>
+			{/if}
+		{/each}
+	</div>
+</section>
+
 <section id="articles" class="article-grid" aria-label="Latest published articles">
 	<div class="section-head">
 		<p class="eyebrow">{copy.latestArticles}</p>
@@ -127,8 +202,8 @@
 		<p class="section-dek">{copy.recentPostsDek}</p>
 	</div>
 
-	{#if latestArticles.length}
-		{#each latestArticles as article, index (article.slug + ':' + index)}
+	{#if indexedArticles.length}
+		{#each indexedArticles as article, index (article.slug + ':' + index)}
 			<ArticleCard article={article} />
 		{/each}
 	{:else}
@@ -159,6 +234,7 @@
 				<a href={`${base}/dev-log`}>{navCopy.devLog}</a>
 			{/if}
 			<a href={data.rssPath}>{copy.rssFeed}</a>
+			<a href={data.rssReaderPath}>{data.ui.rss.openFriendlyPage}</a>
 			<a href={`${base}/sitemap.xml`}>{navCopy.sitemap}</a>
 			<a href="#articles">{navCopy.articles}</a>
 			{#if site.showOwnerControls}

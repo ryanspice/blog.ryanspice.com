@@ -111,6 +111,9 @@ try {
   pnpm exec svelte-kit sync
   if ($LASTEXITCODE -ne 0) { throw "svelte-kit sync failed" }
 
+  pnpm run generate:social-images -- --site=$SiteId
+  if ($LASTEXITCODE -ne 0) { throw "social image generation failed" }
+
   pnpm exec vite build
   if ($LASTEXITCODE -ne 0) { throw "vite build failed" }
 }

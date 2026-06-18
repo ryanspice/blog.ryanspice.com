@@ -1,0 +1,132 @@
+{
+  "ryan:en:a-love-of-digital-technology-bridges-canopy-into-the-fold": {
+    "fingerprint": "c70de5e329edfd9620d28e0c34fb8bb04b770a69e21c3cd26280a7e6c048f86d",
+    "path": "static/img/social/ryan/articles/a-love-of-digital-technology-bridges-canopy-into-the-fold.png",
+    "updatedAt": "2026-06-18T17:43:46.752Z"
+  },
+  "ryan:en:agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns": {
+    "fingerprint": "fb52e9ccf98ebb361b10071213c21e9d567691ef2c6ccc3ef0b8608b0f8b5c2a",
+    "path": "static/img/social/ryan/articles/agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns.png",
+    "updatedAt": "2026-06-18T17:43:47.373Z"
+  },
+  "ryan:en:debugging-gimp-3-python-plugin-failures-windows-windhawk": {
+    "fingerprint": "2e5f21b20edd12ab626a84f87f279153ac92f91a1e150e51ccfe378155ee6db3",
+    "path": "static/img/social/ryan/articles/debugging-gimp-3-python-plugin-failures-windows-windhawk.png",
+    "updatedAt": "2026-06-18T17:43:47.983Z"
+  },
+  "ryan:en:gimp-3-repair-photogimp-pixelboats-workstation": {
+    "fingerprint": "5ffd1d1d862656e88330e14a56b741d12601385c5b1d4e9cb08af80d5020d344",
+    "path": "static/img/social/ryan/articles/gimp-3-repair-photogimp-pixelboats-workstation.png",
+    "updatedAt": "2026-06-18T17:43:48.612Z"
+  },
+  "ryan:en:glm-5-2-long-context-search-exposure": {
+    "fingerprint": "ebed2712871d4e0a28e84e4a05c86a4d33c0f284ac64fe6c1239c65a77c17b5e",
+    "path": "static/img/social/ryan/articles/glm-5-2-long-context-search-exposure.png",
+    "updatedAt": "2026-06-18T17:43:49.211Z"
+  },
+  "ryan:en:how-chatgpt-performs-deep-research": {
+    "fingerprint": "6b69e9fbee3f2dba484b9137d9f03a0c2f97fd2f1d161c4713342f8a42ecd6d9",
+    "path": "static/img/social/ryan/articles/how-chatgpt-performs-deep-research.png",
+    "updatedAt": "2026-06-18T17:43:49.850Z"
+  },
+  "ryan:en:if-fable-5-is-gone-agent-stack-fallback-plan": {
+    "fingerprint": "ef26afa1238638e32db97f9406ece515f4ab3fbf6f67686c9a0f6b8c31670dde",
+    "path": "static/img/social/ryan/articles/if-fable-5-is-gone-agent-stack-fallback-plan.png",
+    "updatedAt": "2026-06-18T17:43:50.440Z"
+  },
+  "ryan:en:openjarvis-local-ai-personal-ai-on-your-pc": {
+    "fingerprint": "124cbeb03fb12c217290b46ad5cd551458f0e8b191846007333f4b91f4641ea1",
+    "path": "static/img/social/ryan/articles/openjarvis-local-ai-personal-ai-on-your-pc.png",
+    "updatedAt": "2026-06-18T17:43:51.154Z"
+  },
+  "ryan:en:phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game": {
+    "fingerprint": "15f80f306d8e8e31c65a174b18d7c6c835d123fe098f93de9a5f9de5417bde28",
+    "path": "static/img/social/ryan/articles/phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game.png",
+    "updatedAt": "2026-06-18T17:43:51.781Z"
+  },
+  "ryan:en:recover-deepseek-gui-conversations-after-update": {
+    "fingerprint": "990b3ebd1b0ccdd3923145f589acf87d52d2cf9d8a2a71dc68c170fdcb186662",
+    "path": "static/img/social/ryan/articles/recover-deepseek-gui-conversations-after-update.png",
+    "updatedAt": "2026-06-18T17:43:52.584Z"
+  },
+  "ryan:en:ship-fast-for-windows-microsoft-store-playbook": {
+    "fingerprint": "cbc6a064511e195267b1f35242759dc327925ba38b20fa66f1ac502166c5e8d6",
+    "path": "static/img/social/ryan/articles/ship-fast-for-windows-microsoft-store-playbook.png",
+    "updatedAt": "2026-06-18T17:43:53.203Z"
+  },
+  "ryan:fr:openjarvis-local-ai-personal-ai-on-your-pc": {
+    "fingerprint": "88d089f3285622f91279c2f822a8c69a3125c8797bead1ee938f9b303d716e52",
+    "path": "static/img/social/ryan/articles/fr/openjarvis-local-ai-personal-ai-on-your-pc.png",
+    "updatedAt": "2026-06-18T17:43:53.835Z"
+  },
+  "canopy:en:a-love-of-digital-technology-bridges-canopy-into-the-fold": {
+    "fingerprint": "6eab42635b7cac40e5b4048f965bf178fab64dbf484d55824adc03041f5ee381",
+    "path": "static/img/social/canopy/articles/a-love-of-digital-technology-bridges-canopy-into-the-fold.png",
+    "updatedAt": "2026-06-18T17:43:55.049Z"
+  },
+  "canopy:en:agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns": {
+    "fingerprint": "0dcc6f0a321fe144a7b56ca2baf2212afb4b5a070361499007e20b628b80e1ce",
+    "path": "static/img/social/canopy/articles/agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns.png",
+    "updatedAt": "2026-06-18T17:43:55.669Z"
+  },
+  "canopy:en:debugging-gimp-3-python-plugin-failures-windows-windhawk": {
+    "fingerprint": "0b71fcd3b3bbd9ec12a5ff9d3ff2317e0fc8390fccf6d53d80eab50de2801b49",
+    "path": "static/img/social/canopy/articles/debugging-gimp-3-python-plugin-failures-windows-windhawk.png",
+    "updatedAt": "2026-06-18T17:43:56.303Z"
+  },
+  "canopy:en:gimp-3-repair-photogimp-pixelboats-workstation": {
+    "fingerprint": "9e5b58db3ba4b3151a9e0800a1fdf1d94da56b7577b6da72ecfe510d92de2472",
+    "path": "static/img/social/canopy/articles/gimp-3-repair-photogimp-pixelboats-workstation.png",
+    "updatedAt": "2026-06-18T17:43:56.935Z"
+  },
+  "canopy:en:glm-5-2-long-context-search-exposure": {
+    "fingerprint": "796151da266870301171ace06d4c189d6b31bff771795836e241827242ad02e5",
+    "path": "static/img/social/canopy/articles/glm-5-2-long-context-search-exposure.png",
+    "updatedAt": "2026-06-18T17:43:57.529Z"
+  },
+  "canopy:en:how-chatgpt-performs-deep-research": {
+    "fingerprint": "1280c5002e6ee15c7c81122758c5825d9c695674c63c7bd47fd777703da5fd08",
+    "path": "static/img/social/canopy/articles/how-chatgpt-performs-deep-research.png",
+    "updatedAt": "2026-06-18T17:43:58.157Z"
+  },
+  "canopy:en:if-fable-5-is-gone-agent-stack-fallback-plan": {
+    "fingerprint": "7a4ea0b87bf080b0eaf93f1f2f23dd96a140a1516697fa7df12383277bf59996",
+    "path": "static/img/social/canopy/articles/if-fable-5-is-gone-agent-stack-fallback-plan.png",
+    "updatedAt": "2026-06-18T17:43:58.759Z"
+  },
+  "canopy:en:openjarvis-local-ai-personal-ai-on-your-pc": {
+    "fingerprint": "dd66b98ad433a33686df0ca2e05b40ae3a4cac8e481173152bf0f94d19d0347a",
+    "path": "static/img/social/canopy/articles/openjarvis-local-ai-personal-ai-on-your-pc.png",
+    "updatedAt": "2026-06-18T17:43:59.380Z"
+  },
+  "canopy:en:phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game": {
+    "fingerprint": "2a57ca51f7105f0354a2d81949cdf8415eeb6100a9bf6474fd0cd21f5a983933",
+    "path": "static/img/social/canopy/articles/phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game.png",
+    "updatedAt": "2026-06-18T17:44:00.011Z"
+  },
+  "canopy:en:recover-deepseek-gui-conversations-after-update": {
+    "fingerprint": "fdcafe7a499c51683e15f5d47e31972d62a5106fc400c58a9af1f7f7d64acbb8",
+    "path": "static/img/social/canopy/articles/recover-deepseek-gui-conversations-after-update.png",
+    "updatedAt": "2026-06-18T17:44:00.641Z"
+  },
+  "canopy:en:ship-fast-for-windows-microsoft-store-playbook": {
+    "fingerprint": "8c9023fd3555f90cd714cd0b246d42ba651978e01392f0e36b880ab934ffa2d9",
+    "path": "static/img/social/canopy/articles/ship-fast-for-windows-microsoft-store-playbook.png",
+    "updatedAt": "2026-06-18T17:44:01.264Z"
+  },
+  "canopy:fr:openjarvis-local-ai-personal-ai-on-your-pc": {
+    "fingerprint": "932f03d3b979b779dc481b827d70a4aa169c7f293406612f41a2538bdd75cd7a",
+    "path": "static/img/social/canopy/articles/fr/openjarvis-local-ai-personal-ai-on-your-pc.png",
+    "updatedAt": "2026-06-18T17:44:01.914Z"
+  },
+  "ryan:home": {
+    "fingerprint": "d1f25b9c4fd73d6dc12025190afdfb3fd5dd026f4a79668789440743000c0cb2",
+    "path": "static/img/social/ryan/home.png",
+    "updatedAt": "2026-06-18T17:43:46.151Z"
+  },
+  "canopy:home": {
+    "fingerprint": "6f356b476eff223668ca1eabfec6a51108b4a2198b31230408c6a6b5f97a98de",
+    "path": "static/img/social/canopy/home.png",
+    "updatedAt": "2026-06-18T17:43:54.460Z"
+  }
+}
