@@ -30,15 +30,6 @@
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
 
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'CollectionPage',
-		name: title,
-		description,
-		url: canonical
-	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
-
 	function devLogTagHref(tag: string): string {
 		const params = new URLSearchParams({ tag });
 		return `${base}/dev-log/?${params.toString()}`;
@@ -66,7 +57,15 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	<script type="application/ld+json">{jsonLdEscaped}</script>
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "CollectionPage",
+			"name": "blog.ryanspice.com · Dev log",
+			"description": "A running log of site changes, AI Wiki notes, and the process hooks behind the blog.",
+			"url": "https://blog.ryanspice.com/dev-log/"
+		}
+	</script>
 </svelte:head>
 
 <SiteHeader

@@ -53,12 +53,12 @@ The answer is still simple:
 
 This is Part 1 of the series. It sets the baseline rule: Pro leads hard synthesis, Flash multiplies bounded work, and Gemma4 stays useful as a local junior-engineer sanity pass.
 
-Two follow-up drafts now extend the argument:
+Two follow-up drafts now extend the argument privately:
 
-* [Part 2 — What changes when GPT-5.5 is the orchestrator](/drafts/agent-mixing-part-2-gpt-55-as-orchestrator/)
-* [Part 3 — The expanded formula: Zen/M3, Puter panels, Gemma4, and specialist rotators](/drafts/agent-mixing-part-3-expanded-formula-zen-m3-puter-gemma4/)
+* Part 2 looks at what changes when GPT-5.5 is the orchestrator.
+* Part 3 expands the formula around Zen/M3, Puter panels, Gemma4, and specialist rotators.
 
-Those draft links are private until promoted. The public principle is already stable: if the next agent does not get a distinct job, the next agent is probably noise.
+Those drafts stay intentionally unlinked until promoted. The public principle is already stable: if the next agent does not get a distinct job, the next agent is probably noise.
 
 ![Agent routing map showing DeepSeek Pro as lead, DeepSeek Flash as scouts, and Gemma4 as a local junior review pass](/img/articles/agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns/agent-routing-map.svg "A practical routing map: DeepSeek Pro leads hard synthesis, Flash handles bounded scouting and review, and Gemma4 provides a local junior-engineer sanity pass.")
 
@@ -461,13 +461,13 @@ That is the point where multi-agent work becomes useful instead of theatrical.
 This article is now Part 1 of a longer agent-routing series:
 
 * **Part 1:** Agent Mixing Without Theater — this baseline article.
-* **Part 2 draft:** [What changes when GPT-5.5 is the orchestrator](/drafts/agent-mixing-part-2-gpt-55-as-orchestrator/).
-* **Part 3 draft:** [The expanded formula: Zen/M3, Puter panels, Gemma4, and specialist rotators](/drafts/agent-mixing-part-3-expanded-formula-zen-m3-puter-gemma4/).
+* **Part 2 draft:** What changes when GPT-5.5 is the orchestrator.
+* **Part 3 draft:** The expanded formula: Zen/M3, Puter panels, Gemma4, and specialist rotators.
 * **Planned mini-note:** why the formula style is useful, but the corrected formula matters.
 * **Planned Part 4:** Cathedral Edition / Prompt Operations framing — how Hermes makes the pattern operational instead of theoretical.
 * **Planned Part 5:** field history, test runs, results, mistakes, and what changed after using the system for real.
 
-*Small footer note: links to Part 2 and Part 3 currently point at private draft previews. They should be switched to public article routes when those drafts are promoted.*
+*Small footer note: Part 2 and Part 3 should get public article routes when those drafts are promoted.*
 
 ## Sources and further reading
 
