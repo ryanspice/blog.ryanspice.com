@@ -27,12 +27,12 @@ const siteThemes = {
 	canopy: {
 		label: 'Canopy Digital Blog',
 		mark: 'CD',
-		background: '#f7f1df',
-		panel: 'rgba(255, 250, 238, 0.9)',
-		text: '#143127',
-		muted: '#4b695a',
-		accent: '#377d58',
-		ring: '#c6933f'
+		background: '#F5F1E6',
+		panel: 'rgba(255, 253, 247, 0.92)',
+		text: '#2C3E2F',
+		muted: '#53675A',
+		accent: '#0B5345',
+		ring: '#E58F65'
 	}
 };
 
@@ -51,7 +51,7 @@ const siteHomeCards = {
 		title: 'Practical web design and SEO notes',
 		summary: 'Local SEO, maintainable websites, care plans, and small-business technology decisions.',
 		tags: ['Web design', 'Local SEO', 'Maintenance'],
-		accent: '#377d58'
+		accent: '#0B5345'
 	}
 };
 

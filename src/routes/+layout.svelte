@@ -25,6 +25,8 @@
 
 	let { children, data } = $props();
 	const siteTheme = $derived(data?.site?.themeClass ?? 'ryan');
+	const rssAlternateTitle = $derived(data?.rssAlternateTitle ?? data?.ui?.rss?.channelTitle ?? 'Ryan Spice Blog RSS');
+	const rssAlternateHref = $derived(data?.rssUrl ?? `${base}${pathWithLocale(data?.locale ?? 'en', '/rss.xml')}`);
 
 	$effect(() => {
 		if (typeof document !== 'undefined') {
@@ -42,7 +44,7 @@
 	{/if}
 	<link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
 	<link rel="stylesheet" href={`${base}/tower-accent.css`} />
-	<link rel="alternate" type="application/rss+xml" title={data?.ui?.rss?.channelTitle ?? 'Ryan Spice · Technical notes'} href={`${base}${pathWithLocale(data?.locale ?? 'en', '/rss.xml')}`} />
+	<link rel="alternate" type="application/rss+xml" title={rssAlternateTitle} href={rssAlternateHref} />
 </svelte:head>
 
 <div class={`site-shell site-shell--${siteTheme}`}>

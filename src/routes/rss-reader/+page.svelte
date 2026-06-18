@@ -69,7 +69,7 @@
 	{#each data.alternates as alternate (alternate.hreflang)}
 		<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
 	{/each}
-	<link rel="alternate" type="application/rss+xml" title={copy.channelTitle} href={data.feedUrl} />
+	<link rel="alternate" type="application/rss+xml" title={data.feedTitle} href={data.feedUrl} />
 
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />

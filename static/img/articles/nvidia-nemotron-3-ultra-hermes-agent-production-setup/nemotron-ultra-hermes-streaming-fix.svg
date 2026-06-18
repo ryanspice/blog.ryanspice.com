@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Nemotron 3 Ultra in Hermes: why large turns failed and how the fix works</title>
+  <desc id="desc">A before-and-after diagram. Before: reasoning is off, the stream goes fast then silent, and Hermes' 240-second stale-stream watchdog kills the connection mid tool-call, dropping write_file calls. After: reasoning is on and raised timeouts let streamed reasoning_content keep the connection warm so the turn completes and files are written.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c1410"/>
+      <stop offset="50%" stop-color="#101a18"/>
+      <stop offset="100%" stop-color="#0b1a0d"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.34"/>
+    </filter>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#fca5a5"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#bbf7d0"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="1050" cy="105" r="150" fill="#76b900" opacity="0.16"/>
+  <circle cx="150" cy="250" r="150" fill="#ef4444" opacity="0.10"/>
+  <circle cx="1010" cy="560" r="130" fill="#76b900" opacity="0.12"/>
+
+  <text x="70" y="70" fill="#f1f8e9" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="32" font-weight="800">Nemotron 3 Ultra in Hermes: why big turns died — and the fix</text>
+  <text x="72" y="106" fill="#cbd5e1" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19">A 550B reasoning model streams in slow bursts. Reasoning ON + raised timeouts keep the connection alive.</text>
+
+  <!-- BEFORE lane -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="150" width="1080" height="210" rx="22" fill="#1a1012" stroke="#ef4444" stroke-width="2"/>
+  </g>
+  <rect x="80" y="166" width="470" height="34" rx="12" fill="#3b1517" stroke="#ef4444" stroke-width="1.5"/>
+  <circle cx="100" cy="183" r="6" fill="#ef4444"/>
+  <text x="116" y="189" fill="#fecaca" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">BEFORE · reasoning off, default 240s watchdog</text>
+
+  <line x1="90" y1="280" x2="1065" y2="280" stroke="#ef4444" stroke-width="2" opacity="0.30"/>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="90" y="238" width="225" height="84" rx="16" fill="#0f172a" stroke="#f87171" stroke-width="2"/>
+    <text x="106" y="274" fill="#fee2e2" font-size="18" font-weight="700">Hermes → NIM</text>
+    <text x="106" y="300" fill="#cbd5e1" font-size="15">stream opens</text>
+
+    <rect x="340" y="238" width="225" height="84" rx="16" fill="#0f172a" stroke="#f87171" stroke-width="2"/>
+    <text x="356" y="274" fill="#fee2e2" font-size="18" font-weight="700">Fast start ~4s</text>
+    <text x="356" y="300" fill="#cbd5e1" font-size="15">one burst, then quiet</text>
+
+    <rect x="590" y="238" width="225" height="84" rx="16" fill="#0f172a" stroke="#f87171" stroke-width="2"/>
+    <text x="606" y="274" fill="#fee2e2" font-size="18" font-weight="700">Silence &gt; 240s</text>
+    <text x="606" y="300" fill="#cbd5e1" font-size="15">model thinks, sends nothing</text>
+
+    <rect x="840" y="238" width="225" height="84" rx="16" fill="#2a1113" stroke="#ef4444" stroke-width="2.5"/>
+    <text x="856" y="274" fill="#fecaca" font-size="18" font-weight="800">✂ Killed @240s</text>
+    <text x="856" y="300" fill="#fca5a5" font-size="15">write_file ×3 dropped</text>
+  </g>
+  <path d="M 317 280 L 336 280" stroke="#fca5a5" stroke-width="4" marker-end="url(#arrowRed)" fill="none"/>
+  <path d="M 567 280 L 586 280" stroke="#fca5a5" stroke-width="4" marker-end="url(#arrowRed)" fill="none"/>
+  <path d="M 817 280 L 836 280" stroke="#fca5a5" stroke-width="4" stroke-dasharray="9 7" marker-end="url(#arrowRed)" fill="none"/>
+
+  <!-- AFTER lane -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="384" width="1080" height="210" rx="22" fill="#0d1f11" stroke="#76b900" stroke-width="2"/>
+  </g>
+  <rect x="80" y="400" width="470" height="34" rx="12" fill="#16320f" stroke="#76b900" stroke-width="1.5"/>
+  <circle cx="100" cy="417" r="6" fill="#76b900"/>
+  <text x="116" y="423" fill="#d9f99d" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">AFTER · reasoning on, stale 900s / read 1800s</text>
+
+  <line x1="90" y1="504" x2="1065" y2="504" stroke="#76b900" stroke-width="2" opacity="0.32"/>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="90" y="462" width="225" height="84" rx="16" fill="#0f1b12" stroke="#86c93a" stroke-width="2"/>
+    <text x="106" y="498" fill="#ecfccb" font-size="18" font-weight="700">Hermes → NIM</text>
+    <text x="106" y="524" fill="#cbd5e1" font-size="15">stream opens</text>
+
+    <rect x="340" y="462" width="225" height="84" rx="16" fill="#0f1b12" stroke="#86c93a" stroke-width="2"/>
+    <text x="356" y="498" fill="#ecfccb" font-size="18" font-weight="700">Reasoning streams</text>
+    <text x="356" y="524" fill="#cbd5e1" font-size="15">reasoning_content deltas</text>
+
+    <rect x="590" y="462" width="225" height="84" rx="16" fill="#0f1b12" stroke="#86c93a" stroke-width="2"/>
+    <text x="606" y="498" fill="#ecfccb" font-size="18" font-weight="700">Timer stays warm</text>
+    <text x="606" y="524" fill="#cbd5e1" font-size="15">every chunk resets it</text>
+
+    <rect x="840" y="462" width="225" height="84" rx="16" fill="#16320f" stroke="#76b900" stroke-width="2.5"/>
+    <text x="856" y="498" fill="#d9f99d" font-size="18" font-weight="800">✓ Completes</text>
+    <text x="856" y="524" fill="#bef264" font-size="15">files written</text>
+  </g>
+  <path d="M 317 504 L 336 504" stroke="#bbf7d0" stroke-width="4" marker-end="url(#arrowGreen)" fill="none"/>
+  <path d="M 567 504 L 586 504" stroke="#bbf7d0" stroke-width="4" marker-end="url(#arrowGreen)" fill="none"/>
+  <path d="M 817 504 L 836 504" stroke="#bbf7d0" stroke-width="4" marker-end="url(#arrowGreen)" fill="none"/>
+
+  <!-- settings strip -->
+  <rect x="60" y="614" width="1080" height="42" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>
+  <text x="80" y="640" fill="#9aa6b2" font-family="Consolas, Menlo, monospace" font-size="14">enable_thinking · force_nonempty_content · temp 1.0 · top_p 0.95 · ctx 262144 · stale 900s · read 1800s</text>
+</svg>

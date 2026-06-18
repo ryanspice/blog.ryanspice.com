@@ -1,10 +1,11 @@
 import { getPublishedArticlesForLocale } from './articles';
-import { getDictionary } from './i18n/dictionaries';
 import { resolveLocaleFromPathname } from './i18n/locales';
+import { getSiteConfig, getSiteDictionary } from './server/site';
 
 export function renderRssFriendlyHtml(url: URL): string {
 	const locale = resolveLocaleFromPathname(url.pathname);
-	const copy = getDictionary(locale).rss;
+	const site = getSiteConfig();
+	const copy = getSiteDictionary(locale, site).rss;
 	const prefix = url.pathname.slice(0, -'/rss.xml/'.length);
 	const basePath = prefix === '' ? '' : prefix;
 	const feedPath = `${basePath}/rss.xml`;
@@ -38,7 +39,7 @@ export function renderRssFriendlyHtml(url: URL): string {
 	<meta name="robots" content="noindex,follow">
 	<title>${escapeHtml(copy.title)}</title>
 	<link rel="canonical" href="${escapeHtml(new URL(`${basePath}/rss.xml/`, url.origin).toString())}">
-	<link rel="alternate" type="application/rss+xml" title="${escapeHtml(copy.channelTitle)}" href="${escapeHtml(feedPath)}">
+	<link rel="alternate" type="application/rss+xml" title="${escapeHtml(site.rssTitle)}" href="${escapeHtml(feedPath)}">
 	<style>
 		:root { color-scheme: dark; }
 		* { box-sizing: border-box; }

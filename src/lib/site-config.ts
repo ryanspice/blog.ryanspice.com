@@ -28,6 +28,7 @@ export type SiteConfig = {
 	description: string;
 	generator: string;
 	defaultOgImage: string;
+	rssTitle: string;
 	author: SitePersonOrOrganization;
 	publisher?: SitePersonOrOrganization;
 	primaryExternalLink: SiteLink;
@@ -54,6 +55,7 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 		description: 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.',
 		generator: 'blog.ryanspice.com',
 		defaultOgImage: '/img/social/ryan/home.png',
+		rssTitle: 'Ryan Spice Blog RSS',
 		author: {
 			type: 'Person',
 			name: 'Ryan Spice',
@@ -96,6 +98,7 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 		description: 'Web design, local SEO, maintenance, and practical technology notes from Canopy Digital.',
 		generator: 'blog.canopydigital.ca',
 		defaultOgImage: '/img/social/canopy/home.png',
+		rssTitle: 'Canopy Digital Blog RSS',
 		author: {
 			type: 'Person',
 			name: 'Ryan Spice',

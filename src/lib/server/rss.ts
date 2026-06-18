@@ -99,6 +99,7 @@ export function loadRssReaderPage(url: URL, localeValue?: string | null) {
 		ui: copy,
 		canonical: new URL(`${base}${readerPath}`, url.origin).toString(),
 		alternates: localizedPageAlternates(url, RSS_READER_PATH),
+		feedTitle: site.rssTitle,
 		feedUrl: new URL(`${base}${feedPath}`, url.origin).toString(),
 		feedPath,
 		homeUrl: new URL(`${base}${pathWithLocale(locale, '/')}`, url.origin).toString(),
