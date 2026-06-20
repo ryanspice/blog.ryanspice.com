@@ -34,6 +34,24 @@ function Wait-ForPath([string]$Path, [int]$Attempts = 20, [int]$DelayMs = 250) {
   }
   return $false
 }
+function Write-PublicEnvModule([string]$BuildPath) {
+  $AppDir = Join-Path $BuildPath "_app"
+  if (-not (Test-Path -LiteralPath $AppDir)) {
+    New-Item -ItemType Directory -Path $AppDir -Force | Out-Null
+  }
+
+  $PublicEnv = [ordered]@{}
+  Get-ChildItem Env: |
+    Where-Object { $_.Name -like "PUBLIC_*" } |
+    Sort-Object Name |
+    ForEach-Object { $PublicEnv[$_.Name] = [string]$_.Value }
+
+  $Json = $PublicEnv | ConvertTo-Json -Compress
+  if ([string]::IsNullOrWhiteSpace($Json)) { $Json = "{}" }
+
+  Set-Content -LiteralPath (Join-Path $AppDir "env.js") -Value "export const env=$Json;`n" -Encoding utf8NoBOM
+  Info "Public env" "_app/env.js"
+}
 
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $BuildDir = Join-Path $ProjectRoot "build"
@@ -176,6 +194,7 @@ foreach ($file in $DocumentFiles) {
   }
 }
 Info "Stamped site theme" $DocumentSiteId
+Write-PublicEnvModule -BuildPath $BuildDir
 
 if ($DocumentSiteId -eq "canopy") {
   $IndexFile = Join-Path $BuildDir "index.php"
@@ -198,6 +217,7 @@ $requiredContract = @(
   ".htaccess",
   "router.php",
   "_runtime/compat.php",
+  "_app/env.js",
   "_app/version.json",
   "adapter/route-manifest.php"
 )

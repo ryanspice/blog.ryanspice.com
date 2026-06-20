@@ -10,6 +10,7 @@ const requiredFiles = [
 	'.htaccess',
 	'router.php',
 	'_runtime/compat.php',
+	'_app/env.js',
 	'_app/version.json',
 	'adapter/route-manifest.php',
 	'tower-accent.php',
