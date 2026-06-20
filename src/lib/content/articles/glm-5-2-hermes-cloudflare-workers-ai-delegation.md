@@ -5,6 +5,7 @@ slug: "glm-5-2-hermes-cloudflare-workers-ai-delegation"
 status: "published"
 draft_type: "field-note"
 date: "2026-06-20"
+updated_date: "2026-06-20"
 summary: "A field note on wiring GLM-5.2 into Hermes through Cloudflare Workers AI, hitting quota pressure quickly, and landing on a safer lead/delegate architecture for expensive reasoning models."
 seo_description: "How GLM-5.2 worked in Hermes through Cloudflare Workers AI, why quota pressure showed up quickly, and why bounded delegation beats using the strongest model as the always-on lead."
 accent: "#38bdf8"
@@ -77,8 +78,6 @@ cheap resilient lead
 That is the part that survived the experiment.
 
 ![Diagram showing a fast lead delegating one bounded reasoning task to GLM-5.2 before returning a compact result to a coder worker.](/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-delegate-fuse.svg "The GLM-5.2 delegate is a fuse: spend the expensive reasoning where it matters, then hand a compact result back to the rest of the chain.")
-
-![Vertical visual showing GLM-5.2 as a bounded reasoning delegate inside a Hermes routing lane.](/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-hermes-focal.svg "The GLM-5.2 delegate lane belongs inside the workflow, not as the whole workflow.")
 
 ## What I verified
 
