@@ -123,6 +123,7 @@
 			releaseDateLabel: toString(article.releaseDateLabel) || undefined,
 			credits: toStringArray(article.credits),
 			references: toStringArray(article.references),
+			furtherReading: toStringArray(article.furtherReading),
 			relatedPosts: toStringArray(article.relatedPosts),
 			design: toSafeDesign(article.design, article),
 			html: toString(article.html, ''),

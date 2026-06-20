@@ -85,6 +85,11 @@
 		rgba(255, 255, 255, 0.025);
 }
 
+.article-further-reading {
+	max-width: 880px;
+	padding-top: 24px;
+}
+
 .article-references .section-head {
 	padding: 0 0 8px;
 }
@@ -108,15 +113,18 @@
 	padding-top: 24px;
 }
 
+.article-further-reading .section-head,
 .related-articles .section-head {
 	padding: 22px 0 6px;
 }
 
+.article-further-reading .section-head h2,
 .related-articles .section-head h2 {
 	font-size: clamp(19px, 1.7vw, 24px);
 	letter-spacing: -0.02em;
 }
 
+.article-further-reading .section-dek,
 .related-articles .section-dek {
 	font-size: 14px;
 	max-width: 62ch;
@@ -274,6 +282,7 @@
 	.article-shell,
 	.article-inner,
 	.article-references,
+	.article-further-reading,
 	.related-articles {
 		max-width: none;
 	}

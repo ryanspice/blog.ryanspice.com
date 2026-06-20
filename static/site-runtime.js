@@ -107,6 +107,35 @@
 		window.history.back();
 	}
 
+	async function shareArticle(source) {
+		const url = source.getAttribute('data-share-url') || '';
+		if (!url) return;
+
+		const shareData = {
+			title: source.getAttribute('data-share-title') || document.title,
+			text: source.getAttribute('data-share-text') || '',
+			url
+		};
+
+		if (navigator.share) {
+			try {
+				await navigator.share(shareData);
+				setFeedback(source, source.getAttribute('data-share-success') || 'Share opened');
+				return;
+			} catch (error) {
+				if (error && error.name === 'AbortError') return;
+			}
+		}
+
+		const ok = await copyText(url);
+		setFeedback(
+			source,
+			ok
+				? source.getAttribute('data-copy-success') || 'Link copied'
+				: source.getAttribute('data-copy-failure') || 'Copy failed'
+		);
+	}
+
 	function updateArticleProgress() {
 		if (frame) window.cancelAnimationFrame(frame);
 		frame = window.requestAnimationFrame(() => {
@@ -133,6 +162,73 @@
 		});
 	}
 
+	function normalizeFilterValue(value) {
+		return String(value || '').trim().toLowerCase().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ');
+	}
+
+	function articleMatchesFilters(card, query, tag) {
+		const search = normalizeFilterValue(card.getAttribute('data-article-search'));
+		const tags = String(card.getAttribute('data-article-tags') || '')
+			.split('|')
+			.map(normalizeFilterValue)
+			.filter(Boolean);
+		const normalizedQuery = normalizeFilterValue(query);
+		const normalizedTag = normalizeFilterValue(tag);
+
+		if (normalizedTag && !tags.includes(normalizedTag)) return false;
+		if (normalizedQuery && !search.includes(normalizedQuery)) return false;
+		return true;
+	}
+
+	function applyArticleFilters(query, tag, compact) {
+		const index = document.querySelector('[data-article-index]');
+		if (!index) return;
+
+		const cards = Array.from(index.querySelectorAll('[data-article-card]'));
+		const hasFilters = Boolean(query || tag || compact);
+		let visible = 0;
+
+		index.classList.toggle('compact-grid', hasFilters);
+
+		for (const card of cards) {
+			const matched = articleMatchesFilters(card, query, tag);
+			card.hidden = !matched;
+			if (matched) visible += 1;
+		}
+
+		const results = index.querySelector('[data-article-results-meta]');
+		if (results) {
+			const label = results.getAttribute('data-results-label') || 'matching articles';
+			results.hidden = !hasFilters;
+			results.textContent = hasFilters ? `${visible} ${label}${tag ? ` · ${tag}` : ''}${query ? ` · "${query}"` : ''}` : '';
+		}
+	}
+
+	function currentArticleFilterValues(form) {
+		const queryInput = form.querySelector('[data-article-filter-query]');
+		const tagSelect = form.querySelector('[data-article-filter-tag]');
+		return {
+			query: queryInput ? queryInput.value.trim() : '',
+			tag: tagSelect ? tagSelect.value.trim() : ''
+		};
+	}
+
+	function syncArticleFiltersFromUrl() {
+		const form = document.querySelector('[data-article-filter-form]');
+		if (!form) return;
+
+		const params = new URLSearchParams(window.location.search);
+		const query = (params.get('q') || '').trim();
+		const tag = (params.get('tag') || '').trim();
+		const compact = (params.get('view') || '').trim().toLowerCase() === 'compact';
+		const queryInput = form.querySelector('[data-article-filter-query]');
+		const tagSelect = form.querySelector('[data-article-filter-tag]');
+
+		if (queryInput) queryInput.value = query;
+		if (tagSelect) tagSelect.value = tag;
+		applyArticleFilters(query, tag, compact);
+	}
+
 	function refresh() {
 		setReadingMode(preferredReadingMode());
 		updateArticleProgress();
@@ -147,6 +243,12 @@
 			const next = preferredReadingMode() === 'classic' ? 'immersive' : 'classic';
 			persistReadingMode(next);
 			setReadingMode(next);
+			return;
+		}
+
+		const shareSource = target.closest('[data-share-url]');
+		if (shareSource) {
+			await shareArticle(shareSource);
 			return;
 		}
 
@@ -169,8 +271,28 @@
 		if (backLink) sameOriginBack(event, backLink);
 	});
 
+	document.addEventListener('input', (event) => {
+		const target = event.target instanceof Element ? event.target : null;
+		const form = target?.closest('[data-article-filter-form]');
+		if (!form) return;
+
+		const filters = currentArticleFilterValues(form);
+		applyArticleFilters(filters.query, filters.tag, true);
+	});
+
+	document.addEventListener('change', (event) => {
+		const target = event.target instanceof Element ? event.target : null;
+		const form = target?.closest('[data-article-filter-form]');
+		if (!form) return;
+
+		const filters = currentArticleFilterValues(form);
+		applyArticleFilters(filters.query, filters.tag, true);
+	});
+
 	window.addEventListener('scroll', updateArticleProgress, { passive: true });
 	window.addEventListener('resize', updateArticleProgress);
+	window.addEventListener('popstate', syncArticleFiltersFromUrl);
 	new MutationObserver(refresh).observe(document.documentElement, { childList: true, subtree: true });
 	refresh();
+	syncArticleFiltersFromUrl();
 })();

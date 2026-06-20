@@ -18,7 +18,9 @@
 	const copy = $derived(data.ui.home);
 	const navCopy = $derived(data.ui.nav);
 	const latestArticles = $derived.by(() => publishedArticles.slice(0, 5));
-	const indexedArticles = $derived.by(() => publishedArticles);
+	const articleTags = $derived(Array.isArray(data.publishedArticleTags) ? data.publishedArticleTags as string[] : []);
+	const articleFilterAction = $derived(`${base}${data.homePath}#articles`);
+	const articleResetHref = $derived(`${base}${data.homePath}#articles`);
 
 	const title = $derived(copy.title);
 	const description = $derived(copy.description);
@@ -58,6 +60,10 @@
 			text: copy.assuranceBuildValue
 		}
 	]);
+
+	function articleShareUrl(article: Article): string {
+		return new URL(articleHref(article), canonical).toString();
+	}
 </script>
 
 <HomeFandangoStyles />
@@ -195,16 +201,39 @@
 	</div>
 </section>
 
-<section id="articles" class="article-grid" aria-label="Latest published articles">
+<section id="articles" class="article-grid" aria-label="Latest published articles" data-article-index>
 	<div class="section-head">
 		<p class="eyebrow">{copy.latestArticles}</p>
 		<h2>{copy.recentPosts}</h2>
 		<p class="section-dek">{copy.recentPostsDek}</p>
 	</div>
 
-	{#if indexedArticles.length}
-		{#each indexedArticles as article, index (article.slug + ':' + index)}
-			<ArticleCard article={article} />
+	<form class="article-filter-bar" method="get" action={articleFilterAction} aria-label={copy.articleSearch} data-article-filter-form>
+		<input type="hidden" name="view" value="compact" />
+		<label class="filter-field">
+			<span>{copy.articleSearch}</span>
+			<input type="text" name="q" placeholder={copy.articleSearchPlaceholder} data-article-filter-query />
+		</label>
+		<label class="filter-field">
+			<span>{copy.articleTagFilter}</span>
+			<select name="tag" data-article-filter-tag>
+				<option value="">{copy.allTags}</option>
+				{#each articleTags as tag, index (tag + ':' + index)}
+					<option value={tag}>{tag}</option>
+				{/each}
+			</select>
+		</label>
+		<div class="filter-actions">
+			<button type="submit">{copy.search}</button>
+			<a class="home-filter-link" href={articleResetHref}>{copy.resetFilters}</a>
+		</div>
+	</form>
+
+	<p class="article-results-meta" data-article-results-meta data-results-label={copy.matchingArticles} hidden></p>
+
+	{#if publishedArticles.length}
+		{#each publishedArticles as article, index (article.slug + ':' + index)}
+			<ArticleCard article={article} shareUrl={articleShareUrl(article)} />
 		{/each}
 	{:else}
 		<div class="article-empty">

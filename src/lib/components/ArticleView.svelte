@@ -28,6 +28,12 @@
 		site?: SiteConfig;
 	};
 
+	type ResourceLink = {
+		label: string;
+		href: string;
+		external: boolean;
+	};
+
 	let { article, relatedArticles = [], alternates = [], site = siteConfigs.ryan }: Props = $props();
 
 	const articleAccent = $derived(articleAccentColor(article));
@@ -38,7 +44,8 @@
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const ui = $derived(getDictionary(article.locale));
 	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
-	const articleReferences = $derived(article.references.filter(Boolean));
+	const articleReferences = $derived.by(() => article.references.map(parseResourceLink).filter((link): link is ResourceLink => Boolean(link)));
+	const articleFurtherReading = $derived.by(() => article.furtherReading.map(parseResourceLink).filter((link): link is ResourceLink => Boolean(link)));
 	const pageTitle = $derived(formatPageTitle(article.seoTitle || article.title, site.titleSuffix));
 	const description = $derived(article.seoDescription || article.summary || site.description);
 	const canonical = $derived(new URL(articleHref(article), page.url.origin).toString());
@@ -116,13 +123,29 @@
 	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 	const jsonLdScriptHtml = $derived(`<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`);
 
-	function formatReferenceLabel(value: string): string {
+	function parseResourceLink(value: string): ResourceLink | null {
+		const cleaned = value.trim();
+		if (!cleaned) return null;
+
+		const pipeIndex = cleaned.indexOf('|');
+		const rawLabel = pipeIndex >= 0 ? cleaned.slice(0, pipeIndex).trim() : '';
+		const href = pipeIndex >= 0 ? cleaned.slice(pipeIndex + 1).trim() : cleaned;
+		if (!href) return null;
+
+		return {
+			href,
+			label: rawLabel || fallbackReferenceLabel(href),
+			external: /^https?:\/\//i.test(href)
+		};
+	}
+
+	function fallbackReferenceLabel(href: string): string {
 		try {
-			const url = new URL(value);
+			const url = new URL(href);
 			const shortPath = url.pathname.replace(/\/$/, '');
 			return `${url.hostname.replace(/^www\./, '')}${shortPath === '' || shortPath === '/' ? '' : shortPath}`;
 		} catch {
-			return value;
+			return href;
 		}
 	}
 
@@ -335,8 +358,39 @@
 						</div>
 					</div>
 					<ul class="reference-list">
-						{#each articleReferences as reference, index (reference + ':' + index)}
-							<li><a class="wiki-link external-link" href={reference} rel="noreferrer" target="_blank">{formatReferenceLabel(reference)}</a></li>
+						{#each articleReferences as reference, index (reference.href + ':' + index)}
+							<li>
+								<a
+									class={`wiki-link ${reference.external ? 'external-link' : 'internal-link'}`}
+									href={reference.href}
+									rel={reference.external ? 'noreferrer' : undefined}
+									target={reference.external ? '_blank' : undefined}
+									>{reference.label}</a
+								>
+							</li>
+						{/each}
+					</ul>
+				</section>
+			{/if}
+
+			{#if articleFurtherReading.length}
+				<section class="article-further-reading" aria-label={ui.article.furtherReadingHeading}>
+					<div class="section-head">
+						<p class="eyebrow">{ui.article.furtherReading}</p>
+						<h2>{ui.article.furtherReadingHeading}</h2>
+						<p class="section-dek">{ui.article.furtherReadingDek}</p>
+					</div>
+					<ul class="reference-list reference-list--further">
+						{#each articleFurtherReading as link, index (link.href + ':' + index)}
+							<li>
+								<a
+									class={`wiki-link ${link.external ? 'external-link' : 'internal-link'}`}
+									href={link.href}
+									rel={link.external ? 'noreferrer' : undefined}
+									target={link.external ? '_blank' : undefined}
+									>{link.label}</a
+								>
+							</li>
 						{/each}
 					</ul>
 				</section>

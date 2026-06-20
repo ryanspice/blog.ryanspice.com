@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-labelledby="title desc">
+  <title id="title">GLM-5.2 Hermes delegate lane</title>
+  <desc id="desc">Vertical article visual showing Hermes routing a bounded reasoning task through GLM-5.2 before returning a compact result.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#06131f"/>
+      <stop offset="0.52" stop-color="#0c2233"/>
+      <stop offset="1" stop-color="#081018"/>
+    </linearGradient>
+    <linearGradient id="lane" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="0.54" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#fbbf24"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="34%" r="58%">
+      <stop offset="0" stop-color="#38bdf8" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="20" stdDeviation="26" flood-color="#000000" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <rect width="900" height="1200" fill="url(#bg)"/>
+  <rect width="900" height="1200" fill="url(#glow)"/>
+  <path d="M96 1015 C236 940 310 1038 465 972 C610 910 690 815 878 870 L878 1200 L96 1200 Z" fill="#0a1824" opacity="0.82"/>
+  <path d="M116 244 H784" stroke="#1e3a52" stroke-width="2" opacity="0.72"/>
+  <path d="M116 934 H784" stroke="#1e3a52" stroke-width="2" opacity="0.72"/>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <text x="96" y="142" fill="#e5f6ff" font-size="64" font-weight="850">Hermes</text>
+    <text x="96" y="204" fill="#9bdcff" font-size="34" font-weight="750">delegate lane</text>
+    <text x="96" y="276" fill="#b8d8e8" font-size="25">GLM-5.2 stays powerful by staying bounded.</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="146" y="350" width="608" height="522" rx="34" fill="#071625" stroke="#24465d" stroke-width="2"/>
+    <path d="M450 408 V812" stroke="url(#lane)" stroke-width="13" stroke-linecap="round"/>
+    <circle cx="450" cy="438" r="48" fill="#103d52" stroke="#38bdf8" stroke-width="4"/>
+    <circle cx="450" cy="610" r="66" fill="#06273a" stroke="#34d399" stroke-width="5"/>
+    <circle cx="450" cy="796" r="48" fill="#33230b" stroke="#fbbf24" stroke-width="4"/>
+
+    <g font-family="Inter, Segoe UI, Arial, sans-serif">
+      <text x="214" y="446" fill="#dffcff" font-size="26" font-weight="800">fast lead</text>
+      <text x="214" y="482" fill="#91b6c9" font-size="19">route and recover</text>
+      <text x="530" y="602" fill="#e8fbff" font-size="31" font-weight="900">GLM-5.2</text>
+      <text x="530" y="640" fill="#9fd7ca" font-size="20">one hard slice</text>
+      <text x="214" y="788" fill="#fff4cc" font-size="26" font-weight="800">compact result</text>
+      <text x="214" y="824" fill="#d8cda9" font-size="19">return before churn</text>
+    </g>
+
+    <path d="M282 532 C330 506 376 502 424 544" fill="none" stroke="#5eead4" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+    <path d="M476 682 C526 720 575 726 628 696" fill="none" stroke="#fbbf24" stroke-width="4" stroke-linecap="round" opacity="0.82"/>
+  </g>
+
+  <g transform="translate(96 976)" font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect width="708" height="104" rx="22" fill="#07111f" stroke="#24465d"/>
+    <text x="32" y="43" fill="#dffcff" font-size="22" font-weight="850">Operating rule</text>
+    <text x="32" y="76" fill="#b8d8e8" font-size="20">fast lead + strong delegate beats strongest-model-everywhere</text>
+  </g>
+</svg>

@@ -8,16 +8,16 @@ date: "2026-06-20"
 summary: "A field note on wiring GLM-5.2 into Hermes through Cloudflare Workers AI, hitting quota pressure quickly, and landing on a safer lead/delegate architecture for expensive reasoning models."
 seo_description: "How GLM-5.2 worked in Hermes through Cloudflare Workers AI, why quota pressure showed up quickly, and why bounded delegation beats using the strongest model as the always-on lead."
 accent: "#38bdf8"
-image: "/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-delegate-fuse.svg"
-image_alt: "Diagram showing a fast lead delegating one bounded reasoning task to GLM-5.2 before returning a compact result to a coder worker."
+image: "/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-hermes-focal.svg"
+image_alt: "Vertical visual showing GLM-5.2 as a bounded reasoning delegate inside a Hermes routing lane."
 image_credit: "Generated SVG diagram by Ryan Spice / Codex"
 image_position: "center center"
 row_image: "/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-delegate-fuse.svg"
 row_image_alt: "Compact agent delegation diagram for GLM-5.2 in Hermes."
 row_image_credit: "Generated SVG diagram by Ryan Spice / Codex"
 row_image_position: "center center"
-background_image: "/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-delegate-fuse.svg"
-background_image_alt: "GLM-5.2 delegate fuse architecture diagram."
+background_image: "/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-hermes-focal.svg"
+background_image_alt: "GLM-5.2 delegate lane visual background."
 background_image_credit: "Generated SVG diagram by Ryan Spice / Codex"
 background_image_position: "center center"
 audience:
@@ -38,12 +38,16 @@ credits:
   - "Ryan Spice"
   - "Cloudflare Workers AI and Z.ai public documentation"
 references:
-  - "https://developers.cloudflare.com/workers-ai/models/glm-5.2/"
-  - "https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/"
-  - "https://developers.cloudflare.com/changelog/post/2026-06-16-glm-52-workers-ai/"
-  - "https://developers.cloudflare.com/workers-ai/platform/pricing/"
-  - "https://docs.z.ai/guides/llm/glm-5.2"
-  - "https://docs.z.ai/guides/overview/migrate-to-glm-new"
+  - "Cloudflare Workers AI GLM-5.2 model page|https://developers.cloudflare.com/workers-ai/models/glm-5.2/"
+  - "Cloudflare Workers AI OpenAI-compatible endpoints|https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/"
+  - "Cloudflare changelog: Introducing GLM-5.2 on Workers AI|https://developers.cloudflare.com/changelog/post/2026-06-16-glm-52-workers-ai/"
+  - "Cloudflare Workers AI pricing|https://developers.cloudflare.com/workers-ai/platform/pricing/"
+  - "Z.ai GLM-5.2 docs|https://docs.z.ai/guides/llm/glm-5.2"
+  - "Z.ai migration notes for GLM-5.2|https://docs.z.ai/guides/overview/migrate-to-glm-new"
+further_reading:
+  - "GLM-5.2: Long Context Does Not Replace Search Exposure|/glm-5-2-long-context-search-exposure/"
+  - "NVIDIA Nemotron 3 Ultra in Hermes|/nvidia-nemotron-3-ultra-hermes-agent-production-setup/"
+  - "Agent Mixing Without Theater|/agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns/"
 related_posts:
   - "glm-5-2-long-context-search-exposure"
   - "nvidia-nemotron-3-ultra-hermes-agent-production-setup"
@@ -336,12 +340,3 @@ cheap resilient lead
 ```
 
 The model was strong. The safer workflow was stronger.
-
-## Sources and further reading
-
-- [Cloudflare Workers AI GLM-5.2 model page](https://developers.cloudflare.com/workers-ai/models/glm-5.2/)
-- [Cloudflare Workers AI OpenAI-compatible endpoints](https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/)
-- [Cloudflare changelog: Introducing GLM-5.2 on Workers AI](https://developers.cloudflare.com/changelog/post/2026-06-16-glm-52-workers-ai/)
-- [Cloudflare Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/)
-- [Z.ai GLM-5.2 docs](https://docs.z.ai/guides/llm/glm-5.2)
-- [Z.ai migration notes for GLM-5.2](https://docs.z.ai/guides/overview/migrate-to-glm-new)

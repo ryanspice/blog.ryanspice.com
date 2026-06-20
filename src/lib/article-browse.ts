@@ -37,7 +37,7 @@ export function articleIndexHref(options: ArticleIndexHrefOptions = {}): string 
 }
 
 export function articleTagIndexHref(tag: string, status: ArticleIndexStatus = 'published'): string {
-	return articleIndexHref({ view: 'compact', status, tag });
+	return articleIndexHref({ view: 'compact', status, tag, q: tag });
 }
 
 export function articleSearchText(article: Article): string {

@@ -556,6 +556,21 @@ html[data-site='canopy'] body::before {
 	color: #273a31;
 }
 
+.site-shell--canopy .article-inner .article-section--verified {
+	border: 2px solid rgba(11, 83, 69, 0.22);
+	border-left: 7px solid var(--canopy-evergreen);
+	border-radius: 6px;
+	background:
+		linear-gradient(90deg, rgba(11, 83, 69, 0.1), transparent 68%),
+		#f8faf5;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.site-shell--canopy .article-inner .article-section--verified p,
+.site-shell--canopy .article-inner .article-section--verified li {
+	color: var(--canopy-ink);
+}
+
 .site-shell--canopy .article-inner > p:first-of-type,
 .site-shell--canopy .article-inner .article-lede {
 	border: 1px solid rgba(11, 83, 69, 0.16);
@@ -893,6 +908,11 @@ html[data-site='canopy'] body::before {
 .site-shell--canopy .article-references {
 	border-top: 6px solid var(--canopy-blue);
 	padding: 24px;
+}
+
+.site-shell--canopy .article-further-reading {
+	border-top: 6px solid var(--canopy-vermilion);
+	padding-top: 26px;
 }
 
 .site-shell--canopy .reference-list li {

@@ -47,6 +47,13 @@ export type UiDictionary = {
 		latestArticles: string;
 		recentPosts: string;
 		recentPostsDek: string;
+		articleSearch: string;
+		articleSearchPlaceholder: string;
+		articleTagFilter: string;
+		allTags: string;
+		search: string;
+		resetFilters: string;
+		matchingArticles: string;
 		noArticles: string;
 		noArticlesHeading: string;
 		noArticlesDek: string;
@@ -85,6 +92,9 @@ export type UiDictionary = {
 		sources: string;
 		sourcesHeading: string;
 		sourcesDek: string;
+		furtherReading: string;
+		furtherReadingHeading: string;
+		furtherReadingDek: string;
 		related: string;
 		relatedHeading: string;
 		relatedDek: string;
@@ -93,6 +103,14 @@ export type UiDictionary = {
 		copyLink: string;
 		linkCopied: string;
 		copyFailed: string;
+		articleActions: string;
+		openArticle: string;
+		shareArticle: string;
+		shareOpened: string;
+		shareFacebook: string;
+		moreShareActions: string;
+		shareX: string;
+		shareLinkedIn: string;
 		minRead: string;
 		home: string;
 		githubRepo: string;
@@ -150,6 +168,13 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			latestArticles: 'Latest articles',
 			recentPosts: 'Recent published posts',
 			recentPostsDek: 'All currently published public technical notes, newest first.',
+			articleSearch: 'Search articles',
+			articleSearchPlaceholder: 'Title, summary, tag...',
+			articleTagFilter: 'Filter by tag',
+			allTags: 'All tags',
+			search: 'Search',
+			resetFilters: 'Reset',
+			matchingArticles: 'matching articles',
 			noArticles: 'No articles',
 			noArticlesHeading: 'No published articles are available yet.',
 			noArticlesDek: 'Check back after the next production deploy.',
@@ -187,8 +212,11 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			release: 'Release',
 			tags: 'Tags',
 			sources: 'Sources',
-			sourcesHeading: 'Sources and further reading',
-			sourcesDek: 'External documentation and source material linked for the parts of the article that need it.',
+			sourcesHeading: 'Sources',
+			sourcesDek: 'Primary documentation and source material used for the factual claims in this article.',
+			furtherReading: 'Further reading',
+			furtherReadingHeading: 'Further reading',
+			furtherReadingDek: 'Related notes and background material worth opening next.',
 			related: 'Related articles',
 			relatedHeading: 'More like this',
 			relatedDek: 'Articles with overlapping tags, explicit references, or the same line of work.',
@@ -197,6 +225,14 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			copyLink: 'Copy link',
 			linkCopied: 'Link copied',
 			copyFailed: 'Copy failed',
+			articleActions: 'Article actions',
+			openArticle: 'Open',
+			shareArticle: 'Share',
+			shareOpened: 'Share opened',
+			shareFacebook: 'Facebook',
+			moreShareActions: 'More',
+			shareX: 'X',
+			shareLinkedIn: 'LinkedIn',
 			minRead: 'min read',
 			home: 'Home',
 			githubRepo: 'GitHub repo',
@@ -252,6 +288,13 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			latestArticles: 'Articles recents',
 			recentPosts: 'Publications recentes',
 			recentPostsDek: 'Toutes les notes techniques publiques actuellement publiees, de la plus recente a la plus ancienne.',
+			articleSearch: 'Recherche d articles',
+			articleSearchPlaceholder: 'Titre, resume, etiquette...',
+			articleTagFilter: 'Filtrer par etiquette',
+			allTags: 'Toutes les etiquettes',
+			search: 'Rechercher',
+			resetFilters: 'Reinitialiser',
+			matchingArticles: 'articles correspondants',
 			noArticles: 'Aucun article',
 			noArticlesHeading: 'Aucun article publie n est disponible pour le moment.',
 			noArticlesDek: 'Revenez apres le prochain deploiement de production.',
@@ -289,8 +332,11 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			release: 'Publication',
 			tags: 'Etiquettes',
 			sources: 'Sources',
-			sourcesHeading: 'Sources et lectures connexes',
-			sourcesDek: 'Documentation externe et materiel source relies aux parties de l article qui en ont besoin.',
+			sourcesHeading: 'Sources',
+			sourcesDek: 'Documentation primaire et materiel source utilises pour les affirmations factuelles de cet article.',
+			furtherReading: 'Lectures connexes',
+			furtherReadingHeading: 'Lectures connexes',
+			furtherReadingDek: 'Notes reliees et contexte utile a ouvrir ensuite.',
 			related: 'Articles connexes',
 			relatedHeading: 'Dans le meme esprit',
 			relatedDek: 'Articles avec des etiquettes, references explicites ou travaux similaires.',
@@ -299,6 +345,14 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			copyLink: 'Copier le lien',
 			linkCopied: 'Lien copie',
 			copyFailed: 'Echec de copie',
+			articleActions: 'Actions de l article',
+			openArticle: 'Ouvrir',
+			shareArticle: 'Partager',
+			shareOpened: 'Partage ouvert',
+			shareFacebook: 'Facebook',
+			moreShareActions: 'Plus',
+			shareX: 'X',
+			shareLinkedIn: 'LinkedIn',
 			minRead: 'min de lecture',
 			home: 'Accueil',
 			githubRepo: 'Depot GitHub',

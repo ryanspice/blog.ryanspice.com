@@ -82,6 +82,7 @@ export type ArticleMeta = {
 	visuals: ArticleVisuals;
 	credits: string[];
 	references: string[];
+	furtherReading: string[];
 	relatedPosts: string[];
 	design: ArticleDesign;
 };
@@ -302,6 +303,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		visuals,
 		credits: credits.length ? credits : ['Ryan Spice'],
 		references: arrayValue(frontmatter.references),
+		furtherReading: arrayValue(frontmatter.further_reading),
 		relatedPosts: arrayValue(frontmatter.related_posts),
 		design: designFor({ slug, locale, title, status, draftType, summary, tags, date, dateLabel, updatedDate, updatedDateLabel, releaseDate, releaseDateLabel }),
 		body: renderedBody

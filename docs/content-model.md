@@ -40,6 +40,10 @@ audience:
   - reader group
 related_posts:
   - "other-post.md"
+references:
+  - "Primary source label|https://example.com/source"
+further_reading:
+  - "Related article label|/related-article/"
 ```
 
 The editor intentionally uses flat YAML keys instead of nested objects. This keeps the PHP mirror
@@ -51,11 +55,23 @@ the gated draft route.
 
 Visual fallbacks:
 
-- `image` is the primary article visual and Open Graph fallback.
+- `image` is the primary article visual for the article side/focal slot and Open Graph fallback.
 - If `row_image` is absent, article cards use `image`.
 - If `background_image` is absent, article pages use `image` as the background.
 - Use root-relative `/img/...` paths for committed static assets, or a licensed remote URL for
   external topical images. Prefer committed static assets for article diagrams and generated media.
+- For illustrated posts, do not reuse the same asset for the article side slot and the first inline
+  body figure unless that repetition is intentional. Generate or source a distinct `image` visual
+  for the side slot, then use the body figure for the explanatory diagram or screenshot.
+
+Source and reading-link conventions:
+
+- Use `references` for primary sources that support factual claims. Entries can be plain URLs or
+  `Label|URL` values when the display label should be cleaner than the raw URL.
+- Use `further_reading` for secondary material, internal follow-up posts, or background links that
+  are useful next but are not primary factual support.
+- Do not repeat the same source list at the end of the Markdown body. The article route renders
+  `references` and `further_reading` as separated post-article sections.
 
 Tag and relationship conventions:
 

@@ -466,6 +466,8 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 	function markdownImageDimensions(src: string): { width: string; height: string } | undefined {
 		const knownDimensions: Array<[RegExp, number, number]> = [
 			[/glm-5-2-search-map\.svg$/i, 1200, 675],
+			[/glm-5-2-delegate-fuse\.svg$/i, 1600, 900],
+			[/glm-5-2-hermes-focal\.svg$/i, 900, 1200],
 			[/fable-lane-fallback-map\.svg$/i, 1200, 720],
 			[/agent-routing-map\.svg$/i, 1600, 900],
 			[/diminishing-returns-curve\.svg$/i, 1600, 900],
@@ -580,10 +582,11 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 				if (!sectionActive || sectionBlocks.length === 0) return;
 
 				const isLead = sectionCount === 0;
+				const headingText = sectionHeadingText(sectionBlocks);
 				out.push(
 					element(
 						'section',
-						{ className: ['article-section', ...(isLead ? ['article-section--lead'] : [])] },
+						{ className: articleSectionClasses(headingText, isLead) },
 						[
 							element('div', { className: ['article-section-body'] }, sectionBlocks),
 							...(isLead ? [leadSectionArt()] : [])
@@ -617,6 +620,20 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 			flush();
 			tree.children = out;
 		};
+	}
+
+	function sectionHeadingText(blocks: any[]): string {
+		const heading = blocks.find((node: any) => node?.type === 'element' && node.tagName === 'h2');
+		return hastText(heading).trim();
+	}
+
+	function articleSectionClasses(headingText: string, isLead: boolean): string[] {
+		const headingSlug = slugify(headingText);
+		return [
+			'article-section',
+			...(isLead ? ['article-section--lead'] : []),
+			...(headingSlug === 'what-i-verified' ? ['article-section--verified'] : [])
+		];
 	}
 
 	function rehypeMarkLede() {
