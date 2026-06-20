@@ -1,4 +1,5 @@
 import { base } from '$app/paths';
+import { articleCanonicalPath } from '$lib/article-paths';
 import { draftArticles, publishedArticles, articles, articleTags, publishedArticleTags } from '$lib/articles';
 import pkg from '../../../package.json';
 
@@ -19,7 +20,7 @@ export const GET = ({ url }: { url: URL }) => {
 	const siteUrl = new URL(`${base}/`, url.origin).toString();
 
 	const fixedPages = ['/', '/dev-log/', '/drafts/', '/login/', '/auth/callback/', '/status/'];
-	const publishedPages = publishedArticles.map((article) => `/${article.slug}/`);
+	const publishedPages = publishedArticles.map((article) => articleCanonicalPath(article));
 	const draftPages = draftArticles.map((article) => `/drafts/${article.slug}/`);
 
 	const payload = {
@@ -54,4 +55,3 @@ export const GET = ({ url }: { url: URL }) => {
 		}
 	});
 };
-

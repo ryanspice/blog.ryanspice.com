@@ -1,4 +1,5 @@
 import { base } from '$app/paths';
+import { articleCanonicalPath } from '$lib/article-paths';
 import { allPublishedArticles, getArticleAlternates, type Article } from '$lib/articles';
 import { pathWithLocale, SUPPORTED_LOCALES, type SupportedLocale } from '$lib/i18n/locales';
 import { getSiteConfig } from '$lib/server/site';
@@ -53,8 +54,8 @@ function localizedAlternates(origin: string, pathname: string): SitemapAlternate
 	];
 }
 
-function articlePath(article: Pick<Article, 'locale' | 'slug'>): string {
-	return pathWithLocale(article.locale, `/${article.slug}/`);
+function articlePath(article: Pick<Article, 'date' | 'locale' | 'slug'>): string {
+	return articleCanonicalPath(article);
 }
 
 function articleAlternates(origin: string, article: Article): SitemapAlternate[] | undefined {

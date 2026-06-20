@@ -6,10 +6,11 @@ import {
 	type Frontmatter,
 	stringValue as frontmatterStringValue
 } from './article-frontmatter';
+import { articleCanonicalPath } from './article-paths';
 import {
 	DEFAULT_LOCALE,
+	isSupportedLocale,
 	localeToLanguageTag,
-	pathWithLocale,
 	resolveLocale,
 	type SupportedLocale
 } from './i18n/locales';
@@ -136,7 +137,9 @@ const buildDate = new Date();
 
 // NOTE: renderMarkdown is async (unified pipeline + server-only Shiki highlighting), so article parsing is async as well.
 // Top-level await is supported by Vite/SvelteKit and keeps the export contract unchanged.
-export const articles: Article[] = (await Promise.all([...Object.entries(modules), ...Object.entries(localizedModules)].map(([path, raw]) => parseArticle(path, raw))))
+const parsedArticles = await Promise.all([...Object.entries(modules), ...Object.entries(localizedModules)].map(([path, raw]) => parseArticle(path, raw)));
+
+export const articles: Article[] = normalizeArticleResourceLinks(parsedArticles)
 	.sort((a, b) => effectivePublishDate(b).localeCompare(effectivePublishDate(a)) || a.title.localeCompare(b.title));
 
 export const allPublishedArticles = articles.filter(isPublicArticle);
@@ -180,7 +183,7 @@ export function getArticleAlternates(article: ArticleMeta): Array<{ locale: Supp
 	return variants.map((variant) => ({
 		locale: variant.locale,
 		hreflang: localeToLanguageTag(variant.locale),
-		path: pathWithLocale(variant.locale, `/${variant.slug}/`)
+		path: articleCanonicalPath(variant)
 	}));
 }
 
@@ -638,6 +641,71 @@ function normalizeRelatedTarget(value: string): string {
 			.replace(/^\d{4}-\d{2}-\d{2}-/, '')
 			.trim()
 	);
+}
+
+function normalizeArticleResourceLinks(items: Article[]): Article[] {
+	const publicArticlesByLocaleSlug = new Map<string, Article>();
+
+	for (const article of items) {
+		if (!isPublicArticle(article)) continue;
+		publicArticlesByLocaleSlug.set(articleLocaleSlugKey(article.locale, article.slug), article);
+	}
+
+	return items.map((article) => ({
+		...article,
+		references: article.references.map((value) => normalizeArticleResourceLink(value, article.locale, publicArticlesByLocaleSlug)),
+		furtherReading: article.furtherReading.map((value) => normalizeArticleResourceLink(value, article.locale, publicArticlesByLocaleSlug))
+	}));
+}
+
+function normalizeArticleResourceLink(value: string, sourceLocale: SupportedLocale, publicArticlesByLocaleSlug: Map<string, Article>): string {
+	const cleaned = value.trim();
+	if (!cleaned) return value;
+
+	const pipeIndex = cleaned.indexOf('|');
+	const label = pipeIndex >= 0 ? cleaned.slice(0, pipeIndex).trim() : '';
+	const href = pipeIndex >= 0 ? cleaned.slice(pipeIndex + 1).trim() : cleaned;
+	if (!href) return value;
+
+	const canonicalHref = canonicalArticleResourceHref(href, sourceLocale, publicArticlesByLocaleSlug);
+	if (!canonicalHref || canonicalHref === href) return value;
+
+	return label ? `${label}|${canonicalHref}` : canonicalHref;
+}
+
+function canonicalArticleResourceHref(href: string, sourceLocale: SupportedLocale, publicArticlesByLocaleSlug: Map<string, Article>): string | null {
+	if (/^(?:https?:)?\/\//i.test(href) || href.startsWith('#')) return null;
+
+	const match = href.match(/^([^?#]*)([?#].*)?$/);
+	if (!match) return null;
+
+	const rawPath = match[1].trim();
+	const suffix = match[2] ?? '';
+	if (!rawPath || rawPath.includes('//')) return null;
+
+	const segments = rawPath
+		.replace(/^\.?\//, '')
+		.replace(/^\.\.\//, '')
+		.replace(/^\/+|\/+$/g, '')
+		.split('/')
+		.filter(Boolean);
+
+	if (segments.length < 1 || segments.length > 2) return null;
+	if (segments.length === 2 && !isSupportedLocale(segments[0])) return null;
+
+	const targetLocale = segments.length === 2 ? resolveLocale(segments[0]) : sourceLocale;
+	const slug = segments.length === 2 ? segments[1] : segments[0];
+	if (!targetLocale || !slug) return null;
+
+	const targetArticle =
+		publicArticlesByLocaleSlug.get(articleLocaleSlugKey(targetLocale, slug)) ??
+		publicArticlesByLocaleSlug.get(articleLocaleSlugKey(DEFAULT_LOCALE, slug));
+
+	return targetArticle ? `${articleCanonicalPath(targetArticle)}${suffix}` : null;
+}
+
+function articleLocaleSlugKey(locale: SupportedLocale, slug: string): string {
+	return `${locale}:${slug}`;
 }
 
 function parseTranslations(values: string[]): Partial<Record<SupportedLocale, string>> {

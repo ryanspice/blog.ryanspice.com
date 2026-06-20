@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import type { Article } from '$lib/articles';
-	import { base } from '$app/paths';
+	import { articleHref } from '$lib/article-links';
 
 	type Props = { article: Article };
 	let { article }: Props = $props();
 
 	const diffLines = $derived(computeDiff(article.previousBody ?? '', article.body));
 
-	const fromUrl = $derived(`${base}/${article.slug}?version=${article.previousVersion ?? '1.0.0'}`);
-	const toUrl = $derived(`${base}/${article.slug}?version=${article.version}`);
-	const noDiffUrl = $derived(`${base}/${article.slug}`);
+	const articleUrl = $derived(articleHref(article));
+	const fromUrl = $derived(`${articleUrl}?version=${article.previousVersion ?? '1.0.0'}`);
+	const toUrl = $derived(`${articleUrl}?version=${article.version}`);
+	const noDiffUrl = $derived(articleUrl);
 
 	const addedLines = $derived(diffLines.filter(l => l.kind === 'add').length);
 	const removedLines = $derived(diffLines.filter(l => l.kind === 'remove').length);
@@ -52,14 +52,6 @@
 		result.push(...stack.reverse());
 		return result;
 	}
-
-	function escHtml(text: string): string {
-		return text
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;');
-	}
 </script>
 
 <svelte:head>
@@ -87,12 +79,11 @@
 
 	<div class="diff-body">
 		{#each diffLines as line, i (i)}
-			{@const lineNum = i + 1}
 			<div class="diff-line diff-{line.kind}">
 				<span class="diff-gutter">{line.lineA || ''}</span>
 				<span class="diff-gutter">{line.lineB || ''}</span>
 				<span class="diff-marker">{line.kind === 'add' ? '+' : line.kind === 'remove' ? '−' : ' '}</span>
-				<span class="diff-text">{@html escHtml(line.text) || ' '}</span>
+				<span class="diff-text">{line.text || ' '}</span>
 			</div>
 		{/each}
 	</div>

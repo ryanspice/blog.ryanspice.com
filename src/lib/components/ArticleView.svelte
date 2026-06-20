@@ -69,7 +69,9 @@
 	const localizedRssHref = $derived(`${base}${pathWithLocale(article.locale, '/rss.xml')}`);
 	const localizedDevLogHref = $derived(`${base}/dev-log/`);
 	const headerNavLinks = $derived.by(() =>
-		site.id === 'canopy' ? [...article.design.navLinks, site.primaryExternalLink] : article.design.navLinks
+		site.id === 'canopy'
+			? [...article.design.navLinks, ...(site.mainSiteLink ? [site.mainSiteLink] : []), site.primaryExternalLink]
+			: article.design.navLinks
 	);
 	const articleFooterLinks = $derived.by(() => {
 		const links = [

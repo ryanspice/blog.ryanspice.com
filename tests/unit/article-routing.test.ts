@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { articleCanonicalPath, articleDateRouteParams, articleLegacyPath } from '../../src/lib/article-paths';
 import { articleTagIndexHref } from '../../src/lib/article-browse';
 import { articleSocialShareHref } from '../../src/lib/article-share';
 import { pathWithLocale } from '../../src/lib/i18n/locales';
@@ -28,6 +29,32 @@ describe('locale routing helper', () => {
 describe('article tag search links', () => {
 	it('prefills the tag filter and search query', () => {
 		expect(articleTagIndexHref('Cloudflare Workers AI')).toBe('/?view=compact&tag=Cloudflare+Workers+AI&q=Cloudflare+Workers+AI');
+	});
+});
+
+describe('dated article paths', () => {
+	const article = {
+		date: '2026-06-20',
+		locale: 'en' as const,
+		slug: 'glm-5-2-hermes-cloudflare-workers-ai-delegation'
+	};
+
+	it('builds canonical dated paths for english articles', () => {
+		expect(articleCanonicalPath(article)).toBe('/2026/06/20/glm-5-2-hermes-cloudflare-workers-ai-delegation/');
+		expect(articleLegacyPath(article)).toBe('/glm-5-2-hermes-cloudflare-workers-ai-delegation/');
+	});
+
+	it('keeps routed locales before the dated article path', () => {
+		expect(articleCanonicalPath({ ...article, locale: 'fr' })).toBe('/fr/2026/06/20/glm-5-2-hermes-cloudflare-workers-ai-delegation/');
+	});
+
+	it('returns date route params for prerender entries', () => {
+		expect(articleDateRouteParams(article)).toEqual({
+			year: '2026',
+			month: '06',
+			day: '20',
+			slug: 'glm-5-2-hermes-cloudflare-workers-ai-delegation'
+		});
 	});
 });
 

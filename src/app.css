@@ -753,6 +753,39 @@ h1 {
 	background: var(--article-accent, var(--accent));
 }
 
+.article-page .nav {
+	min-height: 52px;
+	gap: 12px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.article-page .brand {
+	gap: 10px;
+}
+
+.article-page .brand-mark {
+	width: 30px;
+	height: 30px;
+	font-size: 14px;
+}
+
+.article-page .brand-secondary {
+	display: none;
+}
+
+.article-page .nav-cluster,
+.article-page .nav-links {
+	gap: 10px;
+}
+
+.article-page .nav-action {
+	min-height: 34px;
+	padding-right: 10px;
+	padding-left: 10px;
+	font-size: 12px;
+}
+
 .article-page .toc,
 .article-page .related-articles {
 	--accent: var(--article-accent, var(--accent));

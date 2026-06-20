@@ -35,6 +35,9 @@
 	const canonical = $derived(data.canonical);
 	const ogImage = $derived(data.ogImage);
 	const footerExternalLinks = $derived(site.footerExternalLinks);
+	const headerExternalLinks = $derived.by(() =>
+		site.mainSiteLink ? [site.mainSiteLink, site.primaryExternalLink] : [site.primaryExternalLink]
+	);
 	const assuranceCards = $derived.by(() => [
 		{
 			label: copy.assuranceFreshLabel,
@@ -121,7 +124,7 @@
 	navLinks={[
 		{ label: navCopy.articles, href: '#articles' },
 		{ label: navCopy.rss, href: data.rssPath },
-		site.primaryExternalLink
+		...headerExternalLinks
 	]}
 />
 

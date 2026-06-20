@@ -4,9 +4,16 @@
 	import ArticleView from '$lib/components/ArticleView.svelte';
 	import { getArticle, getRelatedArticles, type Article, type ArticleDesign } from '$lib/articles';
 	import ArticleDiffView from '$lib/components/ArticleDiffView.svelte';
-	import { siteConfigs } from '$lib/site-config';
+	import { siteConfigs, type SiteConfig } from '$lib/site-config';
 
-	let { data } = $props();
+	type ArticleRouteData = {
+		article?: unknown;
+		relatedArticles?: unknown[];
+		alternates?: Array<{ hreflang: string; href: string }>;
+		site?: SiteConfig;
+	};
+
+	let { data }: { data: ArticleRouteData } = $props();
 
 	const isDiff = $derived(browser && page.url.searchParams.get('diff') === 'true');
 

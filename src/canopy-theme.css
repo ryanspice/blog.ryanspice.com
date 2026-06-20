@@ -975,6 +975,60 @@ html[data-site='canopy'] body::before {
 	padding-bottom: 8px;
 }
 
+.site-shell--canopy .article-page .site-header {
+	border-top-width: 3px;
+	box-shadow: 0 8px 20px rgba(44, 62, 47, 0.1);
+}
+
+.site-shell--canopy .article-page .nav {
+	min-height: 52px;
+	gap: 12px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.site-shell--canopy .article-page .nav-cluster {
+	gap: 10px;
+}
+
+.site-shell--canopy .article-page .nav-links {
+	gap: 8px;
+}
+
+.site-shell--canopy .article-page .brand-mark {
+	width: 30px;
+	height: 30px;
+	box-shadow: 3px 3px 0 rgba(229, 143, 101, 0.18);
+}
+
+.site-shell--canopy .article-page .brand-mark::before {
+	left: 7px;
+	top: 7px;
+	width: 13px;
+	height: 13px;
+}
+
+.site-shell--canopy .article-page .brand-primary {
+	font-size: 1rem;
+}
+
+.site-shell--canopy .article-page .brand-secondary {
+	display: none;
+}
+
+.site-shell--canopy .article-page .nav-links a,
+.site-shell--canopy .article-page .nav-action {
+	min-height: 34px;
+	padding-right: 0.7rem;
+	padding-left: 0.7rem;
+	font-size: 0.78rem;
+}
+
+.site-shell--canopy .article-page .hero {
+	padding-top: 30px;
+	padding-bottom: 34px;
+}
+
 html.article-search-active .site-shell--canopy .site-header {
 	border-top-width: 3px;
 	box-shadow: 0 8px 20px rgba(44, 62, 47, 0.1);

@@ -1,5 +1,6 @@
 import { base } from '$app/paths';
 import type { PageServerLoad } from './$types';
+import { articleCanonicalPath } from '$lib/article-paths';
 import pkg from '../../../package.json';
 
 type PackageJson = {
@@ -13,11 +14,11 @@ function normalizeVersion(value: unknown): string {
 	return typeof value === 'string' && value.trim() ? value.trim() : 'unknown';
 }
 
+type ArticleRoute = { date: string; locale: 'en' | 'fr'; slug: string };
+
 export const csr = true;
 
-type ArticleSlug = { slug: string };
-
-function countPages(published: ArticleSlug[], drafts: ArticleSlug[]) {
+function countPages(published: ArticleRoute[], drafts: ArticleRoute[]) {
 	// A pragmatic, user-facing count: "things that behave like pages you can navigate to".
 	const fixedPages = [
 		'/', // home
@@ -28,7 +29,7 @@ function countPages(published: ArticleSlug[], drafts: ArticleSlug[]) {
 		'/status/'
 	];
 
-	const publishedPages = published.map((article) => `/${article.slug}/`);
+	const publishedPages = published.map((article) => articleCanonicalPath(article));
 	const draftPages = drafts.map((article) => `/drafts/${article.slug}/`);
 
 	return {

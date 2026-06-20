@@ -1,4 +1,5 @@
 import { base } from '$app/paths';
+import { articleCanonicalPath } from '$lib/article-paths';
 import { getPublishedArticlesForLocale } from '$lib/articles';
 import {
 	localeToHreflang,
@@ -38,7 +39,7 @@ export function renderRssXml(url: URL, localeValue?: string | null): Response {
 	const lastBuildDate = sorted[0]?.date ? toRfc822Date(sorted[0].date) : new Date().toUTCString();
 	const items = sorted
 		.map((article) => {
-			const itemUrl = new URL(`${base}${pathWithLocale(locale, `/${article.slug}/`)}`, url.origin).toString();
+			const itemUrl = new URL(`${base}${articleCanonicalPath(article)}`, url.origin).toString();
 			const pubDate = toRfc822Date(article.date);
 
 			return `
@@ -85,7 +86,7 @@ export function loadRssReaderPage(url: URL, localeValue?: string | null) {
 		.map((article) => ({
 			title: article.title,
 			slug: article.slug,
-			href: pathWithLocale(locale, `/${article.slug}/`),
+			href: articleCanonicalPath(article),
 			summary: article.summary,
 			date: article.date,
 			dateLabel: article.dateLabel,

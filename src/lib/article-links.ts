@@ -1,8 +1,8 @@
 import { base } from '$app/paths';
 
 import { isPublicArticle, type Article } from './articles';
-import { pathWithLocale } from './i18n/locales';
+import { articleCanonicalPath } from './article-paths';
 
-export function articleHref(article: Pick<Article, 'slug' | 'status' | 'releaseDate' | 'locale'>): string {
-	return isPublicArticle(article) ? `${base}${pathWithLocale(article.locale, `/${article.slug}/`)}` : `${base}/drafts/${article.slug}/`;
+export function articleHref(article: Pick<Article, 'date' | 'slug' | 'status' | 'releaseDate' | 'locale'>): string {
+	return isPublicArticle(article) ? `${base}${articleCanonicalPath(article)}` : `${base}/drafts/${article.slug}/`;
 }

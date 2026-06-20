@@ -1,3 +1,4 @@
+import { articleCanonicalPath } from './article-paths';
 import { getPublishedArticlesForLocale } from './articles';
 import { resolveLocaleFromPathname } from './i18n/locales';
 import { getSiteConfig, getSiteDictionary } from './server/site';
@@ -14,7 +15,7 @@ export function renderRssFriendlyHtml(url: URL): string {
 	const latestItems = getPublishedArticlesForLocale(locale)
 		.slice(0, 5)
 		.map((article) => {
-			const articlePath = `${basePath}/${article.slug}/`;
+			const articlePath = pathFromFeedBase(basePath, articleCanonicalPath(article), article.locale);
 			const tags = article.tags
 				.slice(0, 5)
 				.map((tag) => `<span>${escapeHtml(tag)}</span>`)
@@ -90,4 +91,15 @@ function escapeHtml(value: string): string {
 		.replace(/>/g, '&gt;')
 		.replace(/"/g, '&quot;')
 		.replace(/'/g, '&#039;');
+}
+
+function pathFromFeedBase(basePath: string, canonicalPath: string, locale: string): string {
+	if (!basePath || canonicalPath.startsWith(`${basePath}/`)) return canonicalPath;
+
+	const localePrefix = locale === 'fr' ? '/fr' : '';
+	if (localePrefix && basePath.endsWith(localePrefix) && canonicalPath.startsWith(`${localePrefix}/`)) {
+		return `${basePath}${canonicalPath.slice(localePrefix.length)}`;
+	}
+
+	return `${basePath}${canonicalPath}`.replace(/\/+/g, '/');
 }
