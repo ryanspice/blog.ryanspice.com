@@ -31,6 +31,7 @@ export type SiteConfig = {
 	rssTitle: string;
 	author: SitePersonOrOrganization;
 	publisher?: SitePersonOrOrganization;
+	mainSiteLink?: SiteLink;
 	primaryExternalLink: SiteLink;
 	footerExternalLinks: SiteLink[];
 	repositoryLink?: SiteLink;
@@ -39,6 +40,8 @@ export type SiteConfig = {
 	showLibraryLinks: boolean;
 	indexedUtilityRoutes: SiteUtilityRoute[];
 	robotsDisallow: string[];
+	canonicalRedirectHosts: string[];
+	publicRouteExclusions: string[];
 };
 
 export const DEFAULT_SITE_ID: SiteId = 'ryan';
@@ -85,7 +88,9 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 			{ path: '/library/', changefreq: 'monthly', priority: 0.6 },
 			{ path: '/dev-log/', changefreq: 'weekly', priority: 0.6 }
 		],
-		robotsDisallow: ['/_incoming/', '/_releases/', '/_backups/']
+		robotsDisallow: ['/_incoming/', '/_releases/', '/_backups/'],
+		canonicalRedirectHosts: ['^(www\\.)?ryanspice\\.com$'],
+		publicRouteExclusions: []
 	},
 	canopy: {
 		id: 'canopy',
@@ -108,6 +113,10 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 			type: 'Organization',
 			name: 'Canopy Digital',
 			url: 'https://canopydigital.ca'
+		},
+		mainSiteLink: {
+			label: 'Main site',
+			href: 'https://canopydigital.ca'
 		},
 		primaryExternalLink: {
 			label: 'Book a Consult',
@@ -135,7 +144,9 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 			'/library/',
 			'/login/',
 			'/status/'
-		]
+		],
+		canonicalRedirectHosts: [],
+		publicRouteExclusions: ['auth', 'briefs', 'dev-log', 'drafts', 'library', 'login', 'status']
 	}
 };
 

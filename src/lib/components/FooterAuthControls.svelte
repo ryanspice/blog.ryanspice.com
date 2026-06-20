@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { authState, loadAuthState, trySignIn, trySignOut } from '$lib/auth';
+	import { authLoginHref, authState, loadAuthState, trySignIn, trySignOut } from '$lib/auth';
 
 	type Props = {
 		returnTo?: string;
@@ -9,8 +9,11 @@
 	let { returnTo = '/' }: Props = $props();
 	let busy = $state(false);
 	let actionError = $state('');
+	let mounted = $state(false);
+	const loginHref = $derived(authLoginHref(returnTo));
 
 	onMount(() => {
+		mounted = true;
 		void loadAuthState();
 	});
 
@@ -32,7 +35,9 @@
 </script>
 
 <div class="footer-auth" aria-label="Private access actions">
-	{#if $authState.loading}
+	{#if !mounted}
+		<a class="footer-auth-link" href={loginHref}>Sign in with Microsoft</a>
+	{:else if $authState.loading}
 		<span class="footer-auth-state">Checking access</span>
 	{:else}
 		<button

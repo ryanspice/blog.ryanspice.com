@@ -2,6 +2,8 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { visibleMorningBriefs } from '$lib/morning-briefs';
 
+export const csr = true;
+
 export function entries() {
 	return visibleMorningBriefs.map((brief) => ({ slug: brief.slug }));
 }

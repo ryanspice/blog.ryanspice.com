@@ -34,6 +34,16 @@ function Wait-ForPath([string]$Path, [int]$Attempts = 20, [int]$DelayMs = 250) {
   }
   return $false
 }
+function Get-SiteBuildConfig([string]$SiteId) {
+  $ConfigScript = Join-Path $PSScriptRoot "Read-SiteBuildConfig.mjs"
+  if (-not (Test-Path -LiteralPath $ConfigScript)) {
+    throw "Missing site build config reader: $ConfigScript"
+  }
+
+  $Json = & node $ConfigScript --site $SiteId
+  if ($LASTEXITCODE -ne 0) { throw "Unable to read site build config for '$SiteId'" }
+  return $Json | ConvertFrom-Json
+}
 function Write-PublicEnvModule([string]$BuildPath) {
   $AppDir = Join-Path $BuildPath "_app"
   if (-not (Test-Path -LiteralPath $AppDir)) {
@@ -83,7 +93,17 @@ if (-not [string]::IsNullOrWhiteSpace($AdapterRoot)) {
 } elseif (-not [string]::IsNullOrWhiteSpace($env:SVELTEKIT_PHP_ADAPTER_ROOT)) {
   $AdapterRoot = $env:SVELTEKIT_PHP_ADAPTER_ROOT
   $AdapterRootSource = "environment"
+} elseif (Test-PathSafe "B:\Dev\sveltekit-php") {
+  $AdapterRoot = "B:\Dev\sveltekit-php"
+  $AdapterRootSource = "local default"
 }
+$SiteBuildConfig = Get-SiteBuildConfig -SiteId $SiteId
+$CanonicalRedirectHosts = @($SiteBuildConfig.canonicalRedirectHosts | ForEach-Object {
+  ([string]$_).Trim()
+} | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+$PublicRouteExclusions = @($SiteBuildConfig.publicRouteExclusions | ForEach-Object {
+  ([string]$_).Trim().Trim("/")
+} | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
 
 Step "Resolve paths"
 Info "ProjectRoot" $ProjectRoot
@@ -92,6 +112,9 @@ Info "BasePath" $(if ($BasePath) { $BasePath } else { "(root)" })
 Info "SiteId" $SiteId
 Info "PublicSiteUrl" $PublicSiteUrl
 Info "AdapterRoot" $(if ($AdapterRoot) { $AdapterRoot } else { "(committed vendored adapter)" })
+Info "AdapterRootSource" $AdapterRootSource
+Info "Canonical hosts" $(if ($CanonicalRedirectHosts.Count) { $CanonicalRedirectHosts -join ", " } else { "(none)" })
+Info "Route exclusions" $(if ($PublicRouteExclusions.Count) { $PublicRouteExclusions -join ", " } else { "(none)" })
 
 if ($SkipAdapterSync) {
   Info "Adapter sync" "Skipped by -SkipAdapterSync"
@@ -251,12 +274,25 @@ if (Test-Path -LiteralPath $HtaccessSource) {
   $Generated = Get-Content -LiteralPath $HtaccessDest -Raw
   $HostOverlayLabel = if ($SiteId -eq "canopy") { "blog.canopydigital.ca host overlay" } else { "blog.ryanspice.com host overlay" }
   $OverlaySections = @($Overlay.Trim())
-  if ($SiteId -eq "canopy") {
+  if ($CanonicalRedirectHosts.Count -gt 0) {
+    $HostRedirectRules = $CanonicalRedirectHosts | ForEach-Object {
+      "`tRewriteCond %{HTTP_HOST} $_ [NC]`n`tRewriteRule ^(.*)$ $PublicSiteUrl/`$1 [R=301,L]"
+    }
     $OverlaySections += @"
-# Canopy public build: block Ryan-only owner and utility surfaces at the edge.
+# $SiteId public build: redirect alternate hosts to $PublicSiteUrl.
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteRule ^(auth|briefs|dev-log|drafts|library|login|status)(/|$) - [R=404,L]
+$($HostRedirectRules -join "`n")
+</IfModule>
+"@.Trim()
+  }
+  if ($PublicRouteExclusions.Count -gt 0) {
+    $RoutePattern = ($PublicRouteExclusions | ForEach-Object { [regex]::Escape($_) }) -join "|"
+    $OverlaySections += @"
+# $SiteId public build: block site-excluded owner and utility surfaces at the edge.
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteRule ^($RoutePattern)(/|$) - [R=404,L]
 </IfModule>
 "@.Trim()
   }

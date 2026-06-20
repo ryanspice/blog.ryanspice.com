@@ -13,6 +13,8 @@ function normalizeVersion(value: unknown): string {
 	return typeof value === 'string' && value.trim() ? value.trim() : 'unknown';
 }
 
+export const csr = true;
+
 type ArticleSlug = { slug: string };
 
 function countPages(published: ArticleSlug[], drafts: ArticleSlug[]) {
