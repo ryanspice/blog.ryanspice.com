@@ -47,6 +47,20 @@
 		return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
 	}
 
+	function toContributorArray(value: unknown): Article['coAuthors'] {
+		if (!Array.isArray(value)) return [];
+
+		return value
+			.map((item) => {
+				const contributor = toObject(item);
+				const name = toString(contributor.name);
+				const href = toString(contributor.href);
+				const type = contributor.type === 'Organization' || contributor.type === 'Person' ? contributor.type : undefined;
+				return name ? { name, ...(href ? { href } : {}), ...(type ? { type } : {}) } : null;
+			})
+			.filter((item): item is Article['coAuthors'][number] => item !== null);
+	}
+
 	function toSafeDesign(value: unknown, article: Record<string, unknown>): ArticleDesign {
 		const design = toObject(value);
 		const status = toString(article.status, 'published');
@@ -122,6 +136,7 @@
 			releaseDate: toString(article.releaseDate) || undefined,
 			releaseDateLabel: toString(article.releaseDateLabel) || undefined,
 			credits: toStringArray(article.credits),
+			coAuthors: toContributorArray(article.coAuthors),
 			references: toStringArray(article.references),
 			furtherReading: toStringArray(article.furtherReading),
 			relatedPosts: toStringArray(article.relatedPosts),

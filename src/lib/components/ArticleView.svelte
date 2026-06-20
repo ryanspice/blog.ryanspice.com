@@ -46,6 +46,19 @@
 	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
 	const articleReferences = $derived.by(() => article.references.map(parseResourceLink).filter((link): link is ResourceLink => Boolean(link)));
 	const articleFurtherReading = $derived.by(() => article.furtherReading.map(parseResourceLink).filter((link): link is ResourceLink => Boolean(link)));
+	const coAuthors = $derived(article.coAuthors ?? []);
+	const articleSchemaAuthors = $derived.by(() => [
+		{
+			'@type': site.author.type,
+			name: site.author.name,
+			url: site.author.url
+		},
+		...coAuthors.map((coAuthor) => ({
+			'@type': coAuthor.type ?? 'Person',
+			name: coAuthor.name,
+			...(coAuthor.href ? { url: coAuthor.href } : {})
+		}))
+	]);
 	const pageTitle = $derived(formatPageTitle(article.seoTitle || article.title, site.titleSuffix));
 	const description = $derived(article.seoDescription || article.summary || site.description);
 	const canonical = $derived(new URL(articleHref(article), page.url.origin).toString());
@@ -95,11 +108,7 @@
 				mainEntityOfPage: canonical,
 				datePublished: article.date,
 				dateModified: article.updatedDate,
-				author: {
-					'@type': site.author.type,
-					name: site.author.name,
-					url: site.author.url
-				},
+				author: articleSchemaAuthors,
 				publisher: site.publisher
 					? {
 							'@type': site.publisher.type,
@@ -152,6 +161,10 @@
 	function formatPageTitle(title: string, suffix: string): string {
 		const fullTitle = `${title} · ${suffix}`;
 		return fullTitle.length > 65 ? title : fullTitle;
+	}
+
+	function isExternalHref(href: string | undefined): boolean {
+		return Boolean(href && /^https?:\/\//i.test(href));
 	}
 
 	async function enhanceMermaid() {
@@ -347,6 +360,44 @@
 
 		<div class="article-column">
 			<article class="article-shell"><div class="article-inner">{@html article.html}</div></article>
+
+			<section class="article-end-meta" aria-label={ui.article.articleDetails}>
+				<dl class="article-end-meta-grid">
+					<div>
+						<dt>{ui.article.published}</dt>
+						<dd><time datetime={article.date}>{article.dateLabel}</time></dd>
+					</div>
+					<div>
+						<dt>{ui.article.updated}</dt>
+						<dd><time datetime={article.updatedDate}>{article.updatedDateLabel}</time></dd>
+					</div>
+					<div>
+						<dt>{ui.article.author}</dt>
+						<dd>
+							<a href={site.author.url} rel="author noreferrer" target="_blank">{site.author.name}</a>
+						</dd>
+					</div>
+					{#if coAuthors.length}
+						<div class="article-end-meta-row--wide">
+							<dt>{ui.article.coAuthors}</dt>
+							<dd class="article-contributor-list">
+								{#each coAuthors as coAuthor, index (coAuthor.name + ':' + index)}
+									{#if coAuthor.href}
+										<a
+											href={coAuthor.href}
+											rel={isExternalHref(coAuthor.href) ? 'noreferrer' : undefined}
+											target={isExternalHref(coAuthor.href) ? '_blank' : undefined}
+											>{coAuthor.name}</a
+										>
+									{:else}
+										<span>{coAuthor.name}</span>
+									{/if}
+								{/each}
+							</dd>
+						</div>
+					{/if}
+				</dl>
+			</section>
 
 			{#if articleReferences.length}
 				<section class="article-references" aria-label={ui.article.sourcesHeading}>

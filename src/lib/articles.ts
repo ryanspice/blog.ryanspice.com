@@ -19,6 +19,12 @@ export type NavItem = {
 	href: string;
 };
 
+export type ArticleContributor = {
+	name: string;
+	href?: string;
+	type?: 'Person' | 'Organization';
+};
+
 export type StatusItem = {
 	label: string;
 	value: string;
@@ -81,6 +87,7 @@ export type ArticleMeta = {
 	previousVersion: string | null;
 	visuals: ArticleVisuals;
 	credits: string[];
+	coAuthors: ArticleContributor[];
 	references: string[];
 	furtherReading: string[];
 	relatedPosts: string[];
@@ -266,6 +273,9 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const previousVersion = stringValue(frontmatter.previous_version) || null;
 	const visuals = articleVisualsFromFrontmatter(frontmatter);
 	const credits = arrayValue(frontmatter.credits);
+	const coAuthors = arrayValue(frontmatter.co_authors)
+		.map(parseContributor)
+		.filter((contributor): contributor is ArticleContributor => contributor !== null);
 	const linkTerms = arrayValue(frontmatter.link_terms)
 		.map(parseLinkTerm)
 		.filter((term): term is MarkdownLinkTerm => term !== null);
@@ -302,6 +312,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		previousBody: previousBody ? stripLeadingTitleHeading(previousBody) : null,
 		visuals,
 		credits: credits.length ? credits : ['Ryan Spice'],
+		coAuthors,
 		references: arrayValue(frontmatter.references),
 		furtherReading: arrayValue(frontmatter.further_reading),
 		relatedPosts: arrayValue(frontmatter.related_posts),
@@ -579,6 +590,18 @@ function parseLinkTerm(value: string): MarkdownLinkTerm | null {
 
 	if (!cleanedLabel || !href) return null;
 	return { label: cleanedLabel, href };
+}
+
+function parseContributor(value: string): ArticleContributor | null {
+	const [rawName, rawHref, rawType] = value.split('|').map((part) => part.trim());
+	if (!rawName) return null;
+
+	const type = rawType === 'Organization' || rawType === 'Person' ? rawType : undefined;
+	return {
+		name: rawName,
+		...(rawHref ? { href: rawHref } : {}),
+		...(type ? { type } : {})
+	};
 }
 
 function formatArticleDate(value: string, locale: SupportedLocale = DEFAULT_LOCALE): string {

@@ -38,6 +38,8 @@ tags:
   - another-tag
 audience:
   - reader group
+co_authors:
+  - "Contributor name|https://example.com|Person"
 related_posts:
   - "other-post.md"
 references:
@@ -72,6 +74,10 @@ Source and reading-link conventions:
   are useful next but are not primary factual support.
 - Do not repeat the same source list at the end of the Markdown body. The article route renders
   `references` and `further_reading` as separated post-article sections.
+- Use `co_authors` only for actual article contributors. Entries accept
+  `Name|URL|Person` or `Name|URL|Organization`; omit the URL or type when unknown. Primary source
+  documents, companies mentioned in the article, and tooling credits still belong in `references`
+  or `credits`, not `co_authors`.
 
 Tag and relationship conventions:
 

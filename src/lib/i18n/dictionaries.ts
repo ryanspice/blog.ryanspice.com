@@ -84,6 +84,9 @@ export type UiDictionary = {
 	article: {
 		published: string;
 		updated: string;
+		articleDetails: string;
+		author: string;
+		coAuthors: string;
 		articleInfo: string;
 		readTime: string;
 		type: string;
@@ -206,6 +209,9 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 		article: {
 			published: 'Published',
 			updated: 'Updated',
+			articleDetails: 'Article details',
+			author: 'Author',
+			coAuthors: 'Co-authors',
 			articleInfo: 'Article info',
 			readTime: 'Read time',
 			type: 'Type',
@@ -326,6 +332,9 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 		article: {
 			published: 'Publie',
 			updated: 'Mis a jour',
+			articleDetails: 'Details de l article',
+			author: 'Auteur',
+			coAuthors: 'Coauteurs',
 			articleInfo: 'Info article',
 			readTime: 'Temps de lecture',
 			type: 'Type',

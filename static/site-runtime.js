@@ -180,12 +180,17 @@
 		return true;
 	}
 
+	function setArticleSearchActive(active) {
+		document.documentElement.classList.toggle('article-search-active', Boolean(active));
+	}
+
 	function applyArticleFilters(query, tag, compact) {
+		const hasFilters = Boolean(query || tag || compact);
 		const index = document.querySelector('[data-article-index]');
+		setArticleSearchActive(hasFilters && Boolean(index));
 		if (!index) return;
 
 		const cards = Array.from(index.querySelectorAll('[data-article-card]'));
-		const hasFilters = Boolean(query || tag || compact);
 		let visible = 0;
 
 		index.classList.toggle('compact-grid', hasFilters);
@@ -215,7 +220,10 @@
 
 	function syncArticleFiltersFromUrl() {
 		const form = document.querySelector('[data-article-filter-form]');
-		if (!form) return;
+		if (!form) {
+			setArticleSearchActive(false);
+			return;
+		}
 
 		const params = new URLSearchParams(window.location.search);
 		const query = (params.get('q') || '').trim();

@@ -8,17 +8,19 @@ date: "2026-06-20"
 summary: "A field note on wiring GLM-5.2 into Hermes through Cloudflare Workers AI, hitting quota pressure quickly, and landing on a safer lead/delegate architecture for expensive reasoning models."
 seo_description: "How GLM-5.2 worked in Hermes through Cloudflare Workers AI, why quota pressure showed up quickly, and why bounded delegation beats using the strongest model as the always-on lead."
 accent: "#38bdf8"
-image: "/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-hermes-focal.svg"
-image_alt: "Vertical visual showing GLM-5.2 as a bounded reasoning delegate inside a Hermes routing lane."
-image_credit: "Generated SVG diagram by Ryan Spice / Codex"
+image: "https://images.unsplash.com/photo-1695668548342-c0c1ad479aee?auto=format&fit=crop&w=1600&q=80"
+image_alt: "A close view of data center server racks and blue network cabling, used as a topical infrastructure visual for GLM-5.2 delegation."
+image_credit: "Photo by Kevin Ache on Unsplash"
+image_source: "https://unsplash.com/photos/a-rack-of-servers-in-a-server-room-2JJ3wBHu4_0"
 image_position: "center center"
 row_image: "/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-delegate-fuse.svg"
 row_image_alt: "Compact agent delegation diagram for GLM-5.2 in Hermes."
 row_image_credit: "Generated SVG diagram by Ryan Spice / Codex"
 row_image_position: "center center"
-background_image: "/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-hermes-focal.svg"
-background_image_alt: "GLM-5.2 delegate lane visual background."
-background_image_credit: "Generated SVG diagram by Ryan Spice / Codex"
+background_image: "https://images.unsplash.com/photo-1695668548342-c0c1ad479aee?auto=format&fit=crop&w=1800&q=80"
+background_image_alt: "Data center server racks and blue network cabling used as the GLM-5.2 delegation article background."
+background_image_credit: "Photo by Kevin Ache on Unsplash"
+background_image_source: "https://unsplash.com/photos/a-rack-of-servers-in-a-server-room-2JJ3wBHu4_0"
 background_image_position: "center center"
 audience:
   - "developers building AI coding agents"
@@ -37,6 +39,8 @@ tags:
 credits:
   - "Ryan Spice"
   - "Cloudflare Workers AI and Z.ai public documentation"
+co_authors:
+  - "OpenAI Codex|https://openai.com/codex/|Organization"
 references:
   - "Cloudflare Workers AI GLM-5.2 model page|https://developers.cloudflare.com/workers-ai/models/glm-5.2/"
   - "Cloudflare Workers AI OpenAI-compatible endpoints|https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/"
@@ -73,6 +77,8 @@ cheap resilient lead
 That is the part that survived the experiment.
 
 ![Diagram showing a fast lead delegating one bounded reasoning task to GLM-5.2 before returning a compact result to a coder worker.](/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-delegate-fuse.svg "The GLM-5.2 delegate is a fuse: spend the expensive reasoning where it matters, then hand a compact result back to the rest of the chain.")
+
+![Vertical visual showing GLM-5.2 as a bounded reasoning delegate inside a Hermes routing lane.](/img/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation/glm-5-2-hermes-focal.svg "The GLM-5.2 delegate lane belongs inside the workflow, not as the whole workflow.")
 
 ## What I verified
 
