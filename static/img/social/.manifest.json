@@ -138,5 +138,15 @@
     "fingerprint": "6fcd2d72f491d1de74224dfcf8dd760be28b6cb578ad6e22fddfa0c4cc5c44dd",
     "path": "static/img/social/canopy/articles/nvidia-nemotron-3-ultra-hermes-agent-production-setup.png",
     "updatedAt": "2026-06-18T21:46:45.958Z"
+  },
+  "ryan:en:glm-5-2-hermes-cloudflare-workers-ai-delegation": {
+    "fingerprint": "888c580764a4d64bbc7bb8c97cc369648c005b588e2de3653d08fe1cbe7c61a0",
+    "path": "static/img/social/ryan/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation.png",
+    "updatedAt": "2026-06-20T05:09:14.902Z"
+  },
+  "canopy:en:glm-5-2-hermes-cloudflare-workers-ai-delegation": {
+    "fingerprint": "aa6117bd726af872726d825a045ba4d79047ba94f2e63ff33dfb09718d105b72",
+    "path": "static/img/social/canopy/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation.png",
+    "updatedAt": "2026-06-20T05:11:38.405Z"
   }
 }

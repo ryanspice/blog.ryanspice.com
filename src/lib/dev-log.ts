@@ -18,6 +18,23 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-06-19',
+		title: 'Publish Nemotron and harden social metadata',
+		summary:
+			'Published the Nemotron production-setup article, added RSS/OG/Twitter parity across Ryan and Canopy routes, regenerated social-card metadata, and added structured-schema fixes for low-friction discovery.',
+		source: 'Nemotron article release and metadata hardening',
+		accent: '#0ea5e9',
+		tags: ['blog', 'automation', 'ai', 'seo', 'sveltekit-php', 'canopy'],
+		relatedArticleSlugs: [
+			'nvidia-nemotron-3-ultra-hermes-agent-production-setup',
+			'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',
+			'how-chatgpt-performs-deep-research',
+			'openjarvis-local-ai-personal-ai-on-your-pc',
+			'ship-fast-for-windows-microsoft-store-playbook'
+		],
+		relatedArticleTags: ['AI', 'AI agents', 'SvelteKit', 'SEO', 'Social media', 'developer workflow']
+	},
+	{
 		date: '2026-06-18',
 		title: 'Publish the GLM search-exposure note',
 		summary:
