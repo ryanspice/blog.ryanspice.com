@@ -1,10 +1,11 @@
 ---
-title: "Building a Local 'Fugu' Coding Harness: One Conductor, a Pool of Models"
-seo_title: "Local Fugu Coding Harness: Multi-Model Orchestration"
+title: "My Local Fugu Coding Harness"
+seo_title: "Local Fugu Coding Harness: One Conductor, a Pool of Models"
 slug: "local-fugu-coding-harness"
-status: "draft"
+status: "published"
 draft_type: "build-log"
 date: "2026-06-24"
+updated_date: "2026-06-24"
 audience:
   - "developers building agentic workflows"
   - "AI agent operators"
@@ -22,31 +23,65 @@ tags:
   - "Nemotron"
   - "DeepSeek"
   - "local LLM"
+  - "model routing"
+  - "coding agents"
   - "prompt operations"
 related_posts:
-  - "hermes-deepseek-setup"
   - "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
+  - "glm-5-2-hermes-cloudflare-workers-ai-delegation"
+  - "nvidia-nemotron-3-ultra-hermes-agent-production-setup"
+  - "glm-5-2-long-context-search-exposure"
   - "how-chatgpt-performs-deep-research"
 credits:
   - "Ryan Spice"
   - "AI Wiki research notes"
+accent: "#a3e635"
+image: "/img/articles/local-fugu-coding-harness/fugu-social-card-media.svg"
+image_alt: "A conductor node routes work to thinker, worker, verifier, and local second-brain lanes, then returns one reviewed result."
+image_credit: "Generated SVG diagram by Ryan Spice / Codex"
+image_position: "center center"
+row_image: "/img/articles/local-fugu-coding-harness/fugu-social-card-media.svg"
+row_image_alt: "Local Fugu role map diagram for conductor-led model orchestration."
+row_image_credit: "Generated SVG diagram by Ryan Spice / Codex"
+row_image_position: "center center"
+background_image: "/img/articles/local-fugu-coding-harness/fugu-memory-audit-loop.svg"
+background_image_alt: "A memory unification loop showing shared store, bridges, cross-family verification, and human audit."
+background_image_credit: "Generated SVG diagram by Ryan Spice / Codex"
+background_image_position: "center center"
 link_terms:
   - "Sakana Fugu|https://sakana.ai/fugu/"
   - "TRINITY|https://arxiv.org/abs/2512.04695"
   - "Conductor|https://arxiv.org/abs/2512.04388"
-summary: "How I turned a pile of local and API models into a Sakana-Fugu-style coding harness — one Conductor, role-assigned workers, and mandatory cross-family verification — and dogfooded it on a real game project."
-seo_description: "A build log: assembling a local Sakana-Fugu-style multi-model coding harness with a Conductor, Thinker/Worker/Verifier roles, and cross-family verification."
+  - "technical report|https://arxiv.org/abs/2606.21228"
+references:
+  - "Sakana Fugu product page|https://sakana.ai/fugu/"
+  - "Sakana Fugu release note|https://sakana.ai/fugu-release/"
+  - "Sakana Fugu Technical Report|https://arxiv.org/abs/2606.21228"
+  - "TRINITY: An Evolved LLM Coordinator|https://arxiv.org/abs/2512.04695"
+  - "Learning to Orchestrate Agents in Natural Language with the Conductor|https://arxiv.org/abs/2512.04388"
+  - "Sakana AI TRINITY explainer|https://sakana.ai/trinity/"
+  - "Sakana AI Conductor explainer|https://sakana.ai/learning-to-orchestrate/"
+further_reading:
+  - "Agent Mixing Without Theater|/agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns/"
+  - "GLM-5.2 in Hermes|/glm-5-2-hermes-cloudflare-workers-ai-delegation/"
+  - "NVIDIA Nemotron 3 Ultra in Hermes|/nvidia-nemotron-3-ultra-hermes-agent-production-setup/"
+summary: "How I turned a pile of local and API models into a Sakana-Fugu-style coding harness: one Conductor, role-assigned workers, mandatory cross-family verification, and the human audit loop that kept the system honest."
+seo_description: "A build log for a local Sakana-Fugu-style multi-model coding harness with a Conductor, Thinker/Worker/Verifier roles, a local queue, shared memory, and cross-family verification."
 ---
 
-# Building a Local 'Fugu' Coding Harness: One Conductor, a Pool of Models
+# My Local Fugu Coding Harness
 
 The thing that makes a multi-model setup good is not one stronger model. It is **coordination**.
 
-I already had the parts: a frontier CLI agent, a couple of hosted reasoning models, a fast cheap coder, and one local model running on a single GPU. What I did not have was a *conductor* — something that decides which model does what, in what order, and who is allowed to sign off on the result. This is a build log of wiring those parts into a Sakana-Fugu-style harness, and then dogfooding it on a real game project.
+I built this because I was tired of losing time to polished patches that nobody had to defend. A strong agent can make a bad assumption look finished. Two agents can make the same bad assumption twice. The missing piece was not another chat window. It was a routing rule, a verifier, and a clear owner for the final call.
+
+I already had the parts: a frontier CLI agent, a couple of hosted reasoning models, a fast cheap coder, and one local model running on a single GPU. What I did not have was a *conductor* — something that decides which model does what, in what order, and who is allowed to sign off on the result. This is a build log of wiring those parts into a Sakana-Fugu-style harness, then testing it on real project work instead of leaving it as a diagram.
 
 ## What Fugu actually is
 
-Sakana's "Fugu" framing is the clearest articulation of the idea I keep circling back to: present a pool of models behind one API and let a learned coordinator route work. The two papers behind it are worth skimming:
+Sakana's "Fugu" framing is the clearest articulation of the idea I keep circling back to: present a pool of models behind one API and let a learned coordinator route work. As of this post, Sakana presents Fugu as a productized multi-agent system delivered through an OpenAI-compatible API, with Fugu and Fugu Ultra as the public model choices. I am not claiming to run Sakana's product locally. I am borrowing the operating lesson and applying it to my own workbench.
+
+The research trail matters because it separates the useful idea from the hype. The current Fugu page and technical report ground the system in two ICLR 2026 papers:
 
 - **TRINITY** — an evolved coordinator that assigns **Thinker / Worker / Verifier** roles across turns, adapting per task (coding, math, reasoning).
 - **Conductor** — trained to discover *natural-language* coordination strategies, so a diverse pool of models outperforms any single worker.
@@ -101,6 +136,8 @@ long-context review     -> scarce reviewer (sparingly)
 final synthesis         -> Conductor                     (second-brain pass on the local model)
 ```
 
+![Role map for a local Fugu-style coding harness: a conductor routes work to thinker, worker, verifier, and second-brain lanes before returning one reviewed result.](/img/articles/local-fugu-coding-harness/fugu-conductor-role-map.svg "The important part is not the number of models. The important part is that planning, execution, verification, and final synthesis are separate jobs.")
+
 ## Keep the layer global, not per-project
 
 The mistake would be to bury this inside one repo. The orchestration layer is **project-agnostic** and lives with the agents themselves:
@@ -118,11 +155,11 @@ Most "local Fugu" write-ups assume you can run several local models at once. On 
 
 So the honest design is: **one local model, fronted by a single-slot queue.** The queue *is* the local tier. It serializes callers, makes sure the server is up, caps tokens, enforces timeouts, and restarts the server if it wedges. Everything else in the pool is API-backed, so the local model's only job is to be the Conductor's cheap second brain.
 
-I had sketched a local gateway to unify several local models under one endpoint. I deleted that from the plan. It solved a problem I do not have, and it could not replicate what the queue already does. **Defer the thing that doesn't earn its complexity.**
+I had sketched a local gateway to unify several local models under one endpoint. I deleted that from the plan. It solved a problem I do not have, and it could not replicate what the queue already does. **Defer the thing that doesn't earn its complexity.** That is as much a system-design rule as it is a sanity rule.
 
-## Dogfooding it on a real project
+## Testing it on real work
 
-A harness you do not use is a diagram. So I pointed it at an actual game repo and fixed two real messes with it.
+A harness you do not use is a diagram. So I pointed it at actual project work and fixed two real messes with it.
 
 **A decision kit that had quietly overfit.** I had a "Fusion" decision kit — a four-track panel (baseline → per-track review → ranker → synthesis) — that was supposed to be general but had drifted into being about one subsystem. The prompts said "judge each option on its merits," but the *config and scripts* still injected that subsystem's keywords, rules, and reference art into every run. I generalized the config into neutral decision slots, made the scripts iterate whatever tracks you define, made the reference art opt-in, fixed three different version numbers that disagreed, archived a pile of backups, and renamed it into a task-neutral **"Game Fusion Pack."** The bias lived in the plumbing, not the prompt — that is the lesson.
 
@@ -138,7 +175,9 @@ That is achievable, and it is mostly about the verify rule and routing — not a
 
 ## The conductor's first real job: unifying memory
 
-The honest test of a harness is handing it real work and watching what it does — including what it gets wrong. So I gave the conductor the open thread from the checklist: unify memory across the three agents (they each kept their own private notes). The kickoff was one line:
+This is where the article becomes mine, not just a paper recap.
+
+The honest test of a harness is handing it real work and watching what it does — including what it gets wrong. So I gave the conductor the open thread from the checklist: unify memory across the three agents I actually use. The kickoff was one line:
 
 ```text
 Read the spec, act as the Fugu Conductor, and run the memory-unification job.
@@ -174,17 +213,19 @@ An all-green report from a 50-minute autonomous run still needs a human pass. Mi
 
 That is the honest shape of orchestration: it did ~90% of a fiddly cross-system chore correctly and unattended, and the **verify-then-human-audit** loop caught the 10% that was wrong. Which is the win condition restated — fewer bad patches, not zero oversight.
 
+![Memory unification audit loop: the conductor writes a shared store, bridge pointers expose it to each workbench, a different model verifies the bridge edits, and a human audit catches the remaining wiring defect.](/img/articles/local-fugu-coding-harness/fugu-memory-audit-loop.svg "The useful shape is not autonomous magic. It is bounded automation, cross-family verification, and a human audit before trust.")
+
 ## Next steps
 
 This is a build log, not a finished product. Open threads:
 
 - [x] ~~**Unify memory across the agents** — one shared, canonical store that every agent reads, instead of three private ones.~~ **Done** by the conductor (read-pointer phase; one bridge fix caught on audit — see above). Deep two-way sync still deferred.
+- [x] ~~**Add a cover image and publish this build log.**~~ Done in this pass, with local diagrams instead of generic stock.
 - [ ] Optional unified local+remote endpoint with request tracing — only if multi-local ever becomes real.
 - [ ] A small local planning model as an offline Thinker fallback.
 - [ ] Per-route eval prompts and simple router-decision scoring.
 - [ ] Autopilot: schedule the daily pulse to run through the Fugu routes end-to-end.
 - [ ] Extract the Game Fusion Pack into a portable, cross-game template.
-- [ ] _(publish checklist)_ add a cover image and flip this post to `published`.
 
 ## Start your next conversation with the Fugu config
 

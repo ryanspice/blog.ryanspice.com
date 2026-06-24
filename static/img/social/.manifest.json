@@ -148,5 +148,15 @@
     "fingerprint": "773287b342a55685d45de58b47e4bfedee4f433c7a93e295aa6b2b5d6da35e5e",
     "path": "static/img/social/canopy/articles/glm-5-2-hermes-cloudflare-workers-ai-delegation.png",
     "updatedAt": "2026-06-20T07:00:51.105Z"
+  },
+  "ryan:en:local-fugu-coding-harness": {
+    "fingerprint": "cf6aa70f5cd979cf89d43b75b8163b6fe8ed1154bbe991ab17cb250552b48d94",
+    "path": "static/img/social/ryan/articles/local-fugu-coding-harness.png",
+    "updatedAt": "2026-06-24T18:57:57.167Z"
+  },
+  "canopy:en:local-fugu-coding-harness": {
+    "fingerprint": "16aa2de274c25dd072aba75f645d85cced86131052a7eca92455a06524bebf8f",
+    "path": "static/img/social/canopy/articles/local-fugu-coding-harness.png",
+    "updatedAt": "2026-06-24T18:57:57.786Z"
   }
 }

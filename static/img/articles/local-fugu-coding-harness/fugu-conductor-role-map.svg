@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Local Fugu conductor role map</title>
+  <desc id="desc">A conductor routes work to thinker, worker, verifier, and local second-brain lanes before returning one reviewed result.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#06110f"/>
+      <stop offset="0.52" stop-color="#0d1d19"/>
+      <stop offset="1" stop-color="#18220f"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10241f"/>
+      <stop offset="1" stop-color="#182d25"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#d5b35f"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1335" cy="120" r="260" fill="#a3e635" opacity="0.06"/>
+  <circle cx="175" cy="755" r="330" fill="#38bdf8" opacity="0.06"/>
+  <text x="96" y="112" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700">One Conductor, Separate Jobs</text>
+  <text x="98" y="158" fill="#bed7c9" font-family="Segoe UI, Arial, sans-serif" font-size="24">Planning, execution, verification, and final synthesis are different responsibilities.</text>
+
+  <g filter="url(#softShadow)">
+    <rect x="595" y="260" width="410" height="210" rx="28" fill="#14251f" stroke="#d5b35f" stroke-width="3"/>
+    <text x="800" y="334" text-anchor="middle" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="38" font-weight="700">Conductor</text>
+    <text x="800" y="378" text-anchor="middle" fill="#bed7c9" font-family="Segoe UI, Arial, sans-serif" font-size="22">owns scope, routing, and final synthesis</text>
+    <text x="800" y="420" text-anchor="middle" fill="#a3e635" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">the author never verifies itself</text>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <rect x="96" y="250" width="340" height="150" rx="22" fill="url(#panel)" stroke="#7ad39d" stroke-width="2"/>
+    <text x="126" y="304" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">Thinker</text>
+    <text x="126" y="342" fill="#bed7c9" font-family="Segoe UI, Arial, sans-serif" font-size="20">plans architecture, ranks options</text>
+  </g>
+  <g filter="url(#softShadow)">
+    <rect x="96" y="504" width="340" height="150" rx="22" fill="url(#panel)" stroke="#38bdf8" stroke-width="2"/>
+    <text x="126" y="558" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">Workers</text>
+    <text x="126" y="596" fill="#bed7c9" font-family="Segoe UI, Arial, sans-serif" font-size="20">bounded patches, directed output</text>
+  </g>
+  <g filter="url(#softShadow)">
+    <rect x="1164" y="250" width="340" height="150" rx="22" fill="url(#panel)" stroke="#facc15" stroke-width="2"/>
+    <text x="1194" y="304" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">Verifier</text>
+    <text x="1194" y="342" fill="#bed7c9" font-family="Segoe UI, Arial, sans-serif" font-size="20">different family, alternative read</text>
+  </g>
+  <g filter="url(#softShadow)">
+    <rect x="1164" y="504" width="340" height="150" rx="22" fill="url(#panel)" stroke="#a3e635" stroke-width="2"/>
+    <text x="1194" y="558" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">Local Queue</text>
+    <text x="1194" y="596" fill="#bed7c9" font-family="Segoe UI, Arial, sans-serif" font-size="20">single-slot second brain</text>
+  </g>
+
+  <path d="M 436 325 C 495 325 532 340 588 356" fill="none" stroke="#d5b35f" stroke-width="5" marker-end="url(#arrow)"/>
+  <path d="M 436 579 C 505 552 542 505 592 438" fill="none" stroke="#d5b35f" stroke-width="5" marker-end="url(#arrow)"/>
+  <path d="M 1008 355 C 1065 335 1102 325 1158 325" fill="none" stroke="#d5b35f" stroke-width="5" marker-end="url(#arrow)"/>
+  <path d="M 1008 438 C 1062 505 1100 552 1158 579" fill="none" stroke="#d5b35f" stroke-width="5" marker-end="url(#arrow)"/>
+
+  <g filter="url(#softShadow)">
+    <rect x="505" y="705" width="590" height="86" rx="20" fill="#0f1f1b" stroke="#bed7c9" stroke-width="1.5"/>
+    <text x="800" y="758" text-anchor="middle" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">one reviewed result, not a committee transcript</text>
+  </g>
+</svg>
