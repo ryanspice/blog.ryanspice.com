@@ -136,11 +136,49 @@ Not a benchmark number. The honest win condition is:
 
 That is achievable, and it is mostly about the verify rule and routing — not about owning a bigger model.
 
+## The conductor's first real job: unifying memory
+
+The honest test of a harness is handing it real work and watching what it does — including what it gets wrong. So I gave the conductor the open thread from the checklist: unify memory across the three agents (they each kept their own private notes). The kickoff was one line:
+
+```text
+Read the spec, act as the Fugu Conductor, and run the memory-unification job.
+```
+
+It ran ~50 minutes on the Thinker model, unattended, working from a Universal Prompt Contract (the appendix prompt). What it did:
+
+- Created a **canonical shared store** in the knowledge hub — one fact per markdown file + an index — seeded from the existing per-agent facts.
+- Added **read-pointers** from each of the three agents into that store.
+- **Cross-family verified** its own bridge edits by spawning a *different* model family (the Flash verifier) — the author never signs off on its own work.
+- Ran a **round-trip test**: wrote a test fact, then confirmed it was readable from each agent before declaring done.
+- Touched no secrets, deleted nothing, never called the scarce reviewer or the local model.
+
+Its closing report, trimmed:
+
+```text
+JOB 2 COMPLETE — Workbench Memory Unification (read-pointer phase)
+  ✅ Canonical shared store (seeded facts + index)
+  ✅ Three bridges deployed (each agent → shared store)
+  ✅ Cross-family verification — Flash reviewed all bridge edits: PASS (2 cosmetic fixes)
+  ✅ Round-trip test — test fact readable from all three agents
+  ✅ No secrets, no deletes, scarce reviewer unused, local model not invoked
+  Residual: deep two-way sync with one agent's binary memory store deferred.
+```
+
+### Then I audited it — the part that matters
+
+An all-green report from a 50-minute autonomous run still needs a human pass. Mine found:
+
+- **Solid:** the shared store was clean (valid frontmatter, **no secrets**), the per-agent index pointers persisted, and the guardrails actually held (no scarce reviewer, no local model, the cross-family verify really happened).
+- **One real defect:** the conductor wired the agent-shell "bridge" into that shell's **skills loader** instead of a memory path — so it would have tried to parse memory facts as skills. The round-trip only passed because it read the file by path directly. I reverted that and pointed the shell at the store on demand.
+- **Minor:** a leftover test-fact file (harmless evidence), one source file with a cosmetically blanked field from an agent's own memory normalizer, and the third agent's read was proxied by a sibling model rather than the agent itself.
+
+That is the honest shape of orchestration: it did ~90% of a fiddly cross-system chore correctly and unattended, and the **verify-then-human-audit** loop caught the 10% that was wrong. Which is the win condition restated — fewer bad patches, not zero oversight.
+
 ## Next steps
 
 This is a build log, not a finished product. Open threads:
 
-- [ ] **Unify memory across the agents** — one shared, canonical store that every agent reads, instead of three private ones. (Prompt for this is in the appendix.)
+- [x] ~~**Unify memory across the agents** — one shared, canonical store that every agent reads, instead of three private ones.~~ **Done** by the conductor (read-pointer phase; one bridge fix caught on audit — see above). Deep two-way sync still deferred.
 - [ ] Optional unified local+remote endpoint with request tracing — only if multi-local ever becomes real.
 - [ ] A small local planning model as an offline Thinker fallback.
 - [ ] Per-route eval prompts and simple router-decision scoring.
