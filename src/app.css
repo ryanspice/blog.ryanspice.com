@@ -2362,6 +2362,54 @@ th {
 	padding-top: 4px;
 }
 
+.reference-list--further .further-reading-card {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	display: flex;
+	align-items: flex-end;
+	min-height: 132px;
+	padding: 18px;
+	border-left: 4px solid color-mix(in srgb, var(--article-accent, var(--accent)) 74%, transparent);
+}
+
+.further-reading-card-focal {
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	background-image: var(--further-reading-image);
+	background-size: cover;
+	background-position: var(--further-reading-position, center center);
+	opacity: 0.22;
+	filter: saturate(0.92) contrast(1.08);
+	transform: scale(1.04);
+	transition:
+		opacity var(--metro-motion-fast) var(--metro-ease-out),
+		transform var(--metro-motion-fast) var(--metro-ease-out);
+}
+
+.further-reading-card.has-further-image::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		linear-gradient(180deg, rgba(6, 11, 20, 0.62), rgba(6, 11, 20, 0.92)),
+		linear-gradient(90deg, rgba(6, 11, 20, 0.94) 0%, rgba(6, 11, 20, 0.62) 72%, rgba(6, 11, 20, 0.88) 100%);
+}
+
+.further-reading-card.has-further-image:hover .further-reading-card-focal,
+.further-reading-card.has-further-image:focus-within .further-reading-card-focal {
+	opacity: 0.34;
+	transform: scale(1.08);
+}
+
+.reference-list--further .further-reading-card a {
+	position: relative;
+	z-index: 1;
+	color: color-mix(in srgb, var(--article-accent, var(--accent)) 82%, #ffffff);
+}
+
 .related-articles-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

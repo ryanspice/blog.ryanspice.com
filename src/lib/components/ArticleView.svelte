@@ -4,7 +4,12 @@
 	import { page } from '$app/state';
 	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
-	import { articleFocalCardCssVars, articleFocalImage, articleFocalPageCssVars } from '$lib/article-focal-images';
+	import {
+		articleCardImage,
+		articleFocalCardCssVars,
+		articleFocalImage,
+		articleFocalPageCssVars
+	} from '$lib/article-focal-images';
 	import { articleHref } from '$lib/article-links';
 	import {
 		ARTICLE_SHARE_IMAGE_HEIGHT,
@@ -158,6 +163,38 @@
 		} catch {
 			return href;
 		}
+	}
+
+	function articleForResourceLink(link: ResourceLink): Article | undefined {
+		if (link.external) return undefined;
+
+		const slug = slugFromHref(link.href);
+		if (!slug) return undefined;
+
+		return relatedArticles.find((candidate) => candidate.slug === slug);
+	}
+
+	function slugFromHref(href: string): string | undefined {
+		try {
+			const url = new URL(href, page.url.origin);
+			return url.pathname.split('/').filter(Boolean).at(-1);
+		} catch {
+			return href.split(/[?#]/, 1)[0].split('/').filter(Boolean).at(-1);
+		}
+	}
+
+	function furtherReadingCardStyle(related: Article | undefined): string | undefined {
+		if (!related) return undefined;
+		const cardImage = articleCardImage(related);
+		const fallbackImage = `${base}${articleShareImagePath(related, site)}`;
+		const imageVars = cardImage
+			? `--further-reading-image: url("${cssUrlValue(cardImage.src)}"); --further-reading-position: ${cardImage.position ?? cardImage.cardPosition ?? 'center center'}`
+			: `--further-reading-image: url("${cssUrlValue(fallbackImage)}"); --further-reading-position: center center`;
+		return `--article-accent: ${articleAccentColor(related)}; ${imageVars}`;
+	}
+
+	function cssUrlValue(value: string): string {
+		return value.replaceAll('"', '%22');
 	}
 
 	function formatPageTitle(title: string, suffix: string): string {
@@ -435,7 +472,10 @@
 					</div>
 					<ul class="reference-list reference-list--further">
 						{#each articleFurtherReading as link, index (link.href + ':' + index)}
-							<li>
+							{@const linkedArticle = articleForResourceLink(link)}
+							{@const linkedImage = linkedArticle ? true : false}
+							<li class="further-reading-card" class:has-further-image={Boolean(linkedImage)} style={furtherReadingCardStyle(linkedArticle)}>
+								{#if linkedImage}<span class="further-reading-card-focal" aria-hidden="true"></span>{/if}
 								<a
 									class={`wiki-link ${link.external ? 'external-link' : 'internal-link'}`}
 									href={link.href}

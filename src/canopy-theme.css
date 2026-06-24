@@ -975,6 +975,32 @@ html[data-site='canopy'] body::before {
 	padding-bottom: 8px;
 }
 
+.site-shell--canopy .reference-list--further .further-reading-card {
+	border-left: 6px solid var(--canopy-vermilion);
+	border-radius: 6px;
+	background: #fffdf7;
+}
+
+.site-shell--canopy .further-reading-card-focal {
+	opacity: 0.16;
+	filter: saturate(0.76) contrast(1.02);
+}
+
+.site-shell--canopy .further-reading-card.has-further-image::after {
+	background:
+		linear-gradient(180deg, rgba(255, 253, 247, 0.68), rgba(255, 253, 247, 0.96)),
+		linear-gradient(90deg, rgba(255, 253, 247, 0.98) 0%, rgba(255, 253, 247, 0.72) 72%, rgba(255, 253, 247, 0.94) 100%);
+}
+
+.site-shell--canopy .further-reading-card.has-further-image:hover .further-reading-card-focal,
+.site-shell--canopy .further-reading-card.has-further-image:focus-within .further-reading-card-focal {
+	opacity: 0.24;
+}
+
+.site-shell--canopy .reference-list--further .further-reading-card a {
+	color: var(--canopy-evergreen);
+}
+
 .site-shell--canopy .article-page .site-header {
 	border-top-width: 3px;
 	box-shadow: 0 8px 20px rgba(44, 62, 47, 0.1);
