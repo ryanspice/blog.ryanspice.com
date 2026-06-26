@@ -1,0 +1,21 @@
+{
+  "source": "pixelboats-insights",
+  "sourceArticle": "docs/insights/articles/latest.json",
+  "blogSlug": "pixelboats-morning-watch-2026-06-26",
+  "title": "PixelBoats Morning Watch: P0 scale, collision, pickup, wake, and debug display decoupling",
+  "generatedAt": "2026-06-26T07:17:21.425Z",
+  "publishedAt": "2026-06-26T14:03:38.885Z",
+  "sourcePolicy": "Curated from repo docs, feature matrix rows, question-board gates, automation memory, safe metadata, generated reports, and delegate summaries. Raw Claude/Codex/Hermes session bodies are not read by default; use a separate redacted export lane before raw conversations become article inputs.",
+  "images": [
+    {
+      "id": "morning-watch-waterline",
+      "source": "docs/insights/articles/assets/pixelboats-morning-watch.svg",
+      "publicPath": "/img/articles/pixelboats-morning-watch-2026-06-26/pixelboats-morning-watch.svg"
+    },
+    {
+      "id": "morning-watch-raster-concept",
+      "source": "docs/insights/articles/assets/pixelboats-morning-watch-raster.png",
+      "publicPath": "/img/articles/pixelboats-morning-watch-2026-06-26/pixelboats-morning-watch-raster.png"
+    }
+  ]
+}
