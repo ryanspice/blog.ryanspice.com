@@ -9,18 +9,18 @@ updated_date: "2026-06-28"
 summary: "A practical Windows PowerShell setup for running Claude Code against DeepSeek's Anthropic-compatible endpoint, with scoped environment variables, a safer launcher script, and a low-risk smoke test."
 seo_description: "How to configure Claude Code on Windows PowerShell to use DeepSeek's Anthropic-compatible API endpoint, including environment variables, model names, a local launcher script, and safe key handling."
 accent: "#1e9bff"
-image: "/img/articles/deepseek-claude-code-windows-powershell/deepseek-claude-code-launcher.svg"
-image_alt: "A Windows PowerShell launcher routes Claude Code environment variables to DeepSeek's Anthropic-compatible API endpoint."
+image: "/img/articles/deepseek-claude-code-windows-powershell/deepseek-claude-code-sidebar.svg"
+image_alt: "A vertical Windows PowerShell card routes Claude Code through a scoped launcher to DeepSeek."
 image_credit: "Generated SVG diagram by Ryan Spice / Codex"
-image_position: "center center"
-row_image: "/img/articles/deepseek-claude-code-windows-powershell/deepseek-claude-code-launcher.svg"
-row_image_alt: "Diagram of Claude Code using PowerShell environment variables to talk to DeepSeek."
+image_position: "center top"
+row_image: "/img/articles/deepseek-claude-code-windows-powershell/deepseek-claude-code-sidebar.svg"
+row_image_alt: "Vertical diagram of Claude Code using PowerShell environment variables to talk to DeepSeek."
 row_image_credit: "Generated SVG diagram by Ryan Spice / Codex"
-row_image_position: "center center"
-background_image: "/img/articles/deepseek-claude-code-windows-powershell/deepseek-claude-code-launcher.svg"
-background_image_alt: "DeepSeek Claude Code PowerShell setup diagram."
+row_image_position: "center top"
+background_image: "/img/articles/deepseek-claude-code-windows-powershell/deepseek-claude-code-sidebar.svg"
+background_image_alt: "DeepSeek Claude Code PowerShell sidebar setup diagram."
 background_image_credit: "Generated SVG diagram by Ryan Spice / Codex"
-background_image_position: "center center"
+background_image_position: "center top"
 audience:
   - "Windows developers"
   - "PowerShell users"
@@ -68,6 +68,8 @@ Base URL: https://api.deepseek.com/anthropic
 Main model: deepseek-v4-pro[1m]
 Fast/subagent model: deepseek-v4-flash
 ```
+
+![PowerShell environment variables route Claude Code to DeepSeek's Anthropic-compatible API endpoint.](/img/articles/deepseek-claude-code-windows-powershell/deepseek-claude-code-launcher.svg "The scoped launcher keeps the DeepSeek route attached to one Claude Code process instead of changing the default shell environment.")
 
 ## 1. Check Claude Code first
 

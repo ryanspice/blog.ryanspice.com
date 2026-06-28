@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const articlePath = '/agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns/';
+const articlePath = '/deepseek-claude-code-windows-powershell/';
 
 test('site runtime handles prerendered article controls', async ({ page }, testInfo) => {
 	test.skip(testInfo.project.name !== 'catalog-desktop', 'Runtime contract is covered once on desktop.');
@@ -28,6 +28,11 @@ test('site runtime handles prerendered article controls', async ({ page }, testI
 			return Number.parseFloat(progressWidth);
 		})
 		.toBeGreaterThan(0);
+
+	const codeCopyButton = page.locator('[data-copy-code]').first();
+	await expect(codeCopyButton).toBeVisible();
+	await codeCopyButton.click();
+	await expect(codeCopyButton).toHaveAttribute('data-copy-state', 'copied');
 });
 
 test('site runtime handles prerendered copy controls', async ({ page }, testInfo) => {

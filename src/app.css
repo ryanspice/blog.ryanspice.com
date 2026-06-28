@@ -1710,7 +1710,7 @@ button.footer-auth-link {
 	position: relative;
 	overflow: auto;
 	margin: 22px 0;
-	padding: 18px;
+	padding: 18px 58px 18px 18px;
 	background: #060606;
 	border: 1px solid var(--metro-line-soft);
 	border-radius: 10px;
@@ -1742,6 +1742,72 @@ button.footer-auth-link {
 	font-size: 12px;
 	text-transform: uppercase;
 	letter-spacing: .12em;
+}
+
+.code-copy-button {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	color: rgba(215, 232, 245, 0.78);
+	background: rgba(255, 255, 255, 0.055);
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	border-radius: 8px;
+	cursor: pointer;
+	transition: color .16s ease, background .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.code-copy-button:hover,
+.code-copy-button:focus-visible {
+	color: #ffffff;
+	background: color-mix(in srgb, var(--article-accent, var(--accent)) 20%, rgba(255, 255, 255, 0.08));
+	border-color: color-mix(in srgb, var(--article-accent, var(--accent)) 52%, rgba(255, 255, 255, 0.18));
+}
+
+.code-copy-button:focus-visible {
+	outline: 2px solid color-mix(in srgb, var(--article-accent, var(--accent)) 72%, #ffffff);
+	outline-offset: 2px;
+}
+
+.code-copy-button:active {
+	transform: translateY(1px);
+}
+
+.code-copy-button[data-copy-state="copied"] {
+	color: #a7f3d0;
+	border-color: rgba(167, 243, 208, 0.45);
+}
+
+.code-copy-button[data-copy-state="failed"] {
+	color: #ffb4a8;
+	border-color: rgba(255, 180, 168, 0.48);
+}
+
+.code-copy-icon {
+	width: 17px;
+	height: 17px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.code-copy-icon--check {
+	display: none;
+}
+
+.code-copy-button[data-copy-state="copied"] .code-copy-icon--copy {
+	display: none;
+}
+
+.code-copy-button[data-copy-state="copied"] .code-copy-icon--check {
+	display: block;
 }
 
 .code-block code {

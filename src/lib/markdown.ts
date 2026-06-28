@@ -249,6 +249,10 @@ function element(tagName: string, properties: Record<string, unknown> = {}, chil
 	return { type: 'element', tagName, properties, children };
 }
 
+function svgElement(tagName: string, properties: Record<string, unknown> = {}, children: any[] = []): any {
+	return element(tagName, properties, children);
+}
+
 function text(value: string): any {
 	return { type: 'text', value };
 }
@@ -465,6 +469,8 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 
 	function markdownImageDimensions(src: string): { width: string; height: string } | undefined {
 		const knownDimensions: Array<[RegExp, number, number]> = [
+			[/deepseek-claude-code-launcher\.svg$/i, 1200, 675],
+			[/deepseek-claude-code-sidebar\.svg$/i, 900, 1200],
 			[/glm-5-2-search-map\.svg$/i, 1200, 675],
 			[/glm-5-2-delegate-fuse\.svg$/i, 1600, 900],
 			[/glm-5-2-hermes-focal\.svg$/i, 900, 1200],
@@ -537,8 +543,52 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 				node.properties ??= {};
 				node.properties['data-lang'] = lang;
 				setClass(node, 'code-block');
+				if (!node.children.some((child: any) => child?.type === 'element' && child.tagName === 'button' && hasClass(child, 'code-copy-button'))) {
+					node.children.unshift(codeCopyButton(lang));
+				}
 			});
 		};
+	}
+
+	function codeCopyButton(lang: string): any {
+		return element(
+			'button',
+			{
+				type: 'button',
+				className: ['code-copy-button'],
+				'aria-label': `Copy ${lang} code`,
+				title: 'Copy code',
+				'data-copy-code': '',
+				'data-copy-visual': '',
+				'data-copy-success': 'Copied.',
+				'data-copy-failure': 'Copy failed.'
+			},
+			[
+				svgElement(
+					'svg',
+					{
+						className: ['code-copy-icon', 'code-copy-icon--copy'],
+						viewBox: '0 0 24 24',
+						'aria-hidden': 'true',
+						focusable: 'false'
+					},
+					[
+						svgElement('rect', { x: '9', y: '9', width: '10', height: '10', rx: '2' }),
+						svgElement('path', { d: 'M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1' })
+					]
+				),
+				svgElement(
+					'svg',
+					{
+						className: ['code-copy-icon', 'code-copy-icon--check'],
+						viewBox: '0 0 24 24',
+						'aria-hidden': 'true',
+						focusable: 'false'
+					},
+					[svgElement('path', { d: 'M20 6 9 17l-5-5' })]
+				)
+			]
+		);
 	}
 
 	function rehypeHeadingsAndToc() {
