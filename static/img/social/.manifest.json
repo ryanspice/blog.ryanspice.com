@@ -158,5 +158,10 @@
     "fingerprint": "4eeb1577e5d82c9120172c414a00dfe32c91ded86cee151894df5cf590e648c3",
     "path": "static/img/social/canopy/articles/local-fugu-coding-harness.png",
     "updatedAt": "2026-06-24T21:01:32.171Z"
+  },
+  "ryan:en:deepseek-claude-code-windows-powershell": {
+    "fingerprint": "62ccb4b51d92e77b8b0fc3d53e3e485b8273f4bf4da91cdef377c46e3cd1f50c",
+    "path": "static/img/social/ryan/articles/deepseek-claude-code-windows-powershell.png",
+    "updatedAt": "2026-06-28T08:14:13.234Z"
   }
 }
