@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 	import { authState, canAccessDrafts, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import ArticleView from '$lib/components/ArticleView.svelte';
 	import DraftMetadataControls from '$lib/components/DraftMetadataControls.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { Article } from '$lib/articles';
 
@@ -28,6 +28,7 @@
 	let articleLoading = $state(true);
 	let signingIn = $state(false);
 	let actionError = $state('');
+	let draftInitialized = $state(false);
 	const canViewDrafts = $derived(canAccessDrafts($authState));
 
 	const title = $derived(article ? `${article.title} · Draft · blog.ryanspice.com` : 'blog.ryanspice.com · Draft');
@@ -42,9 +43,13 @@
 		description,
 		url: canonical
 	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
+	$effect(() => {
+		if (draftInitialized) return;
+		draftInitialized = true;
+		void initializeDraft();
+	});
 
-	onMount(async () => {
+	async function initializeDraft() {
 		try {
 			const auth = await loadAuthState();
 			if (!auth.authenticated) {
@@ -62,7 +67,7 @@
 			loadError = error_ instanceof Error ? error_.message : 'Unable to load draft';
 			articleLoading = false;
 		}
-	});
+	}
 
 	async function handleSignIn() {
 		signingIn = true;
@@ -75,6 +80,8 @@
 		}
 	}
 </script>
+
+<JsonLd value={jsonLd} />
 
 <svelte:head>
 	<title>{title}</title>
@@ -98,7 +105,6 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
 </svelte:head>
 
 {#if canViewDrafts}

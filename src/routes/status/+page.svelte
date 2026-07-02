@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 	import { authState, canAccessDrafts, getMsalClient, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
+	import { fetchLiveStatus, type LiveStatus } from '$lib/status-live';
 	import type { PageData } from './$types';
 
 	const title = 'blog.ryanspice.com · Status';
@@ -18,17 +19,11 @@
 	let authConnections = $state<number | null>(null);
 	let actionError = $state('');
 
-	type LiveStatus = {
-		ok: boolean;
-		serverTimeUtc?: string;
-		releases?: { count: number; latest?: string | null };
-		backups?: { count: number; latest?: string | null; totalBytes?: number };
-		error?: string;
-	};
-
 	let liveStatus = $state<LiveStatus | null>(null);
 	let liveLoading = $state(false);
 	let liveError = $state<string | null>(null);
+	let authInitialized = $state(false);
+	let liveInitialized = $state(false);
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(
@@ -44,9 +39,20 @@
 		description,
 		url: canonical
 	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 
-	onMount(async () => {
+	$effect(() => {
+		if (authInitialized) return;
+		authInitialized = true;
+		void initializeAuthConnections();
+	});
+
+	$effect(() => {
+		if (liveInitialized) return;
+		liveInitialized = true;
+		void loadLiveStatus();
+	});
+
+	async function initializeAuthConnections() {
 		try {
 			const state = await loadAuthState();
 			if (!state.available) {
@@ -61,24 +67,20 @@
 		} finally {
 			authResolved = true;
 		}
-	});
+	}
 
-	onMount(async () => {
+	async function loadLiveStatus() {
 		liveLoading = true;
 		liveError = null;
 
 		try {
-			const response = await window.fetch(liveEndpoint, { cache: 'no-store' });
-			if (!response.ok) {
-				throw new Error(`Live status unavailable (${response.status})`);
-			}
-			liveStatus = (await response.json()) as LiveStatus;
+			liveStatus = await fetchLiveStatus(liveEndpoint);
 		} catch (error_) {
 			liveError = error_ instanceof Error ? error_.message : 'Unable to load live status';
 		} finally {
 			liveLoading = false;
 		}
-	});
+	}
 
 	async function handleSignIn() {
 		signingIn = true;
@@ -103,6 +105,8 @@
 	}
 </script>
 
+<JsonLd value={jsonLd} />
+
 <svelte:head>
 	<title>{title}</title>
 	<meta name="description" content={description} />
@@ -125,7 +129,6 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	<script type="application/ld+json">{jsonLdEscaped}</script>
 </svelte:head>
 
 <SiteHeader

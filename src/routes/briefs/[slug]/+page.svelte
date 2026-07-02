@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 	import { authState, canAccessDrafts, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
+	import SafeHtml from '$lib/components/SafeHtml.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { MorningBrief } from '$lib/morning-briefs';
 
@@ -19,6 +20,7 @@
 	let briefLoading = $state(true);
 	let signingIn = $state(false);
 	let actionError = $state('');
+	let briefInitialized = $state(false);
 
 	const canViewBriefs = $derived(canAccessDrafts($authState));
 	const title = $derived(brief ? `${brief.title} · Morning Brief · blog.ryanspice.com` : 'blog.ryanspice.com · Morning Brief');
@@ -32,9 +34,13 @@
 		description,
 		url: canonical
 	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
+	$effect(() => {
+		if (briefInitialized) return;
+		briefInitialized = true;
+		void initializeBrief();
+	});
 
-	onMount(async () => {
+	async function initializeBrief() {
 		try {
 			const auth = await loadAuthState();
 			if (!auth.authenticated) {
@@ -52,7 +58,7 @@
 			loadError = error_ instanceof Error ? error_.message : 'Unable to load morning brief';
 			briefLoading = false;
 		}
-	});
+	}
 
 	async function handleSignIn() {
 		signingIn = true;
@@ -65,6 +71,8 @@
 		}
 	}
 </script>
+
+<JsonLd value={jsonLd} />
 
 <svelte:head>
 	<title>{title}</title>
@@ -88,7 +96,6 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
 </svelte:head>
 
 <SiteHeader
@@ -155,9 +162,7 @@
 			</aside>
 
 			<article class="article-shell">
-				<div class="article-inner private-brief-inner">
-					{@html brief.html}
-				</div>
+				<SafeHtml class="article-inner private-brief-inner" html={brief.html} />
 			</article>
 		</main>
 	{:else}

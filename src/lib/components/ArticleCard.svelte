@@ -37,6 +37,7 @@
 	const facebookShareHref = $derived(articleSocialShareHref('facebook', shareTargetUrl, article.title));
 	const xShareHref = $derived(articleSocialShareHref('x', shareTargetUrl, article.title));
 	const linkedInShareHref = $derived(articleSocialShareHref('linkedin', shareTargetUrl, article.title));
+	const imageDiagnostics = $derived(article.imageDiagnostics ?? []);
 </script>
 
 <article
@@ -57,6 +58,13 @@
 		<h2 style:view-transition-name={titleTransitionName}>
 			<a class="article-title-link" href={resolvedHref}>{article.title}</a>
 		</h2>
+		{#if imageDiagnostics.length}
+			<div class="article-image-flags" aria-label="Article image flags">
+				{#each imageDiagnostics as flag, index (flag.kind + ':' + index)}
+					<span class={`article-image-flag article-image-flag--${flag.kind}`} title={flag.detail}>{flag.label}</span>
+				{/each}
+			</div>
+		{/if}
 		<div class="card-meta" aria-label="Article metadata">
 			<time datetime={article.date}>{article.dateLabel}</time>
 			<span>{article.readingMinutes} min read</span>

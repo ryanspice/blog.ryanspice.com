@@ -2,56 +2,71 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
 	import ResearchLibraryCard from '$lib/components/ResearchLibraryCard.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { PageData } from './$types';
 
-	const title = 'blog.ryanspice.com · Research library';
 	const description = 'Research papers, technical references, and source material used across the blog.';
 	let { data }: { data: PageData } = $props();
-	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
-	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
+	const site = $derived(data.site);
+	const navCopy = $derived(data.ui.nav);
+	const title = $derived(`${site.siteName} · Research library`);
+	const canonical = $derived(data.canonical ?? new URL(page.url.pathname, page.url.origin).toString());
+	const ogImage = $derived(data.ogImage ?? new URL(`${base}${site.defaultOgImage}`, page.url.origin).toString());
 	const libraryItems = $derived(data.libraryItems ?? []);
 	const paperCount = $derived(data.paperCount ?? libraryItems.filter((item) => item.sourceType === 'paper').length);
 	const researchDomains = $derived(data.researchDomains ?? []);
 	const sourceTypes = $derived(data.sourceTypes ?? []);
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@graph': [
-			{
-				'@type': ['WebPage', 'CollectionPage'],
-				'@id': `${canonical}#webpage`,
-				name: title,
-				description,
-				url: canonical,
-				isPartOf: {
-					'@type': 'Blog',
-					name: 'blog.ryanspice.com',
-					url: page.url.origin
-				},
-				about: libraryItems.map((item) => item.title)
-			},
-			{
-				'@type': 'BreadcrumbList',
-				itemListElement: [
-					{
-						'@type': 'ListItem',
-						position: 1,
-						name: 'Articles',
-						item: page.url.origin
-					},
-					{
-						'@type': 'ListItem',
-						position: 2,
-						name: 'Research library',
-						item: canonical
+	const headerExternalLinks = $derived.by(() =>
+		site.mainSiteLink ? [site.mainSiteLink, site.primaryExternalLink] : [site.primaryExternalLink]
+	);
+	const footerExternalLinks = $derived(site.footerExternalLinks);
+	const libraryJsonLd = $derived.by(() => buildLibraryJsonLd(site.id));
+
+	function buildLibraryJsonLd(siteId: string): Record<string, unknown> {
+		const isCanopy = siteId === 'canopy';
+		const origin = isCanopy ? 'https://blog.canopydigital.ca' : 'https://blog.ryanspice.com';
+		const blogName = isCanopy ? 'Canopy Digital Blog' : 'blog.ryanspice.com';
+
+		return {
+			'@context': 'https://schema.org',
+			'@graph': [
+				{
+					'@type': ['WebPage', 'CollectionPage'],
+					'@id': `${origin}/library/#webpage`,
+					name: `${blogName} · Research library`,
+					description,
+					url: `${origin}/library/`,
+					isPartOf: {
+						'@type': 'Blog',
+						name: blogName,
+						url: origin
 					}
-				]
-			}
-		]
-	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
+				},
+				{
+					'@type': 'BreadcrumbList',
+					itemListElement: [
+						{
+							'@type': 'ListItem',
+							position: 1,
+							name: 'Articles',
+							item: `${origin}/`
+						},
+						{
+							'@type': 'ListItem',
+							position: 2,
+							name: 'Research library',
+							item: `${origin}/library/`
+						}
+					]
+				}
+			]
+		};
+	}
 </script>
+
+<JsonLd value={libraryJsonLd} />
 
 <svelte:head>
 	<title>{title}</title>
@@ -61,20 +76,24 @@
 	<meta property="og:description" content={description} />
 	<meta property="og:url" content={canonical} />
 	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="blog.ryanspice.com" />
+	<meta property="og:site_name" content={site.siteName} />
 	<meta property="og:image" content={ogImage} />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={title} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`}
 </svelte:head>
 
 <SiteHeader
+	brandLabel={site.brandLabel}
+	brandInitials={site.brandInitials}
+	showLibraryLink={site.showLibraryLinks}
+	showDevLogLink={site.showDevLogLinks}
+	showOwnerLinks={site.showOwnerControls}
 	navLinks={[
-		{ label: 'Articles', href: '/#articles' },
-		{ label: 'Dev log', href: '/dev-log' },
-		{ label: 'RSS', href: '/rss.xml' }
+		{ label: navCopy.articles, href: '/#articles' },
+		{ label: navCopy.rss, href: '/rss.xml' },
+		...headerExternalLinks
 	]}
 />
 
@@ -150,6 +169,15 @@
 </section>
 
 <footer>
-	Research library for blog.ryanspice.com. <a href="https://github.com/ryanspice/blog.ryanspice.com" rel="noreferrer" target="_blank">GitHub repo</a>.
-	<FooterAuthControls returnTo="/drafts/" />
+	Research library for {site.siteName}.
+	{#each footerExternalLinks as link (link.href)}
+		<a href={link.href} rel="noreferrer" target="_blank">{link.label}</a>.
+	{/each}
+	{#if site.repositoryLink}
+		<a href={site.repositoryLink.href} rel="noreferrer" target="_blank">{site.repositoryLink.label}</a>.
+	{/if}
+	<a href={`${base}/sitemap.xml`}>{navCopy.sitemap}</a>.
+	{#if site.showOwnerControls}
+		<FooterAuthControls returnTo="/drafts/" />
+	{/if}
 </footer>

@@ -6,7 +6,9 @@ import {
 	type Frontmatter,
 	stringValue as frontmatterStringValue
 } from './article-frontmatter';
+import { addArticleImageDiagnostics, type ArticleImageDiagnostic } from './article-image-diagnostics';
 import { articleCanonicalPath } from './article-paths';
+import { effectivePublishDate, isPublicArticle } from './article-publication';
 import {
 	DEFAULT_LOCALE,
 	isSupportedLocale,
@@ -14,6 +16,7 @@ import {
 	resolveLocale,
 	type SupportedLocale
 } from './i18n/locales';
+import { safeInlineHtml, type SafeHtml } from './safe-html';
 
 export type NavItem = {
 	label: string;
@@ -49,12 +52,12 @@ export type ArticleDesign = {
 	statusItems: StatusItem[];
 	tocTitle: string;
 	railTitle: string;
-	railBodyHtml: string;
+	railBodyHtml: SafeHtml;
 	railStatusItems?: StatusItem[];
 	railPalette?: ArticlePalette;
 	railChips?: string[];
 	railChipsLabel?: string;
-	railCalloutHtml: string;
+	railCalloutHtml: SafeHtml;
 	footerText: string;
 };
 
@@ -87,6 +90,7 @@ export type ArticleMeta = {
 	version: string;
 	previousVersion: string | null;
 	visuals: ArticleVisuals;
+	imageDiagnostics: ArticleImageDiagnostic[];
 	credits: string[];
 	coAuthors: ArticleContributor[];
 	references: string[];
@@ -100,6 +104,8 @@ export type Article = ArticleMeta & RenderedMarkdown & {
 	previousBody: string | null;
 	toc: TocItem[];
 };
+
+export { effectivePublishDate, isPublicArticle } from './article-publication';
 
 const modules = import.meta.glob('./content/articles/*.md', {
 	eager: true,
@@ -133,13 +139,11 @@ const articleAccents: Record<string, string> = {
 	'pixelboats-networking-player-hosted-php': '#00c2ff'
 };
 
-const buildDate = new Date();
-
 // NOTE: renderMarkdown is async (unified pipeline + server-only Shiki highlighting), so article parsing is async as well.
 // Top-level await is supported by Vite/SvelteKit and keeps the export contract unchanged.
 const parsedArticles = await Promise.all([...Object.entries(modules), ...Object.entries(localizedModules)].map(([path, raw]) => parseArticle(path, raw)));
 
-export const articles: Article[] = normalizeArticleResourceLinks(parsedArticles)
+export const articles: Article[] = addArticleImageDiagnostics(normalizeArticleResourceLinks(parsedArticles))
 	.sort((a, b) => effectivePublishDate(b).localeCompare(effectivePublishDate(a)) || a.title.localeCompare(b.title));
 
 export const allPublishedArticles = articles.filter(isPublicArticle);
@@ -185,15 +189,6 @@ export function getArticleAlternates(article: ArticleMeta): Array<{ locale: Supp
 		hreflang: localeToLanguageTag(variant.locale),
 		path: articleCanonicalPath(variant)
 	}));
-}
-
-export function isPublicArticle(article: Pick<ArticleMeta, 'status' | 'releaseDate'>): boolean {
-	if (article.status === 'published') return true;
-	return Boolean(article.releaseDate && isDateReached(article.releaseDate, buildDate));
-}
-
-export function effectivePublishDate(article: Pick<ArticleMeta, 'date' | 'releaseDate'>): string {
-	return article.releaseDate || article.date;
 }
 
 export function getRelatedArticles(
@@ -314,6 +309,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		previousVersion,
 		previousBody: previousBody ? stripLeadingTitleHeading(previousBody) : null,
 		visuals,
+		imageDiagnostics: [],
 		credits: credits.length ? credits : ['Ryan Spice'],
 		coAuthors,
 		references: arrayValue(frontmatter.references),
@@ -346,7 +342,7 @@ function designFor(
 	};
 
 	if (article.slug === 'gimp-3-repair-photogimp-pixelboats-workstation') {
-		return {
+		return articleDesign({
 			...common,
 			variant: 'repair',
 			eyebrow: 'Tooling repair log · PixelBoats',
@@ -379,11 +375,11 @@ function designFor(
 			},
 			railCalloutHtml: '<strong>Editorial angle:</strong> tooling repair as production infrastructure, not just “I fixed my app.”',
 			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
-		};
+		});
 	}
 
 	if (article.slug === 'debugging-gimp-3-python-plugin-failures-windows-windhawk') {
-		return {
+		return articleDesign({
 			...common,
 			variant: 'debug',
 			eyebrow: 'Windows debugging · GIMP 3 · Windhawk',
@@ -414,11 +410,11 @@ function designFor(
 			railChips: ['_Unwind_Resume', 'libgraphite2.dll', 'libpango-1.0-0.dll', 'gi.repository', 'Windhawk hooks', 'PATH DLL pollution'],
 			railCalloutHtml: '<strong>Editorial angle:</strong> the search-friendly article people needed when the error message pointed everywhere except the actual suspect.',
 			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
-		};
+		});
 	}
 
 	if (article.slug === 'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game') {
-		return {
+		return articleDesign({
 			...common,
 			variant: 'default',
 			eyebrow: 'Engine decision log · May 2026',
@@ -447,11 +443,11 @@ function designFor(
 			railChipsLabel: 'Key technical decisions',
 			railCalloutHtml: '<strong>Editorial angle:</strong> the most important step in engine evaluation is naming your actual rendering problem — not comparing feature lists.',
 			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from AI Wiki deep research work.`
-		};
+		});
 	}
 
 	if (article.slug === 'how-chatgpt-performs-deep-research') {
-		return {
+		return articleDesign({
 			...common,
 			variant: 'default',
 			eyebrow: 'Research comparison · OpenAI vs DeepSeek',
@@ -482,12 +478,12 @@ function designFor(
 			railCalloutHtml:
 				'<strong>Editorial angle:</strong> compare the layer you are actually using — research workflow, model API, or both.',
 			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit comparison article generated from local Markdown.`
-		};
+		});
 	}
 
 	const isDraft = !isPublicArticle(article);
 
-	return {
+	return articleDesign({
 		...common,
 		variant: 'default',
 		eyebrow: isFrench ? `Blogue technique · ${isDraft ? article.status : 'publie'}` : `Technical blog · ${isDraft ? article.status : 'published'}`,
@@ -528,6 +524,19 @@ function designFor(
 		footerText: isFrench
 			? `Mis a jour le ${article.updatedDateLabel} · Article SvelteKit statique genere depuis Markdown local.`
 			: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
+	});
+}
+
+function articleDesign(
+	design: Omit<ArticleDesign, 'railBodyHtml' | 'railCalloutHtml'> & {
+		railBodyHtml: string;
+		railCalloutHtml: string;
+	}
+): ArticleDesign {
+	return {
+		...design,
+		railBodyHtml: safeInlineHtml(design.railBodyHtml),
+		railCalloutHtml: safeInlineHtml(design.railCalloutHtml)
 	};
 }
 
@@ -617,13 +626,6 @@ function formatArticleDate(value: string, locale: SupportedLocale = DEFAULT_LOCA
 		year: 'numeric',
 		timeZone: 'UTC'
 	}).format(parsed);
-}
-
-function isDateReached(value: string, now: Date): boolean {
-	const parsed = new Date(`${value}T00:00:00Z`);
-	if (Number.isNaN(parsed.getTime())) return false;
-	const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-	return parsed.getTime() <= todayUtc;
 }
 
 function firstHeading(body: string): string | undefined {

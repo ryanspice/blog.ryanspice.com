@@ -2,8 +2,9 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import ArticleView from '$lib/components/ArticleView.svelte';
-	import { getArticle, getRelatedArticles, type Article, type ArticleDesign } from '$lib/articles';
+	import type { Article, ArticleDesign } from '$lib/articles';
 	import ArticleDiffView from '$lib/components/ArticleDiffView.svelte';
+	import { markSafeHtml, safeInlineHtml } from '$lib/safe-html';
 	import { siteConfigs, type SiteConfig } from '$lib/site-config';
 
 	type ArticleRouteData = {
@@ -17,26 +18,14 @@
 
 	const isDiff = $derived(browser && page.url.searchParams.get('diff') === 'true');
 
-	const fallbackArticle = $derived.by(() => getArticle(page.params.slug ?? ''));
-	const sourceArticle = $derived.by(() => hasUsefulArticle(data.article) ? data.article : fallbackArticle);
-	const safeArticle = $derived(toSafeArticle(sourceArticle));
+	const safeArticle = $derived(toSafeArticle(data.article));
 	const sourceRelatedArticles = $derived.by(() => {
 		const related = Array.isArray(data.relatedArticles) ? data.relatedArticles.filter(Boolean) : [];
-		if (related.length) return related;
-		return fallbackArticle ? getRelatedArticles(fallbackArticle, 3) : [];
+		return related;
 	});
 	const safeRelatedArticles = $derived(sourceRelatedArticles.map(toSafeArticle));
 	const safeAlternates = $derived(Array.isArray(data.alternates) ? data.alternates : []);
 	const safeSite = $derived(data.site ?? siteConfigs.ryan);
-
-	function hasUsefulArticle(value: unknown): boolean {
-		const article = toObject(value);
-		return Boolean(
-			toString(article.slug) &&
-			toString(article.title) &&
-			(toString(article.html) || toString(article.body) || toString(article.summary))
-		);
-	}
 
 	function toObject(value: unknown): Record<string, unknown> {
 		return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
@@ -98,12 +87,16 @@
 					],
 			tocTitle: toString(design.tocTitle, 'Contents'),
 			railTitle: toString(design.railTitle, 'Publishing notes'),
-			railBodyHtml: toString(design.railBodyHtml, 'This route is static-friendly and generated from local Markdown.'),
+			railBodyHtml: safeInlineHtml(
+				toString(design.railBodyHtml, 'This route is static-friendly and generated from local Markdown.')
+			),
 			railStatusItems: design.railStatusItems as ArticleDesign['railStatusItems'],
 			railPalette: design.railPalette as ArticleDesign['railPalette'],
 			railChips: design.railChips as ArticleDesign['railChips'],
 			railChipsLabel: design.railChipsLabel as ArticleDesign['railChipsLabel'],
-			railCalloutHtml: toString(design.railCalloutHtml, '<strong>Note:</strong> Article metadata was normalized for hydration.'),
+			railCalloutHtml: safeInlineHtml(
+				toString(design.railCalloutHtml, '<strong>Note:</strong> Article metadata was normalized for hydration.')
+			),
 			footerText: toString(design.footerText, `Updated last ${updatedDateLabel} · Static SvelteKit article generated from local Markdown.`)
 		};
 	}
@@ -148,7 +141,7 @@
 			furtherReading: toStringArray(article.furtherReading),
 			relatedPosts: toStringArray(article.relatedPosts),
 			design: toSafeDesign(article.design, article),
-			html: toString(article.html, ''),
+			html: markSafeHtml(toString(article.html, '')),
 			body: toString(article.body, ''),
 			toc: Array.isArray(article.toc) ? (article.toc as Article['toc']) : [],
 			wordCount: toNumber(article.wordCount, 0),

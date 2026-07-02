@@ -1,3 +1,5 @@
+import { markSafeHtml, sanitizeTrustedSvg, type SafeHtml } from './safe-html';
+
 export type TocItem = {
 	id: string;
 	text: string;
@@ -5,7 +7,7 @@ export type TocItem = {
 };
 
 export type RenderedMarkdown = {
-	html: string;
+	html: SafeHtml;
 	toc: TocItem[];
 	wordCount: number;
 	readingMinutes: number;
@@ -29,6 +31,15 @@ type ProcessorResult = {
 	wordCount: number;
 };
 
+type MermaidRenderInput = {
+	id: string;
+	source: string;
+};
+
+type MermaidRenderOutput = {
+	svg: SafeHtml | null;
+};
+
 let processorPromise: Promise<(markdown: string) => Promise<ProcessorResult>> | null = null;
 
 export async function renderMarkdown(markdown: string, options: RenderMarkdownOptions = {}): Promise<RenderedMarkdown> {
@@ -42,7 +53,7 @@ export async function renderMarkdown(markdown: string, options: RenderMarkdownOp
 	renderedHtml = autoLinkUrls(renderedHtml);
 
 	return {
-		html: renderedHtml,
+		html: markSafeHtml(renderedHtml),
 		toc: result.toc,
 		wordCount: result.wordCount,
 		readingMinutes: Math.max(1, Math.ceil(result.wordCount / 220))
@@ -253,6 +264,10 @@ function text(value: string): any {
 	return { type: 'text', value };
 }
 
+function raw(value: SafeHtml): any {
+	return { type: 'raw', value };
+}
+
 function hastText(node: any): string {
 	if (!node) return '';
 	if (node.type === 'text' && typeof node.value === 'string') return node.value;
@@ -365,7 +380,9 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 	}
 
 	function rehypeMermaid() {
-		return (tree: any) => {
+		return async (tree: any) => {
+			const diagrams: Array<{ index: number; parent: any; source: string; id: string }> = [];
+
 			visit(tree, 'element', (node: any, index: number, parent: any) => {
 				if (!parent || typeof index !== 'number') return;
 				if (node.tagName !== 'pre') return;
@@ -377,9 +394,36 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 				const isMermaid = classes.some((cls) => cls.toLowerCase() === 'language-mermaid');
 				if (!isMermaid) return;
 
-				const value = hastText(code);
-				parent.children[index] = element('div', { className: ['mermaid-diagram', 'code-block'], 'data-lang': 'mermaid' }, [text(value)]);
+				const source = hastText(code).trim();
+				if (!source) return;
+
+				diagrams.push({
+					index,
+					parent,
+					source,
+					id: stableMermaidId(source, diagrams.length)
+				});
 			});
+
+			if (!diagrams.length) return;
+
+			const rendered = await renderMermaidDiagrams(
+				diagrams.map(({ id, source }) => ({
+					id,
+					source
+				}))
+			);
+
+			for (const [diagramIndex, diagram] of diagrams.entries()) {
+				const svg = rendered[diagramIndex]?.svg;
+				diagram.parent.children[diagram.index] = svg
+					? element(
+							'div',
+							{ className: ['mermaid-diagram', 'code-block', 'mermaid-ready'], 'data-lang': 'mermaid' },
+							[raw(svg)]
+						)
+					: mermaidFallbackDiagram(diagram.source);
+			}
 		};
 	}
 
@@ -709,7 +753,7 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 		.use(rehypeGroupSections)
 		.use(rehypeMarkLede)
 		.use(rehypeWordCount)
-		.use(rehypeStringify);
+		.use(rehypeStringify, { allowDangerousHtml: true });
 
 	return async (markdown: string) => {
 		const file = await processor.process(markdown);
@@ -720,4 +764,84 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 			wordCount: typeof data.wordCount === 'number' ? data.wordCount : 0
 		};
 	};
+}
+
+function stableMermaidId(source: string, index: number): string {
+	let hash = 0;
+	for (let i = 0; i < source.length; i += 1) {
+		hash = Math.imul(31, hash) + source.charCodeAt(i);
+	}
+	return `mermaid-${index}-${(hash >>> 0).toString(36)}`;
+}
+
+function mermaidFallbackDiagram(source: string): any {
+	return element(
+		'div',
+		{ className: ['mermaid-diagram', 'code-block', 'mermaid-error'], 'data-lang': 'mermaid' },
+		[element('pre', {}, [element('code', { className: ['language-mermaid'] }, [text(source)])])]
+	);
+}
+
+async function renderMermaidDiagrams(diagrams: MermaidRenderInput[]): Promise<MermaidRenderOutput[]> {
+	if ((import.meta.env.SSR === false && import.meta.env.MODE !== 'test') || typeof document !== 'undefined' || diagrams.length === 0) {
+		return diagrams.map(() => ({ svg: null }));
+	}
+
+	let browser: any = null;
+
+	try {
+		const playwrightSpecifier = '@playwright/test';
+		const nodeModuleSpecifier = 'node:module';
+		const [{ chromium }, { createRequire }] = await Promise.all([
+			import(/* @vite-ignore */ playwrightSpecifier) as Promise<any>,
+			import(/* @vite-ignore */ nodeModuleSpecifier) as Promise<typeof import('node:module')>
+		]);
+		const require = createRequire(import.meta.url);
+		const mermaidBundlePath = require.resolve('mermaid/dist/mermaid.min.js');
+
+		browser = await chromium.launch({ headless: true });
+		const page = await browser.newPage({ colorScheme: 'dark', viewport: { width: 1280, height: 720 } });
+		await page.setContent('<!doctype html><html><body><div id="mermaid-host"></div></body></html>');
+		await page.addScriptTag({ path: mermaidBundlePath });
+
+		const rendered: MermaidRenderOutput[] = await page.evaluate(async (items: MermaidRenderInput[]): Promise<MermaidRenderOutput[]> => {
+			const mermaid = (window as any).mermaid;
+			if (!mermaid) return items.map(() => ({ svg: null }));
+
+			mermaid.initialize({
+				startOnLoad: false,
+				securityLevel: 'strict',
+				theme: 'dark',
+				darkMode: true
+			});
+
+			const results: MermaidRenderOutput[] = [];
+
+			for (const item of items) {
+				try {
+					const { svg } = await mermaid.render(item.id, item.source);
+					results.push({ svg });
+				} catch {
+					results.push({ svg: null });
+				}
+			}
+
+			return results;
+		}, diagrams);
+
+		return rendered.map((item) => ({
+			svg: item.svg ? sanitizeMermaidSvg(item.svg) : null
+		}));
+	} catch (error) {
+		if (process.env.DEBUG_MERMAID_PRERENDER) {
+			console.warn(error instanceof Error ? error.stack ?? error.message : error);
+		}
+		return diagrams.map(() => ({ svg: null }));
+	} finally {
+		await browser?.close().catch(() => {});
+	}
+}
+
+function sanitizeMermaidSvg(svg: string): SafeHtml {
+	return sanitizeTrustedSvg(svg);
 }

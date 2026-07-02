@@ -2084,6 +2084,37 @@ th {
 	font-size: 13px;
 }
 
+.article-image-flags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: -2px 0 12px;
+}
+
+.article-image-flag {
+	display: inline-flex;
+	align-items: center;
+	width: fit-content;
+	max-width: 100%;
+	border: 1px solid color-mix(in srgb, var(--article-accent, var(--accent)) 38%, var(--metro-line-soft));
+	border-radius: 8px;
+	padding: 5px 8px;
+	background: rgba(255, 255, 255, 0.045);
+	color: color-mix(in srgb, var(--article-accent, var(--accent)) 78%, #ffffff);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	line-height: 1;
+	text-transform: uppercase;
+	overflow-wrap: anywhere;
+}
+
+.article-image-flag--missing-side-image {
+	border-color: rgba(255, 207, 119, 0.42);
+	background: rgba(255, 207, 119, 0.08);
+	color: #ffcf77;
+}
+
 .article-card h2 {
 	font-size: clamp(24px, 2.8vw, 32px);
 	line-height: 1.05;

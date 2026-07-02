@@ -2,8 +2,8 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import { authState, loadAuthState, ownerAccessLabel, trySignIn, trySignOut } from '$lib/auth';
+	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 
 	const title = 'blog.ryanspice.com · Login';
@@ -17,6 +17,7 @@
 	let signing = $state(false);
 	let signOutInFlight = $state(false);
 	let actionError = $state('');
+	let loginInitialized = $state(false);
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -25,62 +26,68 @@
 		description,
 		url: canonical
 	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 
-	onMount(() => {
+	$effect(() => {
+		if (loginInitialized) return;
+		loginInitialized = true;
 		let cancelled = false;
-		const params = new URLSearchParams(window.location.search);
-		returnTo = sanitizeReturnTo(params.get('returnTo'), '/');
-		logoutRequested = params.get('logout') === '1';
-
-		void loadAuthState().then(async (state) => {
-			if (cancelled) return;
-			if (logoutRequested && state.authenticated) {
-				signOutInFlight = true;
-				actionError = '';
-
-				try {
-					actionError = (await trySignOut()) ?? '';
-				} catch (caught) {
-					if (!cancelled) {
-						actionError = caught instanceof Error ? caught.message : String(caught);
-					}
-				} finally {
-					if (!cancelled) {
-						signOutInFlight = false;
-					}
-				}
-				return;
-			}
-
-			if (state.authenticated) {
-				actionError = '';
-				await goto(returnTo, { replaceState: true });
-				return;
-			}
-
-			if (!state.loading && state.available && !logoutRequested && !actionError) {
-				signing = true;
-				actionError = '';
-
-				try {
-					actionError = (await trySignIn(returnTo)) ?? '';
-				} catch (caught) {
-					if (!cancelled) {
-						actionError = caught instanceof Error ? caught.message : String(caught);
-					}
-				} finally {
-					if (!cancelled) {
-						signing = false;
-					}
-				}
-			}
-		});
+		void initializeLoginFlow(() => cancelled);
 
 		return () => {
 			cancelled = true;
 		};
 	});
+
+	async function initializeLoginFlow(isCancelled: () => boolean) {
+		const params = new URLSearchParams(window.location.search);
+		const nextReturnTo = sanitizeReturnTo(params.get('returnTo'), '/');
+		const nextLogoutRequested = params.get('logout') === '1';
+		returnTo = nextReturnTo;
+		logoutRequested = nextLogoutRequested;
+
+		const state = await loadAuthState();
+		if (isCancelled()) return;
+		if (nextLogoutRequested && state.authenticated) {
+			signOutInFlight = true;
+			actionError = '';
+
+			try {
+				actionError = (await trySignOut()) ?? '';
+			} catch (caught) {
+				if (!isCancelled()) {
+					actionError = caught instanceof Error ? caught.message : String(caught);
+				}
+			} finally {
+				if (!isCancelled()) {
+					signOutInFlight = false;
+				}
+			}
+			return;
+		}
+
+		if (state.authenticated) {
+			actionError = '';
+			await goto(nextReturnTo, { replaceState: true });
+			return;
+		}
+
+		if (!state.loading && state.available && !nextLogoutRequested && !actionError) {
+			signing = true;
+			actionError = '';
+
+			try {
+				actionError = (await trySignIn(nextReturnTo)) ?? '';
+			} catch (caught) {
+				if (!isCancelled()) {
+					actionError = caught instanceof Error ? caught.message : String(caught);
+				}
+			} finally {
+				if (!isCancelled()) {
+					signing = false;
+				}
+			}
+		}
+	}
 
 	async function handleSignIn() {
 		signing = true;
@@ -117,6 +124,8 @@
 	}
 </script>
 
+<JsonLd value={jsonLd} />
+
 <svelte:head>
 	<title>{title}</title>
 	<meta name="description" content={description} />
@@ -139,7 +148,6 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	<script type="application/ld+json">{jsonLdEscaped}</script>
 </svelte:head>
 
 <SiteHeader navLinks={[{ label: 'Articles', href: '/#articles' }, { label: 'RSS', href: '/rss.xml' }]} />

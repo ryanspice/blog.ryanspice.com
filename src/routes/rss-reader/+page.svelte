@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
+	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { siteConfigs } from '$lib/site-config';
 	import type { PageData } from './$types';
@@ -51,7 +52,6 @@
 			}
 		]
 	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
 	const headerLinks = $derived.by(() => {
 		const links = [
 			{ label: navCopy.articles, href: data.homeUrl + '#articles' },
@@ -61,6 +61,8 @@
 		return links;
 	});
 </script>
+
+<JsonLd value={jsonLd} />
 
 <svelte:head>
 	<title>{title}</title>
@@ -88,7 +90,6 @@
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`}
 </svelte:head>
 
 <SiteHeader

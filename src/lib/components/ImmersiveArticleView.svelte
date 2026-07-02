@@ -8,6 +8,7 @@
 	import type { TocItem } from '$lib/markdown';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import SafeHtml from '$lib/components/SafeHtml.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 
 	type Props = {
@@ -217,7 +218,7 @@
 		<section class="immersive-big-picture" aria-label="Article summary">
 			<div class="immersive-panel summary-panel">
 				<h2>The big picture</h2>
-				<p>{@html article.design.railBodyHtml}</p>
+				<SafeHtml as="p" html={article.design.railBodyHtml} />
 				<div class="signal-grid">
 					{#each keySignals as signal, index (signal + ':' + index)}
 						<div>
@@ -248,9 +249,7 @@
 
 			<div class="immersive-article-column">
 				<article id="article" class="immersive-article-shell">
-					<div class="article-inner immersive-article-inner">
-						{@html article.html}
-					</div>
+					<SafeHtml class="article-inner immersive-article-inner" html={article.html} />
 				</article>
 
 				{#if articleReferences.length}
@@ -338,7 +337,7 @@
 
 		<section id="about-article" class="immersive-about immersive-panel" aria-label="About this article">
 			<strong>Keep in mind</strong>
-			<p>{@html article.design.railCalloutHtml}</p>
+			<SafeHtml as="p" html={article.design.railCalloutHtml} />
 			<span>{articleInfo}</span>
 		</section>
 

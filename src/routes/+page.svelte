@@ -8,6 +8,7 @@
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import HomeFandangoStyles from '$lib/components/HomeFandangoStyles.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { PageData } from './$types';
 
@@ -38,6 +39,7 @@
 	const headerExternalLinks = $derived.by(() =>
 		site.mainSiteLink ? [site.mainSiteLink, site.primaryExternalLink] : [site.primaryExternalLink]
 	);
+	const homeJsonLd = $derived.by(() => buildHomeJsonLd(site.id, data.locale));
 	const assuranceCards = $derived.by(() => [
 		{
 			label: copy.assuranceFreshLabel,
@@ -67,9 +69,51 @@
 	function articleShareUrl(article: Article): string {
 		return new URL(articleHref(article), canonical).toString();
 	}
+
+	function buildHomeJsonLd(siteId: string, locale: string): Record<string, unknown> {
+		if (siteId === 'canopy') {
+			return {
+				'@context': 'https://schema.org',
+				'@type': 'Blog',
+				name: 'Canopy Digital Blog',
+				url: locale === 'fr' ? 'https://blog.canopydigital.ca/fr/' : 'https://blog.canopydigital.ca/',
+				description:
+					locale === 'fr'
+						? 'Design web, SEO local, maintenance et notes techniques pratiques de Canopy Digital.'
+						: 'Web design, local SEO, maintenance, and practical technology notes from Canopy Digital.',
+				publisher: {
+					'@type': 'Organization',
+					name: 'Canopy Digital',
+					url: 'https://canopydigital.ca'
+				}
+			};
+		}
+
+		return {
+			'@context': 'https://schema.org',
+			'@type': 'Blog',
+			name: 'blog.ryanspice.com',
+			url: locale === 'fr' ? 'https://blog.ryanspice.com/fr/' : 'https://blog.ryanspice.com/',
+			description:
+				locale === 'fr'
+					? 'Articles techniques, notes de production et journal de developpement leger de Ryan Spice.'
+					: 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.',
+			author: {
+				'@type': 'Person',
+				name: 'Ryan Spice',
+				url: 'https://ryanspice.com'
+			},
+			publisher: {
+				'@type': 'Organization',
+				name: 'Canopy Digital',
+				url: 'https://canopydigital.ca'
+			}
+		};
+	}
 </script>
 
 <HomeFandangoStyles />
+<JsonLd value={homeJsonLd} />
 
 <svelte:head>
 	<title>{title}</title>
@@ -94,25 +138,6 @@
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
-	{#if site.id === 'canopy'}
-		{#if data.locale === 'fr'}
-			<script type="application/ld+json">
-				{"@context":"https://schema.org","@type":"Blog","name":"Canopy Digital Blog","url":"https://blog.canopydigital.ca/fr/","description":"Design web, SEO local, maintenance et notes techniques pratiques de Canopy Digital.","publisher":{"@type":"Organization","name":"Canopy Digital","url":"https://canopydigital.ca"}}
-			</script>
-		{:else}
-			<script type="application/ld+json">
-				{"@context":"https://schema.org","@type":"Blog","name":"Canopy Digital Blog","url":"https://blog.canopydigital.ca/","description":"Web design, local SEO, maintenance, and practical technology notes from Canopy Digital.","publisher":{"@type":"Organization","name":"Canopy Digital","url":"https://canopydigital.ca"}}
-			</script>
-		{/if}
-	{:else if data.locale === 'fr'}
-		<script type="application/ld+json">
-			{"@context":"https://schema.org","@type":"Blog","name":"blog.ryanspice.com","url":"https://blog.ryanspice.com/fr/","description":"Articles techniques, notes de production et journal de developpement leger de Ryan Spice.","author":{"@type":"Person","name":"Ryan Spice","url":"https://ryanspice.com"},"publisher":{"@type":"Organization","name":"Canopy Digital","url":"https://canopydigital.ca"}}
-		</script>
-	{:else}
-		<script type="application/ld+json">
-			{"@context":"https://schema.org","@type":"Blog","name":"blog.ryanspice.com","url":"https://blog.ryanspice.com/","description":"Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.","author":{"@type":"Person","name":"Ryan Spice","url":"https://ryanspice.com"},"publisher":{"@type":"Organization","name":"Canopy Digital","url":"https://canopydigital.ca"}}
-		</script>
-	{/if}
 </svelte:head>
 
 <SiteHeader
@@ -264,6 +289,9 @@
 			{/if}
 			{#if site.showDevLogLinks}
 				<a href={`${base}/dev-log`}>{navCopy.devLog}</a>
+			{/if}
+			{#if site.showLibraryLinks}
+				<a href={`${base}/library`}>{navCopy.library}</a>
 			{/if}
 			<a href={data.rssPath}>{copy.rssFeed}</a>
 			<a href={data.rssReaderPath}>{data.ui.rss.openFriendlyPage}</a>

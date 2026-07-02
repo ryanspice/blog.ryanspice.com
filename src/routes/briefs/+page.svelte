@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 	import { authState, canAccessDrafts, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { MorningBrief } from '$lib/morning-briefs';
 
@@ -18,6 +18,7 @@
 	let searchQuery = $state('');
 	let signingIn = $state(false);
 	let actionError = $state('');
+	let briefsInitialized = $state(false);
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
@@ -50,9 +51,13 @@
 		description,
 		url: canonical
 	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
+	$effect(() => {
+		if (briefsInitialized) return;
+		briefsInitialized = true;
+		void initializeBriefs();
+	});
 
-	onMount(async () => {
+	async function initializeBriefs() {
 		const params = new URLSearchParams(window.location.search);
 		searchQuery = (params.get('q') ?? '').trim();
 		selectedTag = (params.get('tag') ?? '').trim();
@@ -74,7 +79,7 @@
 			authError = error_ instanceof Error ? error_.message : 'Unable to load morning briefs';
 			briefsLoaded = true;
 		}
-	});
+	}
 
 	async function handleSignIn() {
 		signingIn = true;
@@ -87,6 +92,8 @@
 		}
 	}
 </script>
+
+<JsonLd value={jsonLd} />
 
 <svelte:head>
 	<title>{title}</title>
@@ -110,7 +117,6 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</script>`}
 </svelte:head>
 
 <SiteHeader

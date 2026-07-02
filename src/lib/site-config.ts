@@ -131,8 +131,8 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 		],
 		showOwnerControls: false,
 		showDevLogLinks: false,
-		showLibraryLinks: false,
-		indexedUtilityRoutes: [],
+		showLibraryLinks: true,
+		indexedUtilityRoutes: [{ path: '/library/', changefreq: 'monthly', priority: 0.6 }],
 		robotsDisallow: [
 			'/_incoming/',
 			'/_releases/',
@@ -141,12 +141,11 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 			'/briefs/',
 			'/dev-log/',
 			'/drafts/',
-			'/library/',
 			'/login/',
 			'/status/'
 		],
 		canonicalRedirectHosts: [],
-		publicRouteExclusions: ['auth', 'briefs', 'dev-log', 'drafts', 'library', 'login', 'status']
+		publicRouteExclusions: ['auth', 'briefs', 'dev-log', 'drafts', 'login', 'status']
 	}
 };
 

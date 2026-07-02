@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import type { NavItem } from '$lib/articles';
@@ -24,11 +23,14 @@
 		showDevLogLink = true,
 		showOwnerLinks = true
 	}: Props = $props();
+	let authInitialized = $state(false);
 	const locale = $derived((page.data.locale === 'fr' ? 'fr' : 'en') as SupportedLocale);
 	const ui = $derived(getDictionary(locale));
 	const initials = $derived((brandInitials.trim().slice(0, 2).toUpperCase() || 'RS').padEnd(2, ' '));
 
-	onMount(() => {
+	$effect(() => {
+		if (authInitialized) return;
+		authInitialized = true;
 		void loadAuthState();
 	});
 

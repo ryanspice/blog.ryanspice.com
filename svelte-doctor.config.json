@@ -1,0 +1,19 @@
+{
+	"lint": true,
+	"deadCode": true,
+	"cache": true,
+	"ignore": {
+		"files": [
+			".svelte-kit/**",
+			"build/**",
+			"dist/**",
+			"node_modules/**",
+      "output/**",
+      "playwright-report/**",
+      "test-results/**",
+      "adapter/index.js",
+      "src/lib/components/JsonLd.svelte",
+      "src/lib/components/SafeHtml.svelte"
+    ]
+  }
+}

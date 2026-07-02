@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 	import { authState, canAccessDrafts, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import { articleMatchesTag, articleSearchText } from '$lib/article-browse';
@@ -23,6 +22,7 @@
 	let selectedTag = $state('');
 	let signingIn = $state(false);
 	let actionError = $state('');
+	let draftsInitialized = $state(false);
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
@@ -44,7 +44,13 @@
 	const latestDraftAccent = $derived(latestDraft ? articleAccentColor(latestDraft) : 'var(--accent)');
 	const canViewDrafts = $derived(canAccessDrafts($authState));
 
-	onMount(async () => {
+	$effect(() => {
+		if (draftsInitialized) return;
+		draftsInitialized = true;
+		void initializeDrafts();
+	});
+
+	async function initializeDrafts() {
 		const params = new URLSearchParams(window.location.search);
 		searchQuery = (params.get('q') ?? '').trim();
 		selectedTag = (params.get('tag') ?? '').trim();
@@ -66,7 +72,7 @@
 			authError = error_ instanceof Error ? error_?.message : 'Unable to load drafts';
 			draftsLoaded = true;
 		}
-	});
+	}
 
 	async function handleSignIn() {
 		signingIn = true;

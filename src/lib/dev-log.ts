@@ -18,6 +18,74 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-06-29',
+		title: 'Publish DeepSeek routing and code copy controls',
+		summary:
+			'Published a Windows PowerShell guide for routing Claude Code through DeepSeek, then tightened the article runtime with visual code-copy controls so technical notes are easier to use without weakening the privacy boundary around local agent setup.',
+		source: 'DeepSeek Claude Code article and article runtime polish',
+		accent: '#1e9bff',
+		tags: ['blog', 'automation', 'deepseek', 'claude-code', 'windows', 'frontend', 'developer workflow'],
+		relatedArticleSlugs: [
+			'deepseek-claude-code-windows-powershell',
+			'local-fugu-coding-harness',
+			'nvidia-nemotron-3-ultra-hermes-agent-production-setup',
+			'hermes-deepseek-setup'
+		],
+		relatedArticleTags: ['DeepSeek', 'AI agents', 'developer workflow', 'SvelteKit', 'Windows']
+	},
+	{
+		date: '2026-06-25',
+		title: 'Publish the Fugu harness and review the runtime surface',
+		summary:
+			'Moved the Local Fugu coding-harness article from draft framing into a published, visual build log, captured the PixelBoats pulse as a first-class automation signal, and recorded a local review pass across the blog and PHP-static adapter without exposing private source material.',
+		source: 'Published Fugu article, PixelBoats pulse backstop, and local runtime review',
+		accent: '#f4c273',
+		tags: ['blog', 'automation', 'ai-wiki', 'hermes', 'pixelboats', 'sveltekit-php', 'seo'],
+		relatedArticleSlugs: [
+			'local-fugu-coding-harness',
+			'nvidia-nemotron-3-ultra-hermes-agent-production-setup',
+			'glm-5-2-hermes-cloudflare-workers-ai-delegation',
+			'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',
+			'pixelboats-water-pipeline-pixi-webgl',
+			'ship-fast-for-windows-microsoft-store-playbook'
+		],
+		relatedArticleTags: ['AI', 'AI agents', 'AI Wiki', 'developer workflow', 'PixelBoats', 'SvelteKit', 'SEO']
+	},
+	{
+		date: '2026-06-24',
+		title: 'Turn Fugu orchestration into a build log',
+		summary:
+			'Drafted a Local Fugu coding-harness build log, then added the memory-unification run and audit so the article captures the conductor role map, cross-family verification rule, single-slot local model queue, and the human review loop that caught a real bridge defect.',
+		source: 'Local Fugu build-log draft and workbench memory audit',
+		accent: '#a3e635',
+		tags: ['blog', 'automation', 'ai-wiki', 'hermes', 'ai', 'research', 'developer workflow'],
+		relatedArticleSlugs: [
+			'local-fugu-coding-harness',
+			'glm-5-2-hermes-cloudflare-workers-ai-delegation',
+			'nvidia-nemotron-3-ultra-hermes-agent-production-setup',
+			'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',
+			'hermes-deepseek-setup'
+		],
+		relatedArticleTags: ['AI', 'AI agents', 'AI Wiki', 'developer workflow', 'SvelteKit']
+	},
+	{
+		date: '2026-06-22',
+		title: 'Turn article publishing into dated routes',
+		summary:
+			'Added a GLM-5.2 Hermes delegation article, tightened the article publishing flow, aligned PHP-static build lanes, and introduced dated canonical article routes with tests so Ryan and Canopy can keep clearer crawl and sharing signals.',
+		source: 'Weekend article publishing and routing hardening',
+		accent: '#38bdf8',
+		tags: ['blog', 'automation', 'ai', 'seo', 'sveltekit-php', 'canopy', 'developer workflow'],
+		relatedArticleSlugs: [
+			'glm-5-2-hermes-cloudflare-workers-ai-delegation',
+			'glm-5-2-long-context-search-exposure',
+			'nvidia-nemotron-3-ultra-hermes-agent-production-setup',
+			'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',
+			'ship-fast-for-windows-microsoft-store-playbook'
+		],
+		relatedArticleTags: ['AI', 'AI agents', 'SvelteKit', 'SEO', 'Social media', 'developer workflow']
+	},
+	{
 		date: '2026-06-19',
 		title: 'Publish Nemotron and harden social metadata',
 		summary:

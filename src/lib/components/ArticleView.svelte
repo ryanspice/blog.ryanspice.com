@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
@@ -23,6 +22,8 @@
 	import { siteConfigs, type SiteConfig } from '$lib/site-config';
 	import ArticleBackgroundLayer from '$lib/components/ArticleBackgroundLayer.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
+	import SafeHtml from '$lib/components/SafeHtml.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
 
@@ -136,9 +137,6 @@
 			}
 		]
 	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
-	const jsonLdScriptHtml = $derived(`<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`);
-
 	function parseResourceLink(value: string): ResourceLink | null {
 		const cleaned = value.trim();
 		if (!cleaned) return null;
@@ -205,36 +203,6 @@
 	function isExternalHref(href: string | undefined): boolean {
 		return Boolean(href && /^https?:\/\//i.test(href));
 	}
-
-	async function enhanceMermaid() {
-		const diagrams = Array.from(document.querySelectorAll<HTMLElement>('.mermaid-diagram'));
-		if (!diagrams.length) return;
-
-		try {
-			const { default: mermaid } = await import('mermaid');
-			mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'dark', darkMode: true });
-
-			for (const [index, diagram] of diagrams.entries()) {
-				const source = diagram.textContent?.trim();
-				if (!source) continue;
-
-				try {
-					const renderId = `mermaid-${article.slug}-${index}`;
-					const { svg } = await mermaid.render(renderId, source);
-					diagram.innerHTML = svg;
-					diagram.classList.add('mermaid-ready');
-				} catch {
-					diagram.classList.add('mermaid-error');
-				}
-			}
-		} catch {
-			for (const diagram of diagrams) diagram.classList.add('mermaid-error');
-		}
-	}
-
-	onMount(() => {
-		void enhanceMermaid();
-	});
 </script>
 
 <svelte:head>
@@ -265,8 +233,9 @@
 	{#each article.tags as tag, index (tag + ':' + index)}
 		<meta property="article:tag" content={tag} />
 	{/each}
-	{@html jsonLdScriptHtml}
 </svelte:head>
+
+<JsonLd value={jsonLd} />
 
 <div class={`article-page theme-${article.design.variant} has-command-bar${focalImage ? ' has-focal-image' : ''}`} style={pageStyle}>
 	<ArticleBackgroundLayer {article} />
@@ -362,7 +331,7 @@
 
 			<aside class="rail-card" aria-label={article.design.railTitle}>
 				<h2>{article.design.railTitle}</h2>
-				<p>{@html article.design.railBodyHtml}</p>
+				<SafeHtml as="p" html={article.design.railBodyHtml} />
 				{#if article.design.railStatusItems?.length}
 					<div class="status-grid" aria-label="Publishing controls">
 						{#each article.design.railStatusItems as item, index (item.label + ':' + index)}
@@ -384,7 +353,7 @@
 						{/each}
 					</div>
 				{/if}
-				<div class="callout">{@html article.design.railCalloutHtml}</div>
+				<SafeHtml class="callout" html={article.design.railCalloutHtml} />
 			</aside>
 		</div>
 	</section>
@@ -398,7 +367,7 @@
 		</aside>
 
 		<div class="article-column">
-			<article class="article-shell"><div class="article-inner">{@html article.html}</div></article>
+			<article class="article-shell"><SafeHtml class="article-inner" html={article.html} /></article>
 
 			<section class="article-end-meta" aria-label={ui.article.articleDetails}>
 				<dl class="article-end-meta-grid">

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { onMount } from 'svelte';
 	import { loadAuthState } from '$lib/auth';
 	import { pathWithLocale } from '$lib/i18n/locales';
 	import '../app.css';
@@ -19,14 +18,17 @@
 		});
 	});
 
-	onMount(() => {
-		void loadAuthState();
-	});
-
 	let { children, data } = $props();
+	let authInitialized = $state(false);
 	const siteTheme = $derived(data?.site?.themeClass ?? 'ryan');
 	const rssAlternateTitle = $derived(data?.rssAlternateTitle ?? data?.ui?.rss?.channelTitle ?? 'Ryan Spice Blog RSS');
 	const rssAlternateHref = $derived(data?.rssUrl ?? `${base}${pathWithLocale(data?.locale ?? 'en', '/rss.xml')}`);
+
+	$effect(() => {
+		if (authInitialized) return;
+		authInitialized = true;
+		void loadAuthState();
+	});
 
 	$effect(() => {
 		if (typeof document !== 'undefined') {

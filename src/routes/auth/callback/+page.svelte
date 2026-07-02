@@ -1,12 +1,18 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import { consumeAuthReturnTo, loadAuthState } from '$lib/auth';
 
 	let status = $state('Completing Microsoft sign-in…');
 	let error = $state('');
+	let callbackStarted = $state(false);
 
-	onMount(async () => {
+	$effect(() => {
+		if (callbackStarted) return;
+		callbackStarted = true;
+		void completeSignIn();
+	});
+
+	async function completeSignIn() {
 		try {
 			const state = await loadAuthState();
 			status = state.authenticated ? 'Signed in. Returning to the site…' : 'Signed out. Returning home…';
@@ -15,7 +21,7 @@
 			error = caught instanceof Error ? caught.message : String(caught);
 			status = 'Sign-in callback failed.';
 		}
-	});
+	}
 </script>
 
 <svelte:head>

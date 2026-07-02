@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { authLoginHref, authState, loadAuthState, trySignIn, trySignOut } from '$lib/auth';
 
 	type Props = {
@@ -10,9 +9,12 @@
 	let busy = $state(false);
 	let actionError = $state('');
 	let mounted = $state(false);
+	let authInitialized = $state(false);
 	const loginHref = $derived(authLoginHref(returnTo));
 
-	onMount(() => {
+	$effect(() => {
+		if (authInitialized) return;
+		authInitialized = true;
 		mounted = true;
 		void loadAuthState();
 	});

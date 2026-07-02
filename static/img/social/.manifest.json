@@ -158,5 +158,25 @@
     "fingerprint": "4eeb1577e5d82c9120172c414a00dfe32c91ded86cee151894df5cf590e648c3",
     "path": "static/img/social/canopy/articles/local-fugu-coding-harness.png",
     "updatedAt": "2026-06-24T21:01:32.171Z"
+  },
+  "ryan:en:fable-is-back": {
+    "fingerprint": "e864238a8bec8833043065a490f294e3c853aee604e64309e3ea1fdf4a6a90d5",
+    "path": "static/img/social/ryan/articles/fable-is-back.png",
+    "updatedAt": "2026-07-02T06:36:24.024Z"
+  },
+  "canopy:en:fable-is-back": {
+    "fingerprint": "3b614ee74a14a29d9e0a8f7c4682cf3a2bd963d48c9b29d9e59f467206a9bc56",
+    "path": "static/img/social/canopy/articles/fable-is-back.png",
+    "updatedAt": "2026-07-02T06:37:45.063Z"
+  },
+  "ryan:en:static-deploys-need-live-url-checks": {
+    "fingerprint": "787c27365ffaa0e5a3e2ac1a540abde8721fa2d8bd6c92755c1f7aea66cf008d",
+    "path": "static/img/social/ryan/articles/static-deploys-need-live-url-checks.png",
+    "updatedAt": "2026-07-02T06:36:24.710Z"
+  },
+  "canopy:en:static-deploys-need-live-url-checks": {
+    "fingerprint": "d66708e57bd18169413ba8c89d528a74cef10df22f66455e8e28bea42bde8a5d",
+    "path": "static/img/social/canopy/articles/static-deploys-need-live-url-checks.png",
+    "updatedAt": "2026-07-02T06:37:45.730Z"
   }
 }

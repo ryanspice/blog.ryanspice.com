@@ -1,3 +1,4 @@
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import adapter from './adapter/index.js';
 
 const basePath = process.env.PUBLIC_BASE_PATH ?? '';
@@ -23,6 +24,7 @@ const buildIdentity =
 			};
 
 const config = {
+	preprocess: vitePreprocess(),
 	kit: {
 		paths: {
 			base: basePath,

@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { articleIndexHref } from '$lib/article-browse';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { devLogEntries, devLogMatchesArticleSlug, devLogMatchesTag, devLogTags } from '$lib/dev-log';
 
@@ -64,13 +65,13 @@
 			}
 		]
 	});
-	const jsonLdEscaped = $derived(JSON.stringify(jsonLd).replace(/</g, '\\u003c'));
-
 	function devLogTagHref(tag: string): string {
 		const params = new URLSearchParams({ tag });
 		return `${base}/dev-log/?${params.toString()}`;
 	}
 </script>
+
+<JsonLd value={jsonLd} />
 
 <svelte:head>
 	<title>{title}</title>
@@ -93,7 +94,6 @@
 	<meta name="twitter:image" content={ogImage} />
 	<meta name="twitter:image:alt" content={title} />
 
-	{@html `<script type="application/ld+json">${jsonLdEscaped}</${'script'}>`}
 </svelte:head>
 
 <SiteHeader

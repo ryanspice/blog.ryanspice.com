@@ -793,6 +793,19 @@ html[data-site='canopy'] body::before {
 		linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.96));
 }
 
+.site-shell--canopy .article-image-flag {
+	border-color: rgba(11, 83, 69, 0.24);
+	border-radius: 4px;
+	background: #fffdf7;
+	color: var(--canopy-evergreen);
+}
+
+.site-shell--canopy .article-image-flag--missing-side-image {
+	border-color: rgba(229, 143, 101, 0.42);
+	background: #fff8ef;
+	color: #9c4d24;
+}
+
 .site-shell--canopy .article-card-focal::after {
 	background:
 		linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.78) 54%, rgba(255, 255, 255, 0.22) 100%),

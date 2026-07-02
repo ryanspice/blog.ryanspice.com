@@ -17,3 +17,4 @@ playwright-report/
 output/
 .DS_Store
 Thumbs.db
+.svelte-doctor/*
