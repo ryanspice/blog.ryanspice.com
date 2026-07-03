@@ -163,5 +163,15 @@
     "fingerprint": "84851631da2dd4277e9b2c72f82a67a4472bc7f5f9dc357c9217101c870aed18",
     "path": "static/img/social/ryan/articles/deepseek-claude-code-windows-powershell.png",
     "updatedAt": "2026-06-28T08:41:21.844Z"
+  },
+  "ryan:en:build-the-astro-idea-on-windows-and-android-first": {
+    "fingerprint": "e02ca994ad2f56371dea527d0583e35bc6c4a95857c62df012fdf98043379857",
+    "path": "static/img/social/ryan/articles/build-the-astro-idea-on-windows-and-android-first.png",
+    "updatedAt": "2026-07-03T17:42:28.315Z"
+  },
+  "canopy:en:build-the-astro-idea-on-windows-and-android-first": {
+    "fingerprint": "e0f6903b9593ff062b80d90dc56549e4e0b1416145bd0cbb11bdfe6147445c87",
+    "path": "static/img/social/canopy/articles/build-the-astro-idea-on-windows-and-android-first.png",
+    "updatedAt": "2026-07-03T17:42:46.928Z"
   }
 }

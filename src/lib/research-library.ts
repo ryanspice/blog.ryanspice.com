@@ -112,6 +112,27 @@ export const researchLibraryItems: ResearchLibraryItem[] = [
 		domains: ['agent workflows', 'repo instructions', 'AI-assisted development'],
 		usedBy: ['agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns'],
 		note: 'Included as part of the broader blog research library for agent-workflow and repo-instruction articles.'
+	},
+	{
+		title: 'Strategic Guide to Competing with Astro from Android and Windows First',
+		authors: 'Ryan Spice / OpenAI Codex source brief',
+		year: '2026',
+		sourceType: 'article',
+		url: '/library/strategic-guide-competing-with-astro-android-windows-first.md',
+		domains: ['Android', 'Windows', 'email clients', 'product strategy', 'privacy'],
+		usedBy: ['build-the-astro-idea-on-windows-and-android-first'],
+		note: 'Public source brief used as the strategy input for a Windows-and-Android-first Astro-style email, calendar, and contacts article.',
+		visuals: {
+			image: {
+				src: '/img/articles/build-the-astro-idea-on-windows-and-android-first/astro-strategy-library-card.png',
+				alt: 'Generated research-card illustration for the Astro-style Windows and Android product strategy source brief.',
+				credit: 'Generated image via OpenAI image generation',
+				sourceHref: '/img/articles/build-the-astro-idea-on-windows-and-android-first/astro-strategy-library-card.png',
+				position: 'center center',
+				cardPosition: 'center center',
+				presentation: 'row'
+			}
+		}
 	}
 ];
 
