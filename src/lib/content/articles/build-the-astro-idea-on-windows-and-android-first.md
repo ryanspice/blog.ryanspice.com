@@ -205,8 +205,8 @@ That is the product Astro was hinting at, updated for the platform openings and 
 
 ## Sources
 
-- [Supplied strategic guide in the research library](/library/strategic-guide-competing-with-astro-android-windows-first.md)
-- [Research library](/library/)
+- [Supplied strategic guide in the research library](https://blog.ryanspice.com/library/strategic-guide-competing-with-astro-android-windows-first.md)
+- [Research library](https://blog.ryanspice.com/library/)
 - [Slack - Slack acquires Astro](https://slack.com/blog/news/slack-acquires-astro-to-help-email-and-channels-work-together)
 - [Digital Trends - Astro 3.0 calendar update](https://www.digitaltrends.com/phones/astro-launches-built-in-calendar-feature/)
 - [Microsoft Support - Future of Mail, Calendar, and People on Windows 11](https://support.microsoft.com/en-us/outlook/outlook-for-windows-the-future-of-mail-calendar-and-people-on-windows-11)
