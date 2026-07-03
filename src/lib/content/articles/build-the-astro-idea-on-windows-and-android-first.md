@@ -35,8 +35,8 @@ row_image_credit: "Generated image via OpenAI image generation"
 row_image_source: "/img/articles/build-the-astro-idea-on-windows-and-android-first/astro-strategy-library-card.png"
 row_image_position: "center center"
 references:
-  - "Supplied strategic guide|/library/strategic-guide-competing-with-astro-android-windows-first.md"
-  - "Research library|/library/"
+  - "Supplied strategic guide|https://blog.ryanspice.com/library/strategic-guide-competing-with-astro-android-windows-first.md"
+  - "Research library|https://blog.ryanspice.com/library/"
   - "Slack - Slack acquires Astro|https://slack.com/blog/news/slack-acquires-astro-to-help-email-and-channels-work-together"
   - "Digital Trends - Astro 3.0 calendar update|https://www.digitaltrends.com/phones/astro-launches-built-in-calendar-feature/"
   - "Microsoft Support - Future of Mail, Calendar, and People on Windows 11|https://support.microsoft.com/en-us/outlook/outlook-for-windows-the-future-of-mail-calendar-and-people-on-windows-11"
@@ -54,8 +54,8 @@ references:
   - "Office of the Privacy Commissioner of Canada - PIPEDA breach reporting|https://www.priv.gc.ca/en/privacy-topics/business-privacy/breaches-and-safeguards/privacy-breaches-at-your-business/gd_pb_201810/"
   - "CRTC - CASL implied consent guidance|https://crtc.gc.ca/eng/com500/guide.htm"
 link_terms:
-  - "research library|/library/"
-  - "source guide|/library/strategic-guide-competing-with-astro-android-windows-first.md"
+  - "research library|https://blog.ryanspice.com/library/"
+  - "source guide|https://blog.ryanspice.com/library/strategic-guide-competing-with-astro-android-windows-first.md"
 ---
 
 > [!status-brief] Product strategy
