@@ -198,5 +198,45 @@
     "fingerprint": "84851631da2dd4277e9b2c72f82a67a4472bc7f5f9dc357c9217101c870aed18",
     "path": "static/img/social/ryan/articles/deepseek-claude-code-windows-powershell.png",
     "updatedAt": "2026-06-28T08:41:21.844Z"
+  },
+  "ryan:en:keyword-astro-used-on-itself-local-aso-workflow": {
+    "fingerprint": "93ef297ec46ae2096a0c85c402ba51f730ae7acffd859e820762adafea167caf",
+    "path": "static/img/social/ryan/articles/keyword-astro-used-on-itself-local-aso-workflow.png",
+    "updatedAt": "2026-07-07T20:55:01.997Z"
+  },
+  "ryan:en:pixelboats-morning-watch-2026-06-25": {
+    "fingerprint": "0708029f047c531828936ad24d79142a8feecd847aec07ade6aaf262b3fd3009",
+    "path": "static/img/social/ryan/articles/pixelboats-morning-watch-2026-06-25.png",
+    "updatedAt": "2026-07-07T20:55:02.625Z"
+  },
+  "ryan:en:pixelboats-morning-watch-2026-07-03": {
+    "fingerprint": "fc2d2ef9e4ec3ef5179b7d852f245571dfefc3911630c1e1710e38b97cdac75e",
+    "path": "static/img/social/ryan/articles/pixelboats-morning-watch-2026-07-03.png",
+    "updatedAt": "2026-07-07T20:55:03.264Z"
+  },
+  "ryan:en:qbo-mail-dashboard-productized-ops-workflow": {
+    "fingerprint": "e38f02064fc06a3b0d0299d57ec9867016934b8e06d661551ae5427d3a91b0af",
+    "path": "static/img/social/ryan/articles/qbo-mail-dashboard-productized-ops-workflow.png",
+    "updatedAt": "2026-07-07T20:55:03.853Z"
+  },
+  "ryan:en:turning-pixelboats-into-an-android-first-visual-product": {
+    "fingerprint": "b6d9a573a9bc445540e183db8b9bd3316fafdf9c123f0bf57e040b3a466328a6",
+    "path": "static/img/social/ryan/articles/turning-pixelboats-into-an-android-first-visual-product.png",
+    "updatedAt": "2026-07-07T20:55:04.571Z"
+  },
+  "canopy:en:deepseek-claude-code-windows-powershell": {
+    "fingerprint": "f294281a37737eb7e44b7c18fe817b09dff07d6e0a7ddb9d7c3fff93aba595e5",
+    "path": "static/img/social/canopy/articles/deepseek-claude-code-windows-powershell.png",
+    "updatedAt": "2026-07-07T20:56:37.827Z"
+  },
+  "canopy:en:pixelboats-morning-watch-2026-06-25": {
+    "fingerprint": "dc09fdfb24a95f6e3037c222b62225450ef437fc8a56b31150b76480ce948149",
+    "path": "static/img/social/canopy/articles/pixelboats-morning-watch-2026-06-25.png",
+    "updatedAt": "2026-07-07T20:56:38.454Z"
+  },
+  "canopy:en:pixelboats-morning-watch-2026-07-03": {
+    "fingerprint": "0c643973425ca0a6db82f053edb91f2390ccc05f422149c3593557d07368ae19",
+    "path": "static/img/social/canopy/articles/pixelboats-morning-watch-2026-07-03.png",
+    "updatedAt": "2026-07-07T20:56:39.089Z"
   }
 }
