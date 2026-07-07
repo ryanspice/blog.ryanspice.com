@@ -16,6 +16,30 @@ export type ArticleDateRouteParams = ArticleDateSegments & {
 	slug: string;
 };
 
+export type RetiredArticleAlias = ArticleDateRouteParams & {
+	locale: SupportedLocale;
+	targetSlug: string;
+};
+
+export const retiredArticleAliases: RetiredArticleAlias[] = [
+	{
+		locale: 'en',
+		year: '2026',
+		month: '06',
+		day: '26',
+		slug: 'pixelboats-morning-watch-2026-06-26',
+		targetSlug: 'pixelboats-morning-watch-2026-06-25'
+	},
+	{
+		locale: 'en',
+		year: '2026',
+		month: '07',
+		day: '02',
+		slug: 'pixelboats-morning-watch-2026-07-02',
+		targetSlug: 'pixelboats-morning-watch-2026-06-25'
+	}
+];
+
 export function articleLegacyPath(article: Pick<ArticleDatePathInput, 'locale' | 'slug'>): string {
 	return pathWithLocale(article.locale, `/${article.slug}/`);
 }
@@ -35,6 +59,25 @@ export function articleDateRouteParams(article: ArticleDatePathInput): ArticleDa
 		...segments,
 		slug: article.slug
 	};
+}
+
+export function retiredArticleAliasEntries(locale: SupportedLocale): ArticleDateRouteParams[] {
+	return retiredArticleAliases
+		.filter((alias) => alias.locale === locale)
+		.map(({ year, month, day, slug }) => ({ year, month, day, slug }));
+}
+
+export function findRetiredArticleAlias(
+	params: Pick<ArticleDateRouteParams, 'slug'> & Partial<ArticleDateSegments>,
+	locale: SupportedLocale
+): RetiredArticleAlias | undefined {
+	return retiredArticleAliases.find(
+		(alias) =>
+			alias.locale === locale &&
+			alias.slug === params.slug &&
+			(!params.year ||
+				(alias.year === params.year && alias.month === params.month && alias.day === params.day))
+	);
 }
 
 function articleDateSegments(value: string): ArticleDateSegments | null {

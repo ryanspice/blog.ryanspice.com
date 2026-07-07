@@ -2,7 +2,14 @@ import { base } from '$app/paths';
 import { building } from '$app/environment';
 import { error, redirect } from '@sveltejs/kit';
 
-import { articleCanonicalPath, articleDateParamsMatch, articleDateRouteParams } from '$lib/article-paths';
+import {
+	articleCanonicalPath,
+	articleDateParamsMatch,
+	articleDateRouteParams,
+	findRetiredArticleAlias,
+	retiredArticleAliasEntries,
+	type RetiredArticleAlias
+} from '$lib/article-paths';
 import {
 	getArticle,
 	getArticleAlternates,
@@ -24,40 +31,12 @@ type DatedArticleParams = LegacyArticleParams & {
 	day: string;
 };
 
-type RetiredArticleAlias = DatedArticleParams & {
-	locale: SupportedLocale;
-	targetSlug: string;
-};
-
-const retiredArticleAliases: RetiredArticleAlias[] = [
-	{
-		locale: 'en',
-		year: '2026',
-		month: '06',
-		day: '26',
-		slug: 'pixelboats-morning-watch-2026-06-26',
-		targetSlug: 'pixelboats-morning-watch-2026-06-25'
-	},
-	{
-		locale: 'en',
-		year: '2026',
-		month: '07',
-		day: '02',
-		slug: 'pixelboats-morning-watch-2026-07-02',
-		targetSlug: 'pixelboats-morning-watch-2026-06-25'
-	}
-];
-
 export function datedArticleEntries(locale: SupportedLocale = DEFAULT_LOCALE): DatedArticleParams[] {
 	const articleEntries = getPublishedArticlesForLocale(locale)
 		.map(articleDateRouteParams)
 		.filter((params): params is DatedArticleParams => params !== null);
 
-	const retiredEntries = retiredArticleAliases
-		.filter((alias) => alias.locale === locale)
-		.map(({ year, month, day, slug }) => ({ year, month, day, slug }));
-
-	return [...articleEntries, ...retiredEntries];
+	return [...articleEntries, ...retiredArticleAliasEntries(locale)];
 }
 
 export function redirectLegacyArticlePage(params: LegacyArticleParams, url: URL, locale: SupportedLocale = DEFAULT_LOCALE): never {
@@ -92,19 +71,6 @@ export function loadDatedArticlePage(params: DatedArticleParams, url: URL, local
 	}
 
 	return articlePageData(article, url);
-}
-
-function findRetiredArticleAlias(
-	params: LegacyArticleParams | DatedArticleParams,
-	locale: SupportedLocale
-): RetiredArticleAlias | undefined {
-	return retiredArticleAliases.find(
-		(alias) =>
-			alias.locale === locale &&
-			alias.slug === params.slug &&
-			(!('year' in params) ||
-				(alias.year === params.year && alias.month === params.month && alias.day === params.day))
-	);
 }
 
 function redirectRetiredArticleAlias(alias: RetiredArticleAlias, url: URL): never {

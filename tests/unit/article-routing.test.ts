@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { articleCanonicalPath, articleDateRouteParams, articleLegacyPath } from '../../src/lib/article-paths';
+import {
+	articleCanonicalPath,
+	articleDateRouteParams,
+	articleLegacyPath,
+	findRetiredArticleAlias,
+	retiredArticleAliasEntries
+} from '../../src/lib/article-paths';
 import { articleTagIndexHref } from '../../src/lib/article-browse';
 import { articleSocialShareHref } from '../../src/lib/article-share';
 import { pathWithLocale } from '../../src/lib/i18n/locales';
@@ -54,6 +60,39 @@ describe('dated article paths', () => {
 			month: '06',
 			day: '20',
 			slug: 'glm-5-2-hermes-cloudflare-workers-ai-delegation'
+		});
+	});
+
+	it('tracks retired PixelBoats duplicate routes as canonical article aliases', () => {
+		expect(retiredArticleAliasEntries('en')).toEqual(
+			expect.arrayContaining([
+				{
+					year: '2026',
+					month: '06',
+					day: '26',
+					slug: 'pixelboats-morning-watch-2026-06-26'
+				},
+				{
+					year: '2026',
+					month: '07',
+					day: '02',
+					slug: 'pixelboats-morning-watch-2026-07-02'
+				}
+			])
+		);
+
+		expect(
+			findRetiredArticleAlias(
+				{
+					year: '2026',
+					month: '07',
+					day: '02',
+					slug: 'pixelboats-morning-watch-2026-07-02'
+				},
+				'en'
+			)
+		).toMatchObject({
+			targetSlug: 'pixelboats-morning-watch-2026-06-25'
 		});
 	});
 });
