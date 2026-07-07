@@ -10,7 +10,7 @@ import {
 import { localizedPageAlternates } from './home-page';
 import { getSiteConfig, getSiteDictionary } from './site';
 
-export const RSS_READER_PATH = '/rss-reader/';
+const RSS_READER_PATH = '/rss-reader/';
 
 function escapeXml(value: string): string {
 	return value

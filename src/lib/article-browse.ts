@@ -3,7 +3,7 @@ import type { Article } from './articles';
 import { normalizeContentTag } from './tags';
 
 export type ArticleIndexStatus = 'published' | 'draft' | 'all';
-export type ArticleIndexView = 'compact' | 'full';
+type ArticleIndexView = 'compact' | 'full';
 
 export type ArticleIndexHrefOptions = {
 	view?: ArticleIndexView;

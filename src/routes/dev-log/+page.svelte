@@ -6,7 +6,7 @@
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
-	import { devLogEntries, devLogMatchesArticleSlug, devLogMatchesTag, devLogTags } from '$lib/dev-log';
+	import { devLogEntries, devLogMatchesArticleSlug, devLogMatchesTag, devLogTags, type DevLogEntry } from '$lib/dev-log';
 
 	const title = 'blog.ryanspice.com · Dev log';
 	const description = 'A running log of site changes, AI Wiki notes, and the process hooks behind the blog.';
@@ -14,60 +14,78 @@
 	const selectedArticle = $derived(browser ? (page.url.searchParams.get('article') ?? '').trim() : '');
 	const selectedView = $derived(browser ? (page.url.searchParams.get('view') ?? '').trim().toLowerCase() : '');
 	const isCompactView = $derived(selectedView === 'compact');
-	const filteredEntries = $derived(
-		selectedTag || selectedArticle
-			? devLogEntries.filter((entry) => {
-					if (selectedTag && !devLogMatchesTag(entry, selectedTag)) return false;
-					if (selectedArticle && !devLogMatchesArticleSlug(entry, selectedArticle)) return false;
-					return true;
-				})
-			: devLogEntries
-	);
-	const featuredEntries = $derived(filteredEntries.slice(0, 3));
-	const logEntries = $derived(filteredEntries.slice(3));
+	const filteredEntries = $derived(filterDevLogEntries(selectedTag, selectedArticle));
+	const featuredEntries = $derived(firstDevLogEntries(filteredEntries));
+	const logEntries = $derived(remainingDevLogEntries(filteredEntries));
 	const latestEntry = $derived(featuredEntries[0] ?? devLogEntries[0]);
 	const selectedArticleLabel = $derived(selectedArticle ? selectedArticle.replaceAll('-', ' ') : '');
 
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@graph': [
-			{
-				'@type': ['WebPage', 'CollectionPage'],
-				'@id': `${canonical}#webpage`,
-				name: title,
-				description,
-				url: canonical,
-				isPartOf: {
-					'@type': 'Blog',
-					name: 'blog.ryanspice.com',
-					url: page.url.origin
-				},
-				about: devLogTags.slice(0, 16)
-			},
-			{
-				'@type': 'BreadcrumbList',
-				itemListElement: [
-					{
-						'@type': 'ListItem',
-						position: 1,
-						name: 'Articles',
-						item: page.url.origin
+	const jsonLd = $derived(buildDevLogJsonLd(canonical, page.url.origin));
+
+	function filterDevLogEntries(tag: string, articleSlug: string): DevLogEntry[] {
+		if (!tag && !articleSlug) return devLogEntries;
+		return devLogEntries.filter((entry) => {
+			if (tag && !devLogMatchesTag(entry, tag)) return false;
+			if (articleSlug && !devLogMatchesArticleSlug(entry, articleSlug)) return false;
+			return true;
+		});
+	}
+
+	function firstDevLogEntries(entries: DevLogEntry[]): DevLogEntry[] {
+		return entries.slice(0, 3);
+	}
+
+	function remainingDevLogEntries(entries: DevLogEntry[]): DevLogEntry[] {
+		return entries.slice(3);
+	}
+
+	function buildDevLogJsonLd(canonicalUrl: string, origin: string): Record<string, unknown> {
+		return {
+			'@context': 'https://schema.org',
+			'@graph': [
+				{
+					'@type': ['WebPage', 'CollectionPage'],
+					'@id': `${canonicalUrl}#webpage`,
+					name: title,
+					description,
+					url: canonicalUrl,
+					isPartOf: {
+						'@type': 'Blog',
+						name: 'blog.ryanspice.com',
+						url: origin
 					},
-					{
-						'@type': 'ListItem',
-						position: 2,
-						name: 'Dev log',
-						item: canonical
-					}
-				]
-			}
-		]
-	});
+					about: devLogTags.slice(0, 16)
+				},
+				{
+					'@type': 'BreadcrumbList',
+					itemListElement: [
+						{
+							'@type': 'ListItem',
+							position: 1,
+							name: 'Articles',
+							item: origin
+						},
+						{
+							'@type': 'ListItem',
+							position: 2,
+							name: 'Dev log',
+							item: canonicalUrl
+						}
+					]
+				}
+			]
+		};
+	}
+
 	function devLogTagHref(tag: string): string {
 		const params = new URLSearchParams({ tag });
 		return `${base}/dev-log/?${params.toString()}`;
+	}
+
+	function relatedArticleTagHref(tag: string): string {
+		return articleIndexHref({ view: 'compact', tag });
 	}
 </script>
 
@@ -84,6 +102,8 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="blog.ryanspice.com" />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content={title} />
@@ -140,7 +160,7 @@
 		<aside
 			class="hero-card home-hero-card"
 			aria-label="Process hook"
-			style={`--article-accent: ${latestEntry.accent}`}
+			style:--article-accent={latestEntry.accent}
 		>
 			<strong>Process hook</strong>
 			<p>
@@ -193,7 +213,7 @@
 
 		<div class="dev-log-featured-grid">
 			{#if featuredEntries[0]}
-				<article id={featuredEntries[0].id} class="dev-log-card dev-log-card-large" style={`--article-accent: ${featuredEntries[0].accent}`}>
+				<article id={featuredEntries[0].id} class="dev-log-card dev-log-card-large" style:--article-accent={featuredEntries[0].accent}>
 					<p class="dev-log-meta">
 						<time datetime={featuredEntries[0].date}>{featuredEntries[0].dateLabel}</time>
 						<span>{featuredEntries[0].source}</span>
@@ -207,7 +227,7 @@
 					</div>
 					<div class="tag-row compact" aria-label="Related article tags">
 						{#each featuredEntries[0].relatedArticleTags as tag, tagIndex (tag + ':' + tagIndex)}
-							<a class="tag tag-link" href={articleIndexHref({ view: 'compact', tag })}>{tag}</a>
+							<a class="tag tag-link" href={relatedArticleTagHref(tag)}>{tag}</a>
 						{/each}
 					</div>
 				</article>
@@ -215,7 +235,7 @@
 
 			<div class="dev-log-featured-stack">
 				{#each featuredEntries.slice(1) as entry, index (entry.date + ':' + entry.title + ':' + index)}
-					<article id={entry.id} class="dev-log-card dev-log-card-small" style={`--article-accent: ${entry.accent}`}>
+					<article id={entry.id} class="dev-log-card dev-log-card-small" style:--article-accent={entry.accent}>
 						<p class="dev-log-meta">
 							<time datetime={entry.date}>{entry.dateLabel}</time>
 							<span>{entry.source}</span>
@@ -245,7 +265,7 @@
 
 	<ul class="dev-log-list">
 		{#each logEntries as entry, index (entry.date + ':' + entry.title + ':' + index)}
-			<li id={entry.id} class="dev-log-list-item" style={`--article-accent: ${entry.accent}`}>
+			<li id={entry.id} class="dev-log-list-item" style:--article-accent={entry.accent}>
 				<div class="dev-log-list-meta">
 					<time datetime={entry.date}>{entry.dateLabel}</time>
 					<span>{entry.source}</span>

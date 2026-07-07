@@ -10,9 +10,10 @@
 
 	const title = 'blog.ryanspice.com · Status';
 	const description = 'Build, content, and deploy status snapshot for blog.ryanspice.com.';
+	const EMPTY_STATUS_DATA = {} as PageData;
 
 	let { data }: { data?: PageData } = $props();
-	const safeData = $derived(data ?? ({} as PageData));
+	const safeData = $derived(data ?? EMPTY_STATUS_DATA);
 
 	let authResolved = $state(false);
 	let signingIn = $state(false);
@@ -32,13 +33,7 @@
 	const canViewDrafts = $derived(canAccessDrafts($authState));
 	const liveEndpoint = $derived(`${base}/status.live.json`);
 
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'WebPage',
-		name: title,
-		description,
-		url: canonical
-	});
+	const jsonLd = $derived(webPageJsonLd(title, description, canonical));
 
 	$effect(() => {
 		if (authInitialized) return;
@@ -67,6 +62,16 @@
 		} finally {
 			authResolved = true;
 		}
+	}
+
+	function webPageJsonLd(pageTitle: string, pageDescription: string, pageUrl: string): Record<string, string> {
+		return {
+			'@context': 'https://schema.org',
+			'@type': 'WebPage',
+			name: pageTitle,
+			description: pageDescription,
+			url: pageUrl
+		};
 	}
 
 	async function loadLiveStatus() {
@@ -119,6 +124,8 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="blog.ryanspice.com" />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content={title} />
@@ -196,7 +203,7 @@
 			</p>
 		</div>
 
-		<div class="article-empty" style="text-align:left">
+		<div class="article-empty live-status-panel">
 			{#if liveLoading}
 				<p class="eyebrow">Loading live status</p>
 				<h2>Checking <code>_releases</code> and <code>_backups</code>…</h2>
@@ -291,3 +298,9 @@
 <footer class="drafts-footer">
 	<FooterAuthControls returnTo="/status/" />
 </footer>
+
+<style>
+	.live-status-panel {
+		text-align: left;
+	}
+</style>

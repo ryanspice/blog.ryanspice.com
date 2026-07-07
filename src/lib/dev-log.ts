@@ -18,6 +18,51 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-07-07',
+		title: 'Record proof gates and pulse backstop',
+		summary:
+			'Captured the non-PixelBoats research queue as owner/action-gated instead of broad-research-gated, recorded local proof passes and manual validation blockers, and treated today\'s generated PixelBoats pulse as BLOG_PUBLISH_PARTIAL because the dedicated publisher worktree is dirty.',
+		source: 'AI Wiki proof-gate handoff and PixelBoats pulse publisher backstop',
+		accent: '#f4c273',
+		tags: ['blog', 'automation', 'pixelboats', 'ai-wiki', 'sveltekit-php', 'seo', 'developer workflow'],
+		relatedArticleSlugs: [
+			'local-fugu-coding-harness',
+			'build-the-astro-idea-on-windows-and-android-first',
+			'deepseek-claude-code-windows-powershell'
+		],
+		relatedArticleTags: ['AI agents', 'AI Wiki', 'PixelBoats', 'SvelteKit', 'SEO', 'developer workflow']
+	},
+	{
+		date: '2026-07-06',
+		title: 'Capture Astro strategy and pulse status',
+		summary:
+			'Published the Windows-and-Android-first Astro strategy note, repaired its source links to the canonical research library, and kept PixelBoats pulse publication status explicit after the July 3 source push remained deploy-partial and the July 6 backstop found no current-day pulse.',
+		source: 'July 3 article commits, PixelBoats pulse publisher status, and July 6 pulse backstop',
+		accent: '#2fa8a0',
+		tags: ['blog', 'automation', 'pixelboats', 'keyword-astro', 'seo', 'sveltekit-php', 'developer workflow'],
+		relatedArticleSlugs: [
+			'build-the-astro-idea-on-windows-and-android-first',
+			'pixelboats-morning-watch-2026-07-03',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['Product strategy', 'Windows', 'Android', 'PixelBoats', 'SEO', 'developer workflow']
+	},
+	{
+		date: '2026-07-02',
+		title: 'Publish July blog updates and pulse import',
+		summary:
+			'Published the July 2 blog runtime and article updates, removed a static-deploy note that was not ready to carry forward, and pushed the current PixelBoats morning pulse through an isolated publisher worktree while production activation stayed blocked on deploy host config.',
+		source: 'July 2 blog update commits and PixelBoats pulse publisher',
+		accent: '#f4c273',
+		tags: ['blog', 'automation', 'pixelboats', 'seo', 'sveltekit-php', 'developer workflow'],
+		relatedArticleSlugs: [
+			'fable-is-back',
+			'deepseek-claude-code-windows-powershell',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['AI agents', 'PixelBoats', 'SvelteKit', 'SEO', 'developer workflow']
+	},
+	{
 		date: '2026-06-29',
 		title: 'Publish DeepSeek routing and code copy controls',
 		summary:
@@ -303,7 +348,7 @@ export function devLogMatchesArticleSlug(entry: DevLogEntry, slug: string): bool
 	return entry.relatedArticleSlugs.some((candidate) => normalizeSlug(candidate) === target);
 }
 
-export function getDevLogEntriesForArticle(articleSlug: string, limit = 5): DevLogEntry[] {
+function getDevLogEntriesForArticle(articleSlug: string, limit = 5): DevLogEntry[] {
 	return devLogEntries.filter((entry) => devLogMatchesArticleSlug(entry, articleSlug)).slice(0, limit);
 }
 

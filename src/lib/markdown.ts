@@ -833,13 +833,17 @@ async function renderMermaidDiagrams(diagrams: MermaidRenderInput[]): Promise<Me
 			svg: item.svg ? sanitizeMermaidSvg(item.svg) : null
 		}));
 	} catch (error) {
-		if (process.env.DEBUG_MERMAID_PRERENDER) {
-			console.warn(error instanceof Error ? error.stack ?? error.message : error);
-		}
+		reportMermaidPrerenderError(error);
 		return diagrams.map(() => ({ svg: null }));
 	} finally {
 		await browser?.close().catch(() => {});
 	}
+}
+
+function reportMermaidPrerenderError(error: unknown): void {
+	if (!process.env.DEBUG_MERMAID_PRERENDER) return;
+	const message = error instanceof Error ? error.stack ?? error.message : String(error);
+	process.emitWarning(message, { type: 'MermaidPrerenderWarning' });
 }
 
 function sanitizeMermaidSvg(svg: string): SafeHtml {

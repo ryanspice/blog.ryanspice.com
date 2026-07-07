@@ -36,13 +36,7 @@
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
 
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'WebPage',
-		name: title,
-		description,
-		url: canonical
-	});
+	const jsonLd = $derived(webPageJsonLd(title, description, canonical));
 	$effect(() => {
 		if (draftInitialized) return;
 		draftInitialized = true;
@@ -67,6 +61,16 @@
 			loadError = error_ instanceof Error ? error_.message : 'Unable to load draft';
 			articleLoading = false;
 		}
+	}
+
+	function webPageJsonLd(pageTitle: string, pageDescription: string, pageUrl: string): Record<string, string> {
+		return {
+			'@context': 'https://schema.org',
+			'@type': 'WebPage',
+			name: pageTitle,
+			description: pageDescription,
+			url: pageUrl
+		};
 	}
 
 	async function handleSignIn() {
@@ -95,6 +99,8 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="blog.ryanspice.com" />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content={title} />
@@ -122,7 +128,7 @@
 			</aside>
 		</section>
 	{:else if article}
-		<section class="draft-detail-controls" style={`--article-accent: ${article.design.accent}`}>
+		<section class="draft-detail-controls" style:--article-accent={article.design.accent}>
 			<DraftMetadataControls {article} {form} />
 		</section>
 		<ArticleView {article} />

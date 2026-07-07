@@ -1,9 +1,18 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { articleAccentColor } from '$lib/article-accent';
-	import { articleCardCssVars, articleCardImage, articleFocalImage } from '$lib/article-focal-images';
+	import { articleCardImage, articleFocalImage } from '$lib/article-focal-images';
 	import type { Article } from '$lib/articles';
 	import { articleHref } from '$lib/article-links';
+	import {
+		buildAssuranceCards,
+		buildHomeJsonLd,
+		cssImageUrl,
+		externalHeaderLinks,
+		firstArticles,
+		normalizeArticles,
+		normalizeTags
+	} from '$lib/home-page-model';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
@@ -14,12 +23,12 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const publishedArticles = $derived(Array.isArray(data.publishedArticles) ? data.publishedArticles as Article[] : []);
+	const publishedArticles = $derived(normalizeArticles(data.publishedArticles));
 	const site = $derived(data.site);
 	const copy = $derived(data.ui.home);
 	const navCopy = $derived(data.ui.nav);
-	const latestArticles = $derived.by(() => publishedArticles.slice(0, 5));
-	const articleTags = $derived(Array.isArray(data.publishedArticleTags) ? data.publishedArticleTags as string[] : []);
+	const latestArticles = $derived(firstArticles(publishedArticles));
+	const articleTags = $derived(normalizeTags(data.publishedArticleTags));
 	const articleFilterAction = $derived(`${base}${data.homePath}#articles`);
 	const articleResetHref = $derived(`${base}${data.homePath}#articles`);
 
@@ -32,84 +41,17 @@
 	const latestDateLabel = $derived.by(() => (latestArticle ? latestArticle.dateLabel : 'May 28, 2026'));
 	const latestArticleHref = $derived.by(() => (latestArticle ? articleHref(latestArticle) : `${base}${data.homePath}#articles`));
 	const latestArticleAccent = $derived.by(() => (latestArticle ? articleAccentColor(latestArticle) : 'var(--accent)'));
-	const latestArticleCardStyle = $derived.by(() => `--article-accent: ${latestArticleAccent}; ${articleCardCssVars(latestArticle)}`);
 	const canonical = $derived(data.canonical);
 	const ogImage = $derived(data.ogImage);
 	const footerExternalLinks = $derived(site.footerExternalLinks);
-	const headerExternalLinks = $derived.by(() =>
-		site.mainSiteLink ? [site.mainSiteLink, site.primaryExternalLink] : [site.primaryExternalLink]
-	);
+	const headerExternalLinks = $derived(externalHeaderLinks(site));
 	const homeJsonLd = $derived.by(() => buildHomeJsonLd(site.id, data.locale));
-	const assuranceCards = $derived.by(() => [
-		{
-			label: copy.assuranceFreshLabel,
-			value: latestDateLabel,
-			text: copy.assuranceFreshValue,
-			href: latestArticleHref
-		},
-		{
-			label: copy.assuranceFeedLabel,
-			value: copy.rssFeed,
-			text: copy.assuranceFeedValue,
-			href: data.rssReaderPath
-		},
-		{
-			label: copy.assuranceArchiveLabel,
-			value: `${publishedArticles.length} ${copy.posts}`,
-			text: copy.assuranceArchiveValue,
-			href: '#articles'
-		},
-		{
-			label: copy.assuranceBuildLabel,
-			value: copy.staticSite,
-			text: copy.assuranceBuildValue
-		}
-	]);
+	const assuranceCards = $derived(buildAssuranceCards(copy, latestDateLabel, latestArticleHref, data.rssReaderPath, publishedArticles.length));
 
 	function articleShareUrl(article: Article): string {
 		return new URL(articleHref(article), canonical).toString();
 	}
 
-	function buildHomeJsonLd(siteId: string, locale: string): Record<string, unknown> {
-		if (siteId === 'canopy') {
-			return {
-				'@context': 'https://schema.org',
-				'@type': 'Blog',
-				name: 'Canopy Digital Blog',
-				url: locale === 'fr' ? 'https://blog.canopydigital.ca/fr/' : 'https://blog.canopydigital.ca/',
-				description:
-					locale === 'fr'
-						? 'Design web, SEO local, maintenance et notes techniques pratiques de Canopy Digital.'
-						: 'Web design, local SEO, maintenance, and practical technology notes from Canopy Digital.',
-				publisher: {
-					'@type': 'Organization',
-					name: 'Canopy Digital',
-					url: 'https://canopydigital.ca'
-				}
-			};
-		}
-
-		return {
-			'@context': 'https://schema.org',
-			'@type': 'Blog',
-			name: 'blog.ryanspice.com',
-			url: locale === 'fr' ? 'https://blog.ryanspice.com/fr/' : 'https://blog.ryanspice.com/',
-			description:
-				locale === 'fr'
-					? 'Articles techniques, notes de production et journal de developpement leger de Ryan Spice.'
-					: 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.',
-			author: {
-				'@type': 'Person',
-				name: 'Ryan Spice',
-				url: 'https://ryanspice.com'
-			},
-			publisher: {
-				'@type': 'Organization',
-				name: 'Canopy Digital',
-				url: 'https://canopydigital.ca'
-			}
-		};
-	}
 </script>
 
 <HomeFandangoStyles />
@@ -153,7 +95,7 @@
 	]}
 />
 
-<section class="home-hero" style={`--article-accent: ${latestArticleAccent}`}>
+<section class="home-hero" style:--article-accent={latestArticleAccent}>
 	<div class="home-hero-copy">
 		<p class="eyebrow">{copy.eyebrow}</p>
 		<h1>{copy.heading}</h1>
@@ -178,7 +120,15 @@
 		</dl>
 	</div>
 
-	<aside class={`hero-card home-hero-card${latestArticleVisual ? ' has-row-image' : ''}`} aria-label="Latest article" style={latestArticleCardStyle}>
+	<aside
+		class={`hero-card home-hero-card${latestArticleVisual ? ' has-row-image' : ''}`}
+		aria-label="Latest article"
+		style:--article-accent={latestArticleAccent}
+		style:--article-row-image={latestArticleVisual ? cssImageUrl(latestArticleVisual.src) : undefined}
+		style:--article-row-position={latestArticleVisual ? latestArticleVisual.position ?? latestArticleVisual.cardPosition ?? 'center center' : undefined}
+		style:--article-focal-image={!latestArticleVisual && latestArticleFocal ? cssImageUrl(latestArticleFocal.src) : undefined}
+		style:--article-focal-position={!latestArticleVisual && latestArticleFocal ? latestArticleFocal.cardPosition ?? latestArticleFocal.position ?? 'center center' : undefined}
+	>
 		{#if latestArticleVisual}
 			<span class="article-card-image" aria-hidden="true"></span>
 		{:else if latestArticleFocal}
@@ -229,7 +179,7 @@
 	</div>
 </section>
 
-<section id="articles" class="article-grid" aria-label="Latest published articles" data-article-index>
+<section id="articles" class="article-grid home-article-grid" aria-label="Latest published articles" data-article-index>
 	<div class="section-head">
 		<p class="eyebrow">{copy.latestArticles}</p>
 		<h2>{copy.recentPosts}</h2>

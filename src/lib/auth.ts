@@ -1,5 +1,4 @@
 import { browser } from '$app/environment';
-import { writable } from 'svelte/store';
 import {
 	PublicClientApplication,
 	type AccountInfo,
@@ -22,14 +21,20 @@ export type AuthState = {
 	error: string | null;
 };
 
+type AuthSubscriber = (state: AuthState) => void;
+
+type AuthStore = {
+	subscribe: (subscriber: AuthSubscriber) => () => void;
+};
+
 const storageKey = 'blog-auth-return-to';
 const defaultOwnerEmailSha256 = 'a02b9da8783774e58760bd375e9e5b570bea1a88bb5ad8928b7298332ddbe140';
 
-export const msalClientId = normalizeValue(import.meta.env.VITE_MSAL_CLIENT_ID as string | undefined);
-export const msalTenantId = normalizeValue(import.meta.env.VITE_MSAL_TENANT_ID as string | undefined) || 'common';
-export const msalAuthority = `https://login.microsoftonline.com/${msalTenantId}`;
-export const msalScopes = ['User.Read'];
-export const ownerAccessEmailSha256 =
+const msalClientId = normalizeValue(import.meta.env.VITE_MSAL_CLIENT_ID as string | undefined);
+const msalTenantId = normalizeValue(import.meta.env.VITE_MSAL_TENANT_ID as string | undefined) || 'common';
+const msalAuthority = `https://login.microsoftonline.com/${msalTenantId}`;
+const msalScopes = ['User.Read'];
+const ownerAccessEmailSha256 =
 	normalizeHash(import.meta.env.VITE_OWNER_EMAIL_SHA256 as string | undefined) || defaultOwnerEmailSha256;
 export const ownerAccessLabel = normalizeValue(import.meta.env.VITE_OWNER_ACCESS_LABEL as string | undefined) || 'the site owner account';
 
@@ -47,11 +52,31 @@ const initialState: AuthState = {
 	error: null
 };
 
-export const authState = writable<AuthState>(initialState);
+let currentAuthState = initialState;
+const authSubscribers = new Set<AuthSubscriber>();
+
+export const authState: AuthStore = {
+	subscribe(subscriber) {
+		subscriber(currentAuthState);
+		authSubscribers.add(subscriber);
+		return () => {
+			authSubscribers.delete(subscriber);
+		};
+	}
+};
 
 let client: PublicClientApplication | undefined;
 let initPromise: Promise<PublicClientApplication> | null = null;
 let statePromise: Promise<AuthState> | null = null;
+
+function setAuthState(next: AuthState): void {
+	currentAuthState = next;
+	for (const subscriber of authSubscribers) subscriber(next);
+}
+
+function updateAuthState(updater: (state: AuthState) => AuthState): void {
+	setAuthState(updater(currentAuthState));
+}
 
 function createConfig(): Configuration {
 	assertClientConfig();
@@ -69,7 +94,7 @@ function createConfig(): Configuration {
 	};
 }
 
-export function assertClientConfig(): void {
+function assertClientConfig(): void {
 	if (!msalClientId || msalClientId.includes('00000000-0000')) {
 		throw new Error(
 			'Missing VITE_MSAL_CLIENT_ID. Add your Microsoft Entra app client ID to .env and restart the dev server.'
@@ -95,7 +120,7 @@ export async function getMsalClient(): Promise<PublicClientApplication> {
 export async function loadAuthState(): Promise<AuthState> {
 	if (!browser) {
 		const next = buildUnauthenticatedState(false, 'Browser auth state is only available on the client.');
-		authState.set(next);
+		setAuthState(next);
 		return next;
 	}
 
@@ -108,8 +133,8 @@ export async function loadAuthState(): Promise<AuthState> {
 	return statePromise;
 }
 
-export async function refreshAuthState(): Promise<AuthState> {
-	authState.update((state) => ({
+async function refreshAuthState(): Promise<AuthState> {
+	updateAuthState((state) => ({
 		...state,
 		loading: true,
 		error: null
@@ -121,7 +146,7 @@ export async function refreshAuthState(): Promise<AuthState> {
 				false,
 				'Missing VITE_MSAL_CLIENT_ID. Copy .env.example to .env and add your Microsoft Entra client ID.'
 			);
-			authState.set(next);
+			setAuthState(next);
 			return next;
 		}
 
@@ -137,11 +162,11 @@ export async function refreshAuthState(): Promise<AuthState> {
 
 		const activeAccount = getActiveAccount(app);
 		const next = activeAccount ? await buildAuthenticatedState(activeAccount) : buildUnauthenticatedState(true);
-		authState.set(next);
+		setAuthState(next);
 		return next;
 	} catch (error_) {
 		const next = buildUnauthenticatedState(true, errorMessage(error_));
-		authState.set(next);
+		setAuthState(next);
 		return next;
 	}
 }
@@ -151,7 +176,7 @@ export function authLoginHref(returnTo = '/'): string {
 	return `/login?returnTo=${encodeURIComponent(target)}`;
 }
 
-export function authLogoutHref(returnTo = '/'): string {
+function authLogoutHref(returnTo = '/'): string {
 	const target = normalizeReturnTo(returnTo, '/');
 	return target;
 }
@@ -160,7 +185,7 @@ export function canAccessDrafts(state: Pick<AuthState, 'authenticated' | 'drafts
 	return state.authenticated && state.draftsAllowed;
 }
 
-export function rememberAuthReturnTo(returnTo: string): void {
+function rememberAuthReturnTo(returnTo: string): void {
 	if (!browser) return;
 	window.sessionStorage.setItem(storageKey, normalizeReturnTo(returnTo, '/'));
 }
@@ -173,7 +198,7 @@ export function consumeAuthReturnTo(defaultReturnTo = '/'): string {
 	return normalizeReturnTo(stored ?? defaultReturnTo, defaultReturnTo);
 }
 
-export async function signIn(returnTo = '/'): Promise<void> {
+async function signIn(returnTo = '/'): Promise<void> {
 	rememberAuthReturnTo(returnTo);
 	const app = await getMsalClient();
 	const request: RedirectRequest = {
@@ -214,7 +239,7 @@ export async function acquireOwnerAccessToken(): Promise<string> {
 	return result.accessToken;
 }
 
-export async function signOut(): Promise<void> {
+async function signOut(): Promise<void> {
 	const app = await getMsalClient();
 	const account = getActiveAccount(app);
 	rememberAuthReturnTo('/');
@@ -235,7 +260,7 @@ export async function trySignOut(): Promise<string | null> {
 	}
 }
 
-export function getActiveAccount(app?: PublicClientApplication): AccountInfo | null {
+function getActiveAccount(app?: PublicClientApplication): AccountInfo | null {
 	if (!app) return null;
 	return app.getActiveAccount() ?? app.getAllAccounts()[0] ?? null;
 }
@@ -332,7 +357,7 @@ function errorMessage(error: unknown): string {
 
 function setAuthError(error: unknown): string {
 	const message = errorMessage(error);
-	authState.update((state) => ({
+	updateAuthState((state) => ({
 		...state,
 		loading: false,
 		available: Boolean(msalClientId),

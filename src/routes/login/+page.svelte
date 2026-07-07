@@ -19,13 +19,7 @@
 	let actionError = $state('');
 	let loginInitialized = $state(false);
 
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'WebPage',
-		name: title,
-		description,
-		url: canonical
-	});
+	const jsonLd = $derived(webPageJsonLd(title, description, canonical));
 
 	$effect(() => {
 		if (loginInitialized) return;
@@ -89,6 +83,16 @@
 		}
 	}
 
+	function webPageJsonLd(pageTitle: string, pageDescription: string, pageUrl: string): Record<string, string> {
+		return {
+			'@context': 'https://schema.org',
+			'@type': 'WebPage',
+			name: pageTitle,
+			description: pageDescription,
+			url: pageUrl
+		};
+	}
+
 	async function handleSignIn() {
 		signing = true;
 		actionError = '';
@@ -138,6 +142,8 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="blog.ryanspice.com" />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content={title} />

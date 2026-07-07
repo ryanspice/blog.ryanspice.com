@@ -14,18 +14,30 @@
 		site?: SiteConfig;
 	};
 
+	const EMPTY_RELATED_ARTICLES: unknown[] = [];
+	const EMPTY_ALTERNATES: Array<{ hreflang: string; href: string }> = [];
+
 	let { data }: { data: ArticleRouteData } = $props();
 
 	const isDiff = $derived(browser && page.url.searchParams.get('diff') === 'true');
 
 	const safeArticle = $derived(toSafeArticle(data.article));
-	const sourceRelatedArticles = $derived.by(() => {
-		const related = Array.isArray(data.relatedArticles) ? data.relatedArticles.filter(Boolean) : [];
-		return related;
-	});
-	const safeRelatedArticles = $derived(sourceRelatedArticles.map(toSafeArticle));
-	const safeAlternates = $derived(Array.isArray(data.alternates) ? data.alternates : []);
+	const sourceRelatedArticles = $derived(normalizeRelatedArticles(data.relatedArticles));
+	const safeRelatedArticles = $derived(toSafeArticles(sourceRelatedArticles));
+	const safeAlternates = $derived(normalizeAlternates(data.alternates));
 	const safeSite = $derived(data.site ?? siteConfigs.ryan);
+
+	function normalizeRelatedArticles(value: unknown[] | undefined): unknown[] {
+		return Array.isArray(value) ? value.filter(Boolean) : EMPTY_RELATED_ARTICLES;
+	}
+
+	function normalizeAlternates(value: ArticleRouteData['alternates']): ArticleRouteData['alternates'] {
+		return Array.isArray(value) ? value : EMPTY_ALTERNATES;
+	}
+
+	function toSafeArticles(values: unknown[]): Article[] {
+		return values.map(toSafeArticle);
+	}
 
 	function toObject(value: unknown): Record<string, unknown> {
 		return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};

@@ -1,17 +1,17 @@
 export type SiteId = 'ryan' | 'canopy';
 
-export type SiteLink = {
+type SiteLink = {
 	label: string;
 	href: string;
 };
 
-export type SitePersonOrOrganization = {
+type SitePersonOrOrganization = {
 	type: 'Person' | 'Organization';
 	name: string;
 	url: string;
 };
 
-export type SiteUtilityRoute = {
+type SiteUtilityRoute = {
 	path: string;
 	changefreq: 'daily' | 'weekly' | 'monthly' | 'yearly';
 	priority: number;
@@ -44,7 +44,7 @@ export type SiteConfig = {
 	publicRouteExclusions: string[];
 };
 
-export const DEFAULT_SITE_ID: SiteId = 'ryan';
+const DEFAULT_SITE_ID: SiteId = 'ryan';
 
 export const siteConfigs: Record<SiteId, SiteConfig> = {
 	ryan: {

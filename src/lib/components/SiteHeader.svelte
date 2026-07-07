@@ -2,7 +2,7 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import type { NavItem } from '$lib/articles';
-	import { authState, canAccessDrafts, loadAuthState } from '$lib/auth';
+	import { authState, canAccessDrafts, loadAuthState, type AuthState } from '$lib/auth';
 	import { getDictionary } from '$lib/i18n/dictionaries';
 	import { pathWithLocale, type SupportedLocale } from '$lib/i18n/locales';
 
@@ -34,23 +34,34 @@
 		void loadAuthState();
 	});
 
-	const brandParts = $derived(
-		brandLabel
-			.split('/')
-			.map((part) => part.trim())
-			.filter(Boolean)
-	);
+	const brandParts = $derived(splitBrandLabel(brandLabel));
 
-	const visibleNavLinks = $derived.by(() => {
-		const merged = [...navLinks];
-		if (showLibraryLink) merged.push({ label: ui.nav.library, href: '/library' });
-		if (showDevLogLink) merged.push({ label: ui.nav.devLog, href: '/dev-log' });
-		if (showOwnerLinks && canAccessDrafts($authState)) {
-			merged.push({ label: ui.nav.briefs, href: '/briefs' });
-			merged.push({ label: ui.nav.drafts, href: '/drafts' });
+	const visibleNavLinks = $derived(buildVisibleNavLinks(navLinks, showLibraryLink, showDevLogLink, showOwnerLinks, ui.nav, $authState));
+
+	function buildVisibleNavLinks(
+		items: NavItem[],
+		includeLibrary: boolean,
+		includeDevLog: boolean,
+		includeOwnerLinks: boolean,
+		copy: { library: string; devLog: string; briefs: string; drafts: string },
+		state: Pick<AuthState, 'authenticated' | 'draftsAllowed'>
+	): NavItem[] {
+		const merged = [...items];
+		if (includeLibrary) merged.push({ label: copy.library, href: '/library' });
+		if (includeDevLog) merged.push({ label: copy.devLog, href: '/dev-log' });
+		if (includeOwnerLinks && canAccessDrafts(state)) {
+			merged.push({ label: copy.briefs, href: '/briefs' });
+			merged.push({ label: copy.drafts, href: '/drafts' });
 		}
 		return dedupeByHref(merged);
-	});
+	}
+
+	function splitBrandLabel(value: string): string[] {
+		return value
+			.split('/')
+			.map((part) => part.trim())
+			.filter(Boolean);
+	}
 
 	function hrefFor(href: string): string {
 		if (href.startsWith('#') || href.startsWith('http')) return href;

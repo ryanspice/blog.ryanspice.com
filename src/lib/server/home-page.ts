@@ -9,7 +9,7 @@ import {
 import { getPublishedArticleTagsForLocale, getPublishedArticlesForLocale } from '$lib/articles';
 import { getSiteConfig, getSiteDictionary } from './site';
 
-export function absoluteLocalizedUrl(url: URL, locale: SupportedLocale, path: string): string {
+function absoluteLocalizedUrl(url: URL, locale: SupportedLocale, path: string): string {
 	return new URL(`${base}${pathWithLocale(locale, path)}`, url.origin).toString();
 }
 

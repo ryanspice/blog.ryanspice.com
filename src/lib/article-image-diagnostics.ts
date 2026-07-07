@@ -1,6 +1,6 @@
 import { articleCardImage, type ArticleFocalImage } from './article-focal-images';
 
-export type ArticleImageDiagnosticKind = 'missing-side-image' | 'shared-side-image';
+type ArticleImageDiagnosticKind = 'missing-side-image' | 'shared-side-image';
 
 export type ArticleImageDiagnostic = {
 	kind: ArticleImageDiagnosticKind;

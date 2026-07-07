@@ -5,9 +5,8 @@
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import { articleMatchesTag, articleSearchText } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
-	import { articleHref } from '$lib/article-links';
-	import ArticleCard from '$lib/components/ArticleCard.svelte';
-	import DraftScheduleControls from '$lib/components/DraftScheduleControls.svelte';
+	import DraftArchive from '$lib/components/DraftArchive.svelte';
+	import LatestDraftCard from '$lib/components/LatestDraftCard.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import type { Article } from '$lib/articles';
 
@@ -28,19 +27,9 @@
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
 	const latestDraft = $derived(draftArticles[0] ?? null);
 	const draftCount = $derived(draftArticles.length);
-	const scheduledCount = $derived(draftArticles.filter((article) => Boolean(article.releaseDate)).length);
-	const draftArticleTags = $derived(
-		Array.from(new Set(draftArticles.flatMap((article) => [...article.tags, ...article.design.tags]))).sort(
-			(left: string, right: string) => left.localeCompare(right)
-		)
-	);
-	const visibleDrafts = $derived(
-		draftArticles.filter((article) => {
-			if (selectedTag && !articleMatchesTag(article, selectedTag)) return false;
-			if (searchQuery && !articleSearchText(article).includes(searchQuery.toLowerCase())) return false;
-			return true;
-		})
-	);
+	const scheduledCount = $derived(countScheduledDrafts(draftArticles));
+	const draftArticleTags = $derived(collectDraftTags(draftArticles));
+	const visibleDrafts = $derived(filterDrafts(draftArticles, selectedTag, searchQuery));
 	const latestDraftAccent = $derived(latestDraft ? articleAccentColor(latestDraft) : 'var(--accent)');
 	const canViewDrafts = $derived(canAccessDrafts($authState));
 
@@ -84,6 +73,25 @@
 			signingIn = false;
 		}
 	}
+
+	function countScheduledDrafts(articles: Article[]): number {
+		return articles.filter((article) => Boolean(article.releaseDate)).length;
+	}
+
+	function collectDraftTags(articles: Article[]): string[] {
+		return Array.from(new Set(articles.flatMap((article) => [...article.tags, ...article.design.tags]))).sort(
+			(left, right) => left.localeCompare(right)
+		);
+	}
+
+	function filterDrafts(articles: Article[], tag: string, query: string): Article[] {
+		const normalizedQuery = query.toLowerCase();
+		return articles.filter((article) => {
+			if (tag && !articleMatchesTag(article, tag)) return false;
+			if (normalizedQuery && !articleSearchText(article).includes(normalizedQuery)) return false;
+			return true;
+		});
+	}
 </script>
 
 <svelte:head>
@@ -97,10 +105,16 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="blog.ryanspice.com" />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content={title} />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={title} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
+	<meta name="twitter:image:alt" content={title} />
 </svelte:head>
 
 <SiteHeader
@@ -148,92 +162,10 @@
 				</dl>
 			</div>
 
-			<aside class="hero-card home-hero-card" aria-label="Latest draft" style={`--article-accent: ${latestDraftAccent}`}>
-				<strong>Latest draft</strong>
-				{#if latestDraft}
-					<h2><a href={articleHref(latestDraft)}>{latestDraft.title}</a></h2>
-					<p>{latestDraft.summary}</p>
-					<dl class="hero-meta" aria-label="Latest draft metadata">
-						<div>
-							<dt>Updated</dt>
-							<dd><time datetime={latestDraft.date}>{latestDraft.dateLabel}</time></dd>
-						</div>
-						<div>
-							<dt>Read time</dt>
-							<dd>{latestDraft.readingMinutes} min</dd>
-						</div>
-						<div>
-							<dt>State</dt>
-							<dd>{latestDraft.releaseDateLabel ? 'Scheduled' : 'Draft'}</dd>
-						</div>
-					</dl>
-					{#if latestDraft.releaseDateLabel}
-						<p class="home-hero-note">Scheduled release: {latestDraft.releaseDateLabel}</p>
-					{/if}
-				{:else}
-					<p>No drafts yet.</p>
-				{/if}
-			</aside>
+			<LatestDraftCard {latestDraft} accent={latestDraftAccent} />
 		</section>
 
-		<form class="article-filter-bar" method="get" action="/drafts/">
-			<label class="filter-field">
-				<span>Search</span>
-				<input type="text" name="q" value={searchQuery} placeholder="Title, summary, tag..." />
-			</label>
-
-			<label class="filter-field">
-				<span>Tag</span>
-				<select name="tag">
-					<option value="" selected={!selectedTag}>All tags</option>
-					{#each draftArticleTags as tag, index (tag + ':' + index)}
-						<option value={tag} selected={selectedTag === tag}>{tag}</option>
-					{/each}
-				</select>
-			</label>
-
-			<div class="filter-actions">
-				<button type="submit">Update</button>
-				<a class="home-filter-link" href="/drafts/">Reset</a>
-			</div>
-		</form>
-
-		<section class="draft-schedule-primer" aria-label="Scheduling instructions">
-			<p class="eyebrow">Release scheduling</p>
-			<h2>Schedule a draft with frontmatter.</h2>
-			<p>
-				Use the date control on any draft below, copy the generated frontmatter, paste it into that
-				article, and commit. The daily deploy promotes it once the release date is reached.
-			</p>
-		</section>
-
-		<section id="drafts" class="article-grid" aria-label="Draft articles">
-			<div class="section-head">
-				<p class="eyebrow">Draft queue</p>
-				<h2>Unpublished articles</h2>
-				<p class="section-dek">Newest drafts first, with release dates and publish state visible for quick review.</p>
-			</div>
-			<p class="article-results-meta">Showing {visibleDrafts.length} of {draftArticles.length} drafts.</p>
-
-			{#if visibleDrafts.length}
-				{#each visibleDrafts as article, index (article.slug + ':' + index)}
-					<div class="draft-item" style={`--article-accent: ${articleAccentColor(article)}`}>
-						<ArticleCard {article} href={articleHref(article)} />
-						<DraftScheduleControls {article} />
-					</div>
-				{/each}
-			{:else}
-				<div class="article-empty">
-					<p class="eyebrow">{draftArticles.length ? 'No matching drafts' : 'No drafts'}</p>
-					<h2>{draftArticles.length ? 'Nothing matches the current filters.' : 'The queue is empty.'}</h2>
-					<p class="section-dek">
-						{draftArticles.length
-							? 'Clear the tag or search field to widen the draft list.'
-							: 'Add a draft article under src/lib/content/articles to populate this page.'}
-					</p>
-				</div>
-			{/if}
-		</section>
+		<DraftArchive {draftArticles} {visibleDrafts} {draftArticleTags} {selectedTag} {searchQuery} />
 	{/if}
 {:else}
 	<section class="home-hero compact-page">
@@ -296,33 +228,3 @@
 {#if authError}
 	<p class="drafts-error" role="status">{authError}</p>
 {/if}
-
-<style>
-	.draft-item {
-		display: grid;
-		gap: 12px;
-	}
-
-	.draft-schedule-primer {
-		max-width: min(1120px, calc(100vw - 32px));
-		margin: 0 auto 22px;
-		padding: 18px;
-		border-radius: 22px;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(255, 255, 255, 0.04);
-	}
-
-	.draft-schedule-primer h2,
-	.draft-schedule-primer p {
-		margin: 0;
-	}
-
-	.draft-schedule-primer h2 {
-		margin-top: 4px;
-	}
-
-	.draft-schedule-primer p:not(.eyebrow) {
-		margin-top: 8px;
-		opacity: 0.82;
-	}
-</style>

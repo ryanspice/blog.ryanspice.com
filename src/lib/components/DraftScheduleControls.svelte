@@ -6,20 +6,16 @@
 	};
 
 	let { article }: Props = $props();
-	let releaseDate = $state('');
-	const sourceReleaseDate = $derived(article.releaseDate ?? '');
+	// svelte-ignore state_referenced_locally
+	let releaseDate = $state(article.releaseDate ?? '');
 	let copied = $state(false);
 
-	$effect(() => {
-		releaseDate = sourceReleaseDate;
-	});
+	const frontmatterSnippet = $derived(buildFrontmatterSnippet(releaseDate));
 
-	const frontmatterSnippet = $derived.by(() => {
-		const status = releaseDate ? 'scheduled' : 'draft';
-		const lines = [`status: "${status}"`];
-		if (releaseDate) lines.push(`release_date: "${releaseDate}"`);
-		return lines.join('\n');
-	});
+	function buildFrontmatterSnippet(value: string): string {
+		const status = value ? 'scheduled' : 'draft';
+		return value ? `status: "${status}"\nrelease_date: "${value}"` : `status: "${status}"`;
+	}
 
 	async function copySnippet() {
 		copied = false;
@@ -29,12 +25,16 @@
 			copied = false;
 		}, 1800);
 	}
+
+	function handleReleaseDateInput(event: Event) {
+		releaseDate = event.currentTarget instanceof HTMLInputElement ? event.currentTarget.value : '';
+	}
 </script>
 
 <div class="draft-schedule-controls" aria-label={`Schedule controls for ${article.slug}`}>
 	<label>
 		<span>Release date</span>
-		<input type="date" bind:value={releaseDate} />
+		<input type="date" value={releaseDate} oninput={handleReleaseDateInput} />
 	</label>
 
 	<pre>{frontmatterSnippet}</pre>

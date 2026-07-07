@@ -45,7 +45,6 @@
 		pictureClass?: string;
 		imgClass?: string;
 		captionClass?: string;
-		style?: string;
 		placeholder?: string;
 		dominantColor?: string;
 		children?: Snippet;
@@ -73,7 +72,6 @@
 		pictureClass = '',
 		imgClass = '',
 		captionClass = '',
-		style = '',
 		placeholder,
 		dominantColor,
 		children,
@@ -82,7 +80,7 @@
 		...rest
 	}: Props = $props();
 
-	const fallbackMeta = $derived(image ?? (src ? { src } : undefined));
+	const fallbackMeta = $derived(resolveImageMeta(image, src));
 	const resolvedSizes = $derived(sizes ?? fallbackMeta?.sizes ?? imagePresetSizes(preset));
 	const resolved = $derived(fallbackMeta ? normalizeWikiImage(fallbackMeta, resolvedSizes) : null);
 	const resolvedSources = $derived(normalizeImageSources(sources ?? resolved?.sources, resolvedSizes));
@@ -103,34 +101,38 @@
 		)
 	);
 	const hasFigure = $derived(Boolean(resolvedCaption || resolvedAttribution || children));
-	const figureClasses = $derived(['wiki-image', `wiki-image--${preset}`, className, figureClass].filter(Boolean).join(' '));
-	const pictureClasses = $derived(['wiki-image__picture', pictureClass].filter(Boolean).join(' '));
-	const imgClasses = $derived(['wiki-image__img', imgClass].filter(Boolean).join(' '));
-	const captionClasses = $derived(['wiki-image__caption', captionClass].filter(Boolean).join(' '));
-	const frameStyle = $derived(
-		[
-			ratio ? `--wiki-image-ratio: ${ratio}` : '',
-			resolvedDominantColor ? `--wiki-image-bg: ${resolvedDominantColor}` : '',
-			style
-		]
-			.filter(Boolean)
-			.join('; ')
-	);
+	const figureClasses = $derived(classNames('wiki-image', `wiki-image--${preset}`, className, figureClass));
+	const pictureClasses = $derived(classNames('wiki-image__picture', pictureClass));
+	const imgClasses = $derived(classNames('wiki-image__img', imgClass));
+	const captionClasses = $derived(classNames('wiki-image__caption', captionClass));
+
+	function resolveImageMeta(meta: WikiImageMeta | undefined, imageSrc: string | undefined): WikiImageMeta | undefined {
+		return meta ?? (imageSrc ? { src: imageSrc } : undefined);
+	}
+
+	function classNames(...parts: Array<string | undefined>): string {
+		return parts.filter(Boolean).join(' ');
+	}
+
 </script>
 
 {#if resolved}
-	<svelte:element this={hasFigure ? 'figure' : 'span'} class={figureClasses} style={frameStyle || undefined}>
-		<picture class={pictureClasses} style={resolvedPlaceholder ? `background-image: url('${resolvedPlaceholder}')` : undefined}>
+	<svelte:element
+		this={hasFigure ? 'figure' : 'span'}
+		class={figureClasses}
+		style:--wiki-image-ratio={ratio}
+		style:--wiki-image-bg={resolvedDominantColor}
+	>
+		<picture class={pictureClasses} style:background-image={resolvedPlaceholder ? `url('${resolvedPlaceholder}')` : undefined}>
 			{#each resolvedSources as source, index (`${source.type ?? 'source'}:${source.media ?? ''}:${index}`)}
 				<source type={source.type} media={source.media} srcset={source.srcset} sizes={source.sizes ?? resolvedSizes} />
 			{/each}
 			<img
-				{...rest}
+				alt={resolvedAlt}
 				class={imgClasses}
 				src={resolved.src}
 				srcset={resolvedSrcset}
 				sizes={resolvedSizes}
-				alt={resolvedAlt}
 				width={resolvedWidth}
 				height={resolvedHeight}
 				loading={resolvedLoading}
@@ -138,6 +140,7 @@
 				{decoding}
 				onload={onload}
 				onerror={onerror}
+				{...rest}
 			/>
 		</picture>
 		{#if children}

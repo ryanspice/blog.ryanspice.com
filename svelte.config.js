@@ -26,6 +26,7 @@ const buildIdentity =
 const config = {
 	preprocess: vitePreprocess(),
 	kit: {
+		outDir: process.env.SVELTEKIT_OUTDIR ?? '.svelte-kit',
 		paths: {
 			base: basePath,
 			relative: true

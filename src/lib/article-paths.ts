@@ -37,7 +37,7 @@ export function articleDateRouteParams(article: ArticleDatePathInput): ArticleDa
 	};
 }
 
-export function articleDateSegments(value: string): ArticleDateSegments | null {
+function articleDateSegments(value: string): ArticleDateSegments | null {
 	const normalized = value.trim();
 	const match = normalized.match(/^(\d{4})-(\d{2})-(\d{2})(?:$|[T\s])/);
 

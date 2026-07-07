@@ -1,6 +1,8 @@
 param(
   [string]$BasePath = "",
   [string]$AdapterRoot = "",
+  [string]$RuntimeRoot = "",
+  [string]$RuntimeConfigPath = "",
   [string]$SiteId = "",
   [string]$PublicSiteUrl = "",
   [switch]$Clean,
@@ -33,6 +35,41 @@ function Wait-ForPath([string]$Path, [int]$Attempts = 20, [int]$DelayMs = 250) {
     Start-Sleep -Milliseconds $DelayMs
   }
   return $false
+}
+function Resolve-AbsolutePath([string]$Path, [string]$BasePath) {
+  $expanded = [Environment]::ExpandEnvironmentVariables($Path.Trim())
+  if ([IO.Path]::IsPathRooted($expanded)) {
+    return [IO.Path]::GetFullPath($expanded)
+  }
+  return [IO.Path]::GetFullPath((Join-Path $BasePath $expanded))
+}
+function Initialize-SiteRuntimeLayout([string]$Root) {
+  $paths = @(
+    "data/drafts",
+    "data/private",
+    "data/encrypted",
+    "data/db",
+    "cache/svelte-kit",
+    "cache/vite",
+    "build",
+    "releases",
+    "receipts"
+  )
+  foreach ($path in $paths) {
+    New-Item -ItemType Directory -Path (Join-Path $Root $path) -Force | Out-Null
+  }
+}
+function Add-PathListValue([string]$Current, [string]$Value) {
+  if ([string]::IsNullOrWhiteSpace($Value)) { return $Current }
+  $items = @()
+  if (-not [string]::IsNullOrWhiteSpace($Current)) {
+    $items = @($Current.Split(";") | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+  }
+  $normalized = [IO.Path]::GetFullPath($Value)
+  foreach ($item in $items) {
+    if ([IO.Path]::GetFullPath($item) -ieq $normalized) { return ($items -join ";") }
+  }
+  return (@($items) + $normalized) -join ";"
 }
 function Get-SiteBuildConfig([string]$SiteId) {
   $ConfigScript = Join-Path $PSScriptRoot "Read-SiteBuildConfig.mjs"
@@ -105,9 +142,72 @@ $PublicRouteExclusions = @($SiteBuildConfig.publicRouteExclusions | ForEach-Obje
   ([string]$_).Trim().Trim("/")
 } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
 
+$RuntimeRootSource = "disabled"
+$RuntimeSiteId = if ($SiteId -eq "ryan") { "ryanspice.com" } else { "" }
+$SvelteKitOutDir = ""
+$ViteCacheDir = ""
+$SafeExternalRoot = ""
+
+if (-not [string]::IsNullOrWhiteSpace($RuntimeSiteId)) {
+  if (-not [string]::IsNullOrWhiteSpace($RuntimeRoot)) {
+    $RuntimeRoot = Resolve-AbsolutePath -Path $RuntimeRoot -BasePath $ProjectRoot
+    $RuntimeRootSource = "parameter"
+    Initialize-SiteRuntimeLayout -Root $RuntimeRoot
+  } elseif (-not [string]::IsNullOrWhiteSpace($env:BLOG_RUNTIME_ROOT)) {
+    $RuntimeRoot = Resolve-AbsolutePath -Path $env:BLOG_RUNTIME_ROOT -BasePath $ProjectRoot
+    $RuntimeRootSource = "environment"
+    Initialize-SiteRuntimeLayout -Root $RuntimeRoot
+  } elseif (-not [string]::IsNullOrWhiteSpace($AdapterRoot)) {
+    $AdapterRuntimeConfig = if (-not [string]::IsNullOrWhiteSpace($RuntimeConfigPath)) {
+      Resolve-AbsolutePath -Path $RuntimeConfigPath -BasePath $ProjectRoot
+    } else {
+      Join-Path $AdapterRoot "config/site-runtime.local.json"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($RuntimeConfigPath) -and -not (Test-Path -LiteralPath $AdapterRuntimeConfig)) {
+      throw "RuntimeConfigPath does not exist: $AdapterRuntimeConfig"
+    }
+    if (Test-Path -LiteralPath $AdapterRuntimeConfig) {
+      $ResolverScript = Join-Path $AdapterRoot "scripts/Resolve-SiteRuntime.ps1"
+      if (-not (Test-Path -LiteralPath $ResolverScript)) {
+        throw "Runtime config exists but resolver script is missing: $ResolverScript"
+      }
+      $RuntimeRoot = (& pwsh -NoProfile -ExecutionPolicy Bypass -File $ResolverScript -SiteId $RuntimeSiteId -ConfigPath $AdapterRuntimeConfig -Create | Select-Object -Last 1)
+      if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($RuntimeRoot)) {
+        throw "Unable to resolve runtime root for $RuntimeSiteId"
+      }
+      $RuntimeRoot = Resolve-AbsolutePath -Path $RuntimeRoot -BasePath $ProjectRoot
+      $RuntimeRootSource = "adapter local config"
+    } else {
+      $RuntimeRoot = ""
+    }
+  }
+}
+
+if (-not [string]::IsNullOrWhiteSpace($RuntimeRoot)) {
+  $BuildDir = Join-Path $RuntimeRoot "build"
+  $SvelteKitOutDir = Join-Path $RuntimeRoot "cache/svelte-kit"
+  $ViteCacheDir = Join-Path $RuntimeRoot "cache/vite"
+  Initialize-SiteRuntimeLayout -Root $RuntimeRoot
+
+  $SafeExternalRoot = $RuntimeRoot
+  if (-not [string]::IsNullOrWhiteSpace($AdapterRoot) -and (Test-Path -LiteralPath $AdapterRoot)) {
+    $AdapterRootFull = (Resolve-Path -LiteralPath $AdapterRoot).Path
+    $AdapterRuntimeRoot = [IO.Path]::GetFullPath((Join-Path $AdapterRootFull ".runtime"))
+    $AdapterRuntimePrefix = $AdapterRuntimeRoot.TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
+    if ($RuntimeRoot -ieq $AdapterRuntimeRoot -or $RuntimeRoot.StartsWith($AdapterRuntimePrefix, [StringComparison]::OrdinalIgnoreCase)) {
+      $SafeExternalRoot = $AdapterRuntimeRoot
+    }
+  }
+}
+
 Step "Resolve paths"
 Info "ProjectRoot" $ProjectRoot
 Info "BuildDir" $BuildDir
+Info "RuntimeRoot" $(if ($RuntimeRoot) { $RuntimeRoot } else { "(disabled)" })
+Info "RuntimeSource" $RuntimeRootSource
+Info "SvelteKitOut" $(if ($SvelteKitOutDir) { $SvelteKitOutDir } else { "(default)" })
+Info "ViteCache" $(if ($ViteCacheDir) { $ViteCacheDir } else { "(default)" })
+Info "Safe roots" $(if ($SafeExternalRoot) { $SafeExternalRoot } else { "(default)" })
 Info "BasePath" $(if ($BasePath) { $BasePath } else { "(root)" })
 Info "SiteId" $SiteId
 Info "PublicSiteUrl" $PublicSiteUrl
@@ -130,9 +230,18 @@ if ($SkipAdapterSync) {
   }
 }
 
-if ($Clean -and (Test-Path -LiteralPath $BuildDir)) {
-  Step "Clean build output"
-  Remove-Item -LiteralPath $BuildDir -Recurse -Force
+if ($Clean) {
+  $CleanTargets = @($BuildDir)
+  if ($SvelteKitOutDir) { $CleanTargets += $SvelteKitOutDir }
+  if ($ViteCacheDir) { $CleanTargets += $ViteCacheDir }
+  $ExistingCleanTargets = @($CleanTargets | Sort-Object -Unique | Where-Object { Test-Path -LiteralPath $_ })
+  if ($ExistingCleanTargets.Count -gt 0) {
+    Step "Clean build/cache output"
+    foreach ($target in $ExistingCleanTargets) {
+      Remove-Item -LiteralPath $target -Recurse -Force
+      Info "Cleaned" $target
+    }
+  }
 }
 
 Step "Build blog with PHP adapter"
@@ -146,6 +255,12 @@ try {
   $env:DEPLOY_BASE = $BasePath
   if (-not $env:ADAPTER_MODE) { $env:ADAPTER_MODE = "php-static" }
   if (-not $env:ADAPTER_BASE_MODE) { $env:ADAPTER_BASE_MODE = "fixed" }
+  if ($RuntimeRoot) { $env:BLOG_RUNTIME_ROOT = $RuntimeRoot }
+  if ($SvelteKitOutDir) { $env:SVELTEKIT_OUTDIR = $SvelteKitOutDir }
+  if ($ViteCacheDir) { $env:VITE_CACHE_DIR = $ViteCacheDir }
+  if ($SafeExternalRoot) {
+    $env:SVELTEKIT_PHP_SAFE_EXTERNAL_ROOTS = Add-PathListValue -Current $env:SVELTEKIT_PHP_SAFE_EXTERNAL_ROOTS -Value $SafeExternalRoot
+  }
   $env:ADAPTER_OUT = $BuildDir
   $env:ADAPTER_ASSETS = $BuildDir
 
@@ -321,6 +436,32 @@ if (Test-Path -LiteralPath $WellKnownSource) {
 }
 
 Step "Receipt"
+if ($RuntimeRoot) {
+  $ReceiptDir = Join-Path $RuntimeRoot "receipts"
+  New-Item -ItemType Directory -Path $ReceiptDir -Force | Out-Null
+  $RuntimeReceipt = [pscustomobject]@{
+    siteId = $RuntimeSiteId
+    runtimeRoot = $RuntimeRoot
+    source = $RuntimeRootSource
+    buildDir = $BuildDir
+    svelteKitOutDir = $SvelteKitOutDir
+    viteCacheDir = $ViteCacheDir
+    safeExternalRoot = $SafeExternalRoot
+    adapterRoot = $AdapterRoot
+  }
+  $BuildReceipt = [pscustomobject]@{
+    builtAtUtc = (Get-Date).ToUniversalTime().ToString("o")
+    siteId = $SiteId
+    publicSiteUrl = $PublicSiteUrl
+    mode = $env:ADAPTER_MODE
+    buildDir = $BuildDir
+    svelteKitOutDir = $SvelteKitOutDir
+  }
+  $RuntimeReceipt | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $ReceiptDir "runtime-root.json") -Encoding utf8NoBOM
+  $BuildReceipt | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $ReceiptDir "last-build.json") -Encoding utf8NoBOM
+  Info "Runtime receipt" (Join-Path $ReceiptDir "runtime-root.json")
+  Info "Build receipt" (Join-Path $ReceiptDir "last-build.json")
+}
 Info "Built" $BuildDir
 Info "Mode" $env:ADAPTER_MODE
 Info "BasePath" $(if ($BasePath) { $BasePath } else { "(root)" })

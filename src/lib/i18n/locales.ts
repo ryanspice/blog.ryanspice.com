@@ -1,6 +1,6 @@
 export const DEFAULT_LOCALE = 'en' as const;
 export const SUPPORTED_LOCALES = [DEFAULT_LOCALE, 'fr'] as const;
-export const ROUTED_LOCALES = ['fr'] as const;
+const ROUTED_LOCALES = ['fr'] as const;
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 export type RoutedLocale = (typeof ROUTED_LOCALES)[number];
@@ -25,7 +25,7 @@ export function resolveLocaleFromPathname(pathname: string): SupportedLocale {
 	return isRoutedLocale(firstSegment) ? firstSegment : DEFAULT_LOCALE;
 }
 
-export function stripLocalePrefix(pathname: string): string {
+function stripLocalePrefix(pathname: string): string {
 	const normalized = pathname.startsWith('/') ? pathname : `/${pathname}`;
 	const [firstSegment, ...rest] = normalized.replace(/^\/+/, '').split('/');
 
@@ -34,7 +34,7 @@ export function stripLocalePrefix(pathname: string): string {
 	return stripped === '/' || stripped === '' ? '/' : stripped;
 }
 
-export function localePrefix(locale: SupportedLocale): '' | `/${RoutedLocale}` {
+function localePrefix(locale: SupportedLocale): '' | `/${RoutedLocale}` {
 	return locale === DEFAULT_LOCALE ? '' : `/${locale as RoutedLocale}`;
 }
 

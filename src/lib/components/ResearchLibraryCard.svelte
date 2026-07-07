@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { researchLibraryCardCssVars, researchLibraryCardImage, researchLibraryCardImagePresentation } from '$lib/research-library-visuals';
+	import { researchLibraryCardImage, researchLibraryCardImagePresentation } from '$lib/research-library-visuals';
 	import type { ResearchLibraryItem } from '$lib/research-library';
 
 	type Props = {
@@ -13,7 +13,10 @@
 	const imagePresentation = $derived(researchLibraryCardImagePresentation(item));
 	const hasRowImage = $derived(imagePresentation === 'row');
 	const hasFocalImage = $derived(imagePresentation === 'focal');
-	const cardStyle = $derived(`--article-accent: #00aeef; ${researchLibraryCardCssVars(item)}`);
+
+	function cssImageUrl(src: string | undefined): string | undefined {
+		return src ? `url("${src.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}")` : undefined;
+	}
 </script>
 
 <a
@@ -21,7 +24,11 @@
 	href={item.url}
 	rel="noreferrer"
 	target="_blank"
-	style={cardStyle}
+	style:--article-accent="#00aeef"
+	style:--article-row-image={hasRowImage ? cssImageUrl(image?.src) : undefined}
+	style:--article-row-position={hasRowImage ? image?.cardPosition ?? image?.position ?? 'center center' : undefined}
+	style:--article-focal-image={hasFocalImage ? cssImageUrl(image?.src) : undefined}
+	style:--article-focal-position={hasFocalImage ? image?.cardPosition ?? image?.position ?? 'center center' : undefined}
 >
 	{#if image && hasRowImage}
 		<span class="article-card-image" aria-hidden="true"></span>

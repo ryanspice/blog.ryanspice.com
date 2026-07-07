@@ -27,13 +27,7 @@
 	const description = $derived(brief?.summary ?? 'Private morning brief for Ryan Spice.');
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'WebPage',
-		name: title,
-		description,
-		url: canonical
-	});
+	const jsonLd = $derived(webPageJsonLd(title, description, canonical));
 	$effect(() => {
 		if (briefInitialized) return;
 		briefInitialized = true;
@@ -58,6 +52,16 @@
 			loadError = error_ instanceof Error ? error_.message : 'Unable to load morning brief';
 			briefLoading = false;
 		}
+	}
+
+	function webPageJsonLd(pageTitle: string, pageDescription: string, pageUrl: string): Record<string, string> {
+		return {
+			'@context': 'https://schema.org',
+			'@type': 'WebPage',
+			name: pageTitle,
+			description: pageDescription,
+			url: pageUrl
+		};
 	}
 
 	async function handleSignIn() {
@@ -86,6 +90,8 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="blog.ryanspice.com" />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content={title} />

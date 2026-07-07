@@ -2389,7 +2389,7 @@ if (!empty($sk_deferreds)) {
 		// For now, we use simple JSON encoding to avoid the need for unflattening on the client.
 		$serialized = sk_json_encode($data);
 
-		echo '<script>if(typeof ${appId} !== "undefined") { ${appId}.resolve('.$id. ', () => ['.$serialized.', null]); } else { console.error("App ID undefined: ${appId}"); }</script>';
+		echo '<script>if(typeof ${appId} !== "undefined") { ${appId}.resolve('.$id. ', () => ['.$serialized.', null]); } else { globalThis.console.error("App ID undefined: ${appId}"); }</script>';
 		flush();
 	}
 }
@@ -2676,7 +2676,7 @@ await server.init({ env: process.env });
 const PORT = process.env.PORT || 3000;
 const DEBUG = process.env.SK_DEBUG === 'true' || process.env.ADAPTER_DEBUG === 'true';
 const debugLog = (...args) => {
-    if (DEBUG) console.log(...args);
+    if (DEBUG) globalThis.console.log(...args);
 };
 
 http.createServer(async (req, res) => {
@@ -2777,12 +2777,12 @@ http.createServer(async (req, res) => {
     }
 
 } catch (e) {
-    console.error(e);
+    globalThis.console.error(e);
     res.statusCode = 500;
     res.end('Internal Server Error');
 }
 }).listen(PORT, () => {
-    console.log(\`Listening on port \${PORT}\`);
+    globalThis.console.log(\`Listening on port \${PORT}\`);
 });
 `;
 }
@@ -3601,6 +3601,20 @@ function normalizeMarkerList(value) {
   } catch {}
   return trimmed.split(/\r?\n|;;/).map((item) => item.trim()).filter(Boolean);
 }
+function normalizeSafeExternalRoots(value) {
+  if (!value)
+    return [];
+  const trimmed = value.trim();
+  if (!trimmed)
+    return [];
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (Array.isArray(parsed)) {
+      return parsed.filter((item) => typeof item === "string").map((item) => item.trim()).filter(Boolean).map((item) => path3.resolve(item));
+    }
+  } catch {}
+  return trimmed.split(";").map((item) => item.trim()).filter(Boolean).map((item) => path3.resolve(item));
+}
 function resolveBuildIdentityContract(buildIdentity) {
   if (buildIdentity === false)
     return null;
@@ -3784,7 +3798,8 @@ function sveltekitPhpAdapter(options = {}) {
     async adapt(builder) {
       const debug = (...args) => {
         if (debugEnabled)
-          console.log(...args);
+          process.stdout.write(`${args.map(String).join(" ")}
+`);
       };
       const debugMinor = (message) => {
         if (debugEnabled)
@@ -3844,6 +3859,7 @@ function sveltekitPhpAdapter(options = {}) {
         const rel = path3.relative(parent, child);
         return rel !== "" && !rel.startsWith("..") && !path3.isAbsolute(rel);
       };
+      const isInsideOrSame = (parent, child) => path3.resolve(parent) === path3.resolve(child) || isInside(parent, child);
       const assertSafeBuildTarget = (target, label) => {
         const resolved = path3.resolve(target);
         const cwd = path3.resolve(process.cwd());
@@ -3858,13 +3874,21 @@ function sveltekitPhpAdapter(options = {}) {
           path3.join(cwd, "tests"),
           routesRoot
         ];
+        const safeExternalRoots = normalizeSafeExternalRoots(process.env.SVELTEKIT_PHP_SAFE_EXTERNAL_ROOTS);
         if (resolved === root || resolved === cwd || resolved === home) {
           throw new Error(`Unsafe build target for ${label}: ${resolved}`);
         }
         if (sourceRoots.some((source) => resolved === source || isInside(source, resolved))) {
           throw new Error(`Unsafe build target for ${label}: ${resolved}`);
         }
-        if (!isInside(cwd, resolved) && !isInside(temp, resolved)) {
+        for (const safeRoot of safeExternalRoots) {
+          const safeRootFsRoot = path3.parse(safeRoot).root;
+          if (safeRoot === safeRootFsRoot || safeRoot === cwd || safeRoot === home || sourceRoots.some((source) => safeRoot === source || isInside(source, safeRoot))) {
+            throw new Error(`Unsafe configured external build root for ${label}: ${safeRoot}`);
+          }
+        }
+        const isConfiguredExternalTarget = safeExternalRoots.some((safeRoot) => isInsideOrSame(safeRoot, resolved));
+        if (!isInside(cwd, resolved) && !isInside(temp, resolved) && !isConfiguredExternalTarget) {
           throw new Error(`Unsafe build target for ${label}: ${resolved}`);
         }
       };

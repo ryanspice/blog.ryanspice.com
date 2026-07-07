@@ -3,7 +3,7 @@ export type Frontmatter = Record<string, FrontmatterValue>;
 
 export type ArticleStatus = 'draft' | 'scheduled' | 'published';
 
-export type ArticleVisual = {
+type ArticleVisual = {
 	src: string;
 	alt: string;
 	credit?: string;
@@ -100,7 +100,7 @@ export function splitFrontmatter(raw: string): { frontmatter: Frontmatter; body:
 	return { frontmatter: parseSimpleYaml(yaml), body, hasFrontmatter: true };
 }
 
-export function parseSimpleYaml(yaml: string): Frontmatter {
+function parseSimpleYaml(yaml: string): Frontmatter {
 	const result: Frontmatter = {};
 	let activeKey: string | null = null;
 
@@ -123,7 +123,7 @@ export function parseSimpleYaml(yaml: string): Frontmatter {
 	return result;
 }
 
-export function serializeFrontmatter(frontmatter: Frontmatter): string {
+function serializeFrontmatter(frontmatter: Frontmatter): string {
 	const keys = Object.keys(frontmatter);
 	const ordered = [
 		...preferredScalarOrder.filter((key) => keys.includes(key)),
@@ -155,7 +155,7 @@ export function stringValue(value: FrontmatterValue | undefined): string {
 	return typeof value === 'string' ? value : '';
 }
 
-export function arrayValue(value: FrontmatterValue | undefined): string[] {
+function arrayValue(value: FrontmatterValue | undefined): string[] {
 	return Array.isArray(value) ? value : [];
 }
 
@@ -182,7 +182,7 @@ export function articleVisualsFromFrontmatter(frontmatter: Frontmatter): Article
 	};
 }
 
-export function articlePublishDateTime(frontmatter: Frontmatter): string {
+function articlePublishDateTime(frontmatter: Frontmatter): string {
 	const publishAt = stringValue(frontmatter.publish_at);
 	if (publishAt) return publishAt;
 

@@ -33,31 +33,13 @@ export function articleFocalImage(article: ArticleLike | null | undefined): Arti
 	return focalImages[article.slug];
 }
 
-export function articleFocalCardCssVars(article: ArticleLike | null | undefined): string {
-	const image = articleFocalImage(article);
-	if (!image) return '';
-	return focalCssVars(image, image.cardPosition ?? image.position ?? 'center center');
-}
-
-export function articleFocalPageCssVars(article: ArticleLike | null | undefined): string {
-	const image = articleFocalImage(article);
-	if (!image) return '';
-	return focalCssVars(image, image.position ?? 'center center');
-}
-
-export const articleFocalCssVars = articleFocalCardCssVars;
-
-function focalCssVars(image: ArticleFocalImage, position: string): string {
-	return [`--article-focal-image: url("${image.src}")`, `--article-focal-position: ${position}`].join('; ');
-}
-
-export function articleRowImage(article: ArticleLike | null | undefined): ArticleFocalImage | undefined {
+function articleRowImage(article: ArticleLike | null | undefined): ArticleFocalImage | undefined {
 	if (!article?.visuals?.row?.src) return undefined;
 
 	return normalizeImage(article.visuals.row);
 }
 
-export function articleCardBackgroundImage(article: ArticleLike | null | undefined): ArticleFocalImage | undefined {
+function articleCardBackgroundImage(article: ArticleLike | null | undefined): ArticleFocalImage | undefined {
 	if (!article?.visuals?.background?.src) return undefined;
 
 	return normalizeImage(article.visuals.background);
@@ -65,19 +47,6 @@ export function articleCardBackgroundImage(article: ArticleLike | null | undefin
 
 export function articleCardImage(article: ArticleLike | null | undefined): ArticleFocalImage | undefined {
 	return articleRowImage(article) ?? articleFocalImage(article);
-}
-
-export function articleCardCssVars(article: ArticleLike | null | undefined): string {
-	const image = articleRowImage(article);
-	if (!image) return articleFocalCardCssVars(article);
-	return rowCssVars(image);
-}
-
-function rowCssVars(image: ArticleFocalImage): string {
-	return [
-		`--article-row-image: url("${image.src}")`,
-		`--article-row-position: ${image.position ?? image.cardPosition ?? 'center center'}`
-	].join('; ');
 }
 
 function normalizeImage(image: ArticleFocalImage): ArticleFocalImage {

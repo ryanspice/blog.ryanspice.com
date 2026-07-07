@@ -2,8 +2,39 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const buildDir = path.join(root, process.env.BLOG_BUILD_DIR ?? 'build');
 const adapterMode = process.env.ADAPTER_MODE ?? 'php-static';
+
+function resolveBuildDir(value) {
+	return path.isAbsolute(value) ? value : path.join(root, value);
+}
+
+function discoverRuntimeBuildDir() {
+	const siteId = (process.env.PUBLIC_SITE_ID ?? process.env.BLOG_SITE_ID ?? 'ryan')
+		.trim()
+		.toLowerCase();
+	if (siteId !== 'ryan') return '';
+
+	const adapterRoot = process.env.SVELTEKIT_PHP_ADAPTER_ROOT ?? 'B:/Dev/sveltekit-php';
+	const configPath = path.join(adapterRoot, 'config/site-runtime.local.json');
+	if (!fs.existsSync(configPath)) return '';
+
+	try {
+		const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+		const runtimeRoot = config?.sites?.['ryanspice.com']?.runtimeRoot;
+		if (typeof runtimeRoot !== 'string' || !runtimeRoot.trim()) return '';
+		const expanded = runtimeRoot.replace(/%([^%]+)%/g, (_match, name) => process.env[name] ?? '');
+		const resolvedRoot = path.isAbsolute(expanded)
+			? expanded
+			: path.resolve(adapterRoot, expanded);
+		return path.join(resolvedRoot, 'build');
+	} catch {
+		return '';
+	}
+}
+
+const configuredBuildDir =
+	process.env.BLOG_BUILD_DIR || process.env.ADAPTER_OUT || discoverRuntimeBuildDir() || 'build';
+const buildDir = resolveBuildDir(configuredBuildDir);
 
 const requiredFiles = [
 	'index.php',

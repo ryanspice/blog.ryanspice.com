@@ -8,21 +8,31 @@
 	import type { PageData } from './$types';
 
 	const description = 'Research papers, technical references, and source material used across the blog.';
+	const EMPTY_LIBRARY_ITEMS: PageData['libraryItems'] = [];
+	const EMPTY_DOMAINS: string[] = [];
+	const EMPTY_SOURCE_TYPES: string[] = [];
+
 	let { data }: { data: PageData } = $props();
 	const site = $derived(data.site);
 	const navCopy = $derived(data.ui.nav);
 	const title = $derived(`${site.siteName} · Research library`);
 	const canonical = $derived(data.canonical ?? new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(data.ogImage ?? new URL(`${base}${site.defaultOgImage}`, page.url.origin).toString());
-	const libraryItems = $derived(data.libraryItems ?? []);
-	const paperCount = $derived(data.paperCount ?? libraryItems.filter((item) => item.sourceType === 'paper').length);
-	const researchDomains = $derived(data.researchDomains ?? []);
-	const sourceTypes = $derived(data.sourceTypes ?? []);
-	const headerExternalLinks = $derived.by(() =>
-		site.mainSiteLink ? [site.mainSiteLink, site.primaryExternalLink] : [site.primaryExternalLink]
-	);
+	const libraryItems = $derived(data.libraryItems ?? EMPTY_LIBRARY_ITEMS);
+	const paperCount = $derived(data.paperCount ?? countPapers(libraryItems));
+	const researchDomains = $derived(data.researchDomains ?? EMPTY_DOMAINS);
+	const sourceTypes = $derived(data.sourceTypes ?? EMPTY_SOURCE_TYPES);
+	const headerExternalLinks = $derived(externalHeaderLinks(site));
 	const footerExternalLinks = $derived(site.footerExternalLinks);
-	const libraryJsonLd = $derived.by(() => buildLibraryJsonLd(site.id));
+	const libraryJsonLd = $derived(buildLibraryJsonLd(site.id));
+
+	function countPapers(items: PageData['libraryItems']): number {
+		return items.filter((item) => item.sourceType === 'paper').length;
+	}
+
+	function externalHeaderLinks(siteConfig: typeof site) {
+		return siteConfig.mainSiteLink ? [siteConfig.mainSiteLink, siteConfig.primaryExternalLink] : [siteConfig.primaryExternalLink];
+	}
 
 	function buildLibraryJsonLd(siteId: string): Record<string, unknown> {
 		const isCanopy = siteId === 'canopy';
@@ -78,10 +88,16 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content={site.siteName} />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content={title} />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={title} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={ogImage} />
+	<meta name="twitter:image:alt" content={title} />
 </svelte:head>
 
 <SiteHeader
@@ -121,7 +137,7 @@
 		</dl>
 	</div>
 
-	<aside class="hero-card home-hero-card" aria-label="Library framing" style="--article-accent: #00aeef">
+	<aside class="hero-card home-hero-card" aria-label="Library framing" style:--article-accent="#00aeef">
 		<strong>Why this exists</strong>
 		<p>
 			The blog increasingly uses deep research, local demos, and AI Wiki notes. The library is the
@@ -157,11 +173,11 @@
 	</div>
 
 	<ul class="dev-log-list">
-		<li class="dev-log-list-item" style="--article-accent: #00aeef">
+		<li class="dev-log-list-item" style:--article-accent="#00aeef">
 			<div class="dev-log-list-meta"><span>Types</span></div>
 			<div class="dev-log-list-body"><strong>{sourceTypes.join(', ')}</strong></div>
 		</li>
-		<li class="dev-log-list-item" style="--article-accent: #00aeef">
+		<li class="dev-log-list-item" style:--article-accent="#00aeef">
 			<div class="dev-log-list-meta"><span>Domains</span></div>
 			<div class="dev-log-list-body"><strong>{researchDomains.join(', ')}</strong></div>
 		</li>

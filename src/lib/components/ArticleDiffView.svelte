@@ -12,9 +12,16 @@
 	const toUrl = $derived(`${articleUrl}?version=${article.version}`);
 	const noDiffUrl = $derived(articleUrl);
 
-	const addedLines = $derived(diffLines.filter(l => l.kind === 'add').length);
-	const removedLines = $derived(diffLines.filter(l => l.kind === 'remove').length);
-	const unchangedLines = $derived(diffLines.filter(l => l.kind === 'same').length);
+	const addedLines = $derived(countDiffLines(diffLines, 'add'));
+	const removedLines = $derived(countDiffLines(diffLines, 'remove'));
+	const unchangedLines = $derived(countDiffLines(diffLines, 'same'));
+
+	function countDiffLines(
+		lines: { kind: 'same' | 'add' | 'remove'; text: string; lineA: number; lineB: number }[],
+		kind: 'same' | 'add' | 'remove'
+	): number {
+		return lines.filter((line) => line.kind === kind).length;
+	}
 
 	function computeDiff(before: string, after: string): { kind: 'same' | 'add' | 'remove'; text: string; lineA: number; lineB: number }[] {
 		const linesA = before.split('\n');

@@ -2,6 +2,7 @@
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { authState, canAccessDrafts, loadAuthState, ownerAccessLabel, trySignIn } from '$lib/auth';
+	import BriefArchive from '$lib/components/BriefArchive.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
@@ -23,34 +24,11 @@
 	const canonical = $derived(new URL(page.url.pathname, page.url.origin).toString());
 	const ogImage = $derived(new URL(`${base}/og-default.png`, page.url.origin).toString());
 	const canViewBriefs = $derived(canAccessDrafts($authState));
-	const briefTags = $derived(
-		Array.from(new Set(briefs.flatMap((brief) => brief.tags))).sort((left, right) =>
-			left.localeCompare(right)
-		)
-	);
-	const visibleBriefs = $derived.by(() =>
-		briefs.filter((brief) => {
-			if (selectedTag && !brief.tags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())) {
-				return false;
-			}
-
-			if (searchQuery) {
-				const text = [brief.title, brief.summary, ...brief.tags, ...brief.projects].join(' ').toLowerCase();
-				if (!text.includes(searchQuery.toLowerCase())) return false;
-			}
-
-			return true;
-		})
-	);
+	const briefTags = $derived(collectBriefTags(briefs));
+	const visibleBriefs = $derived(filterBriefs(briefs, selectedTag, searchQuery));
 	const latestBrief = $derived(briefs[0] ?? null);
 
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'CollectionPage',
-		name: title,
-		description,
-		url: canonical
-	});
+	const jsonLd = $derived(collectionPageJsonLd(title, description, canonical));
 	$effect(() => {
 		if (briefsInitialized) return;
 		briefsInitialized = true;
@@ -81,6 +59,37 @@
 		}
 	}
 
+	function collectBriefTags(items: MorningBrief[]): string[] {
+		return Array.from(new Set(items.flatMap((brief) => brief.tags))).sort((left, right) => left.localeCompare(right));
+	}
+
+	function filterBriefs(items: MorningBrief[], tag: string, query: string): MorningBrief[] {
+		const normalizedTag = tag.toLowerCase();
+		const normalizedQuery = query.toLowerCase();
+		return items.filter((brief) => {
+			if (normalizedTag && !brief.tags.some((briefTag) => briefTag.toLowerCase() === normalizedTag)) {
+				return false;
+			}
+
+			if (normalizedQuery) {
+				const text = [brief.title, brief.summary, ...brief.tags, ...brief.projects].join(' ').toLowerCase();
+				if (!text.includes(normalizedQuery)) return false;
+			}
+
+			return true;
+		});
+	}
+
+	function collectionPageJsonLd(pageTitle: string, pageDescription: string, pageUrl: string): Record<string, string> {
+		return {
+			'@context': 'https://schema.org',
+			'@type': 'CollectionPage',
+			name: pageTitle,
+			description: pageDescription,
+			url: pageUrl
+		};
+	}
+
 	async function handleSignIn() {
 		signingIn = true;
 		actionError = '';
@@ -107,6 +116,8 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="blog.ryanspice.com" />
 	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:secure_url" content={ogImage} />
+	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content={title} />
@@ -172,59 +183,7 @@
 			</div>
 		</section>
 	{:else}
-		<form class="article-filter-bar" method="get" action="/briefs/">
-			<label class="filter-field">
-				<span>Search</span>
-				<input type="text" name="q" value={searchQuery} placeholder="Focus, project, tag..." />
-			</label>
-
-			<label class="filter-field">
-				<span>Tag</span>
-				<select name="tag">
-					<option value="" selected={!selectedTag}>All tags</option>
-					{#each briefTags as tag, index (tag + ':' + index)}
-						<option value={tag} selected={selectedTag === tag}>{tag}</option>
-					{/each}
-				</select>
-			</label>
-
-			<div class="filter-actions">
-				<button type="submit">Update</button>
-				<a class="home-filter-link" href="/briefs/">Reset</a>
-			</div>
-		</form>
-
-		<section class="article-grid private-brief-grid" aria-label="Morning briefs">
-			<div class="section-head">
-				<p class="eyebrow">Private briefs</p>
-				<h2>Morning brief archive</h2>
-				<p class="section-dek">
-					Readable only after owner sign-in. Newest briefs appear first.
-				</p>
-			</div>
-			<p class="article-results-meta">Showing {visibleBriefs.length} of {briefs.length} briefs.</p>
-
-			{#if visibleBriefs.length}
-				{#each visibleBriefs as brief, index (brief.slug + ':' + index)}
-					<a class="brief-card article-card-link" href={`${base}/briefs/${brief.slug}/`}>
-						<p class="related-kicker"><time datetime={brief.date}>{brief.dateLabel}</time></p>
-						<h3>{brief.title}</h3>
-						<p>{brief.summary}</p>
-						<div class="tag-row compact" aria-label={`${brief.title} tags`}>
-							{#each brief.tags.slice(0, 6) as tag, tagIndex (tag + ':' + tagIndex)}
-								<span class="tag">{tag}</span>
-							{/each}
-						</div>
-					</a>
-				{/each}
-			{:else}
-				<div class="article-empty">
-					<p class="eyebrow">No matching briefs</p>
-					<h2>Nothing matches the current filters.</h2>
-					<p class="section-dek">Clear the search or tag filter to widen the list.</p>
-				</div>
-			{/if}
-		</section>
+		<BriefArchive {briefs} {visibleBriefs} {briefTags} {selectedTag} {searchQuery} />
 	{/if}
 {:else}
 	<section class="home-hero compact-page">

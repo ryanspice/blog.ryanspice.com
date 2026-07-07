@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
-	import { articleAccentColor } from '$lib/article-accent';
-	import { articleHref } from '$lib/article-links';
 	import type { Article } from '$lib/articles';
 	import type { DevLogEntry } from '$lib/dev-log';
 	import type { TocItem } from '$lib/markdown';
 	import ArticleIcon from '$lib/components/ArticleIcon.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
+	import ImmersiveArticleExtras from '$lib/components/ImmersiveArticleExtras.svelte';
 	import SafeHtml from '$lib/components/SafeHtml.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 
@@ -55,37 +54,45 @@
 		{ label: 'GitHub repo', href: 'https://github.com/ryanspice/blog.ryanspice.com' },
 		{ label: 'Dev log', href: `${base}/dev-log/` }
 	];
-	const statusItems = $derived(article.design.statusItems.slice(0, 4));
-	const keySignals = $derived(
-		(article.design.railChips?.length ? article.design.railChips : article.tags).slice(0, 4)
-	);
-	const firstTocItems = $derived(article.toc.filter((item) => item.level === 2).slice(0, 4));
+	const statusItems = $derived(firstItems(article.design.statusItems, 4));
+	const keySignals = $derived(articleKeySignals(article));
+	const firstTocItems = $derived(firstSectionTocItems(article));
 	const heroImagePath = '/img/articles/how-chatgpt-performs-deep-research/chatgpt-deep-research-vs-deepseek';
 	const hasComparisonHero = $derived(article.slug === 'how-chatgpt-performs-deep-research');
 	const primaryVisual = $derived(article.visuals?.focal ?? article.visuals?.background ?? null);
 	const backgroundVisual = $derived(article.visuals?.background ?? article.visuals?.focal ?? null);
-	const backgroundImageCss = $derived(backgroundVisual ? `url("${backgroundVisual.src.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}")` : '');
-	const pageStyle = $derived(
-		[
-			`--article-accent: ${articleAccent}`,
-			backgroundImageCss ? `--article-background-image: ${backgroundImageCss}` : '',
-			backgroundVisual?.position ? `--article-background-position: ${backgroundVisual.position}` : ''
-		]
-			.filter(Boolean)
-			.join('; ')
-	);
+	const backgroundImageCss = $derived(backgroundVisual ? cssImageUrl(backgroundVisual.src) : '');
 
 	function tocHref(item: TocItem): string {
 		return `#${item.id}`;
 	}
+
+	function firstItems<T>(items: T[], count: number): T[] {
+		return items.slice(0, count);
+	}
+
+	function articleKeySignals(currentArticle: Article): string[] {
+		return (currentArticle.design.railChips?.length ? currentArticle.design.railChips : currentArticle.tags).slice(0, 4);
+	}
+
+	function firstSectionTocItems(currentArticle: Article): TocItem[] {
+		return currentArticle.toc.filter((item) => item.level === 2).slice(0, 4);
+	}
+
+	function cssImageUrl(src: string): string {
+		return `url("${src.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}")`;
+	}
+
 </script>
 
 <div
 	class={`article-page immersive-article-page theme-${article.design.variant} has-command-bar`}
 	class:has-article-background={Boolean(backgroundVisual)}
-	style={pageStyle}
+	style:--article-accent={articleAccent}
+	style:--article-background-image={backgroundImageCss || undefined}
+	style:--article-background-position={backgroundVisual?.position}
 >
-	<div class="read-progress" style={`width: ${progress}%`}></div>
+	<div class="read-progress" style:width={`${progress}%`}></div>
 
 	<aside class="immersive-rail" aria-label="Article tools">
 		<a class="immersive-rail-mark" href={`${base}/`} aria-label="Ryan Spice home">
@@ -157,7 +164,7 @@
 						alt=""
 						loading="eager"
 						decoding="async"
-						style={`object-position: ${primaryVisual.position ?? 'center center'}`}
+						style:object-position={primaryVisual.position ?? 'center center'}
 					/>
 				{:else if hasComparisonHero}
 					<picture>
@@ -274,64 +281,13 @@
 					</section>
 				{/if}
 
-				{#if relatedDevLogEntries.length}
-					<section class="article-dev-log immersive-dev-log" aria-label="Article dev log">
-						<div class="section-head">
-							<p class="eyebrow">Dev log</p>
-							<h2>How this got made</h2>
-							<p class="section-dek">
-								Public process notes linked to this article's research, implementation, and publishing tags.
-							</p>
-						</div>
-
-						<div class="article-dev-log-grid">
-							{#each relatedDevLogEntries as entry, index (entry.id + ':' + index)}
-								<article class="article-dev-log-card" style={`--article-accent: ${entry.accent}`}>
-									<p class="dev-log-meta">
-										<time datetime={entry.date}>{entry.dateLabel}</time>
-										<span>{entry.source}</span>
-									</p>
-									<h3><a href={devLogArticleHref(entry)}>{entry.title}</a></h3>
-									<p>{entry.summary}</p>
-									<div class="tag-row compact" aria-label={`${entry.title} research tags`}>
-										{#each devLogSignalTags(entry) as tag, tagIndex (tag + ':' + tagIndex)}
-											<a class="tag tag-link" href={devLogTagHref(tag)}>{tag}</a>
-										{/each}
-									</div>
-								</article>
-							{/each}
-						</div>
-
-						<a class="process-trail-link" href={devLogArticleHref()}>View filtered public dev log</a>
-					</section>
-				{/if}
-
-				{#if relatedArticles.length}
-					<section class="related-articles immersive-related" aria-label="Related articles">
-						<div class="section-head">
-							<p class="eyebrow">Related articles</p>
-							<h2>More like this</h2>
-						</div>
-
-						<div class="related-articles-grid">
-							{#each relatedArticles as related, index (related.slug + ':' + index)}
-								<a
-									class="related-article-card article-card-link"
-									href={articleHref(related)}
-									style={`--article-accent: ${articleAccentColor(related)}`}
-								>
-									<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
-									<h3>{related.title}</h3>
-									<p class="related-meta">
-										<time datetime={related.date}>{related.dateLabel}</time>
-										<span>{related.readingMinutes} min read</span>
-									</p>
-									<p>{related.summary}</p>
-								</a>
-							{/each}
-						</div>
-					</section>
-				{/if}
+				<ImmersiveArticleExtras
+					{relatedArticles}
+					{relatedDevLogEntries}
+					{devLogArticleHref}
+					{devLogTagHref}
+					{devLogSignalTags}
+				/>
 			</div>
 		</main>
 

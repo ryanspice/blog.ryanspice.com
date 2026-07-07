@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Caribbean Shore Palette Overview</title>
+  <desc id="desc">Four indexed color palettes for beach and shoreline production assets: dune, storm surf, lagoon algae, and driftwood rock.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#08101f"/>
+      <stop offset="50%" stop-color="#111b2f"/>
+      <stop offset="100%" stop-color="#10282b"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <text x="64" y="78" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="43" font-weight="700">Prompt Ops: Caribbean Shore Palette Ops</text>
+  <text x="64" y="118" fill="#b4c6de" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22">Contract-first palette engineering for shader-aware pixel tiles</text>
+
+  <g filter="url(#cardShadow)">
+    <rect x="64" y="168" width="245" height="390" rx="22" fill="#0f172a" stroke="#7dd3fc" stroke-width="2"/>
+    <text x="95" y="208" fill="#f0f9ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Caribbean Dune</text>
+    <text x="95" y="234" fill="#94a3b8" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">10-color indexed</text>
+    <g transform="translate(95 254)">
+      <rect width="24" height="24" fill="#CFEFF5"/><text x="35" y="18" fill="#e2e8f0" font-size="17">01 Foam</text>
+      <rect y="30" width="24" height="24" fill="#A88B63"/><text x="35" y="48" fill="#e2e8f0" font-size="17">02 Wet Sand</text>
+      <rect y="60" width="24" height="24" fill="#A7E6E8"/><text x="35" y="78" fill="#e2e8f0" font-size="17">03 Shallow</text>
+      <rect y="90" width="24" height="24" fill="#F3E6C8"/><text x="35" y="108" fill="#e2e8f0" font-size="17">04 Sand Hi</text>
+      <rect y="120" width="24" height="24" fill="#E2CDA4"/><text x="35" y="138" fill="#e2e8f0" font-size="17">05 Sand</text>
+      <rect y="150" width="24" height="24" fill="#C9B087"/><text x="35" y="168" fill="#e2e8f0" font-size="17">06 Shadow</text>
+      <rect y="180" width="24" height="24" fill="#7A5E3F"/><text x="35" y="198" fill="#e2e8f0" font-size="17">07 Driftwood</text>
+      <rect y="210" width="24" height="24" fill="#5B432D"/><text x="35" y="228" fill="#e2e8f0" font-size="17">08 Rock</text>
+      <rect y="240" width="24" height="24" fill="#4AA6B8"/><text x="35" y="258" fill="#e2e8f0" font-size="17">09 Sea</text>
+      <rect y="270" width="24" height="24" fill="#183F4B"/><text x="35" y="288" fill="#e2e8f0" font-size="17">10 Deep</text>
+    </g>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="352" y="168" width="245" height="390" rx="22" fill="#0f172a" stroke="#facc15" stroke-width="2"/>
+    <text x="383" y="208" fill="#fef3c7" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Stormy Surf</text>
+    <text x="383" y="234" fill="#fef08a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">12-color indexed</text>
+    <g transform="translate(383 254)">
+      <rect width="24" height="24" fill="#E7EFEF"/><text x="35" y="18" fill="#fef3c7" font-size="17">01 Foam</text>
+      <rect y="30" width="24" height="24" fill="#D1E7E9"/><text x="35" y="48" fill="#fef3c7" font-size="17">02 Foam Shadow</text>
+      <rect y="60" width="24" height="24" fill="#8FC6D3"/><text x="35" y="78" fill="#fef3c7" font-size="17">03 Surf</text>
+      <rect y="90" width="24" height="24" fill="#5DA8B6"/><text x="35" y="108" fill="#fef3c7" font-size="17">04 Wet Surf</text>
+      <rect y="120" width="24" height="24" fill="#2F6A75"/><text x="35" y="138" fill="#fef3c7" font-size="17">05 Sea Mid</text>
+      <rect y="150" width="24" height="24" fill="#1A4B53"/><text x="35" y="168" fill="#fef3c7" font-size="17">06 Deep Sea</text>
+      <rect y="180" width="24" height="24" fill="#B9A78F"/><text x="35" y="198" fill="#fef3c7" font-size="17">07 Wet Sand</text>
+      <rect y="210" width="24" height="24" fill="#8B6E51"/><text x="35" y="228" fill="#fef3c7" font-size="17">08 Driftwood</text>
+      <rect y="240" width="24" height="24" fill="#6A5560"/><text x="35" y="258" fill="#fef3c7" font-size="17">09 Metal</text>
+      <rect y="270" width="24" height="24" fill="#3E3B3A"/><text x="35" y="288" fill="#fef3c7" font-size="17">10 Rock</text>
+      <rect y="300" width="24" height="24" fill="#F1E8E0"/><text x="35" y="318" fill="#fef3c7" font-size="17">11 Highlight</text>
+      <rect y="330" width="24" height="24" fill="#9FC5CF"/><text x="35" y="348" fill="#fef3c7" font-size="17">12 Shallow</text>
+    </g>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="640" y="168" width="245" height="390" rx="22" fill="#0f172a" stroke="#34d399" stroke-width="2"/>
+    <text x="671" y="208" fill="#ecfdf5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Lagoon Algae</text>
+    <text x="671" y="234" fill="#bbf7d0" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">9-color indexed</text>
+    <g transform="translate(671 254)">
+      <rect width="24" height="24" fill="#CFF7E6"/><text x="35" y="18" fill="#ecfdf5" font-size="17">01 Foam</text>
+      <rect y="30" width="24" height="24" fill="#9FE9C9"/><text x="35" y="48" fill="#ecfdf5" font-size="17">02 Algae</text>
+      <rect y="60" width="24" height="24" fill="#66C38F"/><text x="35" y="78" fill="#ecfdf5" font-size="17">03 Motion</text>
+      <rect y="90" width="24" height="24" fill="#3FA46B"/><text x="35" y="108" fill="#ecfdf5" font-size="17">04 Algae Mid</text>
+      <rect y="120" width="24" height="24" fill="#1F7A4E"/><text x="35" y="138" fill="#ecfdf5" font-size="17">05 Dark</text>
+      <rect y="150" width="24" height="24" fill="#0E4F33"/><text x="35" y="168" fill="#ecfdf5" font-size="17">06 Deep</text>
+      <rect y="180" width="24" height="24" fill="#F3EACF"/><text x="35" y="198" fill="#ecfdf5" font-size="17">07 Highlight</text>
+      <rect y="210" width="24" height="24" fill="#A0D6D9"/><text x="35" y="228" fill="#ecfdf5" font-size="17">08 Shallow</text>
+      <rect y="240" width="24" height="24" fill="#2B5D62"/><text x="35" y="258" fill="#ecfdf5" font-size="17">09 Shadow</text>
+    </g>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="928" y="168" width="245" height="390" rx="22" fill="#0f172a" stroke="#a78bfa" stroke-width="2"/>
+    <text x="959" y="208" fill="#e9d5ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Driftwood & Rock</text>
+    <text x="959" y="234" fill="#ddd6fe" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">8-color indexed</text>
+    <g transform="translate(959 254)">
+      <rect width="24" height="24" fill="#E9DCCF"/><text x="35" y="18" fill="#ede9fe" font-size="17">01 Pale Wood</text>
+      <rect y="30" width="24" height="24" fill="#C6B39D"/><text x="35" y="48" fill="#ede9fe" font-size="17">02 Wood Mid</text>
+      <rect y="60" width="24" height="24" fill="#8F735E"/><text x="35" y="78" fill="#ede9fe" font-size="17">03 Decay</text>
+      <rect y="90" width="24" height="24" fill="#5D5045"/><text x="35" y="108" fill="#ede9fe" font-size="17">04 Dark Wood</text>
+      <rect y="120" width="24" height="24" fill="#BFC2C7"/><text x="35" y="138" fill="#ede9fe" font-size="17">05 Wet Rock</text>
+      <rect y="150" width="24" height="24" fill="#8A8E93"/><text x="35" y="168" fill="#ede9fe" font-size="17">06 Stone</text>
+      <rect y="180" width="24" height="24" fill="#494A4D"/><text x="35" y="198" fill="#ede9fe" font-size="17">07 Rock</text>
+      <rect y="210" width="24" height="24" fill="#2A2B2C"/><text x="35" y="228" fill="#ede9fe" font-size="17">08 Depth</text>
+    </g>
+  </g>
+
+  <text x="64" y="596" fill="#94a3b8" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20">Indices, contracts, and runtime masks are the source of truth, not visual guesswork.</text>
+</svg>

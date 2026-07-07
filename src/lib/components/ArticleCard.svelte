@@ -2,7 +2,6 @@
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleSearchText, articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
 	import {
-		articleCardCssVars,
 		articleCardImage,
 		articleFocalImage
 	} from '$lib/article-focal-images';
@@ -18,13 +17,14 @@
 		shareUrl?: string;
 	};
 
+	const EMPTY_IMAGE_DIAGNOSTICS: NonNullable<Article['imageDiagnostics']> = [];
+
 	let { article, href, shareUrl }: Props = $props();
 	const articleAccent = $derived(articleAccentColor(article));
 	const rowImage = $derived(articleCardImage(article));
 	const focalImage = $derived(articleFocalImage(article));
 	const hasRowImage = $derived(Boolean(rowImage));
 	const hasFocalImage = $derived(Boolean(focalImage) && !hasRowImage);
-	const cardStyle = $derived(`--article-accent: ${articleAccent}; ${articleCardCssVars(article)}`);
 	const resolvedHref = $derived(href ?? articleHref(article));
 	const tagIndexStatus = $derived<ArticleIndexStatus>(article.status === 'published' ? 'published' : 'draft');
 	const cardSearchText = $derived(articleSearchText(article));
@@ -37,7 +37,11 @@
 	const facebookShareHref = $derived(articleSocialShareHref('facebook', shareTargetUrl, article.title));
 	const xShareHref = $derived(articleSocialShareHref('x', shareTargetUrl, article.title));
 	const linkedInShareHref = $derived(articleSocialShareHref('linkedin', shareTargetUrl, article.title));
-	const imageDiagnostics = $derived(article.imageDiagnostics ?? []);
+	const imageDiagnostics = $derived(article.imageDiagnostics ?? EMPTY_IMAGE_DIAGNOSTICS);
+
+	function cssImageUrl(src: string | undefined): string | undefined {
+		return src ? `url("${src.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}")` : undefined;
+	}
 </script>
 
 <article
@@ -45,7 +49,11 @@
 	data-article-card
 	data-article-search={cardSearchText}
 	data-article-tags={cardTags}
-	style={cardStyle}
+	style:--article-accent={articleAccent}
+	style:--article-row-image={hasRowImage ? cssImageUrl(rowImage?.src) : undefined}
+	style:--article-row-position={hasRowImage ? rowImage?.position ?? rowImage?.cardPosition ?? 'center center' : undefined}
+	style:--article-focal-image={hasFocalImage ? cssImageUrl(focalImage?.src) : undefined}
+	style:--article-focal-position={hasFocalImage ? focalImage?.cardPosition ?? focalImage?.position ?? 'center center' : undefined}
 	style:view-transition-name={previewTransitionName}
 >
 	{#if hasRowImage}

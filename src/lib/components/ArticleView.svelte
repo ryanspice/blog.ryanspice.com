@@ -3,12 +3,7 @@
 	import { page } from '$app/state';
 	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
-	import {
-		articleCardImage,
-		articleFocalCardCssVars,
-		articleFocalImage,
-		articleFocalPageCssVars
-	} from '$lib/article-focal-images';
+	import { articleFocalImage } from '$lib/article-focal-images';
 	import { articleHref } from '$lib/article-links';
 	import {
 		ARTICLE_SHARE_IMAGE_HEIGHT,
@@ -16,11 +11,23 @@
 		articleShareImageAlt,
 		articleShareImagePath
 	} from '$lib/article-social-images';
+	import {
+		EMPTY_CO_AUTHORS,
+		buildArticleFooterLinks,
+		buildArticleHeaderLinks,
+		buildArticleJsonLd,
+		buildArticleSchemaAuthors,
+		cssImageUrl,
+		parseResourceLinks
+	} from '$lib/article-view-model';
 	import type { Article } from '$lib/articles';
 	import { getDictionary } from '$lib/i18n/dictionaries';
 	import { pathWithLocale } from '$lib/i18n/locales';
 	import { siteConfigs, type SiteConfig } from '$lib/site-config';
 	import ArticleBackgroundLayer from '$lib/components/ArticleBackgroundLayer.svelte';
+	import ArticleEndMeta from '$lib/components/ArticleEndMeta.svelte';
+	import ArticleRailCard from '$lib/components/ArticleRailCard.svelte';
+	import ArticleResourceSections from '$lib/components/ArticleResourceSections.svelte';
 	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SafeHtml from '$lib/components/SafeHtml.svelte';
@@ -34,37 +41,19 @@
 		site?: SiteConfig;
 	};
 
-	type ResourceLink = {
-		label: string;
-		href: string;
-		external: boolean;
-	};
-
 	let { article, relatedArticles = [], alternates = [], site = siteConfigs.ryan }: Props = $props();
 
 	const articleAccent = $derived(articleAccentColor(article));
 	const focalImage = $derived(articleFocalImage(article));
 	const focalImageIsDiagram = $derived(Boolean(focalImage?.src.toLowerCase().includes('.svg')));
-	const pageStyle = $derived(`--article-accent: ${articleAccent}; ${articleFocalPageCssVars(article)}`);
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const ui = $derived(getDictionary(article.locale));
 	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
-	const articleReferences = $derived.by(() => article.references.map(parseResourceLink).filter((link): link is ResourceLink => Boolean(link)));
-	const articleFurtherReading = $derived.by(() => article.furtherReading.map(parseResourceLink).filter((link): link is ResourceLink => Boolean(link)));
-	const coAuthors = $derived(article.coAuthors ?? []);
-	const articleSchemaAuthors = $derived.by(() => [
-		{
-			'@type': site.author.type,
-			name: site.author.name,
-			url: site.author.url
-		},
-		...coAuthors.map((coAuthor) => ({
-			'@type': coAuthor.type ?? 'Person',
-			name: coAuthor.name,
-			...(coAuthor.href ? { url: coAuthor.href } : {})
-		}))
-	]);
+	const articleReferences = $derived(parseResourceLinks(article.references));
+	const articleFurtherReading = $derived(parseResourceLinks(article.furtherReading));
+	const coAuthors = $derived(article.coAuthors ?? EMPTY_CO_AUTHORS);
+	const articleSchemaAuthors = $derived(buildArticleSchemaAuthors(site, coAuthors));
 	const pageTitle = $derived(formatPageTitle(article.seoTitle || article.title, site.titleSuffix));
 	const description = $derived(article.seoDescription || article.summary || site.description);
 	const canonical = $derived(new URL(articleHref(article), page.url.origin).toString());
@@ -74,134 +63,29 @@
 	const localizedHomeHref = $derived(`${base}${pathWithLocale(article.locale, '/')}`);
 	const localizedRssHref = $derived(`${base}${pathWithLocale(article.locale, '/rss.xml')}`);
 	const localizedDevLogHref = $derived(`${base}/dev-log/`);
-	const headerNavLinks = $derived.by(() =>
-		site.id === 'canopy'
-			? [...article.design.navLinks, ...(site.mainSiteLink ? [site.mainSiteLink] : []), site.primaryExternalLink]
-			: article.design.navLinks
+	const headerNavLinks = $derived(buildArticleHeaderLinks(article.design.navLinks, site));
+	const articleFooterLinks = $derived(
+		buildArticleFooterLinks(ui.article, localizedHomeHref, localizedRssHref, localizedDevLogHref, site)
 	);
-	const articleFooterLinks = $derived.by(() => {
-		const links = [
-			{ label: ui.article.home, href: localizedHomeHref },
-			{ label: ui.article.rss, href: localizedRssHref }
-		];
-		if (site.repositoryLink) links.push({ label: site.repositoryLink.label, href: site.repositoryLink.href });
-		if (site.showDevLogLinks) links.push({ label: ui.article.devLog, href: localizedDevLogHref });
-		return links;
-	});
 
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@graph': [
-			{
-				'@type': 'BreadcrumbList',
-				itemListElement: [
-					{
-						'@type': 'ListItem',
-						position: 1,
-						name: ui.article.home,
-						item: new URL(localizedHomeHref, page.url.origin).toString()
-					},
-					{
-						'@type': 'ListItem',
-						position: 2,
-						name: article.title,
-						item: canonical
-					}
-				]
-			},
-			{
-				'@type': 'BlogPosting',
-				headline: article.title,
-				description,
-				mainEntityOfPage: canonical,
-				datePublished: article.date,
-				dateModified: article.updatedDate,
-				author: articleSchemaAuthors,
-				publisher: site.publisher
-					? {
-							'@type': site.publisher.type,
-							name: site.publisher.name,
-							url: site.publisher.url
-						}
-					: undefined,
-				image: {
-					'@type': 'ImageObject',
-					url: ogImage,
-					width: ARTICLE_SHARE_IMAGE_WIDTH,
-					height: ARTICLE_SHARE_IMAGE_HEIGHT,
-					caption: ogImageAlt
-				},
-				keywords: article.tags.join(', '),
-				wordCount: article.wordCount,
-				timeRequired: `PT${article.readingMinutes}M`
-			}
-		]
-	});
-	function parseResourceLink(value: string): ResourceLink | null {
-		const cleaned = value.trim();
-		if (!cleaned) return null;
-
-		const pipeIndex = cleaned.indexOf('|');
-		const rawLabel = pipeIndex >= 0 ? cleaned.slice(0, pipeIndex).trim() : '';
-		const href = pipeIndex >= 0 ? cleaned.slice(pipeIndex + 1).trim() : cleaned;
-		if (!href) return null;
-
-		return {
-			href,
-			label: rawLabel || fallbackReferenceLabel(href),
-			external: /^https?:\/\//i.test(href)
-		};
-	}
-
-	function fallbackReferenceLabel(href: string): string {
-		try {
-			const url = new URL(href);
-			const shortPath = url.pathname.replace(/\/$/, '');
-			return `${url.hostname.replace(/^www\./, '')}${shortPath === '' || shortPath === '/' ? '' : shortPath}`;
-		} catch {
-			return href;
-		}
-	}
-
-	function articleForResourceLink(link: ResourceLink): Article | undefined {
-		if (link.external) return undefined;
-
-		const slug = slugFromHref(link.href);
-		if (!slug) return undefined;
-
-		return relatedArticles.find((candidate) => candidate.slug === slug);
-	}
-
-	function slugFromHref(href: string): string | undefined {
-		try {
-			const url = new URL(href, page.url.origin);
-			return url.pathname.split('/').filter(Boolean).at(-1);
-		} catch {
-			return href.split(/[?#]/, 1)[0].split('/').filter(Boolean).at(-1);
-		}
-	}
-
-	function furtherReadingCardStyle(related: Article | undefined): string | undefined {
-		if (!related) return undefined;
-		const cardImage = articleCardImage(related);
-		const fallbackImage = `${base}${articleShareImagePath(related, site)}`;
-		const imageVars = cardImage
-			? `--further-reading-image: url("${cssUrlValue(cardImage.src)}"); --further-reading-position: ${cardImage.position ?? cardImage.cardPosition ?? 'center center'}`
-			: `--further-reading-image: url("${cssUrlValue(fallbackImage)}"); --further-reading-position: center center`;
-		return `--article-accent: ${articleAccentColor(related)}; ${imageVars}`;
-	}
-
-	function cssUrlValue(value: string): string {
-		return value.replaceAll('"', '%22');
-	}
+	const jsonLd = $derived(
+		buildArticleJsonLd(
+			article,
+			site,
+			ui.article.home,
+			localizedHomeHref,
+			canonical,
+			description,
+			articleSchemaAuthors,
+			ogImage,
+			ogImageAlt,
+			page.url.origin
+		)
+	);
 
 	function formatPageTitle(title: string, suffix: string): string {
 		const fullTitle = `${title} · ${suffix}`;
 		return fullTitle.length > 65 ? title : fullTitle;
-	}
-
-	function isExternalHref(href: string | undefined): boolean {
-		return Boolean(href && /^https?:\/\//i.test(href));
 	}
 </script>
 
@@ -237,7 +121,12 @@
 
 <JsonLd value={jsonLd} />
 
-<div class={`article-page theme-${article.design.variant} has-command-bar${focalImage ? ' has-focal-image' : ''}`} style={pageStyle}>
+<div
+	class={`article-page theme-${article.design.variant} has-command-bar${focalImage ? ' has-focal-image' : ''}`}
+	style:--article-accent={articleAccent}
+	style:--article-focal-image={focalImage ? cssImageUrl(focalImage.src) : undefined}
+	style:--article-focal-position={focalImage ? focalImage.position ?? 'center center' : undefined}
+>
 	<ArticleBackgroundLayer {article} />
 	<div class="read-progress" data-scroll-progress></div>
 	<SiteHeader
@@ -300,7 +189,7 @@
 		</div>
 
 		<div class="article-hero-side">
-			<aside class="hero-card" aria-label={article.design.heroCardAria} style={`--article-accent: ${articleAccent}`}>
+			<aside class="hero-card" aria-label={article.design.heroCardAria} style:--article-accent={articleAccent}>
 				<strong>{article.design.heroCardTitle}</strong>
 				<div class="status-grid">
 					{#each article.design.statusItems as item, index (item.label + ':' + index)}
@@ -329,32 +218,7 @@
 				</details>
 			{/if}
 
-			<aside class="rail-card" aria-label={article.design.railTitle}>
-				<h2>{article.design.railTitle}</h2>
-				<SafeHtml as="p" html={article.design.railBodyHtml} />
-				{#if article.design.railStatusItems?.length}
-					<div class="status-grid" aria-label="Publishing controls">
-						{#each article.design.railStatusItems as item, index (item.label + ':' + index)}
-							<div class="status-pill"><span>{item.label}</span><strong>{item.value}</strong></div>
-						{/each}
-					</div>
-				{/if}
-				{#if article.design.railPalette}
-					<div class="palette-preview" aria-label={article.design.railPalette.label}>
-						{#each article.design.railPalette.colors as color, index (color + ':' + index)}
-							<span class="swatch" style={`background:${color}`}></span>
-						{/each}
-					</div>
-				{/if}
-				{#if article.design.railChips?.length}
-					<div class="debug-stack" aria-label={article.design.railChipsLabel ?? 'Debugging stack'}>
-						{#each article.design.railChips as chip, index (chip + ':' + index)}
-							<span class="debug-chip">{chip}</span>
-						{/each}
-					</div>
-				{/if}
-				<SafeHtml class="callout" html={article.design.railCalloutHtml} />
-			</aside>
+			<ArticleRailCard {article} />
 		</div>
 	</section>
 
@@ -369,120 +233,15 @@
 		<div class="article-column">
 			<article class="article-shell"><SafeHtml class="article-inner" html={article.html} /></article>
 
-			<section class="article-end-meta" aria-label={ui.article.articleDetails}>
-				<dl class="article-end-meta-grid">
-					<div>
-						<dt>{ui.article.published}</dt>
-						<dd><time datetime={article.date}>{article.dateLabel}</time></dd>
-					</div>
-					<div>
-						<dt>{ui.article.updated}</dt>
-						<dd><time datetime={article.updatedDate}>{article.updatedDateLabel}</time></dd>
-					</div>
-					<div>
-						<dt>{ui.article.author}</dt>
-						<dd>
-							<a href={site.author.url} rel="author noreferrer" target="_blank">{site.author.name}</a>
-						</dd>
-					</div>
-					{#if coAuthors.length}
-						<div class="article-end-meta-row--wide">
-							<dt>{ui.article.coAuthors}</dt>
-							<dd class="article-contributor-list">
-								{#each coAuthors as coAuthor, index (coAuthor.name + ':' + index)}
-									{#if coAuthor.href}
-										<a
-											href={coAuthor.href}
-											rel={isExternalHref(coAuthor.href) ? 'noreferrer' : undefined}
-											target={isExternalHref(coAuthor.href) ? '_blank' : undefined}
-											>{coAuthor.name}</a
-										>
-									{:else}
-										<span>{coAuthor.name}</span>
-									{/if}
-								{/each}
-							</dd>
-						</div>
-					{/if}
-				</dl>
-			</section>
-
-			{#if articleReferences.length}
-				<section class="article-references" aria-label={ui.article.sourcesHeading}>
-					<div class="section-head section-head-with-art">
-						<div class="section-head-copy">
-							<p class="eyebrow">{ui.article.sources}</p>
-							<h2>{ui.article.sourcesHeading}</h2>
-							<p class="section-dek">{ui.article.sourcesDek}</p>
-						</div>
-					</div>
-					<ul class="reference-list">
-						{#each articleReferences as reference, index (reference.href + ':' + index)}
-							<li>
-								<a
-									class={`wiki-link ${reference.external ? 'external-link' : 'internal-link'}`}
-									href={reference.href}
-									rel={reference.external ? 'noreferrer' : undefined}
-									target={reference.external ? '_blank' : undefined}
-									>{reference.label}</a
-								>
-							</li>
-						{/each}
-					</ul>
-				</section>
-			{/if}
-
-			{#if articleFurtherReading.length}
-				<section class="article-further-reading" aria-label={ui.article.furtherReadingHeading}>
-					<div class="section-head">
-						<p class="eyebrow">{ui.article.furtherReading}</p>
-						<h2>{ui.article.furtherReadingHeading}</h2>
-						<p class="section-dek">{ui.article.furtherReadingDek}</p>
-					</div>
-					<ul class="reference-list reference-list--further">
-						{#each articleFurtherReading as link, index (link.href + ':' + index)}
-							{@const linkedArticle = articleForResourceLink(link)}
-							{@const linkedImage = linkedArticle ? true : false}
-							<li class="further-reading-card" class:has-further-image={Boolean(linkedImage)} style={furtherReadingCardStyle(linkedArticle)}>
-								{#if linkedImage}<span class="further-reading-card-focal" aria-hidden="true"></span>{/if}
-								<a
-									class={`wiki-link ${link.external ? 'external-link' : 'internal-link'}`}
-									href={link.href}
-									rel={link.external ? 'noreferrer' : undefined}
-									target={link.external ? '_blank' : undefined}
-									>{link.label}</a
-								>
-							</li>
-						{/each}
-					</ul>
-				</section>
-			{/if}
-
-			{#if relatedArticles.length}
-				<section class="related-articles" aria-label={ui.article.related}>
-					<div class="section-head">
-						<p class="eyebrow">{ui.article.related}</p>
-						<h2>{ui.article.relatedHeading}</h2>
-						<p class="section-dek">{ui.article.relatedDek}</p>
-					</div>
-					<div class="related-articles-grid">
-						{#each relatedArticles as related, index (related.slug + ':' + index)}
-							<a class={`related-article-card article-card-link${articleFocalImage(related) ? ' has-focal-image' : ''}`} href={articleHref(related)} style={`--article-accent: ${articleAccentColor(related)}; ${articleFocalCardCssVars(related)}`}>
-								{#if articleFocalImage(related)}<span class="article-card-focal" aria-hidden="true"></span>{/if}
-								<div class="article-card-content">
-									<p class="related-kicker">{related.draftType.replaceAll('-', ' ')}</p>
-									<h3>{related.title}</h3>
-									<p class="related-meta"><time datetime={related.date}>{related.dateLabel}</time><span>{related.readingMinutes} {ui.article.minRead}</span></p>
-									<p>{related.summary}</p>
-									<div class="tag-row compact" aria-label={`${related.title} tags`}>
-										{#each related.tags.slice(0, 4) as tag, index (tag + ':' + index)}<span class="tag">{tag}</span>{/each}
-									</div>
-								</div>
-							</a>
-						{/each}
-					</div>
-				</section>
-			{/if}
+			<ArticleEndMeta {article} {site} {coAuthors} copy={ui.article} />
+			<ArticleResourceSections
+				{article}
+				{relatedArticles}
+				{articleReferences}
+				{articleFurtherReading}
+				copy={ui.article}
+				{site}
+			/>
 		</div>
 	</main>
 

@@ -12,54 +12,70 @@
 	const site = $derived(data.site ?? siteConfigs.ryan);
 	const title = $derived(copy.title);
 	const description = $derived(copy.description);
-	const ogImage = $derived(new URL(`${base}/og-default.png`, data.canonical).toString());
-	const jsonLd = $derived({
-		'@context': 'https://schema.org',
-		'@graph': [
-			{
-				'@type': ['WebPage', 'CollectionPage'],
-				'@id': `${data.canonical}#webpage`,
-				name: title,
-				url: data.canonical,
-				description,
-				isPartOf: {
-					'@type': 'Blog',
-					name: site.siteName,
-					url: data.homeUrl
-				},
-				about: {
-					'@type': 'DataFeed',
-					name: copy.channelTitle,
-					url: data.feedUrl
-				}
-			},
-			{
-				'@type': 'BreadcrumbList',
-				itemListElement: [
-					{
-						'@type': 'ListItem',
-						position: 1,
-						name: site.brandLabel,
-						item: data.homeUrl
+	const ogImage = $derived(absoluteUrl(`${base}/og-default.png`, data.canonical));
+	const jsonLd = $derived(buildRssReaderJsonLd(title, description, site, copy.channelTitle, data));
+	const headerLinks = $derived(buildHeaderLinks(navCopy, data.homeUrl, data.feedPath, site.showDevLogLinks));
+
+	function absoluteUrl(path: string, baseUrl: string): string {
+		return new URL(path, baseUrl).toString();
+	}
+
+	function buildRssReaderJsonLd(
+		pageTitle: string,
+		pageDescription: string,
+		siteConfig: typeof site,
+		channelTitle: string,
+		pageData: PageData
+	): Record<string, unknown> {
+		return {
+			'@context': 'https://schema.org',
+			'@graph': [
+				{
+					'@type': ['WebPage', 'CollectionPage'],
+					'@id': `${pageData.canonical}#webpage`,
+					name: pageTitle,
+					url: pageData.canonical,
+					description: pageDescription,
+					isPartOf: {
+						'@type': 'Blog',
+						name: siteConfig.siteName,
+						url: pageData.homeUrl
 					},
-					{
-						'@type': 'ListItem',
-						position: 2,
-						name: title,
-						item: data.canonical
+					about: {
+						'@type': 'DataFeed',
+						name: channelTitle,
+						url: pageData.feedUrl
 					}
-				]
-			}
-		]
-	});
-	const headerLinks = $derived.by(() => {
+				},
+				{
+					'@type': 'BreadcrumbList',
+					itemListElement: [
+						{
+							'@type': 'ListItem',
+							position: 1,
+							name: siteConfig.brandLabel,
+							item: pageData.homeUrl
+						},
+						{
+							'@type': 'ListItem',
+							position: 2,
+							name: pageTitle,
+							item: pageData.canonical
+						}
+					]
+				}
+			]
+		};
+	}
+
+	function buildHeaderLinks(copy: typeof navCopy, homeUrl: string, feedPath: string, showDevLog: boolean) {
 		const links = [
-			{ label: navCopy.articles, href: data.homeUrl + '#articles' },
-			{ label: navCopy.rssXml, href: data.feedPath }
+			{ label: copy.articles, href: homeUrl + '#articles' },
+			{ label: copy.rssXml, href: feedPath }
 		];
-		if (site.showDevLogLinks) links.splice(1, 0, { label: navCopy.devLog, href: '/dev-log/' });
+		if (showDevLog) links.splice(1, 0, { label: copy.devLog, href: '/dev-log/' });
 		return links;
-	});
+	}
 </script>
 
 <JsonLd value={jsonLd} />

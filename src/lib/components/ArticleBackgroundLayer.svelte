@@ -19,9 +19,6 @@
 
 	const frontmatterBackgroundImage = $derived.by(() => backgroundImageFromFrontmatter(article.slug));
 	const backgroundImage = $derived.by(() => article.backgroundImage || frontmatterBackgroundImage || firstImageFromHtml(article.html));
-	const backgroundStyle = $derived.by(() =>
-		backgroundImage ? `--article-bg-image: url("${escapeCssUrl(backgroundImage)}")` : ''
-	);
 
 	function backgroundImageFromFrontmatter(slug: string): string {
 		const raw = Object.entries(rawArticleModules).find(([path]) => path.endsWith(`/${slug}.md`))?.[1];
@@ -52,7 +49,7 @@
 </script>
 
 {#if backgroundImage}
-	<div class="article-bg-image" style={backgroundStyle} aria-hidden="true"></div>
+	<div class="article-bg-image" style:--article-bg-image={`url("${escapeCssUrl(backgroundImage)}")`} aria-hidden="true"></div>
 {/if}
 
 <style>
