@@ -1,6 +1,10 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 
+	# Retired duplicate PixelBoats posts now consolidate into the canonical June 25 article.
+	RewriteRule ^2026/06/26/pixelboats-morning-watch-2026-06-26/?$ /2026/06/25/pixelboats-morning-watch-2026-06-25/ [R=308,L]
+	RewriteRule ^2026/07/02/pixelboats-morning-watch-2026-07-02/?$ /2026/06/25/pixelboats-morning-watch-2026-06-25/ [R=308,L]
+
 	# RSS feed aliases.
 	# /rss.xml is the machine-readable feed; /rss.xml/ is a human-friendly page.
 	#
