@@ -57,6 +57,40 @@ function Normalize-PublicUrl([string]$Url) {
   return $Url.TrimEnd('/') + '/'
 }
 
+function Resolve-RuntimeBuildPath([string]$SiteId) {
+  if ($SiteId -ne "ryan") { return "" }
+
+  $adapterRoot = if (-not [string]::IsNullOrWhiteSpace($env:SVELTEKIT_PHP_ADAPTER_ROOT)) {
+    $env:SVELTEKIT_PHP_ADAPTER_ROOT
+  } else {
+    "B:\Dev\sveltekit-php"
+  }
+  if (-not (Test-Path -LiteralPath $adapterRoot)) { return "" }
+
+  $configPath = Join-Path $adapterRoot "config/site-runtime.local.json"
+  if (-not (Test-Path -LiteralPath $configPath)) { return "" }
+
+  try {
+    $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
+    $site = $config.sites.PSObject.Properties["ryanspice.com"].Value
+    $runtimeRoot = [string]$site.runtimeRoot
+    if ([string]::IsNullOrWhiteSpace($runtimeRoot)) { return "" }
+
+    $expanded = [Environment]::ExpandEnvironmentVariables($runtimeRoot.Trim())
+    $resolvedRoot = if ([IO.Path]::IsPathRooted($expanded)) {
+      [IO.Path]::GetFullPath($expanded)
+    } else {
+      [IO.Path]::GetFullPath((Join-Path $adapterRoot $expanded))
+    }
+    $candidate = Join-Path $resolvedRoot "build"
+    if (Test-Path -LiteralPath (Join-Path $candidate "index.php")) { return $candidate }
+  } catch {
+    return ""
+  }
+
+  return ""
+}
+
 function Resolve-SiteId([string]$Value, [string]$PublicUrl) {
   $normalized = if ([string]::IsNullOrWhiteSpace($Value)) { "" } else { $Value.Trim().ToLowerInvariant() }
   if ($normalized -in @("canopy", "canopydigital", "blog.canopydigital.ca")) { return "canopy" }
@@ -102,7 +136,12 @@ $KeepNames = if ($Config.keepNames) { @($Config.keepNames) } else { @("_incoming
 
 Assert-SafeRemotePath -Path $RemotePath
 
+$BuildDirWasDefault = -not $PSBoundParameters.ContainsKey("BuildDir")
 $BuildPath = if ([IO.Path]::IsPathRooted($BuildDir)) { $BuildDir } else { Join-Path $ProjectRoot $BuildDir }
+$RuntimeBuildPath = if ($BuildDirWasDefault) { Resolve-RuntimeBuildPath -SiteId $SiteId } else { "" }
+if (-not [string]::IsNullOrWhiteSpace($RuntimeBuildPath)) {
+  $BuildPath = $RuntimeBuildPath
+}
 $AdapterMode = if ($env:ADAPTER_MODE) { $env:ADAPTER_MODE } else { "php-static" }
 if ($AdapterMode -eq "js-ssr" -and $env:ALLOW_BLOG_JS_SSR_DEPLOY -ne "true") {
   throw "Blog production deploy is php-static only. Set ALLOW_BLOG_JS_SSR_DEPLOY=true only after a sidecar supervisor and public-root protection are configured."
