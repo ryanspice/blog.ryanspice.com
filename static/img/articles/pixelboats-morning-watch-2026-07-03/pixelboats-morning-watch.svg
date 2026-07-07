@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-label="A stylized pixel-art inspired boat crossing a gridded teal sea while amber lead lines connect signals, delegates, and the next implementation slice.">
+  <defs>
+    <linearGradient id="sea" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#071012"/>
+      <stop offset="0.55" stop-color="#0c2f34"/>
+      <stop offset="1" stop-color="#1f6f78"/>
+    </linearGradient>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0V56" fill="none" stroke="#6bb7b5" stroke-opacity="0.16" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1400" height="760" fill="url(#sea)"/>
+  <rect width="1400" height="760" fill="url(#grid)"/>
+  <path d="M0 560 C180 520 270 600 430 560 C620 510 710 630 890 574 C1100 508 1210 584 1400 534 L1400 760 L0 760 Z" fill="#08292e" opacity="0.72"/>
+  <g transform="translate(620 340)">
+    <path d="M-230 80 C-120 134 132 134 250 76 L196 138 C64 184 -98 176 -198 132 Z" fill="#17120d" stroke="#f4c273" stroke-width="8"/>
+    <path d="M-80 72 L10 -146 L106 72 Z" fill="#dce8e3" stroke="#f4c273" stroke-width="6"/>
+    <path d="M20 -122 C86 -64 122 -6 116 72 L20 72 Z" fill="#ffb0a4" opacity="0.82"/>
+    <path d="M-264 160 C-150 208 64 208 286 160" fill="none" stroke="#dce8e3" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round"/>
+    <path d="M-320 200 C-148 268 120 264 360 202" fill="none" stroke="#f4c273" stroke-opacity="0.38" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g fill="none" stroke="#f4c273" stroke-width="4" stroke-linecap="round" opacity="0.82">
+    <path d="M214 192 C338 120 486 136 626 252"/>
+    <path d="M1068 182 C934 112 778 142 704 252"/>
+    <path d="M260 622 C398 548 502 522 612 456"/>
+    <path d="M1102 602 C936 540 812 500 720 454"/>
+  </g>
+  <g font-family="ui-monospace, Consolas, monospace" font-size="24" fill="#dce8e3">
+    <rect x="84" y="92" width="276" height="98" fill="#071012" stroke="#6bb7b5" stroke-opacity="0.46"/>
+    <text x="110" y="132">SIGNAL</text>
+    <text x="110" y="164" fill="#f4c273">scale/collision</text>
+    <rect x="1028" y="92" width="286" height="98" fill="#071012" stroke="#6bb7b5" stroke-opacity="0.46"/>
+    <text x="1054" y="132">FUGU</text>
+    <text x="1054" y="164" fill="#f4c273">6 lanes complete</text>
+    <rect x="82" y="598" width="334" height="82" fill="#071012" stroke="#6bb7b5" stroke-opacity="0.46"/>
+    <text x="108" y="636">SOURCE POLICY</text>
+    <text x="108" y="664" fill="#f4c273">curated, not raw</text>
+  </g>
+  <text x="700" y="716" text-anchor="middle" font-family="ui-sans-serif, Segoe UI, sans-serif" font-size="30" fill="#f4f1e6">Morning watch over the collision waterline</text>
+</svg>

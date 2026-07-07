@@ -193,5 +193,10 @@
     "fingerprint": "2aa3acac135c222c7c83e2a153105527789dda452f6274fcab3add8232c0f399",
     "path": "static/img/social/canopy/articles/turning-pixelboats-into-an-android-first-visual-product.png",
     "updatedAt": "2026-07-07T20:24:37.206Z"
+  },
+  "ryan:en:deepseek-claude-code-windows-powershell": {
+    "fingerprint": "84851631da2dd4277e9b2c72f82a67a4472bc7f5f9dc357c9217101c870aed18",
+    "path": "static/img/social/ryan/articles/deepseek-claude-code-windows-powershell.png",
+    "updatedAt": "2026-06-28T08:41:21.844Z"
   }
 }

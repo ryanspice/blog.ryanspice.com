@@ -48,6 +48,22 @@ const devLogSeeds: DevLogSeed[] = [
 		relatedArticleTags: ['Product strategy', 'Windows', 'Android', 'PixelBoats', 'SEO', 'developer workflow']
 	},
 	{
+		date: '2026-07-03',
+		title: 'Publish the PixelBoats morning pulse',
+		summary:
+			'Published the NPC, pirate, and shipwreck lifecycle morning pulse as the next distinct PixelBoats P0 guardrail while leaving the earlier scale/collision watch as an update trail on the June 25 article.',
+		source: 'PixelBoats daily fusion insights article',
+		accent: '#f4c273',
+		tags: ['pixelboats', 'automation', 'ai', 'game-dev', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-morning-watch-2026-07-03',
+			'pixelboats-morning-watch-2026-06-25',
+			'pixelboats-water-pipeline-pixi-webgl',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'AI agents', 'developer workflow', 'Water Simulation']
+	},
+	{
 		date: '2026-07-02',
 		title: 'Publish July blog updates and pulse import',
 		summary:
@@ -88,6 +104,7 @@ const devLogSeeds: DevLogSeed[] = [
 		tags: ['blog', 'automation', 'ai-wiki', 'hermes', 'pixelboats', 'sveltekit-php', 'seo'],
 		relatedArticleSlugs: [
 			'local-fugu-coding-harness',
+			'pixelboats-morning-watch-2026-06-25',
 			'nvidia-nemotron-3-ultra-hermes-agent-production-setup',
 			'glm-5-2-hermes-cloudflare-workers-ai-delegation',
 			'agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns',

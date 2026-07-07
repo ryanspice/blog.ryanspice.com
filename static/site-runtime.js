@@ -2,6 +2,8 @@
 	const viewModeKey = 'blog-article-view-mode';
 	const legacyReadingModeKey = 'blog-reading-mode';
 	let feedbackTimer = 0;
+	let visualFeedbackTimer = 0;
+	let activeVisualCopyButton = null;
 	let frame = 0;
 
 	function preferredReadingMode() {
@@ -65,7 +67,55 @@
 		}
 	}
 
-	function setFeedback(source, message) {
+	function codeBlockText(source) {
+		const block = source.closest('.code-block');
+		const code = block?.querySelector('code');
+		if (!code) return '';
+
+		const lines = Array.from(code.querySelectorAll('[data-line]'));
+		if (lines.length) return lines.map((line) => line.textContent || '').join('\n');
+		return code.textContent || '';
+	}
+
+	function resetVisualCopyButton(button) {
+		if (!button) return;
+
+		const label = button.getAttribute('data-copy-original-label');
+		const title = button.getAttribute('data-copy-original-title');
+		button.removeAttribute('data-copy-state');
+		if (label !== null) button.setAttribute('aria-label', label);
+		if (title !== null) button.setAttribute('title', title);
+	}
+
+	function setVisualCopyFeedback(source, message, state) {
+		if (!(source instanceof HTMLButtonElement) || !source.hasAttribute('data-copy-visual')) return false;
+
+		if (activeVisualCopyButton && activeVisualCopyButton !== source) {
+			resetVisualCopyButton(activeVisualCopyButton);
+		}
+
+		if (!source.hasAttribute('data-copy-original-label')) {
+			source.setAttribute('data-copy-original-label', source.getAttribute('aria-label') || '');
+		}
+		if (!source.hasAttribute('data-copy-original-title')) {
+			source.setAttribute('data-copy-original-title', source.getAttribute('title') || '');
+		}
+
+		source.setAttribute('data-copy-state', state);
+		source.setAttribute('aria-label', message);
+		source.setAttribute('title', message);
+		activeVisualCopyButton = source;
+		window.clearTimeout(visualFeedbackTimer);
+		visualFeedbackTimer = window.setTimeout(() => {
+			resetVisualCopyButton(source);
+			if (activeVisualCopyButton === source) activeVisualCopyButton = null;
+		}, 1800);
+		return true;
+	}
+
+	function setFeedback(source, message, state = 'copied') {
+		if (setVisualCopyFeedback(source, message, state)) return;
+
 		const feedbackId = source.getAttribute('data-copy-feedback');
 		const feedback = feedbackId
 			? document.getElementById(feedbackId)
@@ -260,17 +310,20 @@
 			return;
 		}
 
-		const copySource = target.closest('[data-copy-text], [data-copy-current-url]');
+		const copySource = target.closest('[data-copy-text], [data-copy-current-url], [data-copy-code]');
 		if (copySource) {
-			const text = copySource.hasAttribute('data-copy-current-url')
-				? window.location.href
-				: copySource.getAttribute('data-copy-text') || '';
+			const text = copySource.hasAttribute('data-copy-code')
+				? codeBlockText(copySource)
+				: copySource.hasAttribute('data-copy-current-url')
+					? window.location.href
+					: copySource.getAttribute('data-copy-text') || '';
 			const ok = await copyText(text);
 			setFeedback(
 				copySource,
 				ok
 					? copySource.getAttribute('data-copy-success') || 'Copied.'
-					: copySource.getAttribute('data-copy-failure') || 'Copy failed.'
+					: copySource.getAttribute('data-copy-failure') || 'Copy failed.',
+				ok ? 'copied' : 'failed'
 			);
 			return;
 		}

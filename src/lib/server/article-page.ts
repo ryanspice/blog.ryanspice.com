@@ -24,13 +24,48 @@ type DatedArticleParams = LegacyArticleParams & {
 	day: string;
 };
 
+type RetiredArticleAlias = DatedArticleParams & {
+	locale: SupportedLocale;
+	targetSlug: string;
+};
+
+const retiredArticleAliases: RetiredArticleAlias[] = [
+	{
+		locale: 'en',
+		year: '2026',
+		month: '06',
+		day: '26',
+		slug: 'pixelboats-morning-watch-2026-06-26',
+		targetSlug: 'pixelboats-morning-watch-2026-06-25'
+	},
+	{
+		locale: 'en',
+		year: '2026',
+		month: '07',
+		day: '02',
+		slug: 'pixelboats-morning-watch-2026-07-02',
+		targetSlug: 'pixelboats-morning-watch-2026-06-25'
+	}
+];
+
 export function datedArticleEntries(locale: SupportedLocale = DEFAULT_LOCALE): DatedArticleParams[] {
-	return getPublishedArticlesForLocale(locale)
+	const articleEntries = getPublishedArticlesForLocale(locale)
 		.map(articleDateRouteParams)
 		.filter((params): params is DatedArticleParams => params !== null);
+
+	const retiredEntries = retiredArticleAliases
+		.filter((alias) => alias.locale === locale)
+		.map(({ year, month, day, slug }) => ({ year, month, day, slug }));
+
+	return [...articleEntries, ...retiredEntries];
 }
 
 export function redirectLegacyArticlePage(params: LegacyArticleParams, url: URL, locale: SupportedLocale = DEFAULT_LOCALE): never {
+	const retiredAlias = findRetiredArticleAlias(params, locale);
+	if (retiredAlias) {
+		throw redirectRetiredArticleAlias(retiredAlias, url);
+	}
+
 	const article = getArticle(params.slug, locale);
 
 	if (!article || !isPublicArticle(article)) {
@@ -41,6 +76,11 @@ export function redirectLegacyArticlePage(params: LegacyArticleParams, url: URL,
 }
 
 export function loadDatedArticlePage(params: DatedArticleParams, url: URL, locale: SupportedLocale = DEFAULT_LOCALE) {
+	const retiredAlias = findRetiredArticleAlias(params, locale);
+	if (retiredAlias) {
+		throw redirectRetiredArticleAlias(retiredAlias, url);
+	}
+
 	const article = getArticle(params.slug, locale);
 
 	if (!article || !isPublicArticle(article)) {
@@ -52,6 +92,29 @@ export function loadDatedArticlePage(params: DatedArticleParams, url: URL, local
 	}
 
 	return articlePageData(article, url);
+}
+
+function findRetiredArticleAlias(
+	params: LegacyArticleParams | DatedArticleParams,
+	locale: SupportedLocale
+): RetiredArticleAlias | undefined {
+	return retiredArticleAliases.find(
+		(alias) =>
+			alias.locale === locale &&
+			alias.slug === params.slug &&
+			(!('year' in params) ||
+				(alias.year === params.year && alias.month === params.month && alias.day === params.day))
+	);
+}
+
+function redirectRetiredArticleAlias(alias: RetiredArticleAlias, url: URL): never {
+	const article = getArticle(alias.targetSlug, alias.locale);
+
+	if (!article || !isPublicArticle(article)) {
+		throw error(404, 'Article not found');
+	}
+
+	throw redirectToCanonical(article, url);
 }
 
 function redirectToCanonical(article: Article, url: URL): never {
