@@ -47,6 +47,26 @@ pnpm run verify:production
 pnpm dev
 ```
 
+## Deployment
+
+`pnpm run deploy:activate` is the Codex-safe Ryan deploy path. It builds the Ryan site first, resolves the external runtime build folder when configured, uploads the release, and activates it.
+
+```powershell
+pnpm run deploy:test
+pnpm run deploy:plan
+pnpm run deploy:activate
+```
+
+Canopy uses the same deploy key with its own config and site build:
+
+```powershell
+pnpm run deploy:test:canopy
+pnpm run deploy:canopy:plan
+pnpm run deploy:canopy:activate
+```
+
+Use `deploy:activate:no-build` or `deploy:canopy:activate:no-build` only when intentionally activating an already-built release candidate.
+
 ## Microsoft auth
 
 Create `.env` from `.env.example` and fill in your Microsoft Entra app registration:

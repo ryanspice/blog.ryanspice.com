@@ -72,7 +72,9 @@ function Resolve-RuntimeBuildPath([string]$SiteId) {
 
   try {
     $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
-    $site = $config.sites.PSObject.Properties["ryanspice.com"].Value
+    $siteProperty = $config.sites.PSObject.Properties["ryanspice.com"]
+    if ($null -eq $siteProperty) { return "" }
+    $site = $siteProperty.Value
     $runtimeRoot = [string]$site.runtimeRoot
     if ([string]::IsNullOrWhiteSpace($runtimeRoot)) { return "" }
 
@@ -82,8 +84,7 @@ function Resolve-RuntimeBuildPath([string]$SiteId) {
     } else {
       [IO.Path]::GetFullPath((Join-Path $adapterRoot $expanded))
     }
-    $candidate = Join-Path $resolvedRoot "build"
-    if (Test-Path -LiteralPath (Join-Path $candidate "index.php")) { return $candidate }
+    return (Join-Path $resolvedRoot "build")
   } catch {
     return ""
   }
@@ -182,6 +183,11 @@ if ($Build) {
   $BuildPublicUrl = $PublicUrl.TrimEnd("/")
   & pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Build-BlogStatic.ps1") -BasePath $BasePath -Clean -SiteId $SiteId -PublicSiteUrl $BuildPublicUrl
   if ($LASTEXITCODE -ne 0) { throw "Build failed." }
+
+  $PostBuildRuntimeBuildPath = if ($BuildDirWasDefault) { Resolve-RuntimeBuildPath -SiteId $SiteId } else { "" }
+  if (-not [string]::IsNullOrWhiteSpace($PostBuildRuntimeBuildPath)) {
+    $BuildPath = $PostBuildRuntimeBuildPath
+  }
 }
 
 if (-not (Test-Path -LiteralPath (Join-Path $BuildPath "index.php"))) {

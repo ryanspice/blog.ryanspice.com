@@ -26,12 +26,15 @@
     "setup:runtime": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Repair-PnpmExternalization.ps1 -Apply -InstallDeps",
     "deploy:plan": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1",
     "deploy:parallel": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Build -Apply",
-    "deploy:activate": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Apply -Activate",
+    "deploy:activate": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Build -Apply -Activate",
+    "deploy:activate:no-build": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -Apply -Activate",
     "deploy:canopy:plan": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -ConfigPath deploy.canopy.config.json",
     "deploy:canopy:parallel": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -ConfigPath deploy.canopy.config.json -Build -Apply",
-    "deploy:canopy:activate": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -ConfigPath deploy.canopy.config.json -Apply -Activate",
+    "deploy:canopy:activate": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -ConfigPath deploy.canopy.config.json -Build -Apply -Activate",
+    "deploy:canopy:activate:no-build": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -ConfigPath deploy.canopy.config.json -Apply -Activate",
     "publish:parallel": "pnpm run deploy:parallel",
-    "deploy:test": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Test-BlogDeployConnection.ps1"
+    "deploy:test": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Test-BlogDeployConnection.ps1",
+    "deploy:test:canopy": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Test-BlogDeployConnection.ps1 -ConfigPath deploy.canopy.config.json"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.11.0",
