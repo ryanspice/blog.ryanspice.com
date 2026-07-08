@@ -238,5 +238,15 @@
     "fingerprint": "0c643973425ca0a6db82f053edb91f2390ccc05f422149c3593557d07368ae19",
     "path": "static/img/social/canopy/articles/pixelboats-morning-watch-2026-07-03.png",
     "updatedAt": "2026-07-07T20:56:39.089Z"
+  },
+  "ryan:en:gpt-readies-5-6-as-china-aboutfaces-on-claude": {
+    "fingerprint": "a9a98898c5022c45c224fd13783a958d19c58c5a5bd1f3dc44fb684b03721b60",
+    "path": "static/img/social/ryan/articles/gpt-readies-5-6-as-china-aboutfaces-on-claude.png",
+    "updatedAt": "2026-07-08T18:39:17.644Z"
+  },
+  "canopy:en:gpt-readies-5-6-as-china-aboutfaces-on-claude": {
+    "fingerprint": "7ac8c8836f6166e84800feddb20ba6b8591c6b395e3ae323b05cef42aa1a3bf3",
+    "path": "static/img/social/canopy/articles/gpt-readies-5-6-as-china-aboutfaces-on-claude.png",
+    "updatedAt": "2026-07-08T18:40:41.258Z"
   }
 }

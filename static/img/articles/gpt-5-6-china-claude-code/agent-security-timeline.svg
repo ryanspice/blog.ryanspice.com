@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" role="img" aria-labelledby="title desc">
+  <title id="title">GPT 5.6 and Claude Code security timeline</title>
+  <desc id="desc">A timeline showing Anthropic espionage attribution, OpenAI GPT 5.6 preview and China NVDB Claude Code warning.</desc>
+  <rect width="1200" height="430" fill="#0b1413"/>
+  <text x="64" y="72" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">Three live signals, no neutral narrator</text>
+  <text x="64" y="106" fill="#bed7c9" font-family="Segoe UI, Arial, sans-serif" font-size="18">The useful response is not picking a flag. It is hardening the agent boundary.</text>
+  <line x1="128" y1="238" x2="1072" y2="238" stroke="#3a5952" stroke-width="6" stroke-linecap="round"/>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <circle cx="178" cy="238" r="20" fill="#38bdf8"/>
+    <rect x="72" y="148" width="236" height="64" rx="12" fill="#132320" stroke="#365650"/>
+    <text x="92" y="176" fill="#fff7df" font-size="18" font-weight="700">Nov 2025</text>
+    <text x="92" y="199" fill="#bed7c9" font-size="14">Anthropic says Claude Code was abused in an AI-orchestrated espionage campaign.</text>
+
+    <circle cx="600" cy="238" r="20" fill="#f4c273"/>
+    <rect x="480" y="266" width="250" height="78" rx="12" fill="#221c12" stroke="#6b5520"/>
+    <text x="500" y="296" fill="#fff7df" font-size="18" font-weight="700">June 2026</text>
+    <text x="500" y="320" fill="#e9d7aa" font-size="14">OpenAI previews GPT-5.6 Sol, Terra and Luna under limited trusted-partner access.</text>
+
+    <circle cx="1018" cy="238" r="20" fill="#f45d5d"/>
+    <rect x="892" y="148" width="250" height="78" rx="12" fill="#281717" stroke="#6b3030"/>
+    <text x="912" y="178" fill="#fff7df" font-size="18" font-weight="700">July 8, 2026</text>
+    <text x="912" y="202" fill="#f2c2bd" font-size="14">China NVDB warns about Claude Code versions 2.1.91 through 2.1.196.</text>
+  </g>
+</svg>

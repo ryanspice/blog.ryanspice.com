@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">Coding agent operator boundary diagram</title>
+  <desc id="desc">A layered diagram showing workspace, container, host and network egress controls for AI coding agents.</desc>
+  <rect width="1200" height="680" fill="#08110f"/>
+  <rect x="48" y="44" width="1104" height="592" rx="24" fill="#101b1a" stroke="#28413d" stroke-width="2"/>
+  <text x="84" y="96" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">Operator boundary for coding agents</text>
+  <text x="84" y="130" fill="#bed7c9" font-family="Segoe UI, Arial, sans-serif" font-size="18">Treat the agent runtime as high-privilege software until the controls say otherwise.</text>
+
+  <g transform="translate(92 188)">
+    <circle cx="250" cy="220" r="198" fill="none" stroke="#f4c273" stroke-width="4"/>
+    <circle cx="250" cy="220" r="145" fill="none" stroke="#7ad39d" stroke-width="4"/>
+    <circle cx="250" cy="220" r="92" fill="none" stroke="#38bdf8" stroke-width="4"/>
+    <circle cx="250" cy="220" r="42" fill="#f45d5d"/>
+    <text x="250" y="226" text-anchor="middle" fill="#08110f" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">keys</text>
+    <text x="250" y="84" text-anchor="middle" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="19" font-weight="700">workspace</text>
+    <text x="250" y="138" text-anchor="middle" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="19" font-weight="700">container / VM</text>
+    <text x="250" y="194" text-anchor="middle" fill="#fff7df" font-family="Segoe UI, Arial, sans-serif" font-size="19" font-weight="700">agent shell</text>
+    <text x="250" y="446" text-anchor="middle" fill="#bed7c9" font-family="Segoe UI, Arial, sans-serif" font-size="16">Run agents with smaller blast radius than your normal dev account.</text>
+  </g>
+
+  <g transform="translate(610 188)" font-family="Segoe UI, Arial, sans-serif">
+    <rect width="468" height="92" rx="14" fill="#172624" stroke="#314d47"/>
+    <text x="26" y="38" fill="#fff7df" font-size="22" font-weight="700">1. Pin versions</text>
+    <text x="26" y="66" fill="#bed7c9" font-size="16">Avoid floating agent CLIs and unreviewed automatic updates.</text>
+
+    <rect y="118" width="468" height="92" rx="14" fill="#172624" stroke="#314d47"/>
+    <text x="26" y="156" fill="#fff7df" font-size="22" font-weight="700">2. Isolate shells</text>
+    <text x="26" y="184" fill="#bed7c9" font-size="16">Use containers, VMs or scoped terminals for agent work.</text>
+
+    <rect y="236" width="468" height="92" rx="14" fill="#172624" stroke="#314d47"/>
+    <text x="26" y="274" fill="#fff7df" font-size="22" font-weight="700">3. Watch egress</text>
+    <text x="26" y="302" fill="#bed7c9" font-size="16">Log outbound calls from tools that can read and execute.</text>
+
+    <rect y="354" width="468" height="92" rx="14" fill="#172624" stroke="#314d47"/>
+    <text x="26" y="392" fill="#fff7df" font-size="22" font-weight="700">4. Keep keys separate</text>
+    <text x="26" y="420" fill="#bed7c9" font-size="16">Use least-privilege, project-scoped secrets and tokens.</text>
+  </g>
+</svg>

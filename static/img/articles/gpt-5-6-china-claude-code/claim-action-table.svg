@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Agent security claims and operator actions</title>
+  <desc id="desc">A table comparing source claims from China NVDB, Anthropic and OpenAI with practical operator actions.</desc>
+  <rect width="1200" height="620" fill="#fbf4df"/>
+  <rect x="52" y="44" width="1096" height="532" rx="18" fill="#fffaf0" stroke="#d5b35f" stroke-width="2"/>
+  <text x="84" y="96" fill="#111917" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="700">Claims are inputs. Controls are the decision.</text>
+  <text x="84" y="130" fill="#53675a" font-family="Segoe UI, Arial, sans-serif" font-size="18">Do not let vendor statements or government warnings substitute for runtime discipline.</text>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="84" y="174" width="246" height="54" fill="#0b5345"/>
+    <rect x="330" y="174" width="246" height="54" fill="#0f766e"/>
+    <rect x="576" y="174" width="246" height="54" fill="#2563eb"/>
+    <rect x="822" y="174" width="246" height="54" fill="#7c2d12"/>
+    <text x="104" y="209" fill="#fffaf0" font-size="19" font-weight="700">China NVDB</text>
+    <text x="350" y="209" fill="#fffaf0" font-size="19" font-weight="700">Anthropic</text>
+    <text x="596" y="209" fill="#fffaf0" font-size="19" font-weight="700">OpenAI GPT-5.6</text>
+    <text x="842" y="209" fill="#fffaf0" font-size="19" font-weight="700">Operator action</text>
+
+    <g fill="#111917" font-size="16">
+      <rect x="84" y="228" width="246" height="112" fill="#f3ead0" stroke="#d7caa9"/>
+      <rect x="330" y="228" width="246" height="112" fill="#f3ead0" stroke="#d7caa9"/>
+      <rect x="576" y="228" width="246" height="112" fill="#f3ead0" stroke="#d7caa9"/>
+      <rect x="822" y="228" width="246" height="112" fill="#f3ead0" stroke="#d7caa9"/>
+      <text x="104" y="262">Warnings cite</text>
+      <text x="104" y="286">Claude Code 2.1.91</text>
+      <text x="104" y="310">through 2.1.196.</text>
+      <text x="350" y="262">Prior report says</text>
+      <text x="350" y="286">Claude Code was</text>
+      <text x="350" y="310">misused for espionage.</text>
+      <text x="596" y="262">Sol, Terra, Luna</text>
+      <text x="596" y="286">are in limited preview</text>
+      <text x="596" y="310">moving toward GA.</text>
+      <text x="842" y="262">Pin and upgrade</text>
+      <text x="842" y="286">agent tools.</text>
+
+      <rect x="84" y="340" width="246" height="112" fill="#fffaf0" stroke="#d7caa9"/>
+      <rect x="330" y="340" width="246" height="112" fill="#fffaf0" stroke="#d7caa9"/>
+      <rect x="576" y="340" width="246" height="112" fill="#fffaf0" stroke="#d7caa9"/>
+      <rect x="822" y="340" width="246" height="112" fill="#fffaf0" stroke="#d7caa9"/>
+      <text x="104" y="374">Claim: monitoring</text>
+      <text x="104" y="398">can return location</text>
+      <text x="104" y="422">and identity signals.</text>
+      <text x="350" y="374">Counterclaim:</text>
+      <text x="350" y="398">anti-abuse telemetry,</text>
+      <text x="350" y="422">not malicious backdoor.</text>
+      <text x="596" y="374">System card treats</text>
+      <text x="596" y="398">cyber and bio/chem</text>
+      <text x="596" y="422">risk as High.</text>
+      <text x="842" y="374">Isolate shells,</text>
+      <text x="842" y="398">audit outbound calls,</text>
+      <text x="842" y="422">limit key scope.</text>
+    </g>
+  </g>
+</svg>
