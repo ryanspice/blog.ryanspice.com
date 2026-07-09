@@ -18,6 +18,21 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-07-09',
+		title: 'Publish the PixelBoats morning pulse',
+		summary:
+			'A repo-truth-first Pulse Pro briefing for the rotated Composition-spike renderer focus: prove the PixiJS/Corsair composition spine and owner-GPU frame budget before new renderer stages.',
+		source: 'PixelBoats daily fusion insights article',
+		accent: '#f4c273',
+		tags: ['pixelboats', 'automation', 'ai', 'game-dev', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-morning-watch-2026-07-09',
+			'pixelboats-water-pipeline-pixi-webgl',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'AI agents', 'developer workflow', 'Water Simulation']
+	},
+	{
 		date: '2026-07-07',
 		title: 'Record proof gates and pulse backstop',
 		summary:
