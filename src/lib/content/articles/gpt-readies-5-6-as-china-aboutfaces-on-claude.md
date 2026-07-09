@@ -1,15 +1,15 @@
 ---
-title: "GPT Readies 5.6 as China About-Faces on Claude"
+title: "GPT-5.6 Is Out: What the Release Means for Claude Code Operators"
 seo_title: "GPT-5.6, Claude Code, China NVDB Warning: Operator Security Notes"
 slug: "gpt-readies-5-6-as-china-aboutfaces-on-claude"
 status: "published"
 draft_type: "field-note"
 date: "2026-07-08"
-updated_date: "2026-07-08"
-release_date: "2026-07-08"
-release_time: "14:45"
-summary: "China's vulnerability warning about Claude Code and OpenAI's limited GPT-5.6 preview point at the same operational problem: coding agents are now high-privilege software, not passive chat windows."
-seo_description: "A developer-focused read on China's Claude Code backdoor warning, Anthropic's prior China-linked espionage disclosure, and OpenAI's GPT-5.6 preview."
+updated_date: "2026-07-09"
+release_date: "2026-07-09"
+release_time: "09:00"
+summary: "OpenAI has moved GPT-5.6 from limited preview to general availability across ChatGPT, Codex, and the API. The release raises the capability ceiling for coding agents while making version hygiene, access controls, and network boundaries more important."
+seo_description: "GPT-5.6 is now generally available across ChatGPT, Codex, and the API. Here is what Sol, Terra, Luna, ultra mode, pricing, and the security model mean for coding-agent operators."
 accent: "#38bdf8"
 image: "/img/articles/gpt-5-6-china-claude-code/gpt-5-6-claude-code-operator-hero.png"
 image_alt: "Generated developer-ops illustration showing a laptop, model preview panel, security warning panel, and operator controls around coding-agent network egress."
@@ -50,6 +50,7 @@ references:
   - "Wall Street Journal report on China's Claude Code warning|https://www.wsj.com/tech/ai/china-says-it-has-found-security-vulnerabilities-in-anthropics-claude-code-5ecf05dc"
   - "Anthropic: Disrupting the first reported AI-orchestrated cyber espionage campaign|https://www.anthropic.com/news/disrupting-AI-espionage"
   - "OpenAI: Previewing GPT-5.6 Sol|https://openai.com/index/previewing-gpt-5-6-sol/"
+  - "OpenAI: GPT-5.6 Frontier intelligence that scales with your ambition|https://openai.com/index/gpt-5-6/"
   - "OpenAI Deployment Safety Hub: GPT-5.6 Preview System Card|https://deploymentsafety.openai.com/gpt-5-6-preview"
   - "OpenAI Help Center: A preview of GPT-5.6 Sol, Terra, and Luna|https://help.openai.com/en/articles/20001325-a-preview-of-gpt-56-sol-terra-and-luna"
   - "Axios report on GPT-5.6 restricted preview|https://www.axios.com/2026/06/26/openai-gpt-sol-terra-luna-trump"
@@ -62,22 +63,22 @@ related_posts:
 
 > [!status-brief] Current read
 >
-> **Clean read.** China is warning that several Claude Code releases contained a monitoring mechanism it describes as a serious backdoor risk. Anthropic's side of the story is that the mechanism was an anti-abuse experiment, not an espionage feature. OpenAI, meanwhile, is preparing GPT-5.6 for broader access after a limited trusted-partner preview.
+> **Clean read.** OpenAI has released GPT-5.6 for general availability across ChatGPT, Codex, and the API. Sol is the flagship, Terra is the balanced lower-cost tier, and Luna is the fastest and most cost-efficient tier.
 >
-> **Operator read.** Do not turn this into a flag argument. Treat every coding agent as high-privilege software: update it, isolate it, watch network egress, pin versions, and keep private keys out of the workspace.
+> **Operator read.** The preview gate is gone, but the security boundary is not. GPT-5.6 adds stronger coding, computer-use, and multi-agent capabilities; treat the runtime as privileged software and keep the controls from the earlier Claude Code warning in place.
 >
 > | Signal | What I would trust |
 > | --- | --- |
 > | China NVDB warning | Specific affected version range and immediate hardening advice |
 > | Anthropic response | Useful counter-frame, still a vendor statement |
-> | OpenAI GPT-5.6 preview | Official availability, pricing, and safety-card boundaries |
+> | OpenAI GPT-5.6 release | General availability, tiered pricing, and layered safety controls |
 > | Operator decision | Your own runtime controls, logs, and version hygiene |
 
 ![Generated developer-ops illustration showing a laptop, model preview panel, security warning panel, and operator controls around coding-agent network egress.](/img/articles/gpt-5-6-china-claude-code/gpt-5-6-claude-code-operator-hero.png)
 
-The headline is awkward because the moment is awkward.
+The headline changed because the product changed.
 
-OpenAI is getting GPT-5.6 ready for broader use. China is warning developers away from a run of Claude Code versions. Anthropic had already accused a China-linked actor of using Claude Code for an AI-orchestrated cyber-espionage campaign.
+OpenAI has now released GPT-5.6 for general availability. China is warning developers away from a run of Claude Code versions. Anthropic had already accused a China-linked actor of using Claude Code for an AI-orchestrated cyber-espionage campaign.
 
 The useful read is not "who is telling the truth?" as a binary. The useful read is that coding agents have crossed a threshold. They are no longer just text boxes with autocomplete. They are privileged runtimes with file access, shell access, network access, package-manager access, and sometimes enough persistence to keep trying after a human has stopped paying attention.
 
@@ -117,9 +118,9 @@ That is exactly why the operator cannot outsource judgment to either side.
 
 ![Timeline showing Anthropic espionage attribution, OpenAI GPT 5.6 preview and China NVDB Claude Code warning.](/img/articles/gpt-5-6-china-claude-code/agent-security-timeline.svg)
 
-## GPT-5.6 Is The Other Half Of The Same Story
+## GPT-5.6 Is Now The Other Half Of The Same Story
 
-OpenAI's GPT-5.6 preview lands in the same week as this Claude Code fight because both stories are about agentic capability escaping the old mental model.
+OpenAI's GPT-5.6 release lands in the same news cycle as this Claude Code fight because both stories are about agentic capability escaping the old mental model.
 
 OpenAI describes GPT-5.6 as a three-model family:
 
@@ -127,11 +128,19 @@ OpenAI describes GPT-5.6 as a three-model family:
 - **Terra**: the balanced everyday model.
 - **Luna**: the fast, lower-cost model.
 
-The official preview describes limited access first, including API and Codex access for selected trusted partners, with broader availability planned after the preview window. Axios reported that broader public access was expected imminently, but the version I would write into a public technical note is still bounded: OpenAI has announced a preview and a plan for broader access; do not claim the model is broadly available until the public product surface confirms it.
+The preview is now over. OpenAI says GPT-5.6 is available across ChatGPT, Codex, and the API, with the rollout starting globally and continuing gradually toward full availability over the next 24 hours. ChatGPT, Codex, and API access still vary by plan, workspace, and approved organization, so "released" does not mean every account gets every tier or every effort mode immediately.
 
 The interesting part is not only the model family. It is the operating mode.
 
-GPT-5.6 introduces max reasoning effort and an ultra mode that can use subagents. That is useful. It is also the part a security-minded operator should underline. Subagents multiply the number of tool calls, intermediate decisions, cache boundaries, retries, and places where a system can behave in a way the lead operator did not explicitly intend.
+GPT-5.6 introduces max reasoning effort and an ultra mode that coordinates multiple agents. OpenAI also describes programmatic tool calling in the Responses API. That is useful. It is also the part a security-minded operator should underline. Subagents multiply the number of tool calls, intermediate decisions, cache boundaries, retries, and places where a system can behave in a way the lead operator did not explicitly intend.
+
+The release also makes the model family easier to reason about operationally:
+
+- **Sol** is the flagship tier at $5 input and $30 output per million tokens.
+- **Terra** is the balanced tier at $2.50 input and $15 output.
+- **Luna** is the fast, lower-cost tier at $1 input and $6 output.
+
+OpenAI says the family also adds explicit prompt-cache breakpoints and a 30-minute minimum cache life. Those details matter when an agent loop is long enough for cache behavior to become part of the bill.
 
 That is not an argument against GPT-5.6. It is an argument for better controls around any serious agent stack.
 
@@ -225,7 +234,7 @@ The new one is:
 
 > Is it bounded enough to let near the work?
 
-GPT-5.6 will make the first question more tempting. Claude Code's China warning makes the second question harder to ignore.
+GPT-5.6's general release makes the first question more tempting. Claude Code's China warning makes the second question harder to ignore.
 
 Both things can be true at once.
 
@@ -241,7 +250,7 @@ The first thing to watch is independent technical analysis of the flagged Claude
 
 The second thing to watch is GPT-5.6's subagent observability. If ultra mode means multiple agents do work on your behalf, can you inspect the intermediate steps? Can you limit tools per subagent? Can you audit which files each worker saw? Can you revoke or replay a bad branch?
 
-The third thing to watch is whether "trusted partner" access becomes a normal pattern for frontier model launches. OpenAI's own preview post signals discomfort with that becoming the default. Developers should care about that. Access gates can reduce blast radius, but they can also turn model capability into a policy and procurement artifact before the technical community gets to test it.
+The third thing to watch is what the end of "trusted partner" preview access means in practice. GPT-5.6 is broadly released, but the highest-capability settings remain plan- and program-dependent, and OpenAI is adding stronger safeguards around cyber work. Access gates can reduce blast radius, but they can also turn model capability into a policy and procurement artifact before the technical community gets to test it.
 
 For now, I would keep the working rule simple:
 
