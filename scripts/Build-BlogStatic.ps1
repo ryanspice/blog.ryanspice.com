@@ -334,19 +334,18 @@ foreach ($file in $DocumentFiles) {
 Info "Stamped site theme" $DocumentSiteId
 Write-PublicEnvModule -BuildPath $BuildDir
 
-if ($DocumentSiteId -eq "canopy") {
-  $IndexFile = Join-Path $BuildDir "index.php"
-  if (Test-Path -LiteralPath $IndexFile) {
-    $IndexContent = Get-Content -LiteralPath $IndexFile -Raw
-    if ($IndexContent -notmatch 'data-site="canopy"') {
-      throw 'Canopy build did not stamp data-site="canopy" into build/index.php.'
-    }
-    if ($IndexContent -notmatch 'site-shell--canopy') {
-      throw "Canopy build did not prerender the Canopy shell class into build/index.php."
-    }
-    if ($IndexContent -match 'site-shell--ryan' -or $IndexContent -match '"?themeClass"?:\s*"ryan"') {
-      throw "Canopy build contains Ryan shell or hydration data. Check PUBLIC_SITE_ID/BLOG_SITE_ID before deploy."
-    }
+$IndexFile = Join-Path $BuildDir "index.php"
+if (Test-Path -LiteralPath $IndexFile) {
+  $IndexContent = Get-Content -LiteralPath $IndexFile -Raw
+  $OtherSiteId = if ($DocumentSiteId -eq "canopy") { "ryan" } else { "canopy" }
+  if ($IndexContent -notmatch ('data-site="' + [regex]::Escape($DocumentSiteId) + '"')) {
+    throw "$DocumentSiteId build did not stamp data-site=`"$DocumentSiteId`" into build/index.php."
+  }
+  if ($IndexContent -notmatch ('site-shell--' + [regex]::Escape($DocumentSiteId))) {
+    throw "$DocumentSiteId build did not prerender its site shell class into build/index.php."
+  }
+  if ($IndexContent -match ('site-shell--' + [regex]::Escape($OtherSiteId)) -or $IndexContent -match ('"?themeClass"?:\s*"' + [regex]::Escape($OtherSiteId) + '"')) {
+    throw "$DocumentSiteId build contains $OtherSiteId shell or hydration data. Check PUBLIC_SITE_ID/BLOG_SITE_ID before deploy."
   }
 }
 

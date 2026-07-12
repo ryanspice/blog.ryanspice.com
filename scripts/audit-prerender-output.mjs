@@ -3,15 +3,15 @@ import path from 'node:path';
 
 const root = process.cwd();
 const adapterMode = process.env.ADAPTER_MODE ?? 'php-static';
+const siteId = (process.env.PUBLIC_SITE_ID ?? process.env.BLOG_SITE_ID ?? 'ryan')
+	.trim()
+	.toLowerCase();
 
 function resolveBuildDir(value) {
 	return path.isAbsolute(value) ? value : path.join(root, value);
 }
 
 function discoverRuntimeBuildDir() {
-	const siteId = (process.env.PUBLIC_SITE_ID ?? process.env.BLOG_SITE_ID ?? 'ryan')
-		.trim()
-		.toLowerCase();
 	if (siteId !== 'ryan') return '';
 
 	const adapterRoot = process.env.SVELTEKIT_PHP_ADAPTER_ROOT ?? 'B:/Dev/sveltekit-php';
@@ -183,6 +183,24 @@ if (!hasAnyBuildFile(homepageRuntimeFiles)) {
 			console.error(`fail: homepage production output missing marker: ${marker}`);
 			failed = true;
 		}
+	}
+}
+
+const homepageIndexPath = path.join(buildDir, 'index.php');
+if (fs.existsSync(homepageIndexPath)) {
+	const homepageIndex = readText(homepageIndexPath);
+	const otherSiteId = siteId === 'canopy' ? 'ryan' : 'canopy';
+	if (!homepageIndex.includes(`data-site="${siteId}"`)) {
+		console.error(`fail: homepage is not stamped for site ${siteId}`);
+		failed = true;
+	}
+	if (!homepageIndex.includes(`site-shell--${siteId}`)) {
+		console.error(`fail: homepage is missing site shell ${siteId}`);
+		failed = true;
+	}
+	if (homepageIndex.includes(`site-shell--${otherSiteId}`)) {
+		console.error(`fail: homepage contains the ${otherSiteId} site shell`);
+		failed = true;
 	}
 }
 

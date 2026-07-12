@@ -113,6 +113,26 @@ function Assert-SafeRemotePath([string]$Path) {
   }
 }
 
+function Assert-BuildSiteIdentity([string]$Path, [string]$ExpectedSiteId, [string]$ExpectedPublicUrl) {
+  $indexPath = Join-Path $Path "index.php"
+  $content = Get-Content -LiteralPath $indexPath -Raw
+  $otherSiteId = if ($ExpectedSiteId -eq "canopy") { "ryan" } else { "canopy" }
+  $expectedOrigin = $ExpectedPublicUrl.TrimEnd('/')
+
+  if ($content -notmatch ('data-site="' + [regex]::Escape($ExpectedSiteId) + '"')) {
+    throw "Refusing deploy: build/index.php is not stamped for site '$ExpectedSiteId'."
+  }
+  if ($content -notmatch ('site-shell--' + [regex]::Escape($ExpectedSiteId))) {
+    throw "Refusing deploy: build/index.php does not contain the '$ExpectedSiteId' site shell."
+  }
+  if ($content -match ('site-shell--' + [regex]::Escape($otherSiteId))) {
+    throw "Refusing deploy: build/index.php contains the '$otherSiteId' site shell."
+  }
+  if (-not [string]::IsNullOrWhiteSpace($expectedOrigin) -and $content -notmatch [regex]::Escape($expectedOrigin)) {
+    throw "Refusing deploy: build/index.php does not reference expected public origin '$expectedOrigin'."
+  }
+}
+
 function New-RemoteScript([string]$Template, [hashtable]$Values) {
   $out = $Template
   foreach ($key in $Values.Keys) {
@@ -221,6 +241,9 @@ foreach ($item in $RequiredContract) {
     throw "Build output missing required PHP adapter contract file: $item"
   }
 }
+
+Assert-BuildSiteIdentity -Path $BuildPath -ExpectedSiteId $SiteId -ExpectedPublicUrl $PublicUrl
+Info "Build identity" "$SiteId ($PublicUrl)"
 
 $SshArgs = @("-p", $Port, "-o", "User=$UserName")
 $ScpArgs = @("-P", $Port, "-o", "User=$UserName")
