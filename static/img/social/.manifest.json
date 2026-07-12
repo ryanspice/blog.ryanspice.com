@@ -150,14 +150,14 @@
     "updatedAt": "2026-06-20T07:00:51.105Z"
   },
   "ryan:en:local-fugu-coding-harness": {
-    "fingerprint": "ce92117eadd904377879353721ca22a75bac7203cf502330ef20a15ec7e3f186",
+    "fingerprint": "df876a0cbc1fb13ba5bae99b6e54d7fb4972d8d8857956113c79610b56cdb9b2",
     "path": "static/img/social/ryan/articles/local-fugu-coding-harness.png",
-    "updatedAt": "2026-06-24T21:01:31.526Z"
+    "updatedAt": "2026-07-12T20:11:16.942Z"
   },
   "canopy:en:local-fugu-coding-harness": {
-    "fingerprint": "4eeb1577e5d82c9120172c414a00dfe32c91ded86cee151894df5cf590e648c3",
+    "fingerprint": "4059df9b024532faea029bbc6e9fc71483202e7d2fa55d8968c9ba7b84c178dd",
     "path": "static/img/social/canopy/articles/local-fugu-coding-harness.png",
-    "updatedAt": "2026-06-24T21:01:32.171Z"
+    "updatedAt": "2026-07-12T20:14:11.369Z"
   },
   "ryan:en:fable-is-back": {
     "fingerprint": "e864238a8bec8833043065a490f294e3c853aee604e64309e3ea1fdf4a6a90d5",
@@ -240,13 +240,43 @@
     "updatedAt": "2026-07-07T20:56:39.089Z"
   },
   "ryan:en:gpt-readies-5-6-as-china-aboutfaces-on-claude": {
-    "fingerprint": "a9a98898c5022c45c224fd13783a958d19c58c5a5bd1f3dc44fb684b03721b60",
+    "fingerprint": "36ff3bdd5839dfeaee148e9b57b674299016d6e9c47f791705f58c57851be383",
     "path": "static/img/social/ryan/articles/gpt-readies-5-6-as-china-aboutfaces-on-claude.png",
-    "updatedAt": "2026-07-08T18:39:17.644Z"
+    "updatedAt": "2026-07-12T20:11:15.494Z"
   },
   "canopy:en:gpt-readies-5-6-as-china-aboutfaces-on-claude": {
-    "fingerprint": "7ac8c8836f6166e84800feddb20ba6b8591c6b395e3ae323b05cef42aa1a3bf3",
+    "fingerprint": "a4c952181a6c2b6c7adeebb3db72925752ad751c6454986c077237c464558fb0",
     "path": "static/img/social/canopy/articles/gpt-readies-5-6-as-china-aboutfaces-on-claude.png",
-    "updatedAt": "2026-07-08T18:40:41.258Z"
+    "updatedAt": "2026-07-12T20:14:09.954Z"
+  },
+  "ryan:en:local-fugu-coding-harness-june-2026": {
+    "fingerprint": "f70c34b8fa5c661edfa6377281e18cca8831f0b52f6723ad55ef5e5406b9798b",
+    "path": "static/img/social/ryan/articles/local-fugu-coding-harness-june-2026.png",
+    "updatedAt": "2026-07-12T20:11:16.206Z"
+  },
+  "ryan:en:pixelboats-morning-watch-2026-07-09": {
+    "fingerprint": "fc0e9ec8e4b2462331db0c781eacabe427fc817283beffa15783a54b1b825e28",
+    "path": "static/img/social/ryan/articles/pixelboats-morning-watch-2026-07-09.png",
+    "updatedAt": "2026-07-12T20:11:17.616Z"
+  },
+  "ryan:en:pixelboats-morning-watch-2026-07-10": {
+    "fingerprint": "a9060c31fff4b9cb7cedb408aa0af72b0134fc085a693a726a0ac44cf3cbdf9e",
+    "path": "static/img/social/ryan/articles/pixelboats-morning-watch-2026-07-10.png",
+    "updatedAt": "2026-07-12T20:11:18.283Z"
+  },
+  "canopy:en:local-fugu-coding-harness-june-2026": {
+    "fingerprint": "6ef99ca2954879239ca885f436fb08b270d57d726a1f557544dcea5a1f142a70",
+    "path": "static/img/social/canopy/articles/local-fugu-coding-harness-june-2026.png",
+    "updatedAt": "2026-07-12T20:14:10.662Z"
+  },
+  "canopy:en:pixelboats-morning-watch-2026-07-09": {
+    "fingerprint": "126e13308d43dfad36b059bb2688937f1feab56dd81cecf713231c5ec94cbebe",
+    "path": "static/img/social/canopy/articles/pixelboats-morning-watch-2026-07-09.png",
+    "updatedAt": "2026-07-12T20:14:12.056Z"
+  },
+  "canopy:en:pixelboats-morning-watch-2026-07-10": {
+    "fingerprint": "fbc6054fbf444c6e60775164beaab7dbd31ed3c165ae0b4703b71601c21c1683",
+    "path": "static/img/social/canopy/articles/pixelboats-morning-watch-2026-07-10.png",
+    "updatedAt": "2026-07-12T20:14:12.717Z"
   }
 }

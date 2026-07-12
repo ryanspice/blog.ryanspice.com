@@ -1,342 +1,311 @@
 ---
-title: "How to Run a Local Fusion/Fugu Coding Harness"
-seo_title: "How to Run a Local Fusion/Fugu Coding Harness"
+title: "My Fugu/Fusion Harness Now Has One Conductor and Three Real Reviewers"
+seo_title: "My 2026 Fugu/Fusion Coding Harness: GPT-5.6, Nemotron, DeepSeek, and GLM"
 slug: "local-fugu-coding-harness"
 status: "published"
 draft_type: "build-log"
-date: "2026-06-24"
-updated_date: "2026-06-24"
+date: "2026-07-12"
+updated_date: "2026-07-12"
+release_date: "2026-07-12"
+release_time: "16:00"
 audience:
-  - "developers building agentic workflows"
+  - "developers building multi-model coding workflows"
   - "AI agent operators"
   - "local-LLM tinkerers"
-possible_publication_targets:
-  - "AI Wiki inbox"
-  - "ryanspice.com"
 tags:
   - "multi-agent"
   - "orchestration"
-  - "Sakana Fugu"
+  - "Fugu"
+  - "Fusion"
   - "Hermes"
-  - "Claude Code"
-  - "Codex"
+  - "GPT-5.6"
   - "Nemotron"
   - "DeepSeek"
+  - "GLM-5.2"
   - "local LLM"
   - "model routing"
   - "coding agents"
-  - "prompt operations"
-  - "OpenRouter Fusion"
+  - "verification"
 related_posts:
-  - "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
-  - "glm-5-2-hermes-cloudflare-workers-ai-delegation"
+  - "local-fugu-coding-harness-june-2026"
   - "nvidia-nemotron-3-ultra-hermes-agent-production-setup"
-  - "glm-5-2-long-context-search-exposure"
-  - "how-chatgpt-performs-deep-research"
+  - "glm-5-2-hermes-cloudflare-workers-ai-delegation"
+  - "agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns"
 credits:
   - "Ryan Spice"
-  - "AI Wiki research notes"
+  - "OpenAI Codex"
 accent: "#a3e635"
 image: "/img/articles/local-fugu-coding-harness/fugu-codex-focal-1200.webp"
-image_alt: "A stylized conductor console routes model lanes through planning, verification, local memory, and human review."
+image_alt: "A conductor console routing planning, implementation, verification, and local review lanes."
 image_credit: "Generated raster visual by Ryan Spice / Codex"
 image_position: "center center"
 row_image: "/img/articles/local-fugu-coding-harness/fugu-codex-focal-1200.webp"
-row_image_alt: "Stylized local Fusion/Fugu coding harness with a conductor console and model lanes."
+row_image_alt: "A multi-model coding harness organized around one conductor and bounded specialist lanes."
 row_image_credit: "Generated raster visual by Ryan Spice / Codex"
 row_image_position: "center center"
 background_image: "/img/articles/local-fugu-coding-harness/fugu-memory-audit-loop.svg"
-background_image_alt: "A memory unification loop showing shared store, bridges, cross-family verification, and human audit."
+background_image_alt: "A verification loop connecting model workers, deterministic evidence, and human review."
 background_image_credit: "Generated SVG diagram by Ryan Spice / Codex"
 background_image_position: "center center"
-link_terms:
-  - "Sakana Fugu|https://sakana.ai/fugu/"
-  - "OpenRouter Fusion|https://openrouter.ai/fusion"
-  - "Fusion Router|https://openrouter.ai/docs/guides/routing/routers/fusion-router"
-  - "TRINITY|https://arxiv.org/abs/2512.04695"
-  - "Conductor|https://arxiv.org/abs/2512.04388"
-  - "technical report|https://arxiv.org/abs/2606.21228"
-  - "Codex|https://openai.com/codex/"
-  - "Claude Code|https://code.claude.com/docs/en/overview"
-  - "Nemotron 3 Ultra|https://research.nvidia.com/labs/nemotron/Nemotron-3-Ultra/"
-  - "DeepSeek|https://api-docs.deepseek.com/"
-  - "GLM-5.2|https://github.com/zai-org/GLM-5"
-  - "Gemma 4|https://ai.google.dev/gemma/docs/core"
-references:
-  - "Sakana Fugu product page|https://sakana.ai/fugu/"
-  - "Sakana Fugu release note|https://sakana.ai/fugu-release/"
-  - "Sakana Fugu Technical Report|https://arxiv.org/abs/2606.21228"
-  - "TRINITY: An Evolved LLM Coordinator|https://arxiv.org/abs/2512.04695"
-  - "Learning to Orchestrate Agents in Natural Language with the Conductor|https://arxiv.org/abs/2512.04388"
-  - "Sakana AI TRINITY explainer|https://sakana.ai/trinity/"
-  - "Sakana AI Conductor explainer|https://sakana.ai/learning-to-orchestrate/"
-  - "OpenRouter Fusion|https://openrouter.ai/fusion"
-  - "OpenRouter Fusion Router docs|https://openrouter.ai/docs/guides/routing/routers/fusion-router"
-  - "OpenRouter Fusion plugin docs|https://openrouter.ai/docs/guides/features/plugins/fusion"
-  - "OpenAI Codex|https://openai.com/codex/"
-  - "Claude Code overview|https://code.claude.com/docs/en/overview"
-  - "NVIDIA Nemotron 3 Ultra research page|https://research.nvidia.com/labs/nemotron/Nemotron-3-Ultra/"
-  - "NVIDIA Nemotron 3 Ultra NIM page|https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b"
-  - "DeepSeek API docs|https://api-docs.deepseek.com/"
-  - "DeepSeek model pricing and names|https://api-docs.deepseek.com/quick_start/pricing"
-  - "Z.ai GLM-5 repository|https://github.com/zai-org/GLM-5"
-  - "Google Gemma docs|https://ai.google.dev/gemma/docs/core"
-  - "Google Gemma 4 12B announcement|https://blog.google/innovation-and-ai/technology/developers-tools/introducing-gemma-4-12b/"
 further_reading:
-  - "Agent Mixing Without Theater|/agent-mixing-deepseek-pro-flash-gemma4-diminishing-returns/"
-  - "GLM-5.2 in Hermes|/glm-5-2-hermes-cloudflare-workers-ai-delegation/"
+  - "The June 2026 harness (archived)|/local-fugu-coding-harness-june-2026/"
   - "NVIDIA Nemotron 3 Ultra in Hermes|/nvidia-nemotron-3-ultra-hermes-agent-production-setup/"
-summary: "How I turned a pile of local and API models into a local Fusion/Fugu-style coding harness: one Conductor, role-assigned workers, mandatory cross-family verification, and the human audit loop that kept the system honest."
-seo_description: "How to run a local Fusion/Fugu-style multi-model coding harness with a Conductor, Thinker/Worker/Verifier roles, a local queue, model-role routing, shared memory, and cross-family verification."
+  - "GLM-5.2 in Hermes|/glm-5-2-hermes-cloudflare-workers-ai-delegation/"
+summary: "I rebuilt my Fugu/Fusion coding harness around the models that are actually available: GPT-5.6 Sol conducts, Fugu executes through bounded specialist lanes, and a three-model remote Fusion panel reviews important work before the conductor decides."
+seo_description: "A practical build log for a GPT-5.6 Sol Fugu/Fusion coding harness using Nemotron, DeepSeek, GLM-5.2, Spark, Terra, Luna, VibeThinker, and an explicit local Gemmable lane."
 ---
 
-# How to Run a Local Fusion/Fugu Coding Harness
+# My Fugu/Fusion Harness Now Has One Conductor and Three Real Reviewers
 
-The thing that makes a multi-model setup good is not one stronger model. It is **coordination**.
+> [!status-brief]
+> **Current setup, July 12, 2026:** GPT-5.6 Sol is the single conductor and final judge. Fugu is the execution pipeline. Fusion is the independent remote review panel. Local models are optional queued reviewers, never a dependency for the normal path.
+>
+> This article replaces my [June 2026 Fugu/Fusion harness write-up](/local-fugu-coding-harness-june-2026/). I preserved that version because it shows the earlier design honestly, but its model map is no longer operationally correct.
 
-I built this because I was tired of losing time to polished patches that nobody had to defend. A strong agent can make a bad assumption look finished. Two agents can make the same bad assumption twice. The missing piece was not another chat window. It was a routing rule, a verifier, and a clear owner for the final call.
+The first version of my harness had the right instinct and the wrong roster.
 
-I already had the parts: a frontier CLI agent, a couple of hosted reasoning models, a fast cheap coder, and one local model running on a single GPU. What I did not have was a *conductor* — something that decides which model does what, in what order, and who is allowed to sign off on the result. This is a build log of wiring those parts into a local Fusion/Fugu-style harness, then testing it on real project work instead of leaving it as a diagram.
+It separated planning, implementation, verification, and final judgment. That part held up. The configuration around it did not. The conductor's identity was inconsistent, a retired local model was still treated as structurally important, Claude remained in the active map after it stopped being available, and GLM-5.2 was parked at the edge instead of being used where it was actually valuable.
 
-## What Fugu actually is
+I have now rebuilt the system around the models I actually have.
 
-Sakana's "Fugu" framing is the clearest articulation of the idea I keep circling back to: present a pool of models behind one API and let a learned coordinator route work. As of this post, Sakana presents Fugu as a productized multi-agent system delivered through an OpenAI-compatible API, with Fugu and Fugu Ultra as the public model choices. I am not claiming to run Sakana's product locally. I am borrowing the operating lesson and applying it to my own workbench.
-
-The research trail matters because it separates the useful idea from the hype. The current Fugu page and technical report ground the system in two ICLR 2026 papers:
-
-- **TRINITY** — an evolved coordinator that assigns **Thinker / Worker / Verifier** roles across turns, adapting per task (coding, math, reasoning).
-- **Conductor** — trained to discover *natural-language* coordination strategies, so a diverse pool of models outperforms any single worker.
-
-Two ideas do most of the work:
-
-1. **Role assignment.** A task gets a planner, one or more workers, and a verifier — not one model trying to do everything.
-2. **Test-time scaling.** You spend more coordination on harder tasks and less on easy ones.
-
-You do not need their trained coordinator to benefit. You need a written role map and the discipline to follow it.
-
-## How this compares to OpenRouter Fusion
-
-OpenRouter Fusion is the closest public product analogy: it runs multiple models in parallel, has a judge review their answers, and returns one synthesized result. The Fusion Router makes that pattern look like one model endpoint, while the Fusion plugin adds an "expert panel" style review around a chosen model.
-
-My setup is not a local clone of Fusion, and it is not Sakana Fugu running on my machine. It is the same operating pattern applied to local work:
-
-- **Fusion is hosted deliberation.** It is strongest when you want several cloud models to cross-check a research answer or reasoning task behind one API surface.
-- **Sakana Fugu is learned orchestration.** The research goal is a coordinator that decides how to spend a model pool on a task.
-- **This harness is workbench orchestration.** It routes local files, repo context, assistant CLIs, API models, a single local queue, shared memory, and a human audit loop.
-
-That difference matters. A coding harness needs artifact ownership: who plans, who edits, who verifies, who writes the handoff, and who is allowed to call the job done. Fusion gives you a strong hosted answer. A local Fugu-style harness gives you a repeatable way to run work across your own tools.
-
-## The reframe
-
-If you have used agent CLIs for a while, you already own the *pool*:
+The new rule is simple:
 
 ```text
-frontier CLI agent      -> strong general reasoner
-hosted reasoning model  -> deep planning / ranking
-fast cheap coder        -> bounded patches
-"flash" tier model      -> directed, output-heavy work
-local model (1 GPU)     -> a private, free second opinion
+one conductor
+-> bounded specialist execution
+-> evidence first
+-> independent review when the risk earns it
+-> one final decision
 ```
 
-What is missing is the layer on top: a **Conductor**, a **role map**, and a **verification rule**. That layer is small. It is mostly a spec document and a couple of config files.
+That sounds less exciting than “a swarm of agents.” Good. It is also much easier to operate.
 
-## The role map
+## The new operating model
 
-This is the whole design on one page. The hard rule at the bottom is the part people skip and then regret.
+There are three layers, and they have different jobs.
 
-| Role | Who | Job |
+| Layer | Owner | Job |
 |---|---|---|
-| **Conductor** | frontier CLI agent (strongest reasoner) | Decomposes the task, routes it, owns the final synthesis. Can call everything, including parallel sub-agents. |
-| **Thinker** | large hosted reasoning model | Plans, ranks options, designs architecture. |
-| **Worker — fast** | bounded coder | Narrow, well-scoped patches and exact patch-maps. |
-| **Worker — directed** | "flash" model | Work that is already figured out or output-heavy, not thinking-heavy. |
-| **Worker — big** | a big-context coding model | Large multi-file refactors and ships. |
-| **Verifier** | a model from a *different family* | Checks the work. "Alternative insights." |
-| **Second brain** | the local model | A cheap, private gut-check for the Conductor. |
-| **Scarce reviewer** | a quota-limited model | One-shot, high-value reviews only. |
+| **Conductor** | GPT-5.6 Sol | Classify, route, synthesize, and make the final call. |
+| **Fugu execution** | Nemotron, Spark, Flash, Pro, Terra, Luna, and guarded GLM | Plan and perform bounded work with an independent verifier. |
+| **Fusion review** | Nemotron 3 Ultra, DeepSeek V4 Pro, and NVIDIA GLM-5.2 | Produce independent reviews for important decisions; GPT-5.6 Sol judges the panel. |
 
-**The hard rule: the model that produced an artifact never verifies its own work.** Verification always goes to a different family. That single constraint catches more bad output than any amount of "be careful" prompting, because a model is bad at noticing the exact assumptions it just made.
+The conductor does not compete with the panel. Nemotron and GLM do not become alternate leads halfway through the run. GPT-5.6 Sol owns decomposition and the final synthesis from start to finish.
 
-A rough routing table falls out of the map:
+That fixed the largest conceptual problem in the old setup: several strong models were implicitly fighting for the same role.
+
+## Fugu is the execution pipeline
+
+Fugu is how normal delegated work moves through the system.
 
 ```text
-quick answer / triage   -> local or fast worker        (no verify)
-plan / architecture     -> Thinker                      (verify: a different family)
-bounded patch           -> fast coder                   (verify: a different family)
-directed / output-heavy -> flash worker                 (verify: fast coder or Thinker)
-big refactor / ship     -> big coding model             (verify: Thinker + flash)
-long-context review     -> scarce reviewer (sparingly)
-final synthesis         -> Conductor                     (second-brain pass on the local model)
+GPT-5.6 Sol conductor
+-> Nemotron plan or rank, when planning is needed
+-> Spark, Flash, Terra, or a lead worker implements
+-> a capable model from another family reviews
+-> deterministic checks settle what they can
+-> GPT-5.6 Sol judges the evidence
 ```
 
-![Role map for a local Fugu-style coding harness: a conductor routes work to thinker, worker, verifier, and second-brain lanes before returning one reviewed result.](/img/articles/local-fugu-coding-harness/fugu-conductor-role-map.svg "The important part is not the number of models. The important part is that planning, execution, verification, and final synthesis are separate jobs.")
+The roles are intentionally boring:
 
-## The actual model pool I use
-
-The labels below are my routing labels, not universal product names. The public links point to the model or tool surface behind each lane where there is one.
-
-| Harness lane | My assignment | Why it is there |
+| Lane | Model shape | Use it for |
 |---|---|---|
-| **Conductor** | Codex or Claude Code as the front-door coding agent | Owns the task, reads the repo, decomposes work, delegates, merges evidence, and writes the final answer. |
-| **Thinker** | NVIDIA Nemotron 3 Ultra 550B-A55B | Planning, architecture, ranking, tradeoff review, and long-context reasoning before anyone edits. |
-| **Worker — fast** | a DeepSeek-backed `code-spark` lane | Small bounded patches, exact diffs, and quick implementation slices. |
-| **Worker — directed** | a DeepSeek-backed `code-flash` lane | Output-heavy implementation when the plan is already clear, and cross-family verification for work produced by another family. |
-| **Worker — big** | Codex / GPT-class coding lane | Larger multi-file ships where the repo context and patch discipline matter more than cheap throughput. |
-| **Verifier** | whichever different family did not author the artifact | Reviews assumptions, diffs, tests, and omissions. The verifier is a role, not a fixed model. |
-| **Second brain** | Gemma 4 12B local queue | Private, free-ish sanity checks. It runs one request at a time because the local GPU is the bottleneck. |
-| **Scarce reviewer** | GLM-5.2 | One-shot high-value review only. Never in loops, never as the default. |
+| `thinker` | Nemotron 3 Ultra | Architecture, decomposition, ranking, tradeoffs, and blind spots. |
+| `worker-spark` | GPT-5.3 Codex Spark | Fast bounded implementation and exact patch maps. |
+| `worker-flash` | DeepSeek Flash | Directed, output-heavy implementation, checks, and cross-family review. |
+| `worker-lead` | GPT lead lane | Larger multi-file work when one worker needs broader ownership. |
+| `worker-terra` | GPT Terra | Everyday scoped implementation and exploration. |
+| `aux-luna` | GPT Luna | Extraction, mechanical summaries, and compact support work. |
+| `review-pro` / `synthesis-pro` | DeepSeek Pro | Risky review and deeper research synthesis. |
+| `glm` | GLM-5.2 | One-shot lead-programmer review or an alternative implementation strategy. |
 
-The point is not that this exact list is sacred. The point is that each lane has a job and a cost profile. If a model writes the patch, a different family reviews it. If the local lane is slow or wedged, it does not block the whole job. If the scarce reviewer is useful, it gets one clean question instead of being burned on routine churn.
+This is not a fixed ceremony for every task. A one-line change can stay with the conductor. A meaningful architecture fork can go through the full sequence. The conductor spends coordination only when the risk justifies it.
 
-## Keep the layer global, not per-project
+## Fusion is a review panel, not another coding loop
 
-The mistake would be to bury this inside one repo. The orchestration layer is **project-agnostic** and lives with the agents themselves:
+Fusion now has three remote seats:
 
-- a **spec document** (the canonical role map + routing + the verify rule) that everything else points at;
-- a **Conductor skill** for the frontier CLI agent, so it knows the commands and the rule;
-- an **orchestrator profile** for the agent shell (a Thinker-led profile that delegates to the workers);
-- a short **cross-agent note** so a second agent CLI delegates the same way.
+1. **Nemotron 3 Ultra** for architecture, ranking, and blind spots.
+2. **DeepSeek V4 Pro** for deep review and a genuinely different reasoning path.
+3. **NVIDIA GLM-5.2** for lead-programmer judgment and alternative implementation strategy.
 
-Individual projects only *tune* — they consume the global role map, they never redefine it. That separation is what lets the same harness drive a game repo today and something else tomorrow.
+GPT-5.6 Sol is the judge.
 
-## The hardware reality nobody mentions
+I deliberately did not add another GPT panelist. The conductor already represents that family. Repeating the same family inside the panel would spend another seat without buying the same amount of disagreement.
 
-Most "local Fugu" write-ups assume you can run several local models at once. On a single consumer GPU you cannot. One model fits at a time, and concurrent or oversized calls will wedge it even while its health check still says "ok."
+Fusion is for decisions where independent attempts are useful: architecture forks, canon choices, release-risk reviews, and important implementation plans. It is not the default response to every code edit.
 
-So the honest design is: **one local model, fronted by a single-slot queue.** The queue *is* the local tier. It serializes callers, makes sure the server is up, caps tokens, enforces timeouts, and restarts the server if it wedges. Everything else in the pool is API-backed, so the local model's only job is to be the Conductor's cheap second brain.
-
-I had sketched a local gateway to unify several local models under one endpoint. I deleted that from the plan. It solved a problem I do not have, and it could not replicate what the queue already does. **Defer the thing that doesn't earn its complexity.** That is as much a system-design rule as it is a sanity rule.
-
-## Testing it on real work
-
-A harness you do not use is a diagram. So I pointed it at actual project work and fixed two real messes with it.
-
-**A decision kit that had quietly overfit.** I had a "Fusion" decision kit — a four-track panel (baseline → per-track review → ranker → synthesis) — that was supposed to be general but had drifted into being about one subsystem. The prompts said "judge each option on its merits," but the *config and scripts* still injected that subsystem's keywords, rules, and reference art into every run. I generalized the config into neutral decision slots, made the scripts iterate whatever tracks you define, made the reference art opt-in, fixed three different version numbers that disagreed, archived a pile of backups, and renamed it into a task-neutral **"Game Fusion Pack."** The bias lived in the plumbing, not the prompt — that is the lesson.
-
-**A daily insights pulse.** A scheduled job generates bounded delegate prompts (inventory, risk review, research, a local synthesis pass) and writes a dashboard. I aligned every delegate to the role-map vocabulary, added the cross-family-verify and "scarce reviewer stays out of the loop" guardrails to the generated prompts, and confirmed the local model always routes through the queue with a restart-on-wedge retry. Same machinery, now speaking the same language as the rest of the harness.
-
-## What it actually buys you
-
-Not a benchmark number. The honest win condition is:
-
-> For my repos, the harness plans, edits, verifies, and summarizes with **fewer bad patches than a single solo session.**
-
-That is achievable, and it is mostly about the verify rule and routing — not about owning a bigger model.
-
-## The conductor's first real job: unifying memory
-
-This is where the article becomes mine, not just a paper recap.
-
-The honest test of a harness is handing it real work and watching what it does — including what it gets wrong. So I gave the conductor the open thread from the checklist: unify memory across the three agents I actually use. The kickoff was one line:
+The practical distinction is:
 
 ```text
-Read the spec, act as the Fugu Conductor, and run the memory-unification job.
+Fugu  = plan and execute the work
+Fusion = independently review the consequential decision
 ```
 
-It ran ~50 minutes on the Thinker model, unattended, working from a Universal Prompt Contract (the appendix prompt). What it did:
+For epic work, I can run Fugu first and send the resulting evidence packet through Fusion afterward. The panel reviews the artifact and its proof, not a giant raw transcript.
 
-- Created a **canonical shared store** in the knowledge hub — one fact per markdown file + an index — seeded from the existing per-agent facts.
-- Added **read-pointers** from each of the three agents into that store.
-- **Cross-family verified** its own bridge edits by spawning a *different* model family (the Flash verifier) — the author never signs off on its own work.
-- Ran a **round-trip test**: wrote a test fact, then confirmed it was readable from each agent before declaring done.
-- Touched no secrets, deleted nothing, never called the scarce reviewer or the local model.
+## The local tier no longer blocks the remote path
 
-Its closing report, trimmed:
+I still want local reviewers. I no longer pretend they belong in every run.
+
+**VibeThinker** is the cheap CPU skeptic. It is good for a small plan, a patch map, or one suspicious assumption. It runs through a single queue and receives compact context. It does not get a fully loaded agent profile because that degrades a small fed-context model.
+
+**Gemmable** is back, but only as a critical/private divergent reviewer. It occupies the GPU, so it is explicit-only, queued, and serial. It never runs in parallel with another local inference job and it cannot block the standard remote Fusion panel.
+
+That gives me two honest local choices:
+
+| Local lane | Cost shape | Operational rule |
+|---|---|---|
+| `verify-vibe` | Cheap CPU skeptic | Small bounded packets; queue-only. |
+| `critical-gem` | GPU critical/private reviewer | Explicit use only; queue-only; requires `-Force`. |
+
+GLM is also guarded with `-Force`. The flag is not security. It is friction: a deliberate reminder that scarce quota and GPU residency are not routine resources.
+
+## Claude is gone from active routing
+
+The old article kept Claude in the code-sidecar map. The current harness does not.
+
+Claude is unavailable in this environment, so no active route depends on it. A compatibility switch that once attempted to include Claude now fails explicitly instead of silently sending work toward a dead lane.
+
+Some unreachable legacy helper functions still exist inside the large PowerShell runner. They are cleanup debt, not active architecture. I would rather state that plainly than call the script fully clean before the dead code is physically removed.
+
+## The verification rule got stricter
+
+The most important policy is still:
+
+> The producer never signs off on its own artifact.
+
+The stronger version adds a capability gate. “Different model family” is useful, but it is not proof by itself.
+
+Before I trust a verifier, I ask:
+
+1. Can it inspect the evidence the claim depends on?
+2. Is the evidence inside its knowledge horizon, or does it have a live source packet?
+3. Can a compiler, test, schema check, or direct fetch settle the question instead?
+
+Deterministic evidence wins before model voting:
 
 ```text
-JOB 2 COMPLETE — Workbench Memory Unification (read-pointer phase)
-  ✅ Canonical shared store (seeded facts + index)
-  ✅ Three bridges deployed (each agent → shared store)
-  ✅ Cross-family verification — Flash reviewed all bridge edits: PASS (2 cosmetic fixes)
-  ✅ Round-trip test — test fact readable from all three agents
-  ✅ No secrets, no deletes, scarce reviewer unused, local model not invoked
-  Residual: deep two-way sync with one agent's binary memory store deferred.
+tests / typecheck / compiler / direct source fetch
+-> model review for judgment that remains
+-> conductor synthesis
 ```
 
-### Then I audited it — the part that matters
+The author-to-reviewer map is explicit:
 
-An all-green report from a 50-minute autonomous run still needs a human pass. Mine found:
+| Artifact author | Valid reviewer families |
+|---|---|
+| GPT or Spark | DeepSeek or Nemotron |
+| DeepSeek | Spark, Nemotron, or VibeThinker |
+| Nemotron | DeepSeek or GLM |
+| GLM | DeepSeek, Spark, or VibeThinker |
 
-- **Solid:** the shared store was clean (valid frontmatter, **no secrets**), the per-agent index pointers persisted, and the guardrails actually held (no scarce reviewer, no local model, the cross-family verify really happened).
-- **One real defect:** the conductor wired the agent-shell "bridge" into that shell's **skills loader** instead of a memory path — so it would have tried to parse memory facts as skills. The round-trip only passed because it read the file by path directly. I reverted that and pointed the shell at the store on demand.
-- **Minor:** a leftover test-fact file (harmless evidence), one source file with a cosmetically blanked field from an agent's own memory normalizer, and the third agent's read was proxied by a sibling model rather than the agent itself.
+This is not “two model votes mean correct.” It is “use the strongest available ground truth, then use a capable independent reviewer for the uncertainty that remains.”
 
-That is the honest shape of orchestration: it did ~90% of a fiddly cross-system chore correctly and unattended, and the **verify-then-human-audit** loop caught the 10% that was wrong. Which is the win condition restated — fewer bad patches, not zero oversight.
+## A useful failure during this rewrite
 
-![Memory unification audit loop: the conductor writes a shared store, bridge pointers expose it to each workbench, a different model verifies the bridge edits, and a human audit catches the remaining wiring defect.](/img/articles/local-fugu-coding-harness/fugu-memory-audit-loop.svg "The useful shape is not autonomous magic. It is bounded automation, cross-family verification, and a human audit before trust.")
+I used the harness while rewriting this article.
 
-## How I run it locally
+The Nemotron thinker received a bounded editorial packet that explicitly named GPT-5.6 Sol as the single conductor. Its response still called Nemotron the lead, then invented stronger guarantees for some local lanes than the live policy contains.
 
-When you come back to it cold:
+That output was articulate, structured, and wrong.
 
-- **In the frontier CLI agent**, the Conductor skill auto-loads. Open with: *"Act as the Fugu Conductor for &lt;task&gt;."* It will optionally second-brain the local model, route to the right worker, and verify cross-family.
-- **In the agent shell**, start the orchestrator profile: `agent -p fugu-conductor chat`. The first call doubles as a smoke test of the profile.
-- **Routing in one line:** quick → local/fast · plan → Thinker · bounded patch → fast coder (verify with a different family) · big ship → big model (verify with Thinker) · long-context review → scarce reviewer, *sparingly*.
-- **Repeat the guardrails:** the local model only through the queue; the scarce reviewer never in loops; the author never verifies its own work.
+The fix was not to ask it to sound more careful. I checked the answer against the canonical role map, dispatcher, Fusion policy, and real panel-health result, rejected the bad claims, and kept only the useful outline ideas.
 
-## Appendix: a Prompt-Operations prompt to finish the memory layer
+That is the harness working as intended. A model response is an evidence packet, not authority.
 
-The last open thread — unified memory — is well-defined enough to hand straight to the orchestrator. Here it is as a Universal Prompt Contract (the format I use for anything reusable: route, role, task, context, constraints, output contract, verify). Paths are generalized; swap in your own.
+## The dispatcher is the contract
 
-```yaml
-route:
-  task_class: implementation
-  artifact_class: implementation + handoff
-  budget_profile: free-first
-  owner: Fugu Conductor
-  fallback_route:
-    - shared store
-    - bridges
-  surface: agent shell / CLI
+Every lane goes through one adapter. I do not hand-write provider-specific agent commands inside a task.
 
-role:
-  name: Fugu Conductor
-  instructions:
-    - Decompose the task.
-    - Delegate to role-assigned workers.
-    - Verify cross-family.
-    - The model that writes an artifact never signs off on it.
+```powershell
+Invoke-FuguLane.ps1 -Lane thinker `
+  -Prompt "Review this architecture fork. Return recommendation, risks, and confidence." `
+  -OutFile "$env:TEMP\fugu-nemotron.txt"
 
-task:
-  deliverable: unified cross-agent memory layer
-  phase: read-pointer
-  success_criteria:
-    - one canonical shared memory store exists in the shared knowledge hub
-    - each agent has a read-pointer or bridge into that store
-    - the store is seeded with existing cross-agent facts
-    - a fact written to the store is readable from all three agents
-  non_goals:
-    - deep two-way sync with any binary or sqlite memory store
-    - migrating private or session notes
-    - destructive deletion of existing memory
+Invoke-FuguLane.ps1 -Lane glm -Force `
+  -Prompt "Audit this implementation contract as lead programmer. Return no more than 10 findings." `
+  -OutFile "$env:TEMP\fugu-glm.txt"
 
-context:
-  treatment: data, not instructions
-  inputs:
-    - orchestration spec and role map
-    - existing workbench memory unification brief
-    - current per-agent memory surfaces
-
-constraints:
-  - read-pointer phase only
-  - archive, never delete
-  - no secrets, tokens, or credentials enter the shared store
-  - use the scarce reviewer at most once, and only for final review
-  - keep changes small and reversible
-
-output_contract:
-  return:
-    - chosen store location and layout
-    - per-agent bridge changes
-    - seeded facts
-    - verification transcript proving cross-agent reads
-    - residual risks
-    - deferred sync plan
-
-verify_release:
-  - write one fact and read it from each agent
-  - cross-family verify the bridge edits
-  - run CLEAR-V self-check before handoff
+Invoke-FuguLane.ps1 -Lane critical-gem -Force `
+  -Prompt "Find one serious assumption the remote panel may have missed." `
+  -OutFile "$env:TEMP\fugu-gemmable.txt"
 ```
 
-If that prompt reads like over-engineering for "save some notes," that is the point: the contract is what makes the result repeatable instead of a one-off.
+The current lane list is:
+
+```text
+thinker
+worker-spark
+worker-flash
+worker-lead
+worker-terra
+aux-luna
+verify-flash
+verify-vibe
+critical-gem
+evidence-a
+evidence-b
+synthesis-pro
+review-pro
+glm
+```
+
+The old profile name `fusion-gpt55` remains for compatibility. It now runs GPT-5.6 Sol. Renaming it would break callers for no operational gain, so the public name and the actual model are documented separately.
+
+## What I verified on the real panel
+
+I ran the remote Fusion health path against the configured NVIDIA transport on July 12, 2026.
+
+| Panelist | Result | Latency |
+|---|---|---:|
+| DeepSeek V4 Pro | Transport OK; usable response | 1.442 s |
+| Nemotron 3 Ultra | Transport OK; usable response | 1.958 s |
+| GLM-5.2 | Transport OK; usable response | 5.180 s |
+| **Whole panel** | **Status: OK** | **10.888 s** |
+
+This was a health test, not a quality benchmark. It proved that all three configured workers could answer through the real panel runner and that the panel could complete as one operation. It did not prove that every future review will be correct.
+
+That boundary matters. Transport health, content quality, and decision quality are three different claims.
+
+## What changed from the June setup
+
+| June 2026 setup | Current setup |
+|---|---|
+| Generic or inconsistent conductor identity | One GPT-5.6 Sol conductor and judge |
+| Claude presented as an active code-sidecar | Claude removed from active routing |
+| Local Gemma treated as a normal second brain | Gemmable is explicit-only critical/private review |
+| GLM-5.2 kept mainly as a scarce side lane | GLM is a guarded Fugu reviewer and a Fusion panel member |
+| Local tier felt structurally mandatory | Standard remote path works without local inference |
+| Cross-family review emphasized model identity | Capability and deterministic evidence come first |
+
+The architecture is simpler even though the roster is larger. Every model has one reason to be there.
+
+## The practical division of labour
+
+When I return to this setup cold, this is the cheat sheet:
+
+- Normal low-risk work: GPT-5.6 Sol directly.
+- Small bounded code: Spark.
+- Bulk or mechanical code and checks: DeepSeek Flash.
+- Architecture and option ranking: Nemotron.
+- Risky implementation review: DeepSeek Pro.
+- Everyday scoped implementation: Terra.
+- Extraction and mechanical summaries: Luna.
+- Important long-context programming judgment: GLM-5.2.
+- Cheap skepticism: VibeThinker.
+- Critical, private, divergent second opinion: Gemmable.
+- Architecture forks and major risk: Fugu execution followed by Fusion review.
+
+## Residual risk
+
+Three things remain deliberately unfinished.
+
+First, the Fusion PowerShell runner still contains dead Claude and legacy local-model functions. They are unreachable from the active route, but they should be physically deleted in a later cleanup pass.
+
+Second, GLM sits behind a trial-style endpoint with an effective quota I do not treat as guaranteed. The guard remains even though GLM is now a real panel member.
+
+Third, a healthy panel can still agree on a bad assumption. The system reduces correlated error; it does not remove the need for tests, direct sources, or human judgment.
+
+That is the version of multi-model orchestration I trust: fewer heroic claims, clearer ownership, evidence before votes, and one conductor responsible for the final call.
