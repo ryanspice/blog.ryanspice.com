@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/public';
 import { getDictionary, type UiDictionary } from '$lib/i18n/dictionaries';
 import { resolveLocale } from '$lib/i18n/locales';
 import { resolveSiteId, siteConfigs, type SiteConfig } from '$lib/site-config';
@@ -10,7 +11,7 @@ type DictionaryOverrides = {
 };
 
 export function getSiteConfig(): SiteConfig {
-	return siteConfigs[resolveSiteId(process.env.PUBLIC_SITE_ID ?? process.env.BLOG_SITE_ID)];
+	return siteConfigs[resolveSiteId(env.PUBLIC_SITE_ID)];
 }
 
 export function getSiteDictionary(localeValue: string | null | undefined, site: SiteConfig = getSiteConfig()): UiDictionary {
