@@ -1,5 +1,16 @@
 # Content Model
 
+## Publication surfaces
+
+Article frontmatter may declare:
+
+- `canonical_surface`: `ryan`, `canopy-blog`, or `canopy-engineering`.
+- `surfaces`: the enabled render surfaces from the same three values.
+- `projects`: searchable project ownership labels.
+- `locale`, `translation_of`, `translation_status`, `canonical_slug`, and `translations`: the bilingual relationship.
+
+Legacy articles without `canonical_surface` retain self-canonical behavior on each blog build. New or promoted articles should declare it explicitly. The main Canopy site consumes the prerendered structured `/engineering.json` feed and applies its own Canopy presentation without parsing blog HTML.
+
 ## Article frontmatter
 
 Article metadata is file-backed Markdown frontmatter. The draft editor can update the scheduling
