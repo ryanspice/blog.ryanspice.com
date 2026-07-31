@@ -283,5 +283,10 @@
     "fingerprint": "d5b1b211d3cdd4b049f4a7bba7f982cc68da4635b71da0dfbec6a446014d2996",
     "path": "static/img/social/ryan/articles/deepseek-v4-flash-0731-glm-5-2-kimi-k3.png",
     "updatedAt": "2026-07-31T20:29:29.072Z"
+  },
+  "canopy:en:deepseek-v4-flash-0731-glm-5-2-kimi-k3": {
+    "fingerprint": "166f36eb8c9a409d55bd596e554e219d567afb8b65b998646b5e15c3da77cbc9",
+    "path": "static/img/social/canopy/articles/deepseek-v4-flash-0731-glm-5-2-kimi-k3.png",
+    "updatedAt": "2026-07-31T20:31:41.974Z"
   }
 }
