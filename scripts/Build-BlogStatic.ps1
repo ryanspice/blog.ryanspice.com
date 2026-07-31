@@ -305,7 +305,15 @@ if (Test-Path $pagePhp) {
 
 # Post-build fix: embed prerendered hydration data directly instead of
 # re-executing the PHP load function at runtime. Prevents hydration flicker.
-& pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Embed-PrerenderedData.ps1") -BuildDir $BuildDir
+$EmbedArgs = @("-BuildDir", $BuildDir)
+if (-not [string]::IsNullOrWhiteSpace($SvelteKitOutDir)) {
+  $PrerenderedFile = Join-Path $SvelteKitOutDir "output"
+  $PrerenderedFile = Join-Path $PrerenderedFile "prerendered"
+  $PrerenderedFile = Join-Path $PrerenderedFile "pages"
+  $PrerenderedFile = Join-Path $PrerenderedFile "index.html"
+  $EmbedArgs += @("-PrerenderedFile", $PrerenderedFile)
+}
+& pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Embed-PrerenderedData.ps1") @EmbedArgs
 
 # Stamp the selected site onto generated document shells so the root theme is
 # correct before hydration and without relying only on host-detection script.

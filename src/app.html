@@ -39,6 +39,19 @@
 				max-width: 100% !important;
 			}
 
+			/* Keep inline article media visually subordinate to the reading column. */
+			.article-inner figure.article-figure {
+				width: min(100%, 640px) !important;
+				max-width: min(100%, 640px) !important;
+				margin-inline: auto !important;
+			}
+
+			.article-inner figure.article-figure img.article-image {
+				width: 100% !important;
+				max-width: 100% !important;
+				height: auto !important;
+			}
+
 			.code-block,
 			.mermaid-diagram,
 			.table-wrap {
