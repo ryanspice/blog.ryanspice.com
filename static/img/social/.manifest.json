@@ -278,5 +278,10 @@
     "fingerprint": "fbc6054fbf444c6e60775164beaab7dbd31ed3c165ae0b4703b71601c21c1683",
     "path": "static/img/social/canopy/articles/pixelboats-morning-watch-2026-07-10.png",
     "updatedAt": "2026-07-12T20:14:12.717Z"
+  },
+  "ryan:en:deepseek-v4-flash-0731-glm-5-2-kimi-k3": {
+    "fingerprint": "d5b1b211d3cdd4b049f4a7bba7f982cc68da4635b71da0dfbec6a446014d2996",
+    "path": "static/img/social/ryan/articles/deepseek-v4-flash-0731-glm-5-2-kimi-k3.png",
+    "updatedAt": "2026-07-31T20:29:29.072Z"
   }
 }
