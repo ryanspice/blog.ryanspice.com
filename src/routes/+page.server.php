@@ -636,7 +636,7 @@ function load($event): array {
 		'homePath' => $homePath,
 		'ogImage' => blog_home_url('/og-default.png'),
 		'publishedArticles' => $publishedArticles,
-		'archiveMode' => isset($_GET['view']) && (string) $_GET['view'] === 'archive',
+		'archiveMode' => false,
 		'recentPublishedArticles' => array_slice($publishedArticles, 0, 6),
 		'publishedArticleTags' => blog_home_article_tags($publishedArticles)
 	];

@@ -22,7 +22,7 @@ export function localizedPageAlternates(url: URL, path: string) {
 	}));
 }
 
-export function loadHomePage(url: URL, localeValue?: string | null) {
+export function loadHomePage(url: URL, localeValue?: string | null, archiveMode = false) {
 	const locale = resolveLocale(localeValue);
 	const site = getSiteConfig();
 	const surface = siteIdToArticleSurface(site.id);
@@ -44,7 +44,7 @@ export function loadHomePage(url: URL, localeValue?: string | null) {
 		rssReaderUrl: new URL(`${base}${localizedRssReaderPath}`, url.origin).toString(),
 		rssReaderPath: localizedRssReaderPath,
 		 homePath: localizedHomePath,
-		 archiveMode: url.searchParams.get('view') === 'archive',
+		archiveMode,
 		ogImage: new URL(`${base}${site.defaultOgImage}`, url.origin).toString(),
 		publishedArticles,
 		recentPublishedArticles,

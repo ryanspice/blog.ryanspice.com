@@ -29,7 +29,7 @@
 	const navCopy = $derived(data.ui.nav);
 	const latestArticles = $derived(data.archiveMode ? publishedArticles : firstArticles(publishedArticles));
 	const articleTags = $derived(normalizeTags(data.publishedArticleTags));
-	const archiveHref = $derived(`${base}${data.homePath}?view=archive#articles`);
+	const archiveHref = $derived(`${data.locale === 'fr' ? '/fr' : ''}/archive/#articles`);
 	const articleFilterAction = $derived(`${base}${data.homePath}#articles`);
 	const articleResetHref = $derived(`${base}${data.homePath}#articles`);
 
