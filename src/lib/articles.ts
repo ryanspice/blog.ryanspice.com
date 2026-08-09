@@ -98,6 +98,11 @@ export type ArticleMeta = {
 	releaseTime?: string;
 	updatedDate: string;
 	updatedDateLabel: string;
+	lastReviewedDate?: string;
+	lastReviewedDateLabel?: string;
+	author?: string;
+	disclosure?: string;
+	correctionNote?: string;
 	releaseDate?: string;
 	releaseDateLabel?: string;
 	version: string;
@@ -289,6 +294,11 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const dateLabel = formatArticleDate(date, locale);
 	const updatedDate = stringValue(frontmatter.updated_date) || stringValue(frontmatter.modified_date) || date;
 	const updatedDateLabel = formatArticleDate(updatedDate, locale);
+	const lastReviewedDate = optionalDateValue(frontmatter.last_reviewed_date, 'last_reviewed_date');
+	const lastReviewedDateLabel = lastReviewedDate ? formatArticleDate(lastReviewedDate, locale) : undefined;
+	const author = stringValue(frontmatter.author) || undefined;
+	const disclosure = stringValue(frontmatter.disclosure) || undefined;
+	const correctionNote = stringValue(frontmatter.correction_note) || undefined;
 	const releaseDate = stringValue(frontmatter.release_date);
 	const releaseTime = frontmatterStringValue(frontmatter.release_time);
 	const releaseDateLabel = releaseDate ? formatArticleDate(releaseDate, locale) : '';
@@ -332,6 +342,11 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		dateLabel,
 		updatedDate,
 		updatedDateLabel,
+		lastReviewedDate,
+		lastReviewedDateLabel,
+		author,
+		disclosure,
+		correctionNote,
 		releaseDate: releaseDate || undefined,
 		releaseTime: releaseTime || undefined,
 		releaseDateLabel: releaseDateLabel || undefined,
@@ -588,6 +603,15 @@ function splitFrontmatter(raw: string): { frontmatter: Frontmatter; body: string
 	const yaml = normalized.slice(4, end);
 	const body = normalized.slice(end + 4).trimStart();
 	return { frontmatter: parseSimpleYaml(yaml), body };
+}
+
+function optionalDateValue(value: Frontmatter[string] | undefined, key: string): string | undefined {
+	const candidate = stringValue(value);
+	if (!candidate) return undefined;
+	if (!/^\d{4}-\d{2}-\d{2}$/.test(candidate) || Number.isNaN(Date.parse(`${candidate}T00:00:00Z`))) {
+		throw new Error(`Invalid ${key} "${candidate}". Expected an ISO date (YYYY-MM-DD).`);
+	}
+	return candidate;
 }
 
 function parseSimpleYaml(yaml: string): Frontmatter {

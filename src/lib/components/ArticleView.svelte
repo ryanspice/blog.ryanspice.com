@@ -171,7 +171,13 @@
 		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
 			<div class="eyebrow">{article.design.eyebrow}</div>
 			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
-			<p class="article-byline"><time datetime={article.date}>{article.dateLabel}</time></p>
+			<p class="article-byline">
+				{site.author.name} · {ui.article.published} <time datetime={article.date}>{article.dateLabel}</time>
+				{#if article.updatedDate !== article.date}
+					· {ui.article.updated} <time datetime={article.updatedDate}>{article.updatedDateLabel}</time>
+				{/if}
+				· {article.readingMinutes} min
+			</p>
 
 			<dl class="meta-grid article-meta" aria-label="Article metadata">
 				<div><dt>{ui.article.articleInfo}</dt><dd>{articleInfo}</dd></div>

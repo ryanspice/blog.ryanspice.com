@@ -37,7 +37,7 @@
 		<div>
 			<dt>{copy.author}</dt>
 			<dd>
-				<a href={site.author.url} rel="author noreferrer" target="_blank">{site.author.name}</a>
+				<a href={site.author.url} rel="author noreferrer" target="_blank">{article.author || site.author.name}</a>
 			</dd>
 		</div>
 		{#if coAuthors.length}
@@ -60,4 +60,17 @@
 			</div>
 		{/if}
 	</dl>
+	{#if article.lastReviewedDate && article.lastReviewedDateLabel || article.disclosure || article.correctionNote}
+		<div class="article-trust-notes" aria-label="Editorial trust notes">
+			{#if article.lastReviewedDate && article.lastReviewedDateLabel}
+				<p><strong>Last reviewed</strong> <time datetime={article.lastReviewedDate}>{article.lastReviewedDateLabel}</time></p>
+			{/if}
+			{#if article.disclosure}
+				<p><strong>Disclosure</strong> {article.disclosure}</p>
+			{/if}
+			{#if article.correctionNote}
+				<p><strong>Correction/update note</strong> {article.correctionNote}</p>
+			{/if}
+		</div>
+	{/if}
 </section>
