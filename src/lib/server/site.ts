@@ -52,16 +52,16 @@ const canopyEnglishOverrides: DictionaryOverrides = {
 		assuranceFeedValue: 'RSS page, XML, and social previews',
 		assuranceArchiveLabel: 'Indexed library',
 		assuranceArchiveValue: 'Every public note remains linked',
-		assuranceBuildLabel: 'Static handoff',
-		assuranceBuildValue: 'Fast shared-hosting deployment',
+		assuranceBuildLabel: 'Reader-ready',
+		assuranceBuildValue: 'Clear notes with sources and context',
 		latestArticles: 'Latest articles',
 		recentPosts: 'Recent published posts',
 		recentPostsDek: 'Every public note on web infrastructure, delivery workflow, tooling, and small-business technology decisions.',
 		elsewhere: 'Canopy Digital',
 		linksInfo: 'Links and site info',
 		footerDek:
-			'A static SvelteKit publishing surface for technical notes and implementation writeups, skinned to match the Canopy Digital service site.',
-		staticSite: 'Static build'
+			'Practical notes on websites, local visibility, maintenance, and the technology choices behind dependable small-business systems.',
+		staticSite: 'Reader-ready'
 	},
 	rss: {
 		title: 'Subscribe to the Canopy Digital technical notes feed',
@@ -94,16 +94,16 @@ const canopyFrenchOverrides: DictionaryOverrides = {
 		assuranceFeedValue: 'Page RSS, XML et apercus sociaux',
 		assuranceArchiveLabel: 'Bibliotheque indexee',
 		assuranceArchiveValue: 'Chaque note publique reste liee',
-		assuranceBuildLabel: 'Handoff statique',
-		assuranceBuildValue: 'Deploiement rapide sur hebergement partage',
+		assuranceBuildLabel: 'Pret a lire',
+		assuranceBuildValue: 'Notes claires avec sources et contexte',
 		latestArticles: 'Articles recents',
 		recentPosts: 'Publications recentes',
 		recentPostsDek: 'Toutes les notes publiques sur infrastructure web, livraison, outils et decisions techniques pour petites entreprises.',
 		elsewhere: 'Canopy Digital',
 		linksInfo: 'Liens et information du site',
 		footerDek:
-			'Une surface SvelteKit statique pour notes techniques et comptes rendus, avec une interface alignee sur le site de services Canopy Digital.',
-		staticSite: 'Build statique'
+			'Notes pratiques sur les sites web, la visibilite locale, la maintenance et les choix techniques derriere des systemes fiables pour petites entreprises.',
+		staticSite: 'Pret a lire'
 	},
 	rss: {
 		title: 'Abonnement au flux des notes techniques · Canopy Digital Blog',

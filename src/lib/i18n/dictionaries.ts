@@ -142,7 +142,7 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			eyebrow: 'Ryan Spice · technical blog',
 			heading: 'Practical field notes for tooling, web work, AI research, and weird Windows problems.',
 			dek:
-				'A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.',
+				'Practical field notes on tooling, web work, AI research, and weird Windows problems, with sources and context worth returning to.',
 			startLatest: 'Start with the latest article',
 			browseLatest: 'Browse all articles',
 			publishedNotes: 'Published notes',
@@ -159,15 +159,15 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 				'Current focus: source-aware repair logs, practical web work, and research notes that are still readable later.',
 			quickLinks: 'Quick links',
 			assuranceHeading: 'What is current here',
-			assuranceDek: 'A compact map of the public archive, feed, and build surface.',
+			assuranceDek: 'A compact map of the public archive, feed, and reading signals.',
 			assuranceFreshLabel: 'Freshest note',
 			assuranceFreshValue: 'Updated from the latest published article',
 			assuranceFeedLabel: 'Feed-ready',
 			assuranceFeedValue: 'Readable RSS page plus raw XML',
 			assuranceArchiveLabel: 'Public archive',
 			assuranceArchiveValue: 'All published notes stay indexed',
-			assuranceBuildLabel: 'Static build',
-			assuranceBuildValue: 'SvelteKit output for shared hosting',
+			assuranceBuildLabel: 'Reader-ready',
+			assuranceBuildValue: 'Clear notes with sources and context',
 			latestArticles: 'Latest articles',
 			recentPosts: 'Recent published posts',
 			recentPostsDek: 'All currently published public technical notes, newest first.',
@@ -184,9 +184,9 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			elsewhere: 'Elsewhere',
 			linksInfo: 'Links and site info',
 			footerDek:
-				'A static SvelteKit blog for technical notes, repair logs, research writeups, and a lightweight dev log for site changes. The public surface stays small and easy to scan.',
+				'Practical notes on tooling, web work, research, and weird Windows problems, written to stay readable when you return later.',
 			posts: 'posts',
-			staticSite: 'Static site'
+			staticSite: 'Reader-ready'
 		},
 		rss: {
 			title: 'Subscribe to the technical notes feed · blog.ryanspice.com',
@@ -265,7 +265,7 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			eyebrow: 'Ryan Spice · blogue technique',
 			heading: 'Notes pratiques sur les outils, le web, la recherche IA et les problemes Windows etranges.',
 			dek:
-				'Un blogue SvelteKit prepare dans AI Wiki, avec journaux de reparation, notes de debogage, comparaisons de recherche et un journal de developpement ancre dans le vrai flux de travail.',
+				'Des notes pratiques sur les outils, le web, la recherche IA et les problemes Windows etranges, avec des sources et du contexte pour y revenir plus tard.',
 			startLatest: 'Lire le plus recent article',
 			browseLatest: 'Voir tous les articles',
 			publishedNotes: 'Notes publiees',
@@ -282,15 +282,15 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 				'Priorite actuelle: journaux de reparation avec sources, travail web pratique et notes de recherche qui restent lisibles plus tard.',
 			quickLinks: 'Liens rapides',
 			assuranceHeading: 'Ce qui est actuel ici',
-			assuranceDek: 'Carte compacte des archives publiques, du flux et de la surface de build.',
+			assuranceDek: 'Carte compacte des archives publiques, du flux et des signaux de lecture.',
 			assuranceFreshLabel: 'Note la plus recente',
 			assuranceFreshValue: 'Mise a jour depuis le dernier article publie',
 			assuranceFeedLabel: 'Pret pour le flux',
 			assuranceFeedValue: 'Page RSS lisible et XML brut',
 			assuranceArchiveLabel: 'Archive publique',
 			assuranceArchiveValue: 'Toutes les notes publiees restent indexees',
-			assuranceBuildLabel: 'Build statique',
-			assuranceBuildValue: 'Sortie SvelteKit pour hebergement partage',
+			assuranceBuildLabel: 'Pret a lire',
+			assuranceBuildValue: 'Notes claires avec sources et contexte',
 			latestArticles: 'Articles recents',
 			recentPosts: 'Publications recentes',
 			recentPostsDek: 'Toutes les notes techniques publiques actuellement publiees, de la plus recente a la plus ancienne.',
@@ -307,9 +307,9 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			elsewhere: 'Ailleurs',
 			linksInfo: 'Liens et information du site',
 			footerDek:
-				'Un blogue SvelteKit statique pour notes techniques, journaux de reparation, recherches et changements de site. La surface publique reste petite et facile a parcourir.',
+				'Notes pratiques sur les outils, le web, la recherche et les problemes Windows etranges, ecrites pour rester lisibles plus tard.',
 			posts: 'articles',
-			staticSite: 'Site statique'
+			staticSite: 'Pret a lire'
 		},
 		rss: {
 			title: 'Abonnement au flux des notes techniques · blog.ryanspice.com',

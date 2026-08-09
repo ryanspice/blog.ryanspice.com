@@ -146,9 +146,7 @@
 			<p class="home-hero-note">{copy.focusNote}</p>
 			<div class="home-hero-links" aria-label={copy.quickLinks}>
 				<a href={data.rssUrl}>{copy.rssFeed}</a>
-				{#if site.repositoryLink}
-					<a href={site.repositoryLink.href} rel="noreferrer" target="_blank">{site.repositoryLink.label}</a>
-				{/if}
+				<a href={data.rssReaderPath}>{copy.rssFeed}</a>
 			</div>
 		</div>
 	</aside>
@@ -234,9 +232,6 @@
 			{#each footerExternalLinks as link (link.href)}
 				<a href={link.href} rel="noreferrer" target="_blank">{link.label}</a>
 			{/each}
-			{#if site.repositoryLink}
-				<a href={site.repositoryLink.href} rel="noreferrer" target="_blank">{site.repositoryLink.label}</a>
-			{/if}
 			{#if site.showDevLogLinks}
 				<a href={`${base}/dev-log`}>{navCopy.devLog}</a>
 			{/if}
@@ -255,7 +250,6 @@
 
 	<div class="site-footer-meta">
 		<span>{publishedArticles.length} {copy.posts}</span>
-		<span>SvelteKit 2 / Svelte 5</span>
 		<span>{copy.staticSite}</span>
 	</div>
 </footer>

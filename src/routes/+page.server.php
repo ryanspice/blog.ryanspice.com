@@ -111,7 +111,7 @@ function blog_home_dictionary(string $locale): array {
 				'description' => 'Articles techniques, notes de production et journal de developpement leger de Ryan Spice.',
 				'eyebrow' => 'Ryan Spice · blogue technique',
 				'heading' => 'Notes pratiques sur les outils, le web, la recherche IA et les problemes Windows etranges.',
-				'dek' => 'Un blogue SvelteKit prepare dans AI Wiki, avec journaux de reparation, notes de debogage, comparaisons de recherche et un journal de developpement ancre dans le vrai flux de travail.',
+				'dek' => 'Des notes pratiques sur les outils, le web, la recherche IA et les problemes Windows etranges, avec des sources et du contexte pour y revenir plus tard.',
 				'startLatest' => 'Lire le plus recent article',
 				'browseLatest' => 'Voir tous les articles',
 				'publishedNotes' => 'Notes publiees',
@@ -134,9 +134,9 @@ function blog_home_dictionary(string $locale): array {
 				'noArticlesDek' => 'Revenez apres le prochain deploiement de production.',
 				'elsewhere' => 'Ailleurs',
 				'linksInfo' => 'Liens et information du site',
-				'footerDek' => 'Un blogue SvelteKit statique pour notes techniques, journaux de reparation, recherches et changements de site. La surface publique reste petite et facile a parcourir.',
+				'footerDek' => 'Des notes pratiques sur les outils, le web, la recherche et les problemes Windows etranges, ecrites pour rester lisibles plus tard.',
 				'posts' => 'articles',
-				'staticSite' => 'Site statique'
+				'staticSite' => 'Pret a lire'
 			],
 			'rss' => [
 				'channelTitle' => 'Ryan Spice · Notes techniques'
@@ -163,7 +163,7 @@ function blog_home_dictionary(string $locale): array {
 			'description' => 'Technical blog posts, production notes, and a lightweight dev log from Ryan Spice.',
 			'eyebrow' => 'Ryan Spice · technical blog',
 			'heading' => 'Practical field notes for tooling, web work, AI research, and weird Windows problems.',
-			'dek' => 'A SvelteKit-first blog project staged inside the AI Wiki, with repair logs, debugging notes, research comparisons, and a lightweight dev log that stays grounded in the actual workflow.',
+		'dek' => 'Practical field notes on tooling, web work, AI research, and weird Windows problems, with sources and context worth returning to.',
 			'startLatest' => 'Start with the latest article',
 			'browseLatest' => 'Browse all articles',
 			'publishedNotes' => 'Published notes',
@@ -186,9 +186,9 @@ function blog_home_dictionary(string $locale): array {
 			'noArticlesDek' => 'Check back after the next production deploy.',
 			'elsewhere' => 'Elsewhere',
 			'linksInfo' => 'Links and site info',
-			'footerDek' => 'A static SvelteKit blog for technical notes, repair logs, research writeups, and a lightweight dev log for site changes. The public surface stays small and easy to scan.',
+		'footerDek' => 'Practical notes on tooling, web work, research, and weird Windows problems, written to stay readable when you return later.',
 			'posts' => 'posts',
-			'staticSite' => 'Static site'
+		'staticSite' => 'Reader-ready'
 		],
 		'rss' => [
 			'channelTitle' => 'Ryan Spice · Technical notes'
