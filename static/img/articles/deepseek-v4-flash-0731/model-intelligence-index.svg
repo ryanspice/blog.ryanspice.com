@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Artificial Analysis Intelligence Index v4.1 snapshot</title>
+  <desc id="desc">Horizontal bars compare Kimi K3 at 57, GLM-5.2 at 51, and DeepSeek V4 Pro at 44. Source: Artificial Analysis, July 17, 2026.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#12283a"/>
+    </linearGradient>
+    <linearGradient id="kimi" x1="0" x2="1">
+      <stop offset="0" stop-color="#f4c273"/>
+      <stop offset="1" stop-color="#f59e69"/>
+    </linearGradient>
+    <linearGradient id="glm" x1="0" x2="1">
+      <stop offset="0" stop-color="#48c5d6"/>
+      <stop offset="1" stop-color="#2f9bc2"/>
+    </linearGradient>
+    <linearGradient id="deepseek" x1="0" x2="1">
+      <stop offset="0" stop-color="#8f9fff"/>
+      <stop offset="1" stop-color="#6678e8"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="720" rx="28" fill="url(#bg)"/>
+  <rect x="48" y="44" width="1104" height="632" rx="22" fill="#0b1928" stroke="#28445b"/>
+
+  <text x="92" y="112" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">Three open-weight frontier models</text>
+  <text x="92" y="152" fill="#a8bed0" font-family="Segoe UI, Arial, sans-serif" font-size="20">Artificial Analysis Intelligence Index v4.1 · higher is better</text>
+
+  <g stroke="#294258" stroke-width="1">
+    <line x1="350" y1="220" x2="350" y2="590"/>
+    <line x1="480" y1="220" x2="480" y2="590"/>
+    <line x1="610" y1="220" x2="610" y2="590"/>
+    <line x1="740" y1="220" x2="740" y2="590"/>
+    <line x1="870" y1="220" x2="870" y2="590"/>
+    <line x1="1000" y1="220" x2="1000" y2="590"/>
+  </g>
+  <g fill="#7290a5" font-family="Segoe UI, Arial, sans-serif" font-size="16" text-anchor="middle">
+    <text x="350" y="618">0</text>
+    <text x="480" y="618">20</text>
+    <text x="610" y="618">40</text>
+    <text x="740" y="618">60</text>
+    <text x="870" y="618">80</text>
+    <text x="1000" y="618">100</text>
+  </g>
+
+  <g fill="#dbeafe" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">
+    <text x="100" y="278">Kimi K3</text>
+    <text x="100" y="398">GLM-5.2</text>
+    <text x="100" y="518">DeepSeek V4 Pro</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="350" y="240" width="370.5" height="54" rx="12" fill="url(#kimi)"/>
+    <rect x="350" y="360" width="331.5" height="54" rx="12" fill="url(#glm)"/>
+    <rect x="350" y="480" width="286" height="54" rx="12" fill="url(#deepseek)"/>
+  </g>
+  <g fill="#06101c" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="800">
+    <text x="742" y="277">57</text>
+    <text x="703" y="397">51</text>
+    <text x="658" y="517">44</text>
+  </g>
+
+  <g font-family="Segoe UI, Arial, sans-serif" font-size="16">
+    <rect x="92" y="570" width="16" height="16" rx="4" fill="#f4c273"/>
+    <text x="120" y="584" fill="#a8bed0">Kimi K3 leads this three-model snapshot</text>
+    <text x="92" y="650" fill="#7894aa">Source: Artificial Analysis, “Kimi K3 achieves #3…” (July 17, 2026). Redrawn for this article.</text>
+  </g>
+</svg>

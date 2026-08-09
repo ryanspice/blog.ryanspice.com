@@ -18,6 +18,8 @@ import {
 	isPublicArticle,
 	type Article
 } from '$lib/articles';
+import { articleCanonicalUrl } from '$lib/article-surfaces';
+import { isArticleEnabledForSurface, siteIdToArticleSurface } from '$lib/article-surfaces';
 import { DEFAULT_LOCALE, localeToHreflang, type SupportedLocale } from '$lib/i18n/locales';
 import { getSiteConfig } from '$lib/server/site';
 
@@ -32,7 +34,9 @@ type DatedArticleParams = LegacyArticleParams & {
 };
 
 export function datedArticleEntries(locale: SupportedLocale = DEFAULT_LOCALE): DatedArticleParams[] {
+	const surface = siteIdToArticleSurface(getSiteConfig().id);
 	const articleEntries = getPublishedArticlesForLocale(locale)
+		.filter((article) => isArticleEnabledForSurface(article, surface))
 		.map(articleDateRouteParams)
 		.filter((params): params is DatedArticleParams => params !== null);
 
@@ -47,7 +51,7 @@ export function redirectLegacyArticlePage(params: LegacyArticleParams, url: URL,
 
 	const article = getArticle(params.slug, locale);
 
-	if (!article || !isPublicArticle(article)) {
+	if (!article || !isPublicArticle(article) || !isEnabledForCurrentSite(article)) {
 		throw error(404, 'Article not found');
 	}
 
@@ -62,7 +66,7 @@ export function loadDatedArticlePage(params: DatedArticleParams, url: URL, local
 
 	const article = getArticle(params.slug, locale);
 
-	if (!article || !isPublicArticle(article)) {
+	if (!article || !isPublicArticle(article) || !isEnabledForCurrentSite(article)) {
 		throw error(404, 'Article not found');
 	}
 
@@ -94,10 +98,13 @@ function articlePageData(article: Article, url: URL) {
 		site: getSiteConfig(),
 		article,
 		alternates: getArticleAlternates(article).map((alternate) => ({
-			...alternate,
 			hreflang: localeToHreflang(alternate.locale),
-			href: new URL(`${base}${alternate.path}`, url.origin).toString()
+			href: articleCanonicalUrl(alternate.article, url.origin)
 		})),
 		relatedArticles: getRelatedArticles(article, 3)
 	};
+}
+
+function isEnabledForCurrentSite(article: Article): boolean {
+	return isArticleEnabledForSurface(article, siteIdToArticleSurface(getSiteConfig().id));
 }

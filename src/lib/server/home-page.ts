@@ -6,7 +6,8 @@ import {
 	resolveLocale,
 	type SupportedLocale
 } from '$lib/i18n/locales';
-import { getPublishedArticleTagsForLocale, getPublishedArticlesForLocale } from '$lib/articles';
+import { getPublishedArticlesForLocale } from '$lib/articles';
+import { isArticleEnabledForSurface, siteIdToArticleSurface } from '$lib/article-surfaces';
 import { getSiteConfig, getSiteDictionary } from './site';
 
 function absoluteLocalizedUrl(url: URL, locale: SupportedLocale, path: string): string {
@@ -24,7 +25,8 @@ export function localizedPageAlternates(url: URL, path: string) {
 export function loadHomePage(url: URL, localeValue?: string | null) {
 	const locale = resolveLocale(localeValue);
 	const site = getSiteConfig();
-	const publishedArticles = getPublishedArticlesForLocale(locale);
+	const surface = siteIdToArticleSurface(site.id);
+	const publishedArticles = getPublishedArticlesForLocale(locale).filter((article) => isArticleEnabledForSurface(article, surface));
 	const recentPublishedArticles = publishedArticles.slice(0, 5);
 	const localizedHomePath = pathWithLocale(locale, '/');
 	const localizedRssPath = pathWithLocale(locale, '/rss.xml');
@@ -45,6 +47,6 @@ export function loadHomePage(url: URL, localeValue?: string | null) {
 		ogImage: new URL(`${base}${site.defaultOgImage}`, url.origin).toString(),
 		publishedArticles,
 		recentPublishedArticles,
-		publishedArticleTags: getPublishedArticleTagsForLocale(locale)
+		publishedArticleTags: Array.from(new Set(publishedArticles.flatMap((article) => article.tags))).sort((left, right) => left.localeCompare(right))
 	};
 }

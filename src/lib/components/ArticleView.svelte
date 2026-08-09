@@ -5,6 +5,7 @@
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleFocalImage } from '$lib/article-focal-images';
 	import { articleHref } from '$lib/article-links';
+	import { articleCanonicalUrl } from '$lib/article-surfaces';
 	import {
 		ARTICLE_SHARE_IMAGE_HEIGHT,
 		ARTICLE_SHARE_IMAGE_WIDTH,
@@ -56,7 +57,7 @@
 	const articleSchemaAuthors = $derived(buildArticleSchemaAuthors(site, coAuthors));
 	const pageTitle = $derived(formatPageTitle(article.seoTitle || article.title, site.titleSuffix));
 	const description = $derived(article.seoDescription || article.summary || site.description);
-	const canonical = $derived(new URL(articleHref(article), page.url.origin).toString());
+	const canonical = $derived(articleCanonicalUrl(article, page.url.origin));
 	const shareImagePath = $derived(articleShareImagePath(article, site));
 	const ogImage = $derived(new URL(`${base}${shareImagePath}`, page.url.origin).toString());
 	const ogImageAlt = $derived(articleShareImageAlt(article, site));

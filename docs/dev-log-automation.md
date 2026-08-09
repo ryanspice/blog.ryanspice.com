@@ -4,10 +4,19 @@ This is the operating contract for the blog dev-log and owner-gated morning-brie
 
 ## Schedule
 
-- Run the primary owner-gated weekly brief on Monday mornings at about 8:00 AM America/Toronto.
-- Additional weekday runs can still create short briefs or dev-log entries when an automation wakeup asks for them and there are useful work signals.
+- Run PixelBoats at 09:00 and this dev-log/owner-brief loop at 10:00 America/Toronto, Monday-Friday.
+- When today's PixelBoats pulse is absent but its run appears active, retry at most six times with a two-minute delay. Do not wait indefinitely.
 - Skip publishing a dev-log entry when there are fewer than two meaningful work signals or when the only signals are routine file churn.
 - Still write a private morning brief when there is useful focus guidance, even if the public dev log is not updated.
+
+### Coordinated publication
+
+- Prefer PixelBoats schema-v4 `editorial`, `operations`, `evidence`, and `publication` records. Inventories and delegate packets stay private unless a specific public-safe fact supports the article.
+- One promoted article is one bilingual publication bundle. It may render on `blog.ryanspice.com`, `blog.canopydigital.ca`, and `canopydigital.ca/engineering` while retaining one explicit canonical owner per locale.
+- The main Canopy site consumes `/engineering.json`; it must not scrape rendered blog HTML.
+- French generation is pre-publication work: DeepSeek Flash literal draft, Spark Canadian/Quebec editorial pass when available, Luna fallback, Sol synthesis, deterministic structure validation, then owner review.
+- Never expose an incomplete French body under a public French route. Keep `translation_status: review` and `status: draft` until approved.
+- Treat `canopydigital.com` as a typo and normalize it to `canopydigital.ca`.
 
 ## Allowed sources
 

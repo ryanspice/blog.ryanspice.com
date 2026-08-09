@@ -1,6 +1,12 @@
 import { base } from '$app/paths';
 import { articleCanonicalPath } from '$lib/article-paths';
 import { allPublishedArticles, getArticleAlternates, type Article } from '$lib/articles';
+import {
+	articleCanonicalUrl,
+	isArticleEnabledForSurface,
+	isCanonicalForSite,
+	siteIdToArticleSurface
+} from '$lib/article-surfaces';
 import { pathWithLocale, SUPPORTED_LOCALES, type SupportedLocale } from '$lib/i18n/locales';
 import { getSiteConfig } from '$lib/server/site';
 
@@ -64,7 +70,7 @@ function articleAlternates(origin: string, article: Article): SitemapAlternate[]
 
 	const links = alternates.map((alternate) => ({
 		hreflang: alternate.hreflang,
-		href: absoluteUrl(origin, alternate.path)
+		href: articleCanonicalUrl(alternate.article, origin)
 	}));
 	const english = alternates.find((alternate) => alternate.locale === 'en');
 
@@ -109,6 +115,10 @@ function renderEntry(entry: SitemapEntry): string {
 
 export const GET = ({ url }: { url: URL }) => {
 	const site = getSiteConfig();
+	const siteSurface = siteIdToArticleSurface(site.id);
+	const canonicalArticles = allPublishedArticles.filter(
+		(article) => isArticleEnabledForSurface(article, siteSurface) && isCanonicalForSite(article, site.id)
+	);
 	const entries: SitemapEntry[] = [
 		...localizedPageEntries(url.origin, '/', {
 			changefreq: 'weekly',
@@ -123,7 +133,7 @@ export const GET = ({ url }: { url: URL }) => {
 			changefreq: route.changefreq,
 			priority: route.priority
 		})),
-		...allPublishedArticles.map<SitemapEntry>((article) => ({
+		...canonicalArticles.map<SitemapEntry>((article) => ({
 			loc: absoluteUrl(url.origin, articlePath(article)),
 			lastmod: normalizeIsoDate(article.updatedDate || article.date),
 			changefreq: 'yearly',

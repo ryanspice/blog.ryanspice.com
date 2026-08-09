@@ -10,6 +10,13 @@ import { addArticleImageDiagnostics, type ArticleImageDiagnostic } from './artic
 import { articleCanonicalPath } from './article-paths';
 import { effectivePublishDate, isPublicArticle } from './article-publication';
 import {
+	articleSurfacePath,
+	isArticleEnabledForSurface,
+	parseArticleSurface,
+	parseArticleSurfaces,
+	type ArticleSurface
+} from './article-surfaces';
+import {
 	DEFAULT_LOCALE,
 	isSupportedLocale,
 	localeToLanguageTag,
@@ -72,6 +79,10 @@ export type ArticleMeta = {
 	translationOf?: string;
 	translationStatus?: string;
 	canonicalSlug: string;
+	canonicalSurface?: ArticleSurface;
+	surfaces: ArticleSurface[];
+	publicationId: string;
+	projects: string[];
 	translatedSlug?: string;
 	translations: Partial<Record<SupportedLocale, string>>;
 	status: string;
@@ -163,6 +174,12 @@ export function getPublishedArticlesForLocale(locale: SupportedLocale = DEFAULT_
 	return allPublishedArticles.filter((article) => article.locale === locale);
 }
 
+export function getPublishedArticlesForSurface(surface: ArticleSurface, locale?: SupportedLocale): Article[] {
+	return allPublishedArticles.filter(
+		(article) => isArticleEnabledForSurface(article, surface) && (!locale || article.locale === locale)
+	);
+}
+
 export function getPublishedArticleTagsForLocale(locale: SupportedLocale = DEFAULT_LOCALE): string[] {
 	return Array.from(new Set(getPublishedArticlesForLocale(locale).flatMap((article) => article.tags))).sort((left, right) =>
 		left.localeCompare(right)
@@ -180,14 +197,15 @@ export function getArticleTranslationGroup(article: ArticleMeta): Article[] {
 		.sort((left, right) => left.locale.localeCompare(right.locale));
 }
 
-export function getArticleAlternates(article: ArticleMeta): Array<{ locale: SupportedLocale; hreflang: string; path: string }> {
+export function getArticleAlternates(article: ArticleMeta): Array<{ locale: SupportedLocale; hreflang: string; path: string; article: Article }> {
 	const variants = getArticleTranslationGroup(article);
 	if (variants.length < 2) return [];
 
 	return variants.map((variant) => ({
 		locale: variant.locale,
 		hreflang: localeToLanguageTag(variant.locale),
-		path: articleCanonicalPath(variant)
+		path: variant.canonicalSurface ? articleSurfacePath(variant, variant.canonicalSurface) : articleCanonicalPath(variant),
+		article: variant
 	}));
 }
 
@@ -252,6 +270,10 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const slug = stringValue(frontmatter.slug) || slugify(title);
 	const translationOf = stringValue(frontmatter.translation_of);
 	const canonicalSlug = stringValue(frontmatter.canonical_slug) || translationOf || slug;
+	const canonicalSurface = parseArticleSurface(stringValue(frontmatter.canonical_surface));
+	const surfaces = parseArticleSurfaces(arrayValue(frontmatter.surfaces));
+	const publicationId = stringValue(frontmatter.publication_id) || canonicalSlug;
+	const projects = arrayValue(frontmatter.projects);
 	const translatedSlug = stringValue(frontmatter.translated_slug);
 	const translationStatus = stringValue(frontmatter.translation_status);
 	const translations = parseTranslations(arrayValue(frontmatter.translations));
@@ -290,6 +312,10 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		...(translationOf ? { translationOf } : {}),
 		...(translationStatus ? { translationStatus } : {}),
 		canonicalSlug,
+		...(canonicalSurface ? { canonicalSurface } : {}),
+		surfaces,
+		publicationId,
+		projects,
 		...(translatedSlug ? { translatedSlug } : {}),
 		translations,
 		status,

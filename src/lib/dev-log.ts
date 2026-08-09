@@ -18,6 +18,204 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-08-05',
+		title: 'Build PixelBoats character scaffolds and agent tooling',
+		summary:
+			'Took the character pipeline from mannequin jig to measured result: a live capture camera, kinematics and part-ID gates, a WebGL renderer lab, and palette quantization through the fleet transform; in parallel, the agent skill roots, MCP tooling, and doctrine routing were consolidated, and the GDD gained a seabird sea-reading section.',
+		source: 'PixelBoats character-scaffold, agent-tooling, and GDD implementation history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'character', 'rendering', 'webgl', 'ai-wiki', 'automation', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'Game Development', 'WebGL', 'AI agents', 'developer workflow']
+	},
+	{
+		date: '2026-08-04',
+		title: 'Converge PixelBoats water, weather, and living-world tools',
+		summary:
+			'Made the Field V4 sea read as waves, moved wake foam onto the simulation, and mapped the rain lab into deterministic game presets; parallel work consolidated seabirds into one instanced atlas and expanded the character and NPC-relationship workbenches without treating machine proof as visual acceptance.',
+		source: 'PixelBoats water, rain, wildlife, character-foundry, and NPC-relationship implementation history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'water', 'weather', 'wildlife', 'lore', 'testing', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game'
+		],
+		relatedArticleTags: ['PixelBoats', 'Water Simulation', 'Game Development', 'PixiJS', 'developer workflow']
+	},
+	{
+		date: '2026-08-03',
+		title: 'Join PixelBoats progression and Field V4 water',
+		summary:
+			'Joined a versioned captain save spine to typed progression effects and attunement-defined lanes, then advanced Field V4 through spectral water, hull buoyancy, wake and fog integration, and Caribbean scenario teleports; the VFX lane also normalized a 65-asset sea pack around role-based loudness and peak targets.',
+		source: 'PixelBoats progression, player-save, Field V4 water, world-scenario, and VFX-audio implementation history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'progression', 'water', 'audio', 'worldgen', 'testing', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'Water Simulation', 'Game Development', 'PixiJS', 'developer workflow']
+	},
+	{
+		date: '2026-07-31',
+		title: 'Harden PixelBoats audio and Aurora navigation',
+		summary:
+			'Closed audio-context leaks, made condition crossfades and transient ducking deterministic, and kept the game bridge event-only; then removed fictional Aurora Audio controls, connected the lab to real engine data, corrected quick-action routes, and tightened Canopy subsite staging cleanup.',
+		source: 'PixelBoats audio and Aurora implementation history plus Canopy release-script hardening',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'audio', 'aurora', 'accessibility', 'testing', 'sveltekit-php', 'automation', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'Game Development', 'SvelteKit', 'AI agents', 'developer workflow']
+	},
+	{
+		date: '2026-07-30',
+		title: 'Advance PixelBoats ship, water, and audio lanes',
+		summary:
+			'Consolidated Shipwright around per-vessel livery, a GPU ship-selection proof, and an explicit presentation seam; corrected the water-reflection lab with projected ground-plane water; and promoted Aurora Audio into shared engine APIs with a bounded game-event SFX bridge.',
+		source: 'PixelBoats Shipwright, water-reflection, and adaptive-audio implementation history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'shipwright', 'water', 'audio', 'pixijs', 'testing', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'Water Simulation', 'Game Development', 'PixiJS', 'developer workflow']
+	},
+	{
+		date: '2026-07-24',
+		title: 'Refine PixelBoats attunement and Aurora activity',
+		summary:
+			'Reworked the attunement lab into a responsive four-column design surface with a real badge-and-branch aura tree, analytics, stable equip-state geometry, and container-aware panels, then tightened Aurora activity-feed semantics, placeholder labeling, and narrow-layout truncation.',
+		source: 'PixelBoats attunement-lab and Aurora activity-feed implementation history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'ui', 'svelte', 'accessibility', 'testing', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'Game Development', 'SvelteKit', 'AI agents', 'developer workflow']
+	},
+	{
+		date: '2026-07-23',
+		title: 'Build PixelBoats creation workbenches and character slices',
+		summary:
+			'Decomposed Foundry Guided onto the shared Aurora shell with a guided face workflow and multi-sheet picker, expanded the attunement lab into a validated design-and-playtest workbench, and carried the canonical character rig into a live sword slice while onboarding reusable face and hair parts.',
+		source: 'PixelBoats Foundry Guided, attunement, and character-pipeline history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'ui', 'svelte', 'testing', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game'
+		],
+		relatedArticleTags: ['PixelBoats', 'Game Development', 'SvelteKit', 'developer workflow']
+	},
+	{
+		date: '2026-07-22',
+		title: 'Build PixelBoats collectibles, maps, and character rig',
+		summary:
+			'Onboarded a PixiJS collectibles archive and card-recovery lane, made theatre presets easier to create and compare in the map picker, and consolidated the character skeleton around one rig with grip sockets, foot roll, targeted IK fixes, and focused tests.',
+		source: 'PixelBoats collectibles, map-generation, and character-rig history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'pixijs', 'ui', 'testing', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game'
+		],
+		relatedArticleTags: ['PixelBoats', 'Game Development', 'PixiJS', 'developer workflow']
+	},
+	{
+		date: '2026-07-17',
+		title: 'Join PixelBoats weather, water, and proof controls',
+		summary:
+			'Joined feathered weather zones, fog banks, wind-aligned swash, submerged-object tint, and celestial glint through the existing atmosphere and water contracts, then added player-facing weather alerts, exact save-state staging, and cleaner map/debug controls for the next visual proof pass.',
+		source: 'PixelBoats overnight atmosphere, water, UI, and verification history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'water', 'ui', 'performance', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'Water Simulation', 'Game Development', 'developer workflow']
+	},
+	{
+		date: '2026-07-16',
+		title: 'Advance PixelBoats night rendering and Aurora controls',
+		summary:
+			'Ingested a fuller cloud-material sheet into an inspected atlas and FX-card contract, connected moon state to night darkness, and tightened the Aurora tooling surface with reversible feature controls, clearer activity signals, and more focused workspace targets.',
+		source: 'PixelBoats atmosphere/night and Aurora implementation history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'automation', 'frontend', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'Water Simulation', 'AI agents', 'developer workflow']
+	},
+	{
+		date: '2026-07-14',
+		title: 'Rebuild the Fugu article and social preview lane',
+		summary:
+			'Rebuilt the Fugu Fusion harness article as a clearer current guide with an archived June snapshot, regenerated article social cards for both blog identities, and hardened the build, deploy, and audit path so public preview images survive production activation.',
+		source: 'Fugu article publication and social-preview deployment verification',
+		accent: '#38bdf8',
+		tags: ['blog', 'automation', 'ai', 'seo', 'sveltekit-php', 'developer workflow'],
+		relatedArticleSlugs: [
+			'local-fugu-coding-harness',
+			'local-fugu-coding-harness-june-2026',
+			'gpt-readies-5-6-as-china-aboutfaces-on-claude',
+			'pixelboats-morning-watch-2026-07-10'
+		],
+		relatedArticleTags: ['AI agents', 'SEO', 'SvelteKit', 'PixelBoats', 'developer workflow']
+	},
+	{
+		date: '2026-07-09',
+		title: 'Track agent security and pulse blocker',
+		summary:
+			'Confirmed the post-run GPT-5.6 and Claude Code security article publish on origin, checked today\'s generated PixelBoats composition-spike renderer pulse, and stopped its blog import at BLOG_PUBLISH_PARTIAL because the dedicated publisher worktree still contains broad unrelated churn.',
+		source: 'Origin publish commit, PixelBoats pulse metadata, and publisher exception output',
+		accent: '#38bdf8',
+		tags: ['blog', 'automation', 'pixelboats', 'ai', 'claude-code', 'seo', 'developer workflow'],
+		relatedArticleSlugs: [
+			'gpt-readies-5-6-as-china-aboutfaces-on-claude',
+			'deepseek-claude-code-windows-powershell',
+			'local-fugu-coding-harness',
+			'pixelboats-morning-watch-2026-07-03'
+		],
+		relatedArticleTags: ['AI agents', 'Claude Code', 'OpenAI', 'PixelBoats', 'SEO', 'developer workflow']
+	},
+	{
+		date: '2026-07-08',
+		title: 'Harden the July blog release lane',
+		summary:
+			'Merged the July blog release work into a cleaner branch state, consolidated duplicate PixelBoats morning-watch routes, refreshed social preview assets, hardened deploy commands, and kept today\'s generated PixelBoats pulse at BLOG_PUBLISH_PARTIAL because the dedicated publisher worktree is still dirty.',
+		source: 'Blog release commits, PixelBoats pulse backstop, and deploy-script hardening',
+		accent: '#38bdf8',
+		tags: ['blog', 'automation', 'pixelboats', 'seo', 'sveltekit-php', 'developer workflow'],
+		relatedArticleSlugs: [
+			'build-the-astro-idea-on-windows-and-android-first',
+			'pixelboats-morning-watch-2026-07-03',
+			'keyword-astro-used-on-itself-local-aso-workflow',
+			'qbo-mail-dashboard-productized-ops-workflow'
+		],
+		relatedArticleTags: ['SvelteKit', 'SEO', 'PixelBoats', 'Product strategy', 'developer workflow']
+	},
+	{
 		date: '2026-07-07',
 		title: 'Record proof gates and pulse backstop',
 		summary:

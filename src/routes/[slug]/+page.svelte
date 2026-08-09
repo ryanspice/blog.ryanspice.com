@@ -132,6 +132,15 @@
 			locale: (article.locale === 'fr' ? 'fr' : 'en') as Article['locale'],
 			languageTag: toString(article.languageTag, article.locale === 'fr' ? 'fr-CA' : 'en'),
 			canonicalSlug: toString(article.canonicalSlug, slug),
+			canonicalSurface:
+				article.canonicalSurface === 'ryan' || article.canonicalSurface === 'canopy-blog' || article.canonicalSurface === 'canopy-engineering'
+					? article.canonicalSurface
+					: undefined,
+			surfaces: Array.isArray(article.surfaces)
+				? (article.surfaces as Article['surfaces'])
+				: ['ryan', 'canopy-blog', 'canopy-engineering'],
+			publicationId: toString(article.publicationId, toString(article.canonicalSlug, slug)),
+			projects: toStringArray(article.projects),
 			translationOf: toString(article.translationOf) || undefined,
 			translationStatus: toString(article.translationStatus) || undefined,
 			translatedSlug: toString(article.translatedSlug) || undefined,

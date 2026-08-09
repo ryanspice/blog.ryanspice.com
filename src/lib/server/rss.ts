@@ -1,6 +1,7 @@
 import { base } from '$app/paths';
 import { articleCanonicalPath } from '$lib/article-paths';
 import { getPublishedArticlesForLocale } from '$lib/articles';
+import { articleCanonicalUrl, isArticleEnabledForSurface, siteIdToArticleSurface } from '$lib/article-surfaces';
 import {
 	localeToHreflang,
 	pathWithLocale,
@@ -33,13 +34,15 @@ export function renderRssXml(url: URL, localeValue?: string | null): Response {
 	const copy = getSiteDictionary(locale, site).rss;
 	const channelUrl = new URL(`${base}${pathWithLocale(locale, '/')}`, url.origin).toString();
 	const selfUrl = new URL(`${base}${pathWithLocale(locale, '/rss.xml')}`, url.origin).toString();
+	const surface = siteIdToArticleSurface(site.id);
 	const sorted = getPublishedArticlesForLocale(locale)
+		.filter((article) => isArticleEnabledForSurface(article, surface))
 		.slice()
 		.sort((a, b) => b.date.localeCompare(a.date));
 	const lastBuildDate = sorted[0]?.date ? toRfc822Date(sorted[0].date) : new Date().toUTCString();
 	const items = sorted
 		.map((article) => {
-			const itemUrl = new URL(`${base}${articleCanonicalPath(article)}`, url.origin).toString();
+			const itemUrl = articleCanonicalUrl(article, url.origin);
 			const pubDate = toRfc822Date(article.date);
 
 			return `
@@ -81,7 +84,9 @@ export function loadRssReaderPage(url: URL, localeValue?: string | null) {
 	const copy = getSiteDictionary(locale, site);
 	const feedPath = pathWithLocale(locale, '/rss.xml');
 	const readerPath = pathWithLocale(locale, RSS_READER_PATH);
+	const surface = siteIdToArticleSurface(site.id);
 	const latestArticles = getPublishedArticlesForLocale(locale)
+		.filter((article) => isArticleEnabledForSurface(article, surface))
 		.slice(0, 5)
 		.map((article) => ({
 			title: article.title,

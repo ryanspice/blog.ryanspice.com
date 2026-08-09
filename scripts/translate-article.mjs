@@ -22,6 +22,10 @@ function parseArgs(argv) {
 			args.dryRun = true;
 			continue;
 		}
+		if (arg === '--prompt-only') {
+			args.promptOnly = true;
+			continue;
+		}
 		if (arg.startsWith('--')) {
 			const key = arg.slice(2).replace(/-([a-z])/g, (_, char) => char.toUpperCase());
 			const value = argv[index + 1];
@@ -41,11 +45,15 @@ function usage() {
 		'Usage:',
 		'  node scripts/translate-article.mjs --source <slug> --target fr --dry-run',
 		'  node scripts/translate-article.mjs --source <slug> --target fr --llm-output report/i18n/openjarvis.fr.body.md',
+		'  node scripts/translate-article.mjs --source <slug> --target fr --prompt-output report/i18n/prompt.txt --prompt-only',
 		'',
 		'Options:',
 		'  --source      Source English article slug. Required.',
 		'  --target      Target locale. Defaults to fr.',
 		'  --llm-output  Optional reviewed/LLM-produced Markdown body to place in the draft.',
+		'  --prompt-output  Optional path for the generated translation prompt.',
+		'  --prompt-only  Write or print the prompt and stop before creating a draft.',
+		'  --output      Optional draft output path instead of the canonical locale path.',
 		'  --dry-run     Print draft/report output and do not write files.'
 	].join('\n');
 }
@@ -65,6 +73,13 @@ function parseMarkdown(raw) {
 function scalar(frontmatter, key, fallback = '') {
 	const match = frontmatter.match(new RegExp(`^${key}:\\s*["']?([^"'\r\n]+)["']?\\s*$`, 'm'));
 	return match?.[1]?.trim() ?? fallback;
+}
+
+function list(frontmatter, key) {
+	const match = frontmatter.match(new RegExp(`^${key}:\\s*\\r?\\n((?:\\s+-\\s+.*\\r?\\n?)*)`, 'm'));
+	return match
+		? [...match[1].matchAll(/^\s+-\s+["']?(.+?)["']?\s*$/gm)].map((item) => item[1].trim())
+		: [];
 }
 
 function yamlString(value) {
@@ -98,7 +113,7 @@ function translationPrompt({ sourceSlug, target, targetLanguage, frontmatter, bo
 	].join('\n');
 }
 
-function draftFrontmatter({ sourceSlug, target, title, summary, draftType, date }) {
+function draftFrontmatter({ sourceSlug, target, title, summary, draftType, date, canonicalSurface, surfaces, projects }) {
 	return [
 		'---',
 		`title: ${yamlString(`[${target} review] ${title}`)}`,
@@ -107,8 +122,12 @@ function draftFrontmatter({ sourceSlug, target, title, summary, draftType, date 
 		`translation_of: ${yamlString(sourceSlug)}`,
 		'translation_status: "review"',
 		`canonical_slug: ${yamlString(sourceSlug)}`,
+		`canonical_surface: ${yamlString(canonicalSurface)}`,
 		'translations:',
-		`  en: ${yamlString(sourceSlug)}`,
+		`  - ${yamlString(`en|${sourceSlug}`)}`,
+		'surfaces:',
+		...surfaces.map((surface) => `  - ${yamlString(surface)}`),
+		...(projects.length ? ['projects:', ...projects.map((project) => `  - ${yamlString(project)}`)] : []),
 		'status: "draft"',
 		`draft_type: ${yamlString(draftType)}`,
 		`date: ${yamlString(date)}`,
@@ -171,19 +190,32 @@ async function main() {
 
 	const sourcePath = path.join(ARTICLES_ROOT, `${sourceSlug}.md`);
 	const targetDir = path.join(ARTICLES_ROOT, target);
-	const targetPath = path.join(targetDir, `${sourceSlug}.md`);
+	const targetPath = args.output ? path.resolve(args.output) : path.join(targetDir, `${sourceSlug}.md`);
 	const reportPath = path.join(REPORT_ROOT, `${sourceSlug}.${target}.review.md`);
 	const raw = await readFile(sourcePath, 'utf8');
 	const { frontmatter, body } = parseMarkdown(raw);
 	const prompt = translationPrompt({ sourceSlug, target, targetLanguage, frontmatter, body });
+	if (args.promptOutput) {
+		const promptPath = path.resolve(args.promptOutput);
+		await mkdir(path.dirname(promptPath), { recursive: true });
+		await writeFile(promptPath, `${prompt}\n`, 'utf8');
+	}
+	if (args.promptOnly) {
+		if (!args.promptOutput) console.log(prompt);
+		return;
+	}
 	const date = todayIso();
+	const sourceSurfaces = list(frontmatter, 'surfaces');
 	const draftHeader = draftFrontmatter({
 		sourceSlug,
 		target,
 		title: scalar(frontmatter, 'title', sourceSlug),
 		summary: scalar(frontmatter, 'summary', ''),
 		draftType: scalar(frontmatter, 'draft_type', 'technical-blog-post'),
-		date
+		date,
+		canonicalSurface: scalar(frontmatter, 'canonical_surface', 'ryan'),
+		surfaces: sourceSurfaces.length ? sourceSurfaces : ['ryan', 'canopy-blog', 'canopy-engineering'],
+		projects: list(frontmatter, 'projects')
 	});
 	const translatedBody = args.llmOutput
 		? (await readFile(path.resolve(args.llmOutput), 'utf8')).trim()
@@ -212,7 +244,7 @@ async function main() {
 		return;
 	}
 
-	await mkdir(targetDir, { recursive: true });
+	await mkdir(path.dirname(targetPath), { recursive: true });
 	await mkdir(REPORT_ROOT, { recursive: true });
 	await writeFile(targetPath, draftMarkdown, 'utf8');
 	await writeFile(reportPath, reportMarkdown, 'utf8');
