@@ -60,6 +60,13 @@ export function articleCanonicalUrl(article: ArticleSurfaceInput, fallbackOrigin
 		: new URL(articleCanonicalPath(article), fallbackOrigin).toString();
 }
 
+export function articlePresentationUrl(
+	article: Pick<ArticleSurfaceInput, 'date' | 'locale' | 'slug'>,
+	presentationOrigin: string
+): string {
+	return new URL(articleCanonicalPath(article), presentationOrigin).toString();
+}
+
 export function isArticleEnabledForSurface(article: Pick<ArticleSurfaceInput, 'surfaces'>, surface: ArticleSurface): boolean {
 	return article.surfaces.includes(surface);
 }

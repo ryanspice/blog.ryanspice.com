@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
 	articleCanonicalUrl,
+	articlePresentationUrl,
 	articleSurfacePath,
 	parseArticleSurfaces,
 	parseCanonicalOwner,
@@ -49,6 +50,15 @@ describe('article surface contract', () => {
 	});
 
 	it('uses the declared canonical owner across mirrors', () => {
+		expect(articleCanonicalUrl(englishArticle, 'https://blog.canopydigital.ca')).toBe(
+			'https://blog.ryanspice.com/2026/07/10/weekday-pulse/'
+		);
+	});
+
+	it('keeps presentation URLs separate from canonical ownership', () => {
+		expect(articlePresentationUrl(englishArticle, 'https://blog.canopydigital.ca')).toBe(
+			'https://blog.canopydigital.ca/2026/07/10/weekday-pulse/'
+		);
 		expect(articleCanonicalUrl(englishArticle, 'https://blog.canopydigital.ca')).toBe(
 			'https://blog.ryanspice.com/2026/07/10/weekday-pulse/'
 		);

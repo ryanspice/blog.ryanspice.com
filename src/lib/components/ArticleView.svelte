@@ -5,7 +5,7 @@
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleFocalImage } from '$lib/article-focal-images';
 	import { articleHref } from '$lib/article-links';
-	import { articleCanonicalUrl } from '$lib/article-surfaces';
+	import { articleCanonicalUrl, articlePresentationUrl } from '$lib/article-surfaces';
 	import {
 		ARTICLE_SHARE_IMAGE_HEIGHT,
 		ARTICLE_SHARE_IMAGE_WIDTH,
@@ -58,9 +58,11 @@
 	const articleSchemaAuthors = $derived(buildArticleSchemaAuthors(site, coAuthors));
 	const pageTitle = $derived(formatPageTitle(article.seoTitle || article.title, site.titleSuffix));
 	const description = $derived(article.seoDescription || article.summary || site.description);
-	const canonical = $derived(articleCanonicalUrl(article, page.url.origin));
+	const presentationOrigin = $derived(`https://${site.domain}`);
+	const canonical = $derived(articleCanonicalUrl(article, presentationOrigin));
+	const presentationUrl = $derived(articlePresentationUrl(article, presentationOrigin));
 	const shareImagePath = $derived(articleShareImagePath(article, site));
-	const ogImage = $derived(new URL(`${base}${shareImagePath}`, page.url.origin).toString());
+	const ogImage = $derived(new URL(`${base}${shareImagePath}`, presentationOrigin).toString());
 	const ogImageAlt = $derived(articleShareImageAlt(article, site));
 	const localizedHomeHref = $derived(`${base}${pathWithLocale(article.locale, '/')}`);
 	const localizedRssHref = $derived(`${base}${pathWithLocale(article.locale, '/rss.xml')}`);
@@ -81,7 +83,7 @@
 			articleSchemaAuthors,
 			ogImage,
 			ogImageAlt,
-			page.url.origin
+			presentationOrigin
 		)
 	);
 
@@ -191,7 +193,7 @@
 			<p class="dek">{article.summary}</p>
 			<div class="tag-row" aria-label={ui.article.tags}>
 				{#each article.design.tags as tag, index (tag + ':' + index)}
-					<a class="tag tag-link" href={articleTagIndexHref(tag, article.status as ArticleIndexStatus)}>{tag}</a>
+					<a class="tag tag-link" href={articleTagIndexHref(tag, 'published' satisfies ArticleIndexStatus)}>{tag}</a>
 				{/each}
 			</div>
 		</div>
@@ -261,7 +263,7 @@
 				class="cmd"
 				type="button"
 				aria-label={ui.article.copyLink}
-				data-copy-text={canonical}
+				data-copy-text={presentationUrl}
 				data-copy-success={ui.article.linkCopied}
 				data-copy-failure={ui.article.copyFailed}
 			>

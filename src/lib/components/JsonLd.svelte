@@ -10,5 +10,5 @@
 </script>
 
 <svelte:head>
-	<script type="application/ld+json">{text}</script>
+	{@html `<script type="application/ld+json">${text}</script>`}
 </svelte:head>
