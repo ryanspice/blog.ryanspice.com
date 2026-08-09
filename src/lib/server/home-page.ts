@@ -27,7 +27,7 @@ export function loadHomePage(url: URL, localeValue?: string | null) {
 	const site = getSiteConfig();
 	const surface = siteIdToArticleSurface(site.id);
 	const publishedArticles = getPublishedArticlesForLocale(locale).filter((article) => isArticleEnabledForSurface(article, surface));
-	const recentPublishedArticles = publishedArticles.slice(0, 5);
+	const recentPublishedArticles = publishedArticles.slice(0, 6);
 	const localizedHomePath = pathWithLocale(locale, '/');
 	const localizedRssPath = pathWithLocale(locale, '/rss.xml');
 	const localizedRssReaderPath = pathWithLocale(locale, '/rss-reader/');
@@ -43,7 +43,8 @@ export function loadHomePage(url: URL, localeValue?: string | null) {
 		rssPath: localizedRssPath,
 		rssReaderUrl: new URL(`${base}${localizedRssReaderPath}`, url.origin).toString(),
 		rssReaderPath: localizedRssReaderPath,
-		homePath: localizedHomePath,
+		 homePath: localizedHomePath,
+		 archiveMode: url.searchParams.get('view') === 'archive',
 		ogImage: new URL(`${base}${site.defaultOgImage}`, url.origin).toString(),
 		publishedArticles,
 		recentPublishedArticles,

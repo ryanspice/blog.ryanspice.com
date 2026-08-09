@@ -15,11 +15,12 @@
 		article: Article;
 		href?: string;
 		shareUrl?: string;
+		showSocialShare?: boolean;
 	};
 
 	const EMPTY_IMAGE_DIAGNOSTICS: NonNullable<Article['imageDiagnostics']> = [];
 
-	let { article, href, shareUrl }: Props = $props();
+	let { article, href, shareUrl, showSocialShare = false }: Props = $props();
 	const articleAccent = $derived(articleAccentColor(article));
 	const rowImage = $derived(articleCardImage(article));
 	const focalImage = $derived(articleFocalImage(article));
@@ -82,7 +83,7 @@
 		</div>
 		<p>{article.summary}</p>
 		<div class="tag-row compact" aria-label="Tags">
-			{#each article.tags.slice(0, 5) as tag, index (tag + ':' + index)}
+			{#each article.tags.slice(0, 3) as tag, index (tag + ':' + index)}
 				<a class="tag tag-link" href={articleTagIndexHref(tag, tagIndexStatus)}>{tag}</a>
 			{/each}
 		</div>
@@ -105,7 +106,7 @@
 			>
 				{ui.copyLink}
 			</button>
-			{#if canSocialShare}
+			{#if showSocialShare && canSocialShare}
 				<button
 					class="article-card-action"
 					type="button"

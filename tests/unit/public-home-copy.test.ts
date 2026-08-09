@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getDictionary } from '../../src/lib/i18n/dictionaries';
 import { getSiteDictionary } from '../../src/lib/server/site';
 import { siteConfigs } from '../../src/lib/site-config';
+import { firstArticles } from '../../src/lib/home-page-model';
 
 const implementationTerms = /sveltekit|static (build|site|handoff)|github|microsoft sign-in|local markdown|publishing tool|ai wiki|build surface/i;
 
@@ -12,6 +13,11 @@ function publicHomeText(locale: 'en' | 'fr', site: 'ryan' | 'canopy') {
 }
 
 describe('public homepage copy', () => {
+	it('selects six newest articles for the default homepage', () => {
+		const articles = Array.from({ length: 7 }, (_, index) => ({ slug: String(index) }));
+		expect(firstArticles(articles as never[])).toHaveLength(6);
+	});
+
 	it.each([
 		['en', 'ryan'],
 		['fr', 'ryan'],

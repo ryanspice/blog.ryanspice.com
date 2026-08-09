@@ -13,7 +13,7 @@ export function normalizeTags(value: unknown): string[] {
 }
 
 export function firstArticles(articles: Article[]): Article[] {
-	return articles.slice(0, 5);
+	return articles.slice(0, 6);
 }
 
 export function externalHeaderLinks(siteConfig: SiteConfig): SiteConfig['footerExternalLinks'] {

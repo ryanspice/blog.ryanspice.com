@@ -144,7 +144,7 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			dek:
 				'Practical field notes on tooling, web work, AI research, and weird Windows problems, with sources and context worth returning to.',
 			startLatest: 'Start with the latest article',
-			browseLatest: 'Browse all articles',
+			browseLatest: 'Browse the full archive',
 			publishedNotes: 'Published notes',
 			latestUpdate: 'Latest update',
 			subscribe: 'Subscribe',
@@ -267,7 +267,7 @@ const dictionaries: Record<SupportedLocale, UiDictionary> = {
 			dek:
 				'Des notes pratiques sur les outils, le web, la recherche IA et les problemes Windows etranges, avec des sources et du contexte pour y revenir plus tard.',
 			startLatest: 'Lire le plus recent article',
-			browseLatest: 'Voir tous les articles',
+			browseLatest: 'Voir les archives completes',
 			publishedNotes: 'Notes publiees',
 			latestUpdate: 'Derniere mise a jour',
 			subscribe: 'Abonnement',

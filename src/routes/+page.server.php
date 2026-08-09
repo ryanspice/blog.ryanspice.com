@@ -113,7 +113,7 @@ function blog_home_dictionary(string $locale): array {
 				'heading' => 'Notes pratiques sur les outils, le web, la recherche IA et les problemes Windows etranges.',
 				'dek' => 'Des notes pratiques sur les outils, le web, la recherche IA et les problemes Windows etranges, avec des sources et du contexte pour y revenir plus tard.',
 				'startLatest' => 'Lire le plus recent article',
-				'browseLatest' => 'Voir tous les articles',
+				'browseLatest' => 'Voir les archives completes',
 				'publishedNotes' => 'Notes publiees',
 				'latestUpdate' => 'Derniere mise a jour',
 				'subscribe' => 'Abonnement',
@@ -165,7 +165,7 @@ function blog_home_dictionary(string $locale): array {
 			'heading' => 'Practical field notes for tooling, web work, AI research, and weird Windows problems.',
 		'dek' => 'Practical field notes on tooling, web work, AI research, and weird Windows problems, with sources and context worth returning to.',
 			'startLatest' => 'Start with the latest article',
-			'browseLatest' => 'Browse all articles',
+		'browseLatest' => 'Browse the full archive',
 			'publishedNotes' => 'Published notes',
 			'latestUpdate' => 'Latest update',
 			'subscribe' => 'Subscribe',
@@ -636,7 +636,8 @@ function load($event): array {
 		'homePath' => $homePath,
 		'ogImage' => blog_home_url('/og-default.png'),
 		'publishedArticles' => $publishedArticles,
-		'recentPublishedArticles' => array_slice($publishedArticles, 0, 5),
+		'archiveMode' => isset($_GET['view']) && (string) $_GET['view'] === 'archive',
+		'recentPublishedArticles' => array_slice($publishedArticles, 0, 6),
 		'publishedArticleTags' => blog_home_article_tags($publishedArticles)
 	];
 }

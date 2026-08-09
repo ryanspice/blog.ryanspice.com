@@ -27,8 +27,9 @@
 	const site = $derived(data.site);
 	const copy = $derived(data.ui.home);
 	const navCopy = $derived(data.ui.nav);
-	const latestArticles = $derived(firstArticles(publishedArticles));
+	const latestArticles = $derived(data.archiveMode ? publishedArticles : firstArticles(publishedArticles));
 	const articleTags = $derived(normalizeTags(data.publishedArticleTags));
+	const archiveHref = $derived(`${base}${data.homePath}?view=archive#articles`);
 	const articleFilterAction = $derived(`${base}${data.homePath}#articles`);
 	const articleResetHref = $derived(`${base}${data.homePath}#articles`);
 
@@ -89,7 +90,7 @@
 	showDevLogLink={site.showDevLogLinks}
 	showOwnerLinks={site.showOwnerControls}
 	navLinks={[
-		{ label: navCopy.articles, href: '#articles' },
+			{ label: navCopy.articles, href: archiveHref },
 		{ label: navCopy.rss, href: data.rssPath },
 		...headerExternalLinks
 	]}
@@ -102,7 +103,7 @@
 		<p class="dek">{copy.dek}</p>
 		<div class="home-primary-actions" aria-label="Primary actions">
 			<a href={latestArticleHref}>{copy.startLatest}</a>
-			<a href="#articles">{copy.browseLatest}</a>
+			<a href={archiveHref}>{copy.browseLatest}</a>
 		</div>
 		<dl class="meta-grid home-meta" aria-label="Site metadata">
 			<div>
@@ -208,7 +209,7 @@
 	<p class="article-results-meta" data-article-results-meta data-results-label={copy.matchingArticles} hidden></p>
 
 	{#if publishedArticles.length}
-		{#each publishedArticles as article, index (article.slug + ':' + index)}
+				{#each latestArticles as article, index (article.slug + ':' + index)}
 			<ArticleCard article={article} shareUrl={articleShareUrl(article)} />
 		{/each}
 	{:else}
