@@ -25,6 +25,15 @@ export function parseArticleSurface(value: string | undefined): ArticleSurface |
 	return ARTICLE_SURFACES.find((surface) => surface === value?.trim().toLowerCase());
 }
 
+/** Canonical ownership is deliberately limited to the two primary blogs. */
+export function parseCanonicalOwner(value: string | undefined): ArticleSurface {
+	const normalized = value?.trim().toLowerCase();
+	if (!normalized) return 'ryan';
+	if (normalized === 'ryan') return 'ryan';
+	if (normalized === 'canopy' || normalized === 'canopy-blog') return 'canopy-blog';
+	throw new Error(`Invalid canonical owner "${value}". Expected "ryan" or "canopy".`);
+}
+
 export function parseArticleSurfaces(values: string[]): ArticleSurface[] {
 	const parsed = values.map(parseArticleSurface).filter((surface): surface is ArticleSurface => Boolean(surface));
 	return parsed.length ? Array.from(new Set(parsed)) : [...DEFAULT_ARTICLE_SURFACES];
@@ -60,5 +69,5 @@ export function siteIdToArticleSurface(siteId: SiteId): ArticleSurface {
 }
 
 export function isCanonicalForSite(article: Pick<ArticleSurfaceInput, 'canonicalSurface'>, siteId: SiteId): boolean {
-	return !article.canonicalSurface || article.canonicalSurface === siteIdToArticleSurface(siteId);
+	return (article.canonicalSurface ?? 'ryan') === siteIdToArticleSurface(siteId);
 }

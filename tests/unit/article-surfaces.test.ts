@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 import {
 	articleCanonicalUrl,
 	articleSurfacePath,
-	parseArticleSurfaces
+	parseArticleSurfaces,
+	parseCanonicalOwner,
+	isCanonicalForSite
 } from '../../src/lib/article-surfaces';
 
 const englishArticle = {
@@ -50,6 +52,20 @@ describe('article surface contract', () => {
 		expect(articleCanonicalUrl(englishArticle, 'https://blog.canopydigital.ca')).toBe(
 			'https://blog.ryanspice.com/2026/07/10/weekday-pulse/'
 		);
+	});
+
+	it('defaults missing ownership to Ryan and validates the two-owner matrix', () => {
+		expect(parseCanonicalOwner(undefined)).toBe('ryan');
+		expect(parseCanonicalOwner('ryan')).toBe('ryan');
+		expect(parseCanonicalOwner('canopy')).toBe('canopy-blog');
+		expect(() => parseCanonicalOwner('canopy-engineering')).toThrow(/Invalid canonical owner/);
+	});
+
+	it('gives exactly one primary sitemap owner per article', () => {
+		expect(isCanonicalForSite({ canonicalSurface: 'ryan' }, 'ryan')).toBe(true);
+		expect(isCanonicalForSite({ canonicalSurface: 'ryan' }, 'canopy')).toBe(false);
+		expect(isCanonicalForSite({ canonicalSurface: 'canopy-blog' }, 'ryan')).toBe(false);
+		expect(isCanonicalForSite({ canonicalSurface: 'canopy-blog' }, 'canopy')).toBe(true);
 	});
 
 	it('defaults legacy articles to all surfaces', () => {

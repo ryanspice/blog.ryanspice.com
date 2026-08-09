@@ -15,6 +15,7 @@ import {
 	isArticleEnabledForSurface,
 	parseArticleSurface,
 	parseArticleSurfaces,
+	parseCanonicalOwner,
 	type ArticleSurface
 } from './article-surfaces';
 import {
@@ -277,7 +278,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const slug = stringValue(frontmatter.slug) || slugify(title);
 	const translationOf = stringValue(frontmatter.translation_of);
 	const canonicalSlug = stringValue(frontmatter.canonical_slug) || translationOf || slug;
-	const canonicalSurface = parseArticleSurface(stringValue(frontmatter.canonical_surface));
+	const canonicalSurface = parseCanonicalOwner(stringValue(frontmatter.canonical_owner) || stringValue(frontmatter.canonical_surface));
 	const surfaces = parseArticleSurfaces(arrayValue(frontmatter.surfaces));
 	const publicationId = stringValue(frontmatter.publication_id) || canonicalSlug;
 	const projects = arrayValue(frontmatter.projects);
@@ -325,7 +326,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		...(translationOf ? { translationOf } : {}),
 		...(translationStatus ? { translationStatus } : {}),
 		canonicalSlug,
-		...(canonicalSurface ? { canonicalSurface } : {}),
+		canonicalSurface,
 		surfaces,
 		publicationId,
 		projects,
