@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Article } from '$lib/articles';
 	import type { SiteConfig } from '$lib/site-config';
+	import MonetizationSlot from '$lib/components/MonetizationSlot.svelte';
 
 	type ArticleCopy = {
 		articleDetails: string;
@@ -74,3 +75,6 @@
 		</div>
 	{/if}
 </section>
+{#if site.monetization.position === 'article-end'}
+	<MonetizationSlot slot={site.monetization} />
+{/if}

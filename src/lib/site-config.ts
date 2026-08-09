@@ -5,6 +5,16 @@ type SiteLink = {
 	href: string;
 };
 
+export type MonetizationMode = 'none' | 'house' | 'display' | 'affiliate';
+export type MonetizationSlot = {
+	mode: MonetizationMode;
+	position: 'after-intro' | 'mid-article' | 'article-end';
+	label: 'Advertisement' | 'Sponsored' | 'House note';
+	title: string;
+	body: string;
+	link: SiteLink;
+};
+
 type SitePersonOrOrganization = {
 	type: 'Person' | 'Organization';
 	name: string;
@@ -42,6 +52,7 @@ export type SiteConfig = {
 	robotsDisallow: string[];
 	canonicalRedirectHosts: string[];
 	publicRouteExclusions: string[];
+	monetization: MonetizationSlot;
 };
 
 const DEFAULT_SITE_ID: SiteId = 'ryan';
@@ -90,7 +101,15 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 		],
 		robotsDisallow: ['/_incoming/', '/_releases/', '/_backups/'],
 		canonicalRedirectHosts: ['^(www\\.)?ryanspice\\.com$'],
-		publicRouteExclusions: []
+		publicRouteExclusions: [],
+		monetization: {
+			mode: 'none',
+			position: 'article-end',
+			label: 'House note',
+			title: '',
+			body: '',
+			link: { label: '', href: '' }
+		}
 	},
 	canopy: {
 		id: 'canopy',
@@ -145,7 +164,15 @@ export const siteConfigs: Record<SiteId, SiteConfig> = {
 			'/status/'
 		],
 		canonicalRedirectHosts: [],
-		publicRouteExclusions: ['auth', 'briefs', 'dev-log', 'drafts', 'login', 'status']
+		publicRouteExclusions: ['auth', 'briefs', 'dev-log', 'drafts', 'login', 'status'],
+		monetization: {
+			mode: 'house',
+			position: 'article-end',
+			label: 'House note',
+			title: 'Need a clearer next step for your website?',
+			body: 'Canopy Digital helps small businesses improve websites, local visibility, accessibility, and ongoing maintenance.',
+			link: { label: 'Book a consult', href: 'https://canopydigital.ca/#contact' }
+		}
 	}
 };
 

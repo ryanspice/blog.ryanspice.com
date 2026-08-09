@@ -2316,6 +2316,32 @@ th {
 	background: rgba(255, 255, 255, 0.025);
 }
 
+.monetization-slot {
+	margin: 1.25rem 0 0;
+	padding: 1.1rem 1.2rem;
+	border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+	border-radius: 1rem;
+	background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+}
+
+.monetization-slot-label {
+	margin: 0 0 0.35rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.monetization-slot h2,
+.monetization-slot p {
+	margin-top: 0;
+}
+
+.monetization-slot a {
+	display: inline-block;
+	font-weight: 700;
+}
+
 .article-end-meta-grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
