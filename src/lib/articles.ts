@@ -6,6 +6,7 @@ import {
 	type Frontmatter,
 	stringValue as frontmatterStringValue
 } from './article-frontmatter';
+import { resolvePublicArticleType, type PublicArticleType } from './public-taxonomy';
 import { addArticleImageDiagnostics, type ArticleImageDiagnostic } from './article-image-diagnostics';
 import { articleCanonicalPath } from './article-paths';
 import { effectivePublishDate, isPublicArticle } from './article-publication';
@@ -87,6 +88,7 @@ export type ArticleMeta = {
 	translations: Partial<Record<SupportedLocale, string>>;
 	status: string;
 	draftType: string;
+	publicType: PublicArticleType;
 	summary: string;
 	seoDescription?: string;
 	tags: string[];
@@ -279,6 +281,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const translations = parseTranslations(arrayValue(frontmatter.translations));
 	const status = stringValue(frontmatter.status) || 'draft';
 	const draftType = stringValue(frontmatter.draft_type) || 'technical-blog-post';
+	const publicType = resolvePublicArticleType(draftType, stringValue(frontmatter.public_type) || undefined);
 	const summary = stringValue(frontmatter.summary) || '';
 	const seoDescription = stringValue(frontmatter.seo_description) || stringValue(frontmatter.seoDescription);
 	const tags = arrayValue(frontmatter.tags);
@@ -320,6 +323,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		translations,
 		status,
 		draftType,
+		publicType,
 		summary,
 		...(seoDescription ? { seoDescription } : {}),
 		tags,

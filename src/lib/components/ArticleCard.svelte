@@ -8,8 +8,9 @@
 	import { articleHref } from '$lib/article-links';
 	import { articleSocialShareHref } from '$lib/article-share';
 	import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
-	import type { Article } from '$lib/articles';
-	import { getDictionary } from '$lib/i18n/dictionaries';
+import type { Article } from '$lib/articles';
+import { getDictionary } from '$lib/i18n/dictionaries';
+import { PUBLIC_ARTICLE_LABELS } from '$lib/public-taxonomy';
 
 	type Props = {
 		article: Article;
@@ -63,7 +64,7 @@
 		<span class="article-card-focal" aria-hidden="true"></span>
 	{/if}
 	<div class="article-card-content">
-		<p class="card-kicker">{article.draftType.replaceAll('-', ' ')}</p>
+		<p class="card-kicker">{PUBLIC_ARTICLE_LABELS[article.publicType]}</p>
 		<h2 style:view-transition-name={titleTransitionName}>
 			<a class="article-title-link" href={resolvedHref}>{article.title}</a>
 		</h2>

@@ -19,6 +19,7 @@
 	import HomeFandangoStyles from '$lib/components/HomeFandangoStyles.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
+	import { PUBLIC_ARTICLE_LABELS } from '$lib/public-taxonomy';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -142,7 +143,7 @@
 			<dl class="hero-meta" aria-label="Latest article metadata">
 				<div><dt>{copy.published}</dt><dd><time datetime={latestDate}>{latestDateLabel}</time></dd></div>
 				<div><dt>{copy.readTime}</dt><dd>{latestArticle?.readingMinutes ?? 0} min</dd></div>
-				<div><dt>{copy.type}</dt><dd>{latestArticle?.draftType?.replaceAll('-', ' ') ?? 'article'}</dd></div>
+				<div><dt>{copy.type}</dt><dd>{latestArticle ? PUBLIC_ARTICLE_LABELS[latestArticle.publicType] : 'article'}</dd></div>
 			</dl>
 			<p class="home-hero-note">{copy.focusNote}</p>
 			<div class="home-hero-links" aria-label={copy.quickLinks}>

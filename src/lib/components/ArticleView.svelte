@@ -22,6 +22,7 @@
 		parseResourceLinks
 	} from '$lib/article-view-model';
 	import type { Article } from '$lib/articles';
+	import { PUBLIC_ARTICLE_LABELS } from '$lib/public-taxonomy';
 	import { getDictionary } from '$lib/i18n/dictionaries';
 	import { pathWithLocale } from '$lib/i18n/locales';
 	import { siteConfigs, type SiteConfig } from '$lib/site-config';
@@ -50,7 +51,7 @@
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const ui = $derived(getDictionary(article.locale));
-	const articleInfo = $derived(`${article.draftType.replaceAll('-', ' ')} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
+	const articleInfo = $derived(`${PUBLIC_ARTICLE_LABELS[article.publicType]} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
 	const articleReferences = $derived(parseResourceLinks(article.references));
 	const articleFurtherReading = $derived(parseResourceLinks(article.furtherReading));
 	const coAuthors = $derived(article.coAuthors ?? EMPTY_CO_AUTHORS);
@@ -175,7 +176,7 @@
 			<dl class="meta-grid article-meta" aria-label="Article metadata">
 				<div><dt>{ui.article.articleInfo}</dt><dd>{articleInfo}</dd></div>
 				<div><dt>{ui.article.readTime}</dt><dd>{article.readingMinutes} min</dd></div>
-				<div><dt>{ui.article.type}</dt><dd>{article.draftType.replaceAll('-', ' ')}</dd></div>
+				<div><dt>{ui.article.type}</dt><dd>{PUBLIC_ARTICLE_LABELS[article.publicType]}</dd></div>
 				{#if article.releaseDateLabel}
 					<div><dt>{ui.article.release}</dt><dd>{article.releaseDateLabel}</dd></div>
 				{/if}
