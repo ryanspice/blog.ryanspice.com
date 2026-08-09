@@ -178,7 +178,7 @@
 		<div class="article-column">
 			<article class="article-shell"><SafeHtml class="article-inner" html={article.html} /></article>
 
-			<ArticleEndMeta {article} {site} {coAuthors} copy={ui.article} />
+			<ArticleEndMeta {article} {coAuthors} copy={ui.article} />
 			<ArticleResourceSections
 				{article}
 				{relatedArticles}

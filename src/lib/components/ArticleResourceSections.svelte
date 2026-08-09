@@ -8,6 +8,7 @@
 	import type { SiteConfig } from '$lib/site-config';
 	import type { ResourceLink } from '$lib/article-view-model';
 	import { cssImageUrl } from '$lib/article-view-model';
+	import MonetizationSlot from '$lib/components/MonetizationSlot.svelte';
 
 	type ArticleCopy = {
 		sourcesHeading: string;
@@ -92,6 +93,10 @@
 			{/each}
 		</ul>
 	</section>
+{/if}
+
+{#if site.monetization.position === 'article-end'}
+	<MonetizationSlot slot={site.monetization} />
 {/if}
 
 {#if articleFurtherReading.length}

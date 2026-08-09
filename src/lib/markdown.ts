@@ -279,46 +279,6 @@ function hastText(node: any): string {
 	return '';
 }
 
-function leadSectionArt(): any {
-	return element(
-		'div',
-		{ className: ['article-section-art'], 'aria-hidden': 'true' },
-		[
-			element(
-				'svg',
-				{ viewBox: '0 0 320 240', focusable: 'false', 'aria-hidden': 'true' },
-				[
-					element('defs', {}, [
-						element('linearGradient', { id: 'lead-grid', x1: '0%', y1: '0%', x2: '100%', y2: '100%' }, [
-							element('stop', { offset: '0%', 'stop-color': 'currentColor', 'stop-opacity': '0.12' }),
-							element('stop', { offset: '100%', 'stop-color': 'currentColor', 'stop-opacity': '0.02' })
-						])
-					]),
-					element('rect', { x: '22', y: '18', width: '276', height: '204', rx: '24', fill: 'url(#lead-grid)', opacity: '0.9' }),
-					element(
-						'g',
-						{ fill: 'none', stroke: 'currentColor', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
-						[
-							element('rect', { x: '176', y: '28', width: '92', height: '92', rx: '14', opacity: '0.26', 'stroke-width': '1.4' }),
-							element('rect', { x: '124', y: '76', width: '106', height: '106', rx: '16', opacity: '0.45', 'stroke-width': '1.6' }),
-							element('rect', { x: '64', y: '126', width: '124', height: '70', rx: '16', opacity: '0.78', 'stroke-width': '1.8' }),
-							element('path', { d: 'M64 162H188', opacity: '0.34', 'stroke-width': '1.3' }),
-							element('path', { d: 'M124 118H230', opacity: '0.28', 'stroke-width': '1.3' }),
-							element('path', { d: 'M176 74H268', opacity: '0.22', 'stroke-width': '1.3' })
-						]
-					),
-					element('g', { fill: 'currentColor', opacity: '0.22' }, [
-						element('circle', { cx: '88', cy: '58', r: '2.2' }),
-						element('circle', { cx: '105', cy: '39', r: '1.6' }),
-						element('circle', { cx: '244', cy: '48', r: '1.8' }),
-						element('circle', { cx: '214', cy: '184', r: '2.1' })
-					])
-				]
-			)
-		]
-	);
-}
-
 function mdastText(node: any): string {
 	if (!node) return '';
 	if (node.type === 'text' && typeof node.value === 'string') return node.value;
@@ -682,8 +642,7 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 						'section',
 						{ className: articleSectionClasses(headingText, isLead) },
 						[
-							element('div', { className: ['article-section-body'] }, sectionBlocks),
-							...(isLead ? [leadSectionArt()] : [])
+							element('div', { className: ['article-section-body'] }, sectionBlocks)
 						]
 					)
 				);
