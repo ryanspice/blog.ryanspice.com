@@ -525,6 +525,11 @@ a { color: var(--accent); }
 	gap: clamp(20px, 2.2vw, 32px);
 }
 
+.article-page > .hero {
+	grid-template-columns: minmax(0, 920px);
+	max-width: 920px;
+}
+
 .article-hero-side {
 	display: grid;
 	gap: 16px;
@@ -557,6 +562,10 @@ a { color: var(--accent); }
 	display: grid;
 	gap: 0;
 	align-content: start;
+}
+
+.article-page .article-hero-copy {
+	max-width: 920px;
 }
 
 .article-hero-visual {
@@ -1457,6 +1466,15 @@ button.footer-auth-link {
 	padding: 0;
 	line-height: 1.72;
 	letter-spacing: 0.004em;
+	max-width: 70ch;
+	font-size: 17px;
+	font-weight: 400;
+}
+
+.article-page .article-inner {
+	max-width: 70ch;
+	font-size: 17px;
+	font-weight: 400;
 }
 
 .theme-repair .article-inner {

@@ -19,29 +19,20 @@
 	};
 
 	let { article, site, coAuthors, copy }: Props = $props();
+	const hasTrustNotes = $derived(Boolean(
+		(article.lastReviewedDate && article.lastReviewedDateLabel) || article.disclosure || article.correctionNote
+	));
 
 	function isExternalHref(href: string | undefined): boolean {
 		return Boolean(href && /^https?:\/\//i.test(href));
 	}
 </script>
 
-<section class="article-end-meta" aria-label={copy.articleDetails}>
-	<dl class="article-end-meta-grid">
-		<div>
-			<dt>{copy.published}</dt>
-			<dd><time datetime={article.date}>{article.dateLabel}</time></dd>
-		</div>
-		<div>
-			<dt>{copy.updated}</dt>
-			<dd><time datetime={article.updatedDate}>{article.updatedDateLabel}</time></dd>
-		</div>
-		<div>
-			<dt>{copy.author}</dt>
-			<dd>
-				<a href={site.author.url} rel="author noreferrer" target="_blank">{article.author || site.author.name}</a>
-			</dd>
-		</div>
-		{#if coAuthors.length}
+
+{#if coAuthors.length || hasTrustNotes}
+	<section class="article-end-meta" aria-label={copy.articleDetails}>
+	{#if coAuthors.length}
+		<dl class="article-end-meta-grid">
 			<div class="article-end-meta-row--wide">
 				<dt>{copy.coAuthors}</dt>
 				<dd class="article-contributor-list">
@@ -59,9 +50,9 @@
 					{/each}
 				</dd>
 			</div>
-		{/if}
-	</dl>
-	{#if article.lastReviewedDate && article.lastReviewedDateLabel || article.disclosure || article.correctionNote}
+		</dl>
+	{/if}
+	{#if hasTrustNotes}
 		<div class="article-trust-notes" aria-label="Editorial trust notes">
 			{#if article.lastReviewedDate && article.lastReviewedDateLabel}
 				<p><strong>Last reviewed</strong> <time datetime={article.lastReviewedDate}>{article.lastReviewedDateLabel}</time></p>
@@ -74,7 +65,8 @@
 			{/if}
 		</div>
 	{/if}
-</section>
+	</section>
+{/if}
 {#if site.monetization.position === 'article-end'}
 	<MonetizationSlot slot={site.monetization} />
 {/if}

@@ -39,13 +39,16 @@ export function buildArticleFooterLinks(
 	homeHref: string,
 	rssHref: string,
 	devLogHref: string,
-	siteConfig: SiteConfig
+	siteConfig: SiteConfig,
+	includeRepository = true
 ): Article['design']['navLinks'] {
 	const links = [
 		{ label: copy.home, href: homeHref },
 		{ label: copy.rss, href: rssHref }
 	];
-	if (siteConfig.repositoryLink) links.push({ label: siteConfig.repositoryLink.label, href: siteConfig.repositoryLink.href });
+	if (includeRepository && siteConfig.repositoryLink) {
+		links.push({ label: siteConfig.repositoryLink.label, href: siteConfig.repositoryLink.href });
+	}
 	if (siteConfig.showDevLogLinks) links.push({ label: copy.devLog, href: devLogHref });
 	return links;
 }

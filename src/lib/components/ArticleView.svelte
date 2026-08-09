@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
-	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
+	import { articleTagIndexHref } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleFocalImage } from '$lib/article-focal-images';
 	import { articleHref } from '$lib/article-links';
-	import { articleCanonicalUrl, articlePresentationUrl } from '$lib/article-surfaces';
+	import { articleCanonicalUrl } from '$lib/article-surfaces';
 	import {
 		ARTICLE_SHARE_IMAGE_HEIGHT,
 		ARTICLE_SHARE_IMAGE_WIDTH,
@@ -22,15 +22,12 @@
 		parseResourceLinks
 	} from '$lib/article-view-model';
 	import type { Article } from '$lib/articles';
-	import { PUBLIC_ARTICLE_LABELS } from '$lib/public-taxonomy';
 	import { getDictionary } from '$lib/i18n/dictionaries';
 	import { pathWithLocale } from '$lib/i18n/locales';
 	import { siteConfigs, type SiteConfig } from '$lib/site-config';
 	import ArticleBackgroundLayer from '$lib/components/ArticleBackgroundLayer.svelte';
 	import ArticleEndMeta from '$lib/components/ArticleEndMeta.svelte';
-	import ArticleRailCard from '$lib/components/ArticleRailCard.svelte';
 	import ArticleResourceSections from '$lib/components/ArticleResourceSections.svelte';
-	import FooterAuthControls from '$lib/components/FooterAuthControls.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import SafeHtml from '$lib/components/SafeHtml.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
@@ -47,11 +44,9 @@
 
 	const articleAccent = $derived(articleAccentColor(article));
 	const focalImage = $derived(articleFocalImage(article));
-	const focalImageIsDiagram = $derived(Boolean(focalImage?.src.toLowerCase().includes('.svg')));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const ui = $derived(getDictionary(article.locale));
-	const articleInfo = $derived(`${PUBLIC_ARTICLE_LABELS[article.publicType]} · ${ui.article.published} ${article.dateLabel}${article.updatedDate !== article.date ? ` · ${ui.article.updated} ${article.updatedDateLabel}` : ''}`);
 	const articleReferences = $derived(parseResourceLinks(article.references));
 	const articleFurtherReading = $derived(parseResourceLinks(article.furtherReading));
 	const coAuthors = $derived(article.coAuthors ?? EMPTY_CO_AUTHORS);
@@ -60,7 +55,6 @@
 	const description = $derived(article.seoDescription || article.summary || site.description);
 	const presentationOrigin = $derived(`https://${site.domain}`);
 	const canonical = $derived(articleCanonicalUrl(article, presentationOrigin));
-	const presentationUrl = $derived(articlePresentationUrl(article, presentationOrigin));
 	const shareImagePath = $derived(articleShareImagePath(article, site));
 	const ogImage = $derived(new URL(`${base}${shareImagePath}`, presentationOrigin).toString());
 	const ogImageAlt = $derived(articleShareImageAlt(article, site));
@@ -69,7 +63,7 @@
 	const localizedDevLogHref = $derived(`${base}/dev-log/`);
 	const headerNavLinks = $derived(buildArticleHeaderLinks(article.design.navLinks, site));
 	const articleFooterLinks = $derived(
-		buildArticleFooterLinks(ui.article, localizedHomeHref, localizedRssHref, localizedDevLogHref, site)
+		buildArticleFooterLinks(ui.article, localizedHomeHref, localizedRssHref, localizedDevLogHref, site, false)
 	);
 
 	const jsonLd = $derived(
@@ -125,8 +119,8 @@
 
 <JsonLd value={jsonLd} />
 
-<div
-	class={`article-page theme-${article.design.variant} has-command-bar${focalImage ? ' has-focal-image' : ''}`}
+	<div
+		class={`article-page theme-${article.design.variant}${focalImage ? ' has-focal-image' : ''}`}
 	style:--article-accent={articleAccent}
 	style:--article-focal-image={focalImage ? cssImageUrl(focalImage.src) : undefined}
 	style:--article-focal-position={focalImage ? focalImage.position ?? 'center center' : undefined}
@@ -139,37 +133,10 @@
 		navLinks={headerNavLinks}
 		showLibraryLink={site.showLibraryLinks}
 		showDevLogLink={site.showDevLogLinks}
-		showOwnerLinks={site.showOwnerControls}
+		showOwnerLinks={false}
 	/>
 
 	<section class="hero">
-		<div class="article-hero-visual" aria-hidden="true">
-			{#if focalImage}
-				<div class="article-focal-panel" class:article-focal-panel--diagram={focalImageIsDiagram}></div>
-			{:else}
-				<svg viewBox="0 0 420 560" focusable="false">
-					<defs>
-						<linearGradient id="hero-visual-line" x1="0%" y1="0%" x2="100%" y2="100%">
-							<stop offset="0%" stop-color="currentColor" stop-opacity="0.55" />
-							<stop offset="100%" stop-color="currentColor" stop-opacity="0.05" />
-						</linearGradient>
-						<radialGradient id="hero-visual-glow" cx="50%" cy="42%" r="58%">
-							<stop offset="0%" stop-color="currentColor" stop-opacity="0.2" />
-							<stop offset="100%" stop-color="currentColor" stop-opacity="0" />
-						</radialGradient>
-					</defs>
-					<rect x="34" y="78" width="306" height="382" rx="32" fill="url(#hero-visual-glow)" />
-					<g fill="none" stroke="url(#hero-visual-line)" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M68 402V184l112-64 128 74v218l-116 66-124-76Z" stroke-width="1.7" />
-						<path d="M68 184l124 72 116-62M192 256v222" stroke-width="1.4" opacity="0.62" />
-						<path d="M104 374V232l78-44 90 52v142l-82 46-86-54Z" stroke-width="1.4" opacity="0.5" />
-						<path d="M132 350V260l52-30 60 35v90l-55 31-57-36Z" stroke-width="1.4" opacity="0.62" />
-						<path d="M66 116h206M92 98h148M238 464h106M262 486h66" stroke-width="1.2" opacity="0.42" />
-					</g>
-				</svg>
-			{/if}
-		</div>
-
 		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
 			<div class="eyebrow">{article.design.eyebrow}</div>
 			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
@@ -181,42 +148,12 @@
 				· {article.readingMinutes} min
 			</p>
 
-			<dl class="meta-grid article-meta" aria-label="Article metadata">
-				<div><dt>{ui.article.articleInfo}</dt><dd>{articleInfo}</dd></div>
-				<div><dt>{ui.article.readTime}</dt><dd>{article.readingMinutes} min</dd></div>
-				<div><dt>{ui.article.type}</dt><dd>{PUBLIC_ARTICLE_LABELS[article.publicType]}</dd></div>
-				{#if article.releaseDateLabel}
-					<div><dt>{ui.article.release}</dt><dd>{article.releaseDateLabel}</dd></div>
-				{/if}
-			</dl>
-
 			<p class="dek">{article.summary}</p>
 			<div class="tag-row" aria-label={ui.article.tags}>
-				{#each article.design.tags as tag, index (tag + ':' + index)}
-					<a class="tag tag-link" href={articleTagIndexHref(tag, 'published' satisfies ArticleIndexStatus)}>{tag}</a>
+				{#each article.design.tags.slice(0, 3) as tag, index (tag + ':' + index)}
+					<a class="tag tag-link" href={articleTagIndexHref(tag, 'published')}>{tag}</a>
 				{/each}
 			</div>
-		</div>
-
-		<div class="article-hero-side">
-			<aside class="hero-card" aria-label={article.design.heroCardAria} style:--article-accent={articleAccent}>
-				<strong>{article.design.heroCardTitle}</strong>
-				<div class="status-grid">
-					{#each article.design.statusItems as item, index (item.label + ':' + index)}
-						<div class="status-pill"><span>{item.label}</span><strong>{item.value}</strong></div>
-					{/each}
-				</div>
-				{#if focalImage?.credit}
-					<p class="focal-credit">
-						{#if focalImage.sourceHref}
-							<a href={focalImage.sourceHref} rel="noreferrer" target="_blank">{focalImage.credit}</a>
-						{:else}
-							{focalImage.credit}
-						{/if}
-					</p>
-				{/if}
-			</aside>
-
 			{#if article.toc.length}
 				<details class="toc-accordion article-toc article-toc--mobile" aria-label="Table of contents">
 					<summary><span>{article.design.tocTitle}</span><strong>{article.toc.length} sections</strong></summary>
@@ -227,8 +164,6 @@
 					</div>
 				</details>
 			{/if}
-
-			<ArticleRailCard {article} />
 		</div>
 	</section>
 
@@ -255,33 +190,11 @@
 		</div>
 	</main>
 
-	<div class="command-bar" aria-label="Commands">
-		<div class="command-inner" data-copy-scope>
-			<a class="cmd" href={localizedHomeHref} data-back-same-origin>{ui.article.back}</a>
-			<a class="cmd" href={localizedRssHref}>{ui.article.rss}</a>
-			<button
-				class="cmd"
-				type="button"
-				aria-label={ui.article.copyLink}
-				data-copy-text={presentationUrl}
-				data-copy-success={ui.article.linkCopied}
-				data-copy-failure={ui.article.copyFailed}
-			>
-				{ui.article.copyLink}
-			</button>
-			<span class="cmd-feedback" aria-live="polite" data-copy-feedback-target hidden></span>
-		</div>
-	</div>
-
 	<footer class="article-footer">
-		<p class="article-footer-copy">{article.design.footerText}</p>
 		<div class="article-footer-links" aria-label="Footer links">
 			{#each articleFooterLinks as link, index (link.href + ':' + index)}
 				<a href={link.href}>{link.label}</a>
 			{/each}
-			{#if site.showOwnerControls}
-				<FooterAuthControls returnTo="/drafts/" />
-			{/if}
 		</div>
 	</footer>
 </div>
