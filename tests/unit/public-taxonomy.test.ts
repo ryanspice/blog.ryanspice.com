@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { publishedArticles } from '../../src/lib/articles';
+import { getPublishedArticlesForLocale, publishedArticles } from '../../src/lib/articles';
+import { isArticleEnabledForSurface } from '../../src/lib/article-surfaces';
 import {
 	PUBLIC_ARTICLE_TYPES,
 	resolvePublicArticleType,
@@ -23,5 +24,16 @@ describe('public article taxonomy', () => {
 
 	it('keeps explicit valid public types authoritative', () => {
 		expect(resolvePublicArticleType('research-note', 'field-note')).toBe('field-note');
+	});
+
+	it('keeps Ryan and Canopy public labels aligned by slug', () => {
+		const articles = getPublishedArticlesForLocale('en');
+		const ryan = new Map(
+			articles.filter((article) => isArticleEnabledForSurface(article, 'ryan')).map((article) => [article.slug, article.publicType])
+		);
+		const canopy = new Map(
+			articles.filter((article) => isArticleEnabledForSurface(article, 'canopy-blog')).map((article) => [article.slug, article.publicType])
+		);
+		expect([...ryan.entries()]).toEqual([...canopy.entries()]);
 	});
 });
