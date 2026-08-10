@@ -1195,7 +1195,7 @@ html.article-search-active .site-shell--canopy .article-filter-bar {
 	}
 
 	.site-shell--canopy .article-hero-visual {
-		display: none;
+		display: grid;
 	}
 
 	.site-shell--canopy h1,
