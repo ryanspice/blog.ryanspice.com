@@ -4399,6 +4399,17 @@ footer {
 	}
 }
 
+@media (max-width: 360px) {
+	.article-hero-visual--portrait {
+		width: min(100%, 230px);
+		max-height: 345px;
+	}
+
+	.article-hero-visual--portrait img {
+		max-height: 345px;
+	}
+}
+
 html.reading-mode {
 	--wide: min(1840px, calc(100vw - 24px));
 	--content: min(1280px, calc(100vw - 24px));
