@@ -138,6 +138,8 @@
 	]}
 />
 
+<span id="main-content" class="skip-target" tabindex="-1"></span>
+
 {#if canViewBriefs}
 	<section class="home-hero compact-page private-brief-hero">
 		<div class="home-hero-copy">

@@ -158,6 +158,8 @@
 
 <SiteHeader navLinks={[{ label: 'Articles', href: '/#articles' }, { label: 'RSS', href: '/rss.xml' }]} />
 
+<span id="main-content" class="skip-target" tabindex="-1"></span>
+
 <section class="home-hero compact-page">
 	<div class="home-hero-copy">
 		<p class="eyebrow">Microsoft auth gate</p>

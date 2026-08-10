@@ -167,7 +167,7 @@
 		</div>
 	</section>
 
-	<main class="layout">
+	<main id="main-content" class="layout" tabindex="-1">
 		<aside class="toc article-toc article-toc--desktop" aria-label="Table of contents">
 			<h2>{article.design.tocTitle}</h2>
 			{#each article.toc as item, index (item.id + ':' + index)}

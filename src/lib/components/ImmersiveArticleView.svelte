@@ -238,7 +238,7 @@
 			</div>
 		</section>
 
-		<main id="sections" class="immersive-layout">
+		<main id="main-content" class="immersive-layout">
 			{#if article.toc.length}
 				<aside class="immersive-toc article-toc article-toc--desktop" aria-label="Table of contents">
 					<h2>{article.design.tocTitle}</h2>

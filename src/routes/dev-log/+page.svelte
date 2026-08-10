@@ -123,6 +123,8 @@
 	]}
 />
 
+<span id="main-content" class="skip-target" tabindex="-1"></span>
+
 {#if !isCompactView}
 	<section class="home-hero">
 		<div class="home-hero-copy">

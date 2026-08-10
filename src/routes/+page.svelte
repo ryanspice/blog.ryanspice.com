@@ -97,6 +97,7 @@
 	]}
 />
 
+<main id="main-content" tabindex="-1">
 <section class="home-hero" style:--article-accent={latestArticleAccent}>
 	<div class="home-hero-copy">
 		<p class="eyebrow">{copy.eyebrow}</p>
@@ -255,3 +256,4 @@
 		<span>{copy.staticSite}</span>
 	</div>
 </footer>
+</main>

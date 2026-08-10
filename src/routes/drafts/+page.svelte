@@ -124,6 +124,8 @@
 	]}
 />
 
+<span id="main-content" class="skip-target" tabindex="-1"></span>
+
 {#if canViewDrafts}
 	{#if !draftsLoaded}
 		<section class="home-hero compact-page">

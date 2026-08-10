@@ -113,6 +113,7 @@
 	]}
 />
 
+<main id="main-content" tabindex="-1">
 <section class="home-hero">
 	<div class="home-hero-copy">
 		<p class="eyebrow">Research shelf · source memory</p>
@@ -150,6 +151,8 @@
 		</dl>
 	</aside>
 </section>
+
+</main>
 
 <section class="article-grid" aria-label="Research library items">
 	<div class="section-head">

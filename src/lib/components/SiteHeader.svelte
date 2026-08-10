@@ -85,6 +85,8 @@
 	}
 </script>
 
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
 <header class="site-header">
 	<nav class="nav" aria-label="Site">
 		<div class="nav-branding">

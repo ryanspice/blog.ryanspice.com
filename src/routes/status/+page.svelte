@@ -145,6 +145,8 @@
 	]}
 />
 
+<span id="main-content" class="skip-target" tabindex="-1"></span>
+
 <section class="home-hero compact-page">
 	<div class="home-hero-copy">
 		<p class="eyebrow">Site status · internal snapshot</p>

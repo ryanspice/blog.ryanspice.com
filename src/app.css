@@ -110,6 +110,34 @@ body::before {
 	outline-offset: 4px;
 }
 
+.skip-link {
+	position: fixed;
+	top: 0.75rem;
+	left: 0.75rem;
+	z-index: 1000;
+	transform: translateY(-200%);
+	padding: 0.7rem 0.9rem;
+	border: 2px solid var(--accent);
+	border-radius: 0.5rem;
+	background: var(--surface, #111);
+	color: var(--text, #fff);
+	font-weight: 800;
+	text-decoration: none;
+}
+
+.skip-link:focus-visible {
+	transform: translateY(0);
+}
+
+.skip-target {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
 a { color: var(--accent); }
 
 ::view-transition-group(*),

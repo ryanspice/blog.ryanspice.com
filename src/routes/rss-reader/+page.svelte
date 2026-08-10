@@ -117,7 +117,7 @@
 	navLinks={headerLinks}
 />
 
-<main class="rss-friendly-shell">
+<main id="main-content" class="rss-friendly-shell" tabindex="-1">
 	<section class="rss-friendly-hero">
 		<p class="eyebrow">{copy.feedLabel}</p>
 		<h1>{copy.heading}</h1>
