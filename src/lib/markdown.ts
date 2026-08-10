@@ -482,7 +482,9 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 			[/agent-routing-map\.svg$/i, 1600, 900],
 			[/diminishing-returns-curve\.svg$/i, 1600, 900],
 			[/openjarvis-local-ai-stack\.svg$/i, 1600, 900],
-			[/openjarvis-five-parts\.svg$/i, 1200, 675]
+			[/openjarvis-five-parts\.svg$/i, 1200, 675],
+			[/mimo-coding-harness-architecture\.svg$/i, 1600, 900],
+			[/mimo-harness-decision-map\.svg$/i, 1400, 900]
 		];
 
 		for (const [pattern, width, height] of knownDimensions) {

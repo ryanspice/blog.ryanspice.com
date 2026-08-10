@@ -143,8 +143,8 @@
 				<img
 					src={heroImage.src}
 					alt={heroImage.alt}
-					width="1200"
-					height="800"
+					width="1600"
+					height="900"
 					loading="eager"
 					decoding="async"
 				/>

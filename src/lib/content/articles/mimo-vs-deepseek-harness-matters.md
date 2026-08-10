@@ -12,10 +12,10 @@ release_time: "21:00"
 summary: "MiMo and DeepSeek are portable coding engines. My daily choice now depends as much on Claude Code, Codex, Hermes, OpenCode, and T3 Code as on the model underneath."
 seo_description: "A Windows workflow field note on MiMo, DeepSeek, Claude Code, Codex, Hermes, OpenCode, and T3 Code—and why the coding harness matters as much as the model."
 accent: "#6f86ff"
-image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=2000&q=85"
-image_alt: "Laptop showing a code editor in a dark developer workspace"
-image_credit: "Unsplash"
-image_source: "https://unsplash.com/photos/macbook-pro-on-brown-wooden-table-c5249f4df085"
+image: "/img/articles/mimo-vs-deepseek-harness-matters/mimo-coding-harness-architecture.svg"
+image_alt: "Architecture diagram showing MiMo and DeepSeek flowing through a compatibility layer, coding harness, control surface, and repository tools"
+image_credit: "Original diagram by Ryan Spice"
+image_source: "/img/articles/mimo-vs-deepseek-harness-matters/mimo-coding-harness-architecture.svg"
 image_position: "center center"
 row_image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1800&q=85"
 row_image_alt: "Laptop with code on screen beside a notebook"
@@ -43,6 +43,8 @@ tags:
 credits:
   - "Ryan Spice"
 references:
+  - "Original article diagrams|/img/articles/mimo-vs-deepseek-harness-matters/mimo-coding-harness-architecture.svg"
+  - "Original qualitative decision map|/img/articles/mimo-vs-deepseek-harness-matters/mimo-harness-decision-map.svg"
   - "MiMo repository and model documentation|https://github.com/XiaomiMiMo/MiMo"
   - "DeepSeek Claude Code integration|https://api-docs.deepseek.com/quick_start/agent_integrations/claude_code"
   - "DeepSeek Anthropic API guide|https://api-docs.deepseek.com/guides/anthropic_api"
@@ -86,6 +88,14 @@ The stack has four different layers:
 | Compatibility or gateway route | DeepSeek's Anthropic-compatible API | How one provider speaks the protocol expected by another tool |
 
 Calling T3 a model, or treating the DeepSeek gateway as a new harness, collapses distinctions that matter when something fails. A control surface can change the interaction loop without changing the model. A compatibility route can make an integration possible without making it vendor-supported.
+
+The architecture map makes the boundary concrete: the provider is replaceable, the compatibility layer is a route, the harness owns the coding loop, and the control surface changes how I move between sessions. The arrows describe routing boundaries, not a benchmark or a promise of vendor support.
+
+![Architecture diagram showing model providers flowing through compatibility, harness, control-surface, and repository layers](/img/articles/mimo-vs-deepseek-harness-matters/mimo-coding-harness-architecture.svg "The model is one layer of the coding loop")
+
+I use the qualitative map below as a reminder to choose the surface for the work in front of me. It is intentionally not a scorecard: the repository, permissions, review habits, and tests should remain stable even when the provider or surface changes.
+
+![Qualitative decision map connecting workflow needs to Codex, Hermes, Claude Code, and T3 Code](/img/articles/mimo-vs-deepseek-harness-matters/mimo-harness-decision-map.svg "Choose the surface for the work, not a winner in a benchmark")
 
 ## Model, harness, runtime, and control surface
 
