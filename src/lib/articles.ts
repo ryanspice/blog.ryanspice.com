@@ -8,6 +8,7 @@ import {
 } from './article-frontmatter';
 import { resolvePublicArticleType, type PublicArticleType } from './public-taxonomy';
 import { addArticleImageDiagnostics, type ArticleImageDiagnostic } from './article-image-diagnostics';
+import { optionalArticleDate } from './article-trust';
 import { articleCanonicalPath } from './article-paths';
 import { effectivePublishDate, isPublicArticle } from './article-publication';
 import {
@@ -295,7 +296,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const dateLabel = formatArticleDate(date, locale);
 	const updatedDate = stringValue(frontmatter.updated_date) || stringValue(frontmatter.modified_date) || date;
 	const updatedDateLabel = formatArticleDate(updatedDate, locale);
-	const lastReviewedDate = optionalDateValue(frontmatter.last_reviewed_date, 'last_reviewed_date');
+	const lastReviewedDate = optionalArticleDate(frontmatter.last_reviewed_date, 'last_reviewed_date');
 	const lastReviewedDateLabel = lastReviewedDate ? formatArticleDate(lastReviewedDate, locale) : undefined;
 	const author = stringValue(frontmatter.author) || undefined;
 	const disclosure = stringValue(frontmatter.disclosure) || undefined;
@@ -604,15 +605,6 @@ function splitFrontmatter(raw: string): { frontmatter: Frontmatter; body: string
 	const yaml = normalized.slice(4, end);
 	const body = normalized.slice(end + 4).trimStart();
 	return { frontmatter: parseSimpleYaml(yaml), body };
-}
-
-function optionalDateValue(value: Frontmatter[string] | undefined, key: string): string | undefined {
-	const candidate = stringValue(value);
-	if (!candidate) return undefined;
-	if (!/^\d{4}-\d{2}-\d{2}$/.test(candidate) || Number.isNaN(Date.parse(`${candidate}T00:00:00Z`))) {
-		throw new Error(`Invalid ${key} "${candidate}". Expected an ISO date (YYYY-MM-DD).`);
-	}
-	return candidate;
 }
 
 function parseSimpleYaml(yaml: string): Frontmatter {

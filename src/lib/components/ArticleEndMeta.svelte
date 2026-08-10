@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Article } from '$lib/articles';
+	import { hasArticleTrustNotes } from '$lib/article-trust';
 
 	type ArticleCopy = {
 		articleDetails: string;
@@ -16,9 +17,7 @@
 	};
 
 	let { article, coAuthors, copy }: Props = $props();
-	const hasTrustNotes = $derived(Boolean(
-		(article.lastReviewedDate && article.lastReviewedDateLabel) || article.disclosure || article.correctionNote
-	));
+	const hasTrustNotes = $derived(hasArticleTrustNotes(article));
 
 	function isExternalHref(href: string | undefined): boolean {
 		return Boolean(href && /^https?:\/\//i.test(href));
