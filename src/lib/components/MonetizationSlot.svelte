@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { MonetizationSlot as MonetizationSlotConfig } from '$lib/site-config';
+	import { isMonetizationSlotVisible } from '$lib/monetization';
 
 	let { slot }: { slot: MonetizationSlotConfig } = $props();
-	const visible = $derived(slot.mode !== 'none' && Boolean(slot.title && slot.body && slot.link.href));
+	const visible = $derived(isMonetizationSlotVisible(slot));
 </script>
 
 {#if visible}
