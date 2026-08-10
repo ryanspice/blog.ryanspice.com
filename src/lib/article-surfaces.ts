@@ -22,7 +22,13 @@ const SURFACE_ORIGINS: Record<ArticleSurface, string> = {
 };
 
 export function parseArticleSurface(value: string | undefined): ArticleSurface | undefined {
-	return ARTICLE_SURFACES.find((surface) => surface === value?.trim().toLowerCase());
+	const normalized = value?.trim().toLowerCase();
+	if (!normalized) return undefined;
+	const parsed = ARTICLE_SURFACES.find((surface) => surface === normalized);
+	if (!parsed) {
+		throw new Error(`Invalid article surface "${value}". Expected one of: ${ARTICLE_SURFACES.join(', ')}`);
+	}
+	return parsed;
 }
 
 /** Canonical ownership is deliberately limited to the two primary blogs. */

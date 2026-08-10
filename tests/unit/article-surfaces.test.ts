@@ -81,4 +81,8 @@ describe('article surface contract', () => {
 	it('defaults legacy articles to all surfaces', () => {
 		expect(parseArticleSurfaces([])).toEqual(['ryan', 'canopy-blog', 'canopy-engineering']);
 	});
+
+	it('rejects unknown article surfaces instead of dropping them', () => {
+		expect(() => parseArticleSurfaces(['blog.unknown'])).toThrow(/Invalid article surface/);
+	});
 });
