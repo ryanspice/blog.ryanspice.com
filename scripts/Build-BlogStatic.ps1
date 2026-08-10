@@ -305,7 +305,15 @@ if (Test-Path $pagePhp) {
 
 # Post-build fix: embed prerendered hydration data directly instead of
 # re-executing the PHP load function at runtime. Prevents hydration flicker.
-& pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Embed-PrerenderedData.ps1") -BuildDir $BuildDir
+# When the site uses an external SvelteKit output directory, point the embedder
+# at that selected build. Otherwise a stale project-local prerender can leak a
+# different site's shell into the release.
+$PrerenderedFile = if ($SvelteKitOutDir) {
+  Join-Path $SvelteKitOutDir "output/prerendered/pages/index.html"
+} else {
+  Join-Path $ProjectRoot ".svelte-kit/output/prerendered/pages/index.html"
+}
+& pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Embed-PrerenderedData.ps1") -BuildDir $BuildDir -PrerenderedFile $PrerenderedFile
 
 # Stamp the selected site onto generated document shells so the root theme is
 # correct before hydration and without relying only on host-detection script.
