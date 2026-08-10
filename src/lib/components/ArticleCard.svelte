@@ -92,8 +92,6 @@ import { PUBLIC_ARTICLE_LABELS } from '$lib/public-taxonomy';
 			<a
 				class="article-card-action article-card-action--primary"
 				href={resolvedHref}
-				target="_blank"
-				rel="noreferrer"
 				aria-label={`${ui.openArticle}: ${article.title}`}
 				>{ui.openArticle}</a
 			>
