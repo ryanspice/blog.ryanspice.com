@@ -4086,8 +4086,8 @@ footer {
 	.hero { grid-template-columns: 1fr; padding-top: 58px; }
 	.article-hero-visual { min-height: 260px; order: 0; }
 	.article-hero-visual--image img { min-height: 260px; }
-	.article-hero-visual--portrait { width: min(100%, 360px); max-height: 560px; min-height: 0; }
-	.article-hero-visual--portrait img { min-height: 0; max-height: 560px; }
+	.article-hero-visual--portrait { width: min(100%, 280px); max-height: 420px; min-height: 0; }
+	.article-hero-visual--portrait img { min-height: 0; max-height: 420px; }
 	.article-hero-copy { order: 1; }
 	.home-hero { grid-template-columns: 1fr; padding-top: 58px; }
 	.home-assurance { grid-template-columns: 1fr; }
