@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { articleTagIndexHref } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
-	import { articleFocalImage } from '$lib/article-focal-images';
+	import { articleCardImage, articleFocalImage } from '$lib/article-focal-images';
 	import { articleHref } from '$lib/article-links';
 	import { articleCanonicalUrl } from '$lib/article-surfaces';
 	import {
@@ -44,6 +44,7 @@
 
 	const articleAccent = $derived(articleAccentColor(article));
 	const focalImage = $derived(articleFocalImage(article));
+	const heroImage = $derived(focalImage ?? articleCardImage(article));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const ui = $derived(getDictionary(article.locale));
@@ -137,6 +138,19 @@
 	/>
 
 	<section class="hero">
+		{#if heroImage}
+			<figure class="article-hero-visual article-hero-visual--image">
+				<img
+					src={heroImage.src}
+					alt={heroImage.alt}
+					width="1200"
+					height="800"
+					loading="eager"
+					decoding="async"
+				/>
+				{#if heroImage.credit}<figcaption>{heroImage.credit}</figcaption>{/if}
+			</figure>
+		{/if}
 		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
 			<div class="eyebrow">{article.design.eyebrow}</div>
 			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>

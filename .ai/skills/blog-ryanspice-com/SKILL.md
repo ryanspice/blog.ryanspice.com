@@ -30,6 +30,8 @@ Canonical reusable skills remain under:
 - Production uses the committed vendored PHP adapter under `adapter/`.
 - Public article publish passes should propagate to `blog.ryanspice.com`, `blog.canopydigital.ca`, and, when relevant, the root `canopydigital.ca` engineering/home teaser surface.
 - Current-day draft promotion should remove `-draft` from the public slug/filename, strip draft-only local source fields, and set `date`, `updated_date`, `release_date`, and `release_time` before publish.
+- Every new or promoted public article must include one accessible hero visual beside the title/opening copy, one or two additive body figures, and an evidence-bearing graph, chart, or diagram for comparison, analysis, workflow, architecture, benchmark, and process articles. Use licensed stock photography, original/generated artwork, screenshots, local SVG/PNG diagrams, Mermaid, or Remotion stills according to the article's evidence needs.
+- Record visual credit/source metadata, write useful alt text, explain chart/diagram takeaways in prose, reserve dimensions, and verify the rendered hero/body visuals at desktop and narrow widths. A generic stock image does not satisfy an evidence-visual requirement by itself.
 
 ## Repo-local skills
 
@@ -61,3 +63,5 @@ pnpm run audit:seo
 pnpm run build:blog:canopy
 pnpm run audit:seo
 ```
+
+For visual compliance, also read `docs/article-visual-rules.md` and confirm the hero visual, one or two body figures, and any required graph/diagram are present in source and rendered output.
