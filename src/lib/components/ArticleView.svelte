@@ -45,6 +45,7 @@
 	const articleAccent = $derived(articleAccentColor(article));
 	const focalImage = $derived(articleFocalImage(article));
 	const heroImage = $derived(focalImage ?? articleCardImage(article));
+	const isPortraitDiagram = $derived(Boolean(heroImage?.src.match(/mimo-coding-harness-portrait\.png$/i)));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const ui = $derived(getDictionary(article.locale));
@@ -121,7 +122,7 @@
 <JsonLd value={jsonLd} />
 
 	<div
-		class={`article-page theme-${article.design.variant}${focalImage ? ' has-focal-image' : ''}`}
+		class={`article-page theme-${article.design.variant}${focalImage ? ' has-focal-image' : ''}${heroImage ? ' has-hero-visual' : ''}`}
 	style:--article-accent={articleAccent}
 	style:--article-focal-image={focalImage ? cssImageUrl(focalImage.src) : undefined}
 	style:--article-focal-position={focalImage ? focalImage.position ?? 'center center' : undefined}
@@ -139,12 +140,12 @@
 
 	<section class="hero">
 		{#if heroImage}
-			<figure class="article-hero-visual article-hero-visual--image">
+			<figure class:article-hero-visual--portrait={isPortraitDiagram} class="article-hero-visual article-hero-visual--image">
 				<img
 					src={heroImage.src}
 					alt={heroImage.alt}
-					width="1600"
-					height="900"
+					width={isPortraitDiagram ? '1024' : '1600'}
+					height={isPortraitDiagram ? '1536' : '900'}
 					loading="eager"
 					decoding="async"
 				/>

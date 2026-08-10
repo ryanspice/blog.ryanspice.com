@@ -189,7 +189,7 @@
 }
 
 .article-references {
-	max-width: 880px;
+	max-width: none;
 	padding: 28px 26px 26px;
 	border: 1px solid var(--metro-line-soft);
 	border-left: 4px solid var(--article-accent, var(--accent));
@@ -197,6 +197,12 @@
 	background:
 		linear-gradient(90deg, color-mix(in srgb, var(--article-accent, var(--accent)) 8%, transparent), transparent 64%),
 		rgba(255, 255, 255, 0.025);
+}
+
+.article-references .reference-list {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px 14px;
 }
 
 .article-further-reading {
@@ -223,8 +229,35 @@
 }
 
 .related-articles {
-	max-width: 880px;
+	max-width: none;
 	padding-top: 24px;
+}
+
+.related-articles-grid {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.related-article-card {
+	min-height: 0;
+	padding: 14px 16px;
+	gap: 7px;
+	border-radius: 8px;
+}
+
+.related-article-card h3 {
+	font-size: clamp(16px, 1.3vw, 19px);
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+}
+
+.related-article-card .article-card-content > p:not(.related-kicker):not(.related-meta) {
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+}
+
+.related-article-card .tag-row.compact {
+	display: none;
 }
 
 .article-further-reading .section-head,
@@ -407,6 +440,10 @@
 }
 
 @media (max-width: 700px) {
+	.article-references .reference-list,
+	.related-articles-grid {
+		grid-template-columns: 1fr;
+	}
 	.article-card.has-focal-image,
 	.home-hero-card.has-focal-image {
 		padding-right: 18px;
