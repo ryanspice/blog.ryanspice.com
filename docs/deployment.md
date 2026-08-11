@@ -159,6 +159,19 @@ Activation backs up the current remote blog folder to `_backups/live-<release-id
 
 Backups under `_backups` must stay compressed. During activation, legacy backup directories are converted to `.tar.gz` archives and removed. Any remaining uncompressed backup artifact makes the deploy fail before activation continues.
 
+## Google Analytics (GA4, free)
+
+Optional free analytics via Google Analytics 4, gated on a measurement ID so the static shell is untouched when unset.
+
+- Set `PUBLIC_GA_MEASUREMENT_ID` (format `G-XXXXXXXXXX`) at build time. In CI, the GitHub Actions workflow reads it from the `GA_MEASUREMENT_ID` repository secret. Locally, set it in the environment or `.env` before `pnpm run build:blog`.
+- When the ID is empty or unset, no analytics code is emitted at all (checked by `tests/unit/analytics.test.ts`).
+- Behavior when set:
+  - gtag.js is injected in the page head with **Consent Mode v2**: EEA/UK visitors get `analytics_storage: denied` by default (cookieless pings only, no cookie banner required); the rest of the world gets granted defaults.
+  - Initial page view is sent on load; SPA navigations fire additional `page_view` configs via `afterNavigate` (`src/lib/analytics.ts`).
+  - Owner-only routes are never tracked: `/drafts`, `/login`, `/auth`, `/status`, `/briefs`, `/_protected`.
+  - Both site builds share the same measurement ID; the GA4 `hostname` dimension separates blog.ryanspice.com from blog.canopydigital.ca. Use separate IDs per build step if you ever want distinct properties.
+- Verified by `tests/e2e/analytics.spec.ts` (dataLayer contract, no dependency on Google's network).
+
 ## Runtime dependency repair
 
 The v0.1.0 installer tried to create `node_modules` as a junction before pnpm ran. On Windows/OneDrive, pnpm can fail with `ENOTDIR` in that shape. Use:

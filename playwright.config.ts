@@ -26,7 +26,10 @@ export default defineConfig({
 		command: 'pnpm run dev --host 127.0.0.1 --port 4173',
 		url: 'http://127.0.0.1:4173',
 		reuseExistingServer: true,
-		timeout: 120000
+		timeout: 120000,
+		env: {
+			PUBLIC_GA_MEASUREMENT_ID: 'G-TEST000001'
+		}
 	},
 	reporter: [['list']]
 });

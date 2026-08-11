@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { onNavigate } from '$app/navigation';
+	import { afterNavigate, onNavigate } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { loadAuthState } from '$lib/auth';
 	import { pathWithLocale } from '$lib/i18n/locales';
+	import { analyticsHeadSnippet, isAnalyticsEnabled, isAnalyticsExcluded, trackPageView } from '$lib/analytics';
 	import '../app.css';
 	import '../article-polish.css';
 	import '../canopy-theme.css';
@@ -16,6 +17,13 @@
 				await navigation.complete;
 			});
 		});
+	});
+
+	afterNavigate((navigation) => {
+		if (!isAnalyticsEnabled()) return;
+		const path = navigation.to?.url.pathname ?? window.location.pathname;
+		if (isAnalyticsExcluded(path)) return;
+		trackPageView(path);
 	});
 
 	let { children, data } = $props();
@@ -39,6 +47,9 @@
 </script>
 
 <svelte:head>
+	{#if isAnalyticsEnabled()}
+		{@html analyticsHeadSnippet()}
+	{/if}
 	{#if siteTheme === 'canopy'}
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
