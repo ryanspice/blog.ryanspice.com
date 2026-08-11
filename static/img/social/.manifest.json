@@ -288,5 +288,10 @@
     "fingerprint": "166f36eb8c9a409d55bd596e554e219d567afb8b65b998646b5e15c3da77cbc9",
     "path": "static/img/social/canopy/articles/deepseek-v4-flash-0731-glm-5-2-kimi-k3.png",
     "updatedAt": "2026-07-31T20:31:41.974Z"
+  },
+  "ryan:en:choosing-ai-coding-tool-when-model-isnt-the-product": {
+    "fingerprint": "6c1521cabdde50abbb5d67be8287b812c1c1f6a315c193cadcdb9de9ddacaa3b",
+    "path": "static/img/social/ryan/articles/choosing-ai-coding-tool-when-model-isnt-the-product.png",
+    "updatedAt": "2026-08-11T00:08:13.832Z"
   }
 }

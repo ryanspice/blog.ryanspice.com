@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 506" font-family="-apple-system, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#101a2e"/>
+    </linearGradient>
+    <linearGradient id="surface" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1e3a5f"/>
+      <stop offset="1" stop-color="#155e75"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="506" rx="24" fill="url(#bg)"/>
+  <text x="450" y="52" text-anchor="middle" font-size="30" font-weight="700" fill="#f1f5f9">What are you actually choosing?</text>
+  <text x="450" y="86" text-anchor="middle" font-size="18" fill="#94a3b8">An AI coding stack, layer by layer</text>
+
+  <g>
+    <rect x="40" y="110" width="820" height="58" rx="14" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+    <rect x="40" y="110" width="246" height="58" rx="14" fill="#334155"/>
+    <text x="60" y="147" font-size="20" font-weight="700" fill="#e2e8f0">5 · repository / tools</text>
+    <text x="680" y="147" text-anchor="middle" font-size="18" fill="#cbd5e1">repo, files, permissions, MCP, hooks</text>
+  </g>
+
+  <g>
+    <rect x="40" y="172" width="820" height="58" rx="14" fill="url(#surface)" stroke="#38bdfa" stroke-width="3"/>
+    <rect x="40" y="172" width="246" height="58" rx="14" fill="#0e7490"/>
+    <text x="60" y="209" font-size="20" font-weight="700" fill="#e0f2fe">4 · control surface</text>
+    <text x="680" y="209" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">T3 Code</text>
+  </g>
+
+  <g>
+    <rect x="40" y="234" width="820" height="58" rx="14" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+    <rect x="40" y="234" width="246" height="58" rx="14" fill="#334155"/>
+    <text x="60" y="271" font-size="20" font-weight="700" fill="#e2e8f0">3 · harness / runtime</text>
+    <text x="680" y="271" text-anchor="middle" font-size="18" fill="#cbd5e1">Claude Code · Codex CLI · Hermes · OpenCode</text>
+  </g>
+
+  <g>
+    <rect x="40" y="296" width="820" height="58" rx="14" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+    <rect x="40" y="296" width="246" height="58" rx="14" fill="#334155"/>
+    <text x="60" y="333" font-size="20" font-weight="700" fill="#e2e8f0">2 · compatibility / routing</text>
+    <text x="680" y="333" text-anchor="middle" font-size="18" fill="#cbd5e1">Hermes lanes · AgentRouter · OpenCode routes</text>
+  </g>
+
+  <g>
+    <rect x="40" y="358" width="820" height="58" rx="14" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+    <rect x="40" y="358" width="246" height="58" rx="14" fill="#334155"/>
+    <text x="60" y="395" font-size="20" font-weight="700" fill="#e2e8f0">1 · model / provider</text>
+    <text x="680" y="395" text-anchor="middle" font-size="18" fill="#cbd5e1">DeepSeek · GLM-5.2 · Nemotron · MiMo · Claude · GPT</text>
+  </g>
+
+  <text x="450" y="470" text-anchor="middle" font-size="17" fill="#64748b">A model benchmark measures layer 1 — the other four decide which tool you actually open.</text>
+</svg>
