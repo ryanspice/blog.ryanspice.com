@@ -149,6 +149,9 @@ jobs:
           pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Build-BlogStatic.ps1 -Clean -SiteId canopy -PublicSiteUrl $env:PUBLIC_SITE_URL
 
       - name: Audit Canopy PHP release
+        env:
+          PUBLIC_SITE_ID: canopy
+          BLOG_SITE_ID: canopy
         run: pnpm run audit:seo
 
       - name: Deploy and activate Canopy production
