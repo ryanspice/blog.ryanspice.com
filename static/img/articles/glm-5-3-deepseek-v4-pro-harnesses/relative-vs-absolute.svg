@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">The 50% improvement headline, recalculated</title>
+  <desc id="desc">Grouped bar chart on the private Z.ai Code Bench: at High effort GLM-5.2 scores 20.9 and GLM-5.3 scores 31.4, a 50.2 percent relative gain that is 10.5 absolute points; at Max effort 23.4 to 34.5, a 47.4 percent relative gain that is 11.1 absolute points.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#12283a"/>
+    </linearGradient>
+    <linearGradient id="glm53" x1="0" x2="1">
+      <stop offset="0" stop-color="#48c5d6"/>
+      <stop offset="1" stop-color="#2f9bc2"/>
+    </linearGradient>
+    <linearGradient id="glm52" x1="0" x2="1">
+      <stop offset="0" stop-color="#4a7f95"/>
+      <stop offset="1" stop-color="#3a6178"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="720" rx="28" fill="url(#bg)"/>
+  <rect x="48" y="44" width="1104" height="632" rx="22" fill="#0b1928" stroke="#28445b"/>
+
+  <text x="92" y="112" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">The “50% improvement” headline, recalculated</text>
+  <text x="92" y="152" fill="#a8bed0" font-family="Segoe UI, Arial, sans-serif" font-size="20">Z.ai Code Bench v1.0 · relative gains and the absolute points behind them</text>
+
+  <g stroke="#294258" stroke-width="1">
+    <line x1="420" y1="210" x2="420" y2="580"/>
+    <line x1="490" y1="210" x2="490" y2="580"/>
+    <line x1="560" y1="210" x2="560" y2="580"/>
+    <line x1="630" y1="210" x2="630" y2="580"/>
+    <line x1="700" y1="210" x2="700" y2="580"/>
+    <line x1="770" y1="210" x2="770" y2="580"/>
+    <line x1="840" y1="210" x2="840" y2="580"/>
+    <line x1="910" y1="210" x2="910" y2="580"/>
+  </g>
+  <g fill="#7290a5" font-family="Segoe UI, Arial, sans-serif" font-size="16" text-anchor="middle">
+    <text x="350" y="640">0</text>
+    <text x="420" y="640">5</text>
+    <text x="490" y="640">10</text>
+    <text x="560" y="640">15</text>
+    <text x="630" y="640">20</text>
+    <text x="700" y="640">25</text>
+    <text x="770" y="640">30</text>
+    <text x="840" y="640">35</text>
+    <text x="910" y="640">40</text>
+  </g>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="380" y="240" fill="#f8fafc" font-size="22" font-weight="700">High effort</text>
+    <text x="620" y="240" fill="#f8fafc" font-size="22" font-weight="700">Max effort</text>
+
+    <g filter="url(#shadow)">
+      <rect x="380" y="262" width="293" height="52" rx="11" fill="url(#glm52)"/>
+      <rect x="380" y="330" width="440" height="52" rx="11" fill="url(#glm53)"/>
+      <rect x="620" y="262" width="328" height="52" rx="11" fill="url(#glm52)"/>
+      <rect x="620" y="330" width="483" height="52" rx="11" fill="url(#glm53)"/>
+    </g>
+    <g fill="#06101c" font-size="23" font-weight="800">
+      <text x="686" y="299">20.9</text>
+      <text x="833" y="367">31.4</text>
+      <text x="961" y="299">23.4</text>
+      <text x="1050" y="367">34.5</text>
+    </g>
+
+    <text x="380" y="312" fill="#9fb8c9" font-size="16">GLM-5.2</text>
+    <text x="380" y="380" fill="#dbeafe" font-size="16">GLM-5.3</text>
+
+    <rect x="380" y="420" width="560" height="118" rx="14" fill="#0d1f31" stroke="#2c4a63"/>
+    <text x="406" y="452" fill="#a8bed0" font-size="18">Headline: +50.2% relative</text>
+    <text x="406" y="480" fill="#48c5d6" font-size="18" font-weight="700">Reality: +10.5 percentage points (20.9 → 31.4)</text>
+    <text x="406" y="512" fill="#a8bed0" font-size="18">Max effort: +47.4% relative · +11.1 points (23.4 → 34.5)</text>
+
+    <text x="380" y="580" fill="#7894aa" font-size="16">Avg output per task at Max: ~96,000 → ~75,000 tokens (−21.9%)</text>
+  </g>
+
+  <text x="92" y="672" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="16">Private Z.ai Code Bench v1.0, evaluated in Claude Code 2.1.207. Tasks, graders, and run artifacts were not released at publication. Recalculated from Z.ai's launch chart (2026-08-14).</text>
+</svg>

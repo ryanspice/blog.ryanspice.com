@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek V4 Pro integration paths</title>
+  <desc id="desc">Four integration surfaces for DeepSeek V4 Pro: Claude Code through the Anthropic-compatible endpoint, Hermes profiles with lead discipline, the direct OpenAI-compatible API, and OpenRouter, with a shared rule band for reasoning effort and thinking mode.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#12283a"/>
+    </linearGradient>
+    <linearGradient id="ds" x1="0" x2="1">
+      <stop offset="0" stop-color="#8f9fff"/>
+      <stop offset="1" stop-color="#6678e8"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="720" rx="28" fill="url(#bg)"/>
+  <rect x="48" y="44" width="1104" height="632" rx="22" fill="#0b1928" stroke="#28445b"/>
+
+  <text x="92" y="112" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">DeepSeek V4 Pro — integration paths</text>
+  <text x="92" y="152" fill="#a8bed0" font-family="Segoe UI, Arial, sans-serif" font-size="20">The model is portable; the two shared rules travel with it</text>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="70" y="200" width="520" height="210" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
+    <text x="96" y="246" fill="#8f9fff" font-size="22" font-weight="700">Claude Code</text>
+    <text x="96" y="286" fill="#f8fafc" font-size="19">Anthropic-compatible endpoint</text>
+    <text x="96" y="316" fill="#a8bed0" font-size="19">1M context · effort via env config</text>
+    <text x="96" y="346" fill="#a8bed0" font-size="19">Discipline prefix as first user message</text>
+    <text x="96" y="376" fill="#a8bed0" font-size="19">— not in CLAUDE.md, so subagents</text>
+    <text x="96" y="402" fill="#a8bed0" font-size="19">keep the compact prompt</text>
+
+    <rect x="610" y="200" width="520" height="210" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
+    <text x="636" y="246" fill="#8f9fff" font-size="22" font-weight="700">Hermes</text>
+    <text x="636" y="286" fill="#f8fafc" font-size="19">Profiles hold provider + effort</text>
+    <text x="636" y="316" fill="#a8bed0" font-size="19">SOUL.md carries lead discipline</text>
+    <text x="636" y="346" fill="#a8bed0" font-size="19">hermes -p &lt;profile&gt; chat = fresh lead:</text>
+    <text x="636" y="376" fill="#a8bed0" font-size="19">it injects SOUL/AGENTS/memory — workers</text>
+    <text x="636" y="402" fill="#a8bed0" font-size="19">call with --ignore-rules</text>
+
+    <rect x="70" y="430" width="520" height="150" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
+    <text x="96" y="476" fill="#8f9fff" font-size="22" font-weight="700">Direct API</text>
+    <text x="96" y="516" fill="#f8fafc" font-size="19">OpenAI-compatible · thinking enabled</text>
+    <text x="96" y="546" fill="#a8bed0" font-size="19">temperature 1.0 · reasoning_effort max</text>
+
+    <rect x="610" y="430" width="520" height="150" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
+    <text x="636" y="476" fill="#8f9fff" font-size="22" font-weight="700">OpenRouter</text>
+    <text x="636" y="516" fill="#f8fafc" font-size="19">deepseek/deepseek-v4-pro-0813 (GA)</text>
+    <text x="636" y="546" fill="#a8bed0" font-size="19">cache-read $0.0036/M · prefix caching</text>
+  </g>
+
+  <rect x="70" y="604" width="1060" height="52" rx="14" fill="url(#ds)"/>
+  <text x="96" y="638" fill="#06101c" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">Two rules everywhere: reasoning_effort max on agent lanes · thinking stays enabled, temperature 1.0</text>
+</svg>

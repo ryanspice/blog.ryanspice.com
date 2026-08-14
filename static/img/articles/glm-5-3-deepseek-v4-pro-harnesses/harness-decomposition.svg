@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSWE v1.1 — one benchmark name, different experiments</title>
+  <desc id="desc">Diagram showing how the same public benchmark task set flows through different harness configurations and runners, producing different scores for the same model name: GLM-5.2 at 46.2 on a vendor run versus 44 plus or minus 2 on an independent mini-swe-agent run.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#12283a"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3d6b8a"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="900" rx="28" fill="url(#bg)"/>
+  <rect x="48" y="44" width="1104" height="812" rx="22" fill="#0b1928" stroke="#28445b"/>
+
+  <text x="92" y="110" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">One benchmark name, four different records</text>
+  <text x="92" y="150" fill="#a8bed0" font-family="Segoe UI, Arial, sans-serif" font-size="20">DeepSWE v1.1 · the same public task set can be run very differently</text>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="70" y="200" width="320" height="310" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
+    <text x="96" y="244" fill="#48c5d6" font-size="22" font-weight="700">1 · Public task set</text>
+    <text x="96" y="296" fill="#f8fafc" font-size="26" font-weight="600">DeepSWE v1.1</text>
+    <text x="96" y="332" fill="#a8bed0" font-size="19">Real-world GitHub issues.</text>
+    <text x="96" y="360" fill="#a8bed0" font-size="19">Identical task list for</text>
+    <text x="96" y="388" fill="#a8bed0" font-size="19">every runner below.</text>
+    <text x="96" y="452" fill="#7894aa" font-size="16">The name is the same.</text>
+    <text x="96" y="478" fill="#7894aa" font-size="16">The experiment is not.</text>
+
+    <rect x="440" y="200" width="320" height="310" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
+    <text x="466" y="244" fill="#48c5d6" font-size="22" font-weight="700">2 · Harness configuration</text>
+    <text x="466" y="294" fill="#f8fafc" font-size="19">Agent: mini-swe-agent / Claude Code</text>
+    <text x="466" y="324" fill="#f8fafc" font-size="19">temperature 0.95 · top_p 1.0</text>
+    <text x="466" y="354" fill="#f8fafc" font-size="19">timeout: 6–10 hours per task</text>
+    <text x="466" y="384" fill="#f8fafc" font-size="19">context: 400K–1M tokens</text>
+    <text x="466" y="414" fill="#f8fafc" font-size="19">rollouts: 1–3 per task</text>
+    <text x="466" y="444" fill="#f8fafc" font-size="19">max output: 128K tokens</text>
+
+    <rect x="810" y="200" width="320" height="310" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
+    <text x="836" y="244" fill="#48c5d6" font-size="22" font-weight="700">3 · Who ran it</text>
+    <rect x="836" y="280" width="170" height="40" rx="10" fill="#5b3a21"/>
+    <text x="858" y="306" fill="#f8fafc" font-size="19">Z.ai — vendor</text>
+    <rect x="836" y="336" width="200" height="40" rx="10" fill="#253252"/>
+    <text x="858" y="362" fill="#f8fafc" font-size="19">Independent leaderboard</text>
+    <rect x="836" y="392" width="206" height="40" rx="10" fill="#1c3d33"/>
+    <text x="858" y="418" fill="#f8fafc" font-size="19">Official evaluation service</text>
+    <text x="836" y="480" fill="#7894aa" font-size="16">A score's weight depends</text>
+    <text x="836" y="502" fill="#7894aa" font-size="16">on this column.</text>
+
+    <line x1="396" y1="355" x2="432" y2="355" stroke="#3d6b8a" stroke-width="3" marker-end="url(#arrow)"/>
+    <line x1="766" y1="355" x2="802" y2="355" stroke="#3d6b8a" stroke-width="3" marker-end="url(#arrow)"/>
+  </g>
+
+  <rect x="70" y="540" width="1060" height="200" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
+  <text x="96" y="584" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">The same model name can carry two scores</text>
+  <text x="96" y="632" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.2 &nbsp;<tspan fill="#48c5d6" font-weight="700">46.2</tspan> &nbsp;(Z.ai run) &nbsp;·&nbsp; <tspan fill="#8f9fff" font-weight="700">44 ± 2</tspan> &nbsp;(independent, mini-swe-agent)</text>
+  <text x="96" y="672" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.3 &nbsp;<tspan fill="#48c5d6" font-weight="700">66.9</tspan> &nbsp;(Z.ai run) &nbsp;·&nbsp; independent record pending at publication</text>
+  <line x1="96" y1="700" x2="1104" y2="700" stroke="#28445b"/>
+  <text x="96" y="726" fill="#a8bed0" font-family="Segoe UI, Arial, sans-serif" font-size="19">Benchmark names identify the task set — not the experiment that measured it.</text>
+
+  <text x="92" y="796" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="16">Harness and runner labels follow Z.ai's GLM-5.3 launch notes (2026-08-14) and the DeepSWE v1.1 independent leaderboard. Original diagram for this article.</text>
+</svg>

@@ -1,0 +1,39 @@
+
+==> Resolve deploy settings
+ProjectRoot     : S:\OneDrive\Obsidan\AI-Wiki\07_Projects\blog.ryanspice.com
+BuildPath       : S:\OneDrive\Obsidan\AI-Wiki\07_Projects\blog.ryanspice.com\build
+Host            : blog.ryanspice.com
+User            : rspice
+RemotePath      : domains/blog.canopydigital.ca/public_html
+ReleaseId       : 20260812T180221Z
+PublicUrl       : https://blog.canopydigital.ca/
+SiteId          : canopy
+AdapterMode     : php-static
+Mode            : UPLOAD + ACTIVATE
+
+==> Build canopy blog for 
+
+==> Resolve paths
+ProjectRoot       : S:\OneDrive\Obsidan\AI-Wiki\07_Projects\blog.ryanspice.com
+BuildDir          : S:\OneDrive\Obsidan\AI-Wiki\07_Projects\blog.ryanspice.com\build
+RuntimeRoot       : (disabled)
+RuntimeSource     : disabled
+SvelteKitOut      : (default)
+ViteCache         : (default)
+Safe roots        : (default)
+BasePath          : (root)
+SiteId            : canopy
+PublicSiteUrl     : https://blog.canopydigital.ca
+AdapterRoot       : B:\Dev\sveltekit-php
+AdapterRootSource : local default
+Canonical hosts   : (none)
+Route exclusions  : auth, briefs, dev-log, drafts, login, status
+
+==> Sync canonical PHP adapter
+
+==> Resolve adapter source
+ProjectRoot       : S:\OneDrive\Obsidan\AI-Wiki\07_Projects\blog.ryanspice.com
+AdapterRoot       : B:\Dev\sveltekit-php
+Build             : Yes
+
+==> Build canonical adapter

@@ -238,5 +238,35 @@
     "fingerprint": "0c643973425ca0a6db82f053edb91f2390ccc05f422149c3593557d07368ae19",
     "path": "static/img/social/canopy/articles/pixelboats-morning-watch-2026-07-03.png",
     "updatedAt": "2026-07-07T20:56:39.089Z"
+  },
+  "ryan:en:mimo-vs-deepseek-harness-matters": {
+    "fingerprint": "fe9dcf1a973d78a79a29bd7e334f3c97cf0a38dbc25240113fe492f0328a0fe1",
+    "path": "static/img/social/ryan/articles/mimo-vs-deepseek-harness-matters.png",
+    "updatedAt": "2026-08-10T18:05:49.783Z"
+  },
+  "canopy:en:mimo-vs-deepseek-harness-matters": {
+    "fingerprint": "30e42c18311676873d881039c3d45cd8c531095d618a4b1926ec73b8679bc073",
+    "path": "static/img/social/canopy/articles/mimo-vs-deepseek-harness-matters.png",
+    "updatedAt": "2026-08-10T18:08:24.004Z"
+  },
+  "canopy:en:deepseek-v4-pro-0813-ga-fleet": {
+    "fingerprint": "d1497b59816d086204b016786f081f357470a646fe5c314a67c1e24185bc34c5",
+    "path": "static/img/social/canopy/articles/deepseek-v4-pro-0813-ga-fleet.png",
+    "updatedAt": "2026-08-12T18:20:41.261Z"
+  },
+  "ryan:en:deepseek-v4-pro-0813-ga-fleet": {
+    "fingerprint": "714b0e92a26092700d43918c4625f59fdb0427abb8f462539f25d22887836dc7",
+    "path": "static/img/social/ryan/articles/deepseek-v4-pro-0813-ga-fleet.png",
+    "updatedAt": "2026-08-14T20:54:20.905Z"
+  },
+  "ryan:en:deepseek-v4-pro-deployment-cheatsheet": {
+    "fingerprint": "7eef229ee497bfcd0f6e5f39c939430029d5e72057b00d5c1bd31c1e7534c93f",
+    "path": "static/img/social/ryan/articles/deepseek-v4-pro-deployment-cheatsheet.png",
+    "updatedAt": "2026-08-14T20:54:21.507Z"
+  },
+  "ryan:en:glm-5-3-deepseek-v4-pro-harnesses": {
+    "fingerprint": "ba14a145883ee65bc92b46e0c828de39dd674919d3b650e47182ddcddbd8073c",
+    "path": "static/img/social/ryan/articles/glm-5-3-deepseek-v4-pro-harnesses.png",
+    "updatedAt": "2026-08-14T20:54:22.136Z"
   }
 }

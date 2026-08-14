@@ -18,6 +18,36 @@ type DevLogSeed = Omit<DevLogEntry, 'id' | 'dateLabel'>;
 
 const devLogSeeds: DevLogSeed[] = [
 	{
+		date: '2026-08-12',
+		title: 'Make PixelBoats combat land and Canopy chat work everywhere',
+		summary:
+			'Advanced the PixelBoats sword lab with authored ARDY motion, deterministic MK-style strings, grounded blade contact, recovery, and overboard outcomes; in parallel, Canopy gave its chat control a real bilingual fallback on non-hydrated prerendered pages and expanded focused analytics, chrome, admin, and auth tests.',
+		source: 'PixelBoats sword-lab and Canopy web implementation history',
+		accent: '#38bdf8',
+		tags: ['pixelboats', 'game-dev', 'combat', 'animation', 'testing', 'canopy', 'accessibility', 'analytics', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'Game Development', 'SvelteKit', 'Accessibility', 'developer workflow']
+	},
+	{
+		date: '2026-08-10',
+		title: 'Harden publication surfaces and the PixelBoats anchor bridge',
+		summary:
+			'Unified the shared article system across the Ryan, Canopy blog, and Canopy engineering surfaces, then tightened taxonomy, canonical ownership, trust metadata, restrained promotion, and accessibility; in parallel, PixelBoats joined its generated character rig to art anchors and replaced false-positive tests with gates that fail on missing evidence.',
+		source: 'Blog publication-system and PixelBoats CS4 anchor-bridge implementation history',
+		accent: '#38bdf8',
+		tags: ['blog', 'pixelboats', 'sveltekit', 'seo', 'accessibility', 'character', 'testing', 'developer workflow'],
+		relatedArticleSlugs: [
+			'pixelboats-water-pipeline-pixi-webgl',
+			'pixelboats-morning-watch-2026-07-10',
+			'local-fugu-coding-harness'
+		],
+		relatedArticleTags: ['PixelBoats', 'SvelteKit', 'SEO', 'Game Development', 'Accessibility', 'developer workflow']
+	},
+	{
 		date: '2026-08-05',
 		title: 'Build PixelBoats character scaffolds and agent tooling',
 		summary:

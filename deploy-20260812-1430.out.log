@@ -1,0 +1,38 @@
+
+==> Resolve deploy settings
+ProjectRoot     : S:\OneDrive\Obsidan\AI-Wiki\07_Projects\blog.ryanspice.com
+BuildPath       : S:\OneDrive\Obsidan\AI-Wiki\07_Projects\blog.ryanspice.com\build
+Host            : blog.ryanspice.com
+User            : rspice
+RemotePath      : domains/blog.canopydigital.ca/public_html
+ReleaseId       : 20260812T182237Z
+PublicUrl       : https://blog.canopydigital.ca/
+SiteId          : canopy
+AdapterMode     : php-static
+Mode            : UPLOAD + ACTIVATE
+
+==> Create local build archive
+Archive         : C:\Users\spice\AppData\Local\Temp\blog-ryanspice-com-20260812T182237Z.tar.gz
+
+==> Prepare remote release folders
+Remote live path: domains/blog.canopydigital.ca/public_html
+Remote release path: domains/blog.canopydigital.ca/public_html/_releases/20260812T182237Z
+
+==> Upload archive
+
+==> Extract parallel release
+Parallel release uploaded: domains/blog.canopydigital.ca/public_html/_releases/20260812T182237Z
+
+==> Activate release
+Keeping: _backups
+Keeping: _incoming
+Keeping: _releases
+Keeping: cgi-bin
+Keeping: .htaccess
+Activated release: 20260812T182237Z
+Backup: domains/blog.canopydigital.ca/public_html/_backups/live-20260812T182237Z.tar.gz
+
+==> Receipt
+Parallel URL    : https://blog.canopydigital.ca/_releases/20260812T182237Z/
+Live URL        : https://blog.canopydigital.ca/
+Activated       : Yes
