@@ -13,7 +13,7 @@
   </defs>
 
   <rect width="1200" height="720" rx="28" fill="url(#bg)"/>
-  <rect x="48" y="44" width="1104" height="632" rx="22" fill="#0b1928" stroke="#28445b"/>
+  <rect x="48" y="44" width="1104" height="652" rx="22" fill="#0b1928" stroke="#28445b"/>
 
   <text x="92" y="112" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">DeepSeek V4 Pro — integration paths</text>
   <text x="92" y="152" fill="#a8bed0" font-family="Segoe UI, Arial, sans-serif" font-size="20">The model is portable; the two shared rules travel with it</text>
@@ -46,6 +46,7 @@
     <text x="636" y="546" fill="#a8bed0" font-size="19">cache-read $0.0036/M · prefix caching</text>
   </g>
 
-  <rect x="70" y="604" width="1060" height="52" rx="14" fill="url(#ds)"/>
-  <text x="96" y="638" fill="#06101c" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">Two rules everywhere: reasoning_effort max on agent lanes · thinking stays enabled, temperature 1.0</text>
+  <rect x="70" y="604" width="1060" height="70" rx="14" fill="url(#ds)"/>
+  <text x="96" y="636" fill="#06101c" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">Two rules everywhere: reasoning_effort max on agent lanes ·</text>
+  <text x="96" y="664" fill="#06101c" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">thinking stays enabled, temperature 1.0</text>
 </svg>

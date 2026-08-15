@@ -24,8 +24,8 @@
     <text x="96" y="316" fill="#a8bed0" font-size="19">Real-world GitHub issues.</text>
     <text x="96" y="344" fill="#a8bed0" font-size="19">Identical task list for</text>
     <text x="96" y="372" fill="#a8bed0" font-size="19">every runner below.</text>
-    <text x="96" y="428" fill="#7894aa" font-size="16">The name is the same.</text>
-    <text x="96" y="452" fill="#7894aa" font-size="16">The experiment is not.</text>
+    <text x="96" y="424" fill="#7894aa" font-size="16">The name is the same.</text>
+    <text x="96" y="446" fill="#7894aa" font-size="16">The experiment is not.</text>
 
     <line x1="512" y1="462" x2="512" y2="488" stroke="#3d6b8a" stroke-width="3" marker-end="url(#arrow)"/>
 
@@ -44,12 +44,12 @@
     <text x="96" y="892" fill="#48c5d6" font-size="22" font-weight="700">3 · Who ran it</text>
     <rect x="96" y="922" width="230" height="40" rx="10" fill="#5b3a21"/>
     <text x="122" y="948" fill="#f8fafc" font-size="19">Z.ai — vendor</text>
-    <rect x="96" y="978" width="260" height="40" rx="10" fill="#253252"/>
-    <text x="122" y="1004" fill="#f8fafc" font-size="19">Independent leaderboard</text>
-    <rect x="96" y="1034" width="266" height="40" rx="10" fill="#1c3d33"/>
-    <text x="122" y="1060" fill="#f8fafc" font-size="19">Official evaluation service</text>
-    <text x="96" y="1108" fill="#7894aa" font-size="16">A score's weight depends</text>
-    <text x="96" y="1130" fill="#7894aa" font-size="16">on this column.</text>
+    <rect x="96" y="978" width="200" height="40" rx="10" fill="#253252"/>
+    <text x="122" y="1004" fill="#f8fafc" font-size="19">Independent</text>
+    <rect x="96" y="1034" width="220" height="40" rx="10" fill="#1c3d33"/>
+    <text x="122" y="1060" fill="#f8fafc" font-size="19">Official service</text>
+    <text x="96" y="1082" fill="#7894aa" font-size="16">A score's weight depends</text>
+    <text x="96" y="1104" fill="#7894aa" font-size="16">on this column.</text>
 
     <line x1="512" y1="1122" x2="512" y2="1148" stroke="#3d6b8a" stroke-width="3" marker-end="url(#arrow)"/>
 
@@ -61,6 +61,7 @@
     <text x="96" y="1342" fill="#a8bed0" font-size="18">Benchmark names identify the task set — not the experiment that measured it.</text>
   </g>
 
-  <text x="70" y="1422" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="15">Harness and runner labels follow Z.ai's GLM-5.3 launch notes (2026-08-14) and the DeepSWE v1.1 independent leaderboard.</text>
-  <text x="70" y="1446" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="15">Original portrait diagram for this article.</text>
+  <text x="70" y="1422" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="15">Harness and runner labels follow Z.ai's GLM-5.3 launch notes</text>
+  <text x="70" y="1446" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="15">(2026-08-14) and the DeepSWE v1.1 independent leaderboard.</text>
+  <text x="70" y="1470" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="15">Original portrait diagram for this article.</text>
 </svg>

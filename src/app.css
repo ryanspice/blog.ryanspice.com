@@ -671,7 +671,7 @@ a { color: var(--accent); }
 .article-hero-visual--portrait {
 	align-self: start;
 	justify-self: center;
-	width: min(100%, 340px);
+	width: min(100%, 520px);
 	min-height: 0;
 	max-height: 760px;
 	background: #05080d;

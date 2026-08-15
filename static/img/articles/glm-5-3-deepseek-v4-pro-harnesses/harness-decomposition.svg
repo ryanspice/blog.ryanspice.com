@@ -28,22 +28,23 @@
     <text x="96" y="478" fill="#7894aa" font-size="16">The experiment is not.</text>
 
     <rect x="440" y="200" width="320" height="310" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
-    <text x="466" y="244" fill="#48c5d6" font-size="22" font-weight="700">2 · Harness configuration</text>
-    <text x="466" y="294" fill="#f8fafc" font-size="19">Agent: mini-swe-agent / Claude Code</text>
-    <text x="466" y="324" fill="#f8fafc" font-size="19">temperature 0.95 · top_p 1.0</text>
-    <text x="466" y="354" fill="#f8fafc" font-size="19">timeout: 6–10 hours per task</text>
-    <text x="466" y="384" fill="#f8fafc" font-size="19">context: 400K–1M tokens</text>
-    <text x="466" y="414" fill="#f8fafc" font-size="19">rollouts: 1–3 per task</text>
-    <text x="466" y="444" fill="#f8fafc" font-size="19">max output: 128K tokens</text>
+    <text x="466" y="244" fill="#48c5d6" font-size="20" font-weight="700">2 · Harness configuration</text>
+    <text x="466" y="294" fill="#f8fafc" font-size="19">Agent: mini-swe-agent</text>
+    <text x="466" y="324" fill="#f8fafc" font-size="19">Agent: Claude Code</text>
+    <text x="466" y="354" fill="#f8fafc" font-size="19">temp 0.95 · top_p 1.0</text>
+    <text x="466" y="384" fill="#f8fafc" font-size="19">timeout: 6–10 h per task</text>
+    <text x="466" y="414" fill="#f8fafc" font-size="19">context: 400K–1M tokens</text>
+    <text x="466" y="444" fill="#f8fafc" font-size="19">rollouts: 1–3 per task</text>
+    <text x="466" y="474" fill="#f8fafc" font-size="19">max output: 128K tokens</text>
 
     <rect x="810" y="200" width="320" height="310" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
     <text x="836" y="244" fill="#48c5d6" font-size="22" font-weight="700">3 · Who ran it</text>
     <rect x="836" y="280" width="170" height="40" rx="10" fill="#5b3a21"/>
     <text x="858" y="306" fill="#f8fafc" font-size="19">Z.ai — vendor</text>
     <rect x="836" y="336" width="200" height="40" rx="10" fill="#253252"/>
-    <text x="858" y="362" fill="#f8fafc" font-size="19">Independent leaderboard</text>
+    <text x="858" y="362" fill="#f8fafc" font-size="19">Independent</text>
     <rect x="836" y="392" width="206" height="40" rx="10" fill="#1c3d33"/>
-    <text x="858" y="418" fill="#f8fafc" font-size="19">Official evaluation service</text>
+    <text x="858" y="418" fill="#f8fafc" font-size="19">Official service</text>
     <text x="836" y="480" fill="#7894aa" font-size="16">A score's weight depends</text>
     <text x="836" y="502" fill="#7894aa" font-size="16">on this column.</text>
 
@@ -53,10 +54,11 @@
 
   <rect x="70" y="540" width="1060" height="200" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
   <text x="96" y="584" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">The same model name can carry two scores</text>
-  <text x="96" y="632" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.2 &#160;<tspan fill="#48c5d6" font-weight="700">46.2</tspan> &#160;(Z.ai run) &#160;·&#160; <tspan fill="#8f9fff" font-weight="700">44 ± 2</tspan> &#160;(independent, mini-swe-agent)</text>
-  <text x="96" y="672" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.3 &#160;<tspan fill="#48c5d6" font-weight="700">66.9</tspan> &#160;(Z.ai run) &#160;·&#160; independent record pending at publication</text>
+  <text x="96" y="632" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.2 <tspan fill="#48c5d6" font-weight="700">46.2</tspan> (Z.ai run) · <tspan fill="#8f9fff" font-weight="700">44 ± 2</tspan> (independent, mini-swe-agent)</text>
+  <text x="96" y="672" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.3 <tspan fill="#48c5d6" font-weight="700">66.9</tspan> (Z.ai run) · independent record pending at publication</text>
   <line x1="96" y1="700" x2="1104" y2="700" stroke="#28445b"/>
   <text x="96" y="726" fill="#a8bed0" font-family="Segoe UI, Arial, sans-serif" font-size="19">Benchmark names identify the task set — not the experiment that measured it.</text>
 
-  <text x="92" y="796" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="16">Harness and runner labels follow Z.ai's GLM-5.3 launch notes (2026-08-14) and the DeepSWE v1.1 independent leaderboard. Original diagram for this article.</text>
+  <text x="92" y="780" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="16">Harness and runner labels follow Z.ai's GLM-5.3 launch notes (2026-08-14) and the</text>
+  <text x="92" y="806" fill="#7894aa" font-family="Segoe UI, Arial, sans-serif" font-size="16">DeepSWE v1.1 independent leaderboard. Original diagram for this article.</text>
 </svg>
