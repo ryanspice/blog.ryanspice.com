@@ -45,7 +45,7 @@
 	const articleAccent = $derived(articleAccentColor(article));
 	const focalImage = $derived(articleFocalImage(article));
 	const heroImage = $derived(focalImage ?? articleCardImage(article));
-	const isPortraitDiagram = $derived(Boolean(heroImage?.src.match(/mimo-coding-harness-portrait\.png$/i)));
+	const isPortraitDiagram = $derived(Boolean(heroImage?.src.match(/[\/-]portrait\.(png|svg)$/i)));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
 	const titleTransitionName = $derived(articleTitleTransitionName(article.slug));
 	const ui = $derived(getDictionary(article.locale));

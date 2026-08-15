@@ -260,13 +260,23 @@
     "updatedAt": "2026-08-14T20:54:20.905Z"
   },
   "ryan:en:deepseek-v4-pro-deployment-cheatsheet": {
-    "fingerprint": "7eef229ee497bfcd0f6e5f39c939430029d5e72057b00d5c1bd31c1e7534c93f",
+    "fingerprint": "17e86f6ac2b1b2a00330cb952a1eb26fd36bde09776c5227733cec41d9684e11",
     "path": "static/img/social/ryan/articles/deepseek-v4-pro-deployment-cheatsheet.png",
-    "updatedAt": "2026-08-14T20:54:21.507Z"
+    "updatedAt": "2026-08-15T02:37:55.028Z"
   },
   "ryan:en:glm-5-3-deepseek-v4-pro-harnesses": {
-    "fingerprint": "ba14a145883ee65bc92b46e0c828de39dd674919d3b650e47182ddcddbd8073c",
+    "fingerprint": "69a85f8180171727fb44ab0e3e649b7ca8c455eeb38c91ef68a96601c08fd28a",
     "path": "static/img/social/ryan/articles/glm-5-3-deepseek-v4-pro-harnesses.png",
-    "updatedAt": "2026-08-14T20:54:22.136Z"
+    "updatedAt": "2026-08-15T02:37:55.636Z"
+  },
+  "canopy:en:deepseek-v4-pro-deployment-cheatsheet": {
+    "fingerprint": "708144d7008273c750c64963fb8b6e586f43bbcaa2de46372f5e4e0f6de250c0",
+    "path": "static/img/social/canopy/articles/deepseek-v4-pro-deployment-cheatsheet.png",
+    "updatedAt": "2026-08-15T02:39:20.125Z"
+  },
+  "canopy:en:glm-5-3-deepseek-v4-pro-harnesses": {
+    "fingerprint": "e328e41e2422df07007c641347154f415cf6b58f361cdac91791aeaa9fe6fe80",
+    "path": "static/img/social/canopy/articles/glm-5-3-deepseek-v4-pro-harnesses.png",
+    "updatedAt": "2026-08-15T02:39:20.728Z"
   }
 }

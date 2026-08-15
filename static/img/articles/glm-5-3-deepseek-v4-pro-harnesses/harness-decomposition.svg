@@ -53,8 +53,8 @@
 
   <rect x="70" y="540" width="1060" height="200" rx="16" fill="#0d1f31" stroke="#2c4a63"/>
   <text x="96" y="584" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">The same model name can carry two scores</text>
-  <text x="96" y="632" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.2 &nbsp;<tspan fill="#48c5d6" font-weight="700">46.2</tspan> &nbsp;(Z.ai run) &nbsp;·&nbsp; <tspan fill="#8f9fff" font-weight="700">44 ± 2</tspan> &nbsp;(independent, mini-swe-agent)</text>
-  <text x="96" y="672" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.3 &nbsp;<tspan fill="#48c5d6" font-weight="700">66.9</tspan> &nbsp;(Z.ai run) &nbsp;·&nbsp; independent record pending at publication</text>
+  <text x="96" y="632" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.2 &#160;<tspan fill="#48c5d6" font-weight="700">46.2</tspan> &#160;(Z.ai run) &#160;·&#160; <tspan fill="#8f9fff" font-weight="700">44 ± 2</tspan> &#160;(independent, mini-swe-agent)</text>
+  <text x="96" y="672" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="20">GLM-5.3 &#160;<tspan fill="#48c5d6" font-weight="700">66.9</tspan> &#160;(Z.ai run) &#160;·&#160; independent record pending at publication</text>
   <line x1="96" y1="700" x2="1104" y2="700" stroke="#28445b"/>
   <text x="96" y="726" fill="#a8bed0" font-family="Segoe UI, Arial, sans-serif" font-size="19">Benchmark names identify the task set — not the experiment that measured it.</text>
 
