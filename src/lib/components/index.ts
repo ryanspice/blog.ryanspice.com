@@ -5,4 +5,6 @@ export { default as ArticleView } from './ArticleView.svelte';
 export { default as DraftMetadataControls } from './DraftMetadataControls.svelte';
 export { default as FooterAuthControls } from './FooterAuthControls.svelte';
 export { default as ImmersiveArticleView } from './ImmersiveArticleView.svelte';
+export { default as LatestModelStats } from './LatestModelStats.svelte';
+export { default as ModelPriceWatch } from './ModelPriceWatch.svelte';
 export { default as SiteHeader } from './SiteHeader.svelte';

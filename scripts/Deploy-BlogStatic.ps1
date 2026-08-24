@@ -7,7 +7,8 @@ param(
   [switch]$Activate,
   [switch]$OpenProbe,
   [switch]$NoClean,
-  [switch]$AllowBroadRemotePath
+  [switch]$AllowBroadRemotePath,
+  [switch]$SkipRemoteBackup
 )
 
 Set-StrictMode -Version Latest
@@ -320,7 +321,8 @@ if ($Activate) {
 set -eu
 LIVE=__REMOTE__
 RELEASE=__RELEASE__
-KEEP_NAMES=__KEEP__
+KEEP=__KEEP__
+SKIP_BACKUP=__SKIP_BACKUP__
 BACKUP="_backups/live-$RELEASE.tar.gz"
 BACKUP_LABEL="$LIVE/$BACKUP"
 
@@ -338,9 +340,11 @@ else
   test -f "_releases/$RELEASE/_protected/.htaccess"
 fi
 
-tar -czf "$BACKUP" --exclude='./_incoming' --exclude='./_releases' --exclude='./_backups' .
-test -s "$BACKUP"
-tar -tzf "$BACKUP" >/dev/null
+if [ "$SKIP_BACKUP" != "1" ]; then
+  tar -czf "$BACKUP" --exclude='./_incoming' --exclude='./_releases' --exclude='./_backups' .
+  test -s "$BACKUP"
+  tar -tzf "$BACKUP" >/dev/null
+fi
 
 find "_backups" -mindepth 1 -maxdepth 1 -type d | while IFS= read -r backup_dir; do
   name="${backup_dir#_backups/}"
@@ -366,7 +370,7 @@ is_keep_name() {
   name="$1"
   old_ifs="$IFS"
   IFS=','
-  for keep in $KEEP_NAMES; do
+  for keep in $KEEP; do
     IFS="$old_ifs"
     if [ "$name" = "$keep" ]; then return 0; fi
     IFS=','
@@ -387,10 +391,13 @@ done
 
 cp -a "_releases/$RELEASE"/. .
 echo "Activated release: $RELEASE"
-echo "Backup: $BACKUP_LABEL"
+test "$SKIP_BACKUP" != "1" || rm -rf "_releases/$RELEASE"
+test "$SKIP_BACKUP" != "1" || echo "Backup: skipped (release folder cleaned up)"
+test "$SKIP_BACKUP" = "1" || echo "Backup: $BACKUP_LABEL"
 '@
 
-  $ActivateRemote = New-RemoteScript $ActivateRemoteTemplate @{ REMOTE = $remoteQ; RELEASE = $releaseQ; KEEP = $keepQ }
+  $skipBackupValue = if ($SkipRemoteBackup) { '1' } else { '0' }
+  $ActivateRemote = New-RemoteScript $ActivateRemoteTemplate @{ REMOTE = $remoteQ; RELEASE = $releaseQ; KEEP = $keepQ; SKIP_BACKUP = $skipBackupValue }
 
   Step "Activate release"
   $ActivateRemote | & ssh @SshArgs $HostName "sh -s"

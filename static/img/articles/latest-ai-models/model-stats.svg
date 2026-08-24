@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">Capability versus practical productivity — editorial operator snapshot</title>
+  <desc id="desc">Horizontal paired bars for five AI models. Values are editorial judgments from 0 to 100, not benchmark scores.</desc>
+  <defs>
+    <linearGradient id="capability" x1="0" x2="1"><stop stop-color="#6e42d8"/><stop offset="1" stop-color="#925cf6"/></linearGradient>
+    <linearGradient id="productivity" x1="0" x2="1"><stop stop-color="#8f3d69"/><stop offset="1" stop-color="#c35d89"/></linearGradient>
+  </defs>
+  <rect width="1600" height="980" fill="#05070b"/>
+  <text x="70" y="70" fill="#f7f4ff" font-family="Arial, sans-serif" font-size="34" font-weight="700">Your AI model fleet — capability vs productivity</text>
+  <text x="70" y="112" fill="#c7c1d5" font-family="Arial, sans-serif" font-size="18">August 24, 2026 editorial operator snapshot. 0–100 judgments, not benchmark scores.</text>
+  <text x="70" y="140" fill="#8e879b" font-family="Arial, sans-serif" font-size="15">Capability = reasoning/coding/judgment ceiling. Productivity = useful completed work after speed, cost, availability, and correction overhead.</text>
+  <g stroke="#252330" stroke-dasharray="4 10">
+    <line x1="390" y1="190" x2="390" y2="790"/><line x1="650" y1="190" x2="650" y2="790"/><line x1="910" y1="190" x2="910" y2="790"/><line x1="1170" y1="190" x2="1170" y2="790"/><line x1="1430" y1="190" x2="1430" y2="790"/>
+  </g>
+  <g fill="#777083" font-family="Arial, sans-serif" font-size="14" text-anchor="middle">
+    <text x="390" y="820">0</text><text x="650" y="820">25</text><text x="910" y="820">50</text><text x="1170" y="820">75</text><text x="1430" y="820">100</text>
+  </g>
+  <g fill="#f2edf9" font-family="Arial, sans-serif" font-size="17" text-anchor="end">
+    <text x="365" y="245">DeepSeek V4 Pro</text><text x="365" y="365">V4 Flash Vision Exp</text><text x="365" y="485">GLM-5.3</text><text x="365" y="605">Qwen3.8-27B</text><text x="365" y="725">Gemini 3.7 Flash</text>
+  </g>
+  <g fill="url(#capability)">
+    <rect x="390" y="210" width="458.8" height="14" rx="7"/><rect x="390" y="330" width="421.2" height="14" rx="7"/><rect x="390" y="450" width="436.8" height="14" rx="7"/><rect x="390" y="570" width="400.4" height="14" rx="7"/><rect x="390" y="690" width="390" height="14" rx="7"/>
+  </g>
+  <g fill="url(#productivity)">
+    <rect x="390" y="232" width="436.8" height="14" rx="7"/><rect x="390" y="352" width="374.4" height="14" rx="7"/><rect x="390" y="472" width="410.8" height="14" rx="7"/><rect x="390" y="592" width="395.2" height="14" rx="7"/><rect x="390" y="712" width="416" height="14" rx="7"/>
+  </g>
+  <g fill="#8d8597" font-family="Arial, sans-serif" font-size="13"><text x="1445" y="820">editorial scale</text></g>
+  <g transform="translate(615 875)" font-family="Arial, sans-serif" font-size="16" fill="#c7c1d5"><circle cx="0" cy="-5" r="7" fill="#7c4dff"/><text x="18" y="1">Capability ceiling</text><circle cx="220" cy="-5" r="7" fill="#b34e7b"/><text x="238" y="1">Practical productivity</text></g>
+  <text x="70" y="930" fill="#8e879b" font-family="Arial, sans-serif" font-size="14">Editorial operator snapshot, 2026-08-24 — benchmark families differ; no direct cross-model ranking is implied.</text>
+</svg>

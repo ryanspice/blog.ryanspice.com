@@ -473,6 +473,8 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 
 	function markdownImageDimensions(src: string): { width: string; height: string } | undefined {
 		const knownDimensions: Array<[RegExp, number, number]> = [
+			[/latest-model-stats\.svg$/i, 1600, 980],
+			[/deepseek-peak-pricing\.svg$/i, 1200, 720],
 			[/deepseek-claude-code-launcher\.svg$/i, 1200, 675],
 			[/deepseek-claude-code-sidebar\.svg$/i, 900, 1200],
 			[/glm-5-2-search-map\.svg$/i, 1200, 675],

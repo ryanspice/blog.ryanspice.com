@@ -29,6 +29,7 @@
 	import ArticleEndMeta from '$lib/components/ArticleEndMeta.svelte';
 	import ArticleResourceSections from '$lib/components/ArticleResourceSections.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
+	import ModelPriceWatch from '$lib/components/ModelPriceWatch.svelte';
 	import SafeHtml from '$lib/components/SafeHtml.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { articlePreviewTransitionName, articleTitleTransitionName } from '$lib/view-transitions';
@@ -153,32 +154,39 @@
 			</figure>
 		{/if}
 		<div class="article-hero-copy" style:view-transition-name={previewTransitionName}>
-			<div class="eyebrow">{article.design.eyebrow}</div>
-			<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
-			<p class="article-byline">
-				{site.author.name} · {ui.article.published} <time datetime={article.date}>{article.dateLabel}</time>
-				{#if article.updatedDate !== article.date}
-					· {ui.article.updated} <time datetime={article.updatedDate}>{article.updatedDateLabel}</time>
-				{/if}
-				· {article.readingMinutes} min
-			</p>
+			<div class="article-hero-copy-grid">
+				<div class="article-hero-copy-main">
+					<div class="eyebrow">{article.design.eyebrow}</div>
+					<h1 style:view-transition-name={titleTransitionName}>{article.title}</h1>
+					<p class="article-byline">
+						{site.author.name} · {ui.article.published} <time datetime={article.date}>{article.dateLabel}</time>
+						{#if article.updatedDate !== article.date}
+							· {ui.article.updated} <time datetime={article.updatedDate}>{article.updatedDateLabel}</time>
+						{/if}
+						· {article.readingMinutes} min
+					</p>
 
-			<p class="dek">{article.summary}</p>
-			<div class="tag-row" aria-label={ui.article.tags}>
-				{#each article.design.tags.slice(0, 3) as tag, index (tag + ':' + index)}
-					<a class="tag tag-link" href={articleTagIndexHref(tag, 'published')}>{tag}</a>
-				{/each}
-			</div>
-			{#if article.toc.length}
-				<details class="toc-accordion article-toc article-toc--mobile" aria-label="Table of contents">
-					<summary><span>{article.design.tocTitle}</span><strong>{article.toc.length} sections</strong></summary>
-					<div class="toc-accordion-panel">
-						{#each article.toc as item, index (item.id + ':' + index)}
-							<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} href={`#${item.id}`}>{item.text}</a>
+					<p class="dek">{article.summary}</p>
+					<div class="tag-row" aria-label={ui.article.tags}>
+						{#each article.design.tags.slice(0, 3) as tag, index (tag + ':' + index)}
+							<a class="tag tag-link" href={articleTagIndexHref(tag, 'published')}>{tag}</a>
 						{/each}
 					</div>
-				</details>
-			{/if}
+					{#if article.toc.length}
+						<details class="toc-accordion article-toc article-toc--mobile" aria-label="Table of contents">
+							<summary><span>{article.design.tocTitle}</span><strong>{article.toc.length} sections</strong></summary>
+							<div class="toc-accordion-panel">
+								{#each article.toc as item, index (item.id + ':' + index)}
+									<a class:toc-l3={item.level === 3} class:toc-l2={item.level === 2} href={`#${item.id}`}>{item.text}</a>
+								{/each}
+							</div>
+						</details>
+					{/if}
+				</div>
+				{#if article.modelStats}
+					<ModelPriceWatch compact />
+				{/if}
+			</div>
 		</div>
 	</section>
 

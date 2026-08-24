@@ -91,6 +91,7 @@ export type ArticleMeta = {
 	status: string;
 	draftType: string;
 	publicType: PublicArticleType;
+	modelStats: boolean;
 	summary: string;
 	seoDescription?: string;
 	tags: string[];
@@ -289,6 +290,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 	const status = stringValue(frontmatter.status) || 'draft';
 	const draftType = stringValue(frontmatter.draft_type) || 'technical-blog-post';
 	const publicType = resolvePublicArticleType(draftType, stringValue(frontmatter.public_type) || undefined);
+	const modelStats = stringValue(frontmatter.model_stats).toLowerCase() === 'true';
 	const summary = stringValue(frontmatter.summary) || '';
 	const seoDescription = stringValue(frontmatter.seo_description) || stringValue(frontmatter.seoDescription);
 	const tags = arrayValue(frontmatter.tags);
@@ -336,6 +338,7 @@ async function parseArticle(path: string, raw: string): Promise<Article> {
 		status,
 		draftType,
 		publicType,
+		modelStats,
 		summary,
 		...(seoDescription ? { seoDescription } : {}),
 		tags,

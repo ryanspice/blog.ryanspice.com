@@ -1,0 +1,45 @@
+{
+	"title": "Your AI model fleet — capability vs productivity",
+	"updatedAt": "2026-08-24",
+	"methodology": "Editorial operator snapshot for 2026-08-24. Capability and productivity are 0-100 judgments derived from vendor-published benchmarks fetched this run plus practical operator constraints (pricing, SLA status, context window, licensing, availability). They are NOT direct benchmark scores, and the underlying benchmark families differ across vendors (Terminal Bench 2.1, DeepSWE, FrontierCode 1.1, Z.ai Code Bench) and are not directly comparable. This chart is an editorial snapshot, not a benchmark leaderboard; a higher value does not imply a ranking on any single benchmark.",
+	"rows": [
+		{
+			"model": "DeepSeek V4 Pro (GA Aug 13)",
+			"capability": 88,
+			"productivity": 84,
+			"note": "Vendor: Terminal Bench 2.1 87.9, DeepSWE 62.7, Cybergym 83.3, HLE 42.7/60.0. Peak/off-peak pricing since Aug 16; strongest all-round agentic coding pick in this run."
+		},
+		{
+			"model": "DeepSeek V4 Flash Vision Exp (Aug 21)",
+			"capability": 81,
+			"productivity": 74,
+			"note": "Vendor: Terminal Bench 2.1 83.9, NL2Repo 57.7, DeepSWE 59.3. Experimental: no SLA, no weights; cheap off-peak ($0.22/$0.66 per 1M) but not production-grade."
+		},
+		{
+			"model": "GLM-5.3 (mid-Aug)",
+			"capability": 84,
+			"productivity": 79,
+			"note": "Z.ai: +50% over GLM-5.2 on Z.ai Code Bench; $1.40/$4.40, 1.05M ctx, reasoning always-on. Release date disputed (Aug 14 vs Aug 18)."
+		},
+		{
+			"model": "Qwen3.8-27B (Aug 14)",
+			"capability": 77,
+			"productivity": 76,
+			"note": "Vendor: Terminal Bench 2.1 73.0, DeepSWE 1.1 42.2, OSWorld-Verified 84.3. Apache-2.0 open weights, native image+video, 262K→1M ctx — best open-weight option in this packet."
+		},
+		{
+			"model": "Gemini 3.7 Flash (Aug 13)",
+			"capability": 75,
+			"productivity": 80,
+			"note": "Vendor: FrontierCode 1.1 Main 43.6, DeepSWE v1.1 65.3. Intro pricing $0.75/$3.75 per 1M until Dec 31 2026, then $1.50/$7.50. Pre-window context row."
+		}
+	],
+	"sources": [
+		{ "label": "DeepSeek — API updates (primary)", "href": "https://api-docs.deepseek.com/updates/" },
+		{ "label": "Digital Applied — DeepSeek V4 Flash Vision Exp launch and pricing", "href": "https://www.digitalapplied.com/blog/deepseek-v4-flash-vision-exp-launch-pricing" },
+		{ "label": "Z.ai — release notes", "href": "https://docs.z.ai/release-notes/new-released" },
+		{ "label": "Google — Introducing Gemini 3.7 Flash", "href": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/" },
+		{ "label": "Hugging Face — Qwen3.8-27B model card", "href": "https://huggingface.co/Qwen/Qwen3.8-27B" },
+		{ "label": "OpenRouter — zero-price models", "href": "https://openrouter.ai/models?max_price=0" }
+	]
+}

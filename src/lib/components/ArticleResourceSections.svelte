@@ -8,6 +8,8 @@
 	import type { SiteConfig } from '$lib/site-config';
 	import type { ResourceLink } from '$lib/article-view-model';
 	import { cssImageUrl } from '$lib/article-view-model';
+	import LatestModelStats from '$lib/components/LatestModelStats.svelte';
+	import ModelPriceWatch from '$lib/components/ModelPriceWatch.svelte';
 	import MonetizationSlot from '$lib/components/MonetizationSlot.svelte';
 
 	type ArticleCopy = {
@@ -93,6 +95,11 @@
 			{/each}
 		</ul>
 	</section>
+{/if}
+
+{#if article.modelStats}
+	<LatestModelStats />
+	<ModelPriceWatch />
 {/if}
 
 {#if site.monetization.position === 'article-end'}

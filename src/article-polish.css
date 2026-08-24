@@ -13,6 +13,40 @@
 	max-width: 760px;
 }
 
+.article-hero-copy-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(230px, 286px);
+	gap: clamp(20px, 3vw, 34px);
+	align-items: start;
+}
+
+.article-hero-copy-main {
+	min-width: 0;
+}
+
+.article-hero-copy-grid .model-price-watch {
+	min-width: 0;
+	margin-top: 4px;
+}
+
+.site-shell--canopy .article-hero-copy-grid {
+	padding-right: 20px;
+}
+
+@media (max-width: 760px) {
+	.article-hero-copy-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.article-hero-copy-grid .model-price-watch {
+		margin-top: 8px;
+	}
+
+	.site-shell--canopy .article-hero-copy-grid {
+		padding-right: 0;
+	}
+}
+
 .article-inner {
 	font-size: clamp(15.5px, 1.08vw, 16.5px);
 	line-height: 1.78;

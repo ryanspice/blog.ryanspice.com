@@ -278,5 +278,15 @@
     "fingerprint": "e328e41e2422df07007c641347154f415cf6b58f361cdac91791aeaa9fe6fe80",
     "path": "static/img/social/canopy/articles/glm-5-3-deepseek-v4-pro-harnesses.png",
     "updatedAt": "2026-08-15T02:39:20.728Z"
+  },
+  "ryan:en:latest-ai-models": {
+    "fingerprint": "32a1ea1034d601b92419bbe4b54406422888115d56a4a3049c6e96bcba429f15",
+    "path": "static/img/social/ryan/articles/latest-ai-models.png",
+    "updatedAt": "2026-08-24T06:31:07.388Z"
+  },
+  "canopy:en:latest-ai-models": {
+    "fingerprint": "49d7e3f646325d3576a220d2ed3035b117178884e94ef1a5a35c7fc6f386d4fa",
+    "path": "static/img/social/canopy/articles/latest-ai-models.png",
+    "updatedAt": "2026-08-24T06:34:34.382Z"
   }
 }

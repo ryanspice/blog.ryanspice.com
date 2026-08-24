@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek V4 Flash Vision Exp peak versus off-peak pricing</title>
+  <desc id="desc">Paired bars show input price rising from 0.22 to 0.44 dollars and output price rising from 0.66 to 1.32 dollars per million tokens during peak windows.</desc>
+  <rect width="1200" height="720" fill="#070a10"/>
+  <text x="60" y="68" fill="#f7f4ff" font-family="Arial, sans-serif" font-size="30" font-weight="700">DeepSeek V4 Flash Vision Exp — schedule the spend</text>
+  <text x="60" y="105" fill="#b7b0c3" font-family="Arial, sans-serif" font-size="17">Input/output price per 1M tokens, based on fetched public catalog sources.</text>
+  <g stroke="#29303b" stroke-dasharray="4 8"><line x1="240" y1="170" x2="240" y2="540"/><line x1="480" y1="170" x2="480" y2="540"/><line x1="720" y1="170" x2="720" y2="540"/><line x1="960" y1="170" x2="960" y2="540"/></g>
+  <g fill="#8f879a" font-family="Arial, sans-serif" font-size="14" text-anchor="middle"><text x="240" y="570">$0.00</text><text x="480" y="570">$0.40</text><text x="720" y="570">$0.80</text><text x="960" y="570">$1.20</text></g>
+  <g fill="#eee9f4" font-family="Arial, sans-serif" font-size="18" text-anchor="end"><text x="210" y="260">Input</text><text x="210" y="420">Output</text></g>
+  <rect x="240" y="230" width="132" height="28" rx="6" fill="#47b7cc"/><rect x="240" y="270" width="264" height="28" rx="6" fill="#a85783"/>
+  <rect x="240" y="390" width="396" height="28" rx="6" fill="#47b7cc"/><rect x="240" y="430" width="792" height="28" rx="6" fill="#a85783"/>
+  <g fill="#f7f4ff" font-family="Arial, sans-serif" font-size="15"><text x="385" y="251">off-peak $0.22</text><text x="518" y="291">peak $0.44</text><text x="647" y="411">off-peak $0.66</text><text x="1042" y="451">peak $1.32</text></g>
+  <rect x="240" y="620" width="14" height="14" rx="3" fill="#47b7cc"/><text x="266" y="633" fill="#b7b0c3" font-family="Arial, sans-serif" font-size="14">off-peak: outside 01:00–04:00 and 06:00–10:00 UTC</text>
+  <rect x="240" y="650" width="14" height="14" rx="3" fill="#a85783"/><text x="266" y="663" fill="#b7b0c3" font-family="Arial, sans-serif" font-size="14">peak: exactly 2×; cache hit listed at $0.007</text>
+</svg>
