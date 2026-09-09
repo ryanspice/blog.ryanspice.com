@@ -8,14 +8,14 @@ date: "2026-09-09"
 updated_date: "2026-09-09"
 release_date: "2026-09-09"
 release_time: "09:00"
-summary: "A practical build note on PocketMic LAN: turning an Android phone into an encrypted Windows microphone over a private LAN, with QR pairing, authenticated UDP audio, and an honest release boundary."
-seo_description: "How PocketMic LAN turns an Android phone into an encrypted Windows microphone over a private LAN, and what its v0.1.4 source currently proves."
+summary: "A cat-damaged microphone became an Android-to-Windows audio project. Here is how PocketMic LAN pairs, encrypts, buffers, and gets your voice into a meeting."
+seo_description: "Turn an Android phone into a Windows microphone with PocketMic LAN. Explore QR pairing, encrypted LAN audio, packet diagrams, setup tips, and a glossary."
 accent: "#b88a3b"
-image: "https://canopydigital.github.io/pocketmic-lan/og-image.png"
-image_alt: "PocketMic LAN encrypted microphone landing page visual"
-image_credit: "PocketMic LAN"
-image_source: "https://canopydigital.ca/sites/pocketmic-lan/"
-image_position: "center center"
+image: "https://images.unsplash.com/photo-1599580856824-f5224acb901b?auto=format&fit=crop&w=1600&q=85"
+image_alt: "Studio microphone on a stand; an illustrative stock photograph, not PocketMic hardware."
+image_credit: "Photo: Cedrik Wesche / Unsplash"
+image_source: "https://unsplash.com/photos/black-microphone-on-black-microphone-stand-zn-xrjOKQmc"
+image_position: "22% center"
 audience:
   - "Windows users"
   - "Android developers"
@@ -46,132 +46,118 @@ link_terms:
   - "PocketMic protocol|https://github.com/ryanspice/pocketmic-lan/blob/master/pocketmic-lan-v0.1.4/PROTOCOL.md"
 ---
 
-> [!status-brief] Build read
+> [!status-brief] The short version
 >
-> **The clean read.** PocketMic LAN turns an Android phone into a Windows microphone without sending the audio through a cloud service. It is a small, useful answer to a very ordinary hardware problem.
+> Your Android phone captures the sound. PocketMic LAN carries it over your private network to a Windows receiver. A virtual audio cable can then make that sound available as a microphone in your meeting app.
 >
-> **The operator read.** The interesting work is underneath the demo: authenticated packets, sequence handling, prebuffering, loss concealment, QR pairing, encrypted key storage, and diagnostics that do not get in the way of the audio loop.
->
-> | Area | Current stance |
-> | --- | --- |
-> | Core product | Android phone to Windows audio over a private LAN |
-> | Wire format | 48 kHz mono PCM16, 10 ms UDP frames, AES-256-GCM |
-> | Current source | v0.1.4 tree with Android, Windows, web, scripts, and verification tools |
-> | Ready to claim | Open-source build and protocol work |
-> | Still needs proof | Signed binaries, a normal installer, and repeatable physical end-to-end testing |
+> **Start here:** [Project page](https://canopydigital.ca/sites/pocketmic-lan/) · [Source code](https://github.com/ryanspice/pocketmic-lan) · [Setup](#getting-your-voice-into-a-meeting) · [Glossary](#pocket-wiki)
 
-The original problem was not grand. It was a missing microphone.
+My cat ate my microphone. That is a ridiculous opening for a software project, but it is the one this project got.
 
-I had Zoom meetings to do, my cat had apparently eaten the microphone, and the obvious expensive answer was to buy another piece of hardware. The more interesting answer was to use the hardware already sitting on the desk: an Android phone, a Windows PC, and the private Wi-Fi network between them.
+I needed a microphone for Zoom meetings. I also had an Android phone: a perfectly useful microphone attached to a small computer with Wi-Fi. PocketMic LAN grew out of connecting that phone to the Windows machine already on my desk.
 
-That is where [PocketMic LAN](https://github.com/ryanspice/pocketmic-lan) came from.
+The [original post on X](https://x.com/RyanSpice/status/2097543171995566427) gives the short origin story, including a thank-you to ChatGPT. This article is the longer version: what the project does, how the audio travels, and why getting a voice across a room involves more than opening a socket.
 
-The first version could have been a thin “send some audio over UDP” experiment. That would have been enough to make a demo and not enough to make something I wanted to use. A microphone path has to survive the boring conditions: the receiver starts late, a packet goes missing, the Wi-Fi link jitters, the output device disappears, the phone goes into the background, or the pairing key is wrong.
+## A microphone you already own
 
-The project is now a compact Android transmitter and Windows receiver with a public [landing page](https://canopydigital.ca/sites/pocketmic-lan/), a documented protocol, build scripts, and a growing set of verification tools. It is still a small project. That is part of the appeal.
+[PocketMic LAN](https://canopydigital.ca/sites/pocketmic-lan/) is an Android sender and a Windows receiver. The phone captures mono audio; the PC receives, authenticates, decrypts, and plays it through a selected output device.
 
-## The useful shape of the system
+That last step matters. Sending audio to Windows speakers is useful for checking the connection, but speakers are not a microphone input. To feed a meeting app, the receiver needs an audio route the app can select. A virtual cable supplies that bridge.
 
-The path is deliberately direct:
+The phone-to-PC transport stays on the LAN. There is no cloud relay in that audio path. If you feed the result into Zoom or another online service, that service still handles the meeting audio under its own rules. “Local microphone transport” does not mean “offline meeting.”
 
-~~~
-Android phone
-    microphone -> 48 kHz PCM16 -> encrypt -> UDP over private LAN
-                                                       |
-                                                       v
-Windows receiver
-    authenticate -> sequence/reorder -> prebuffer -> speakers, VB-CABLE, or VoiceMeeter
-~~~
+## Follow the sound
 
-The phone does not need an account. The PC does not need to send the audio to a hosted service. If the goal is to get a better microphone into Discord, OBS, Teams, Zoom, or a game, PocketMic can play into a Windows output endpoint and a virtual cable can expose that output as a recording device.
+![PocketMic audio path: Android capture and encryption, private-LAN UDP transport, Windows authentication and buffering, then a virtual cable and meeting app.](/img/articles/pocketmic-audio-path.svg)
 
-That last step matters. PocketMic is not trying to become a separate audio ecosystem for every application. It gives Windows an audio signal and lets Windows’ existing device-routing tools do the rest. Install [VB-CABLE](https://vb-audio.com/Cable/), choose ‘CABLE Input’ in PocketMic Receiver, then choose ‘CABLE Output’ as the microphone in the target application.
+*Figure 1. The encrypted transport ends at the Windows receiver. The virtual cable and meeting app are separate parts of the setup.*
 
-## One packet, ten milliseconds
+The sender packages the microphone signal into **10 ms frames**. Each frame travels as a UDP datagram, with an authenticated header and encrypted audio. The receiver checks it before adding the audio to playback.
 
-The wire format is refreshingly explicit. PocketMic sends one authenticated encrypted datagram for every 10 ms microphone frame:
+There is a reason for sending little pieces frequently. A live microphone is a moving conversation, not a file transfer: an old syllable arriving much later is not automatically useful. The receiver drops older, out-of-order packets instead of waiting indefinitely to reconstruct a perfect recording.
 
-| Part | Size | Meaning |
-| --- | ---: | --- |
-| Header | 24 bytes | ‘PMIC’, protocol version, flags, session ID, sequence, sample rate |
-| Encrypted audio | 960 bytes | 480 mono PCM16 samples at 48,000 Hz |
-| GCM tag | 16 bytes | Authentication for the packet |
+A separate control channel handles discovery, status, and processing settings. Keeping those messages separate makes it easier to explain a failed connection: a receiver that answered with the wrong pairing key is different from a receiver that never answered at all.
 
-That makes each datagram exactly 1,000 bytes and produces 100 packets per second, or 768 kbit/s of raw mono PCM audio before the normal network framing overhead.
+The exact fields and sequencing rules are documented in the [versioned protocol](https://github.com/ryanspice/pocketmic-lan/blob/master/pocketmic-lan-v0.1.4/PROTOCOL.md).
 
-The encryption boundary is equally clear. The pairing key is hashed with SHA-256 to produce the AES-256-GCM key. The 24-byte header is authenticated data, so changing the session, sequence, or sample-rate fields invalidates the packet rather than quietly changing how the receiver interprets it. A stream gets a random session ID, and the sequence number is never allowed to wrap inside that session.
+## What one packet costs
 
-The reconnect rule is the kind of detail that separates a protocol from a screenshot. A dropped link does not reset the counter. Resetting it could reuse a key-and-nonce pair. A genuine new stream gets a new random session ID instead.
+The audio format is **48 kHz, mono, signed 16-bit PCM**. PCM is uncompressed sample data, so the arithmetic is unusually approachable:
 
-There is also a separate authenticated control channel on the next UDP port for discovery and live status. That channel has its own HMAC-derived key rather than reusing the audio cipher key for a different job. The project treats parsing and authentication as separate steps, which lets it report “a receiver answered but the key is wrong” instead of collapsing every failure into silence.
+- 48,000 samples per second × 2 bytes = 96,000 audio bytes per second.
+- Ten milliseconds contains 480 samples, or **960 bytes of audio**.
+- A 24-byte header and 16-byte authentication tag bring each PocketMic datagram to **1,000 bytes**.
+- At 100 packets per second, that is **800 kbit/s**, before UDP/IP and network-link overhead.
 
-## Pairing without making the user type a LAN address
+![Proportional packet chart: 960 bytes of audio, 24 bytes of header, and 16 bytes of authentication tag make a 1000-byte PocketMic datagram.](/img/articles/pocketmic-packet-budget.svg)
 
-The current v0.1.4 work added the small piece of UX that makes a network tool feel usable: QR pairing.
+*Figure 2. Calculated from the protocol, not a network benchmark. Audio alone is 768 kbit/s; PocketMic framing adds 32 kbit/s. Control traffic and lower-layer overhead are additional.*
 
-The Windows receiver can show a QR code containing a ‘pmic://host:port/key’ payload. The Android app scans it with CameraX and ML Kit, fills in the connection fields, and stores the pairing key with Android Keystore-backed encrypted preferences. Manual IPv4 entry remains available as a fallback, but it is no longer the default experience.
+That is a deliberate simplicity tradeoff. Uncompressed audio avoids a codec stage, but uses more bandwidth than a compressed voice stream would. It also leaves a clear wire format that someone else can inspect and implement.
 
-That is a good example of the kind of feature that looks cosmetic until you use the system. A microphone tool should not make a person copy an IP address and a long key while they are already trying to join a call. The QR code is not the security model; it is the human-friendly transport for the security configuration that the encrypted stream still enforces.
+## Smooth audio takes a little waiting
 
-## Audio reliability is mostly about controlled imperfection
+Wi-Fi packets do not arrive with a metronome's consistency. The receiver keeps a small reserve of audio before playback starts so an uneven arrival does not immediately become a gap you hear.
 
-The receiver does not pretend that UDP is a reliable audio transport. It builds the useful parts of reliability around it:
+The default **prebuffer is 100 ms**, adjustable from **40 to 300 ms**. These are buffer settings, not measurements of total microphone-to-meeting latency. Capture, networking, audio drivers, the virtual cable, and the meeting app can all add delay.
 
-- a 100 ms playback prebuffer;
-- a configurable prebuffer range rather than one hard-coded latency promise;
-- unsigned sequence arithmetic that survives counter rollover;
-- rejection of malformed, unauthenticated, or wrong-version packets;
-- bounded concealment for small gaps by repeating the last good frame at a decaying level;
-- a fresh prebuffer after a large jump or genuinely new session;
-- latency trimming above a high-water mark instead of allowing buffering to drift forever;
-- controlled shutdown when a Windows output device disappears.
+| Receiver behaviour | What it is trying to prevent |
+| --- | --- |
+| Wait for the prebuffer | Starting playback without enough audio in reserve |
+| Conceal gaps of 1–20 frames with a decaying repeat | Turning every short loss into an abrupt crackle |
+| Drop older packets | Playing stale speech after the conversation has moved on |
+| Clear and prebuffer after larger jumps | Continuing with badly disrupted playback state |
+| Trim excess buffered audio during quiet input | Letting delay grow throughout a session |
 
-This is not studio-clock synchronization, Opus compression, or a universal low-latency audio stack. It is a sensible conversational-audio policy for a private Wi-Fi link. The project keeps PCM16 because it is easy to reason about and easy to verify; the tradeoff is bandwidth.
+At the default prebuffer, the high-water mark is 220 ms. It changes with the selected prebuffer; it is not a universal latency target. Loss concealment also cannot recover words that never arrived—it makes a short interruption less abrupt.
 
-The phone’s capture loop and network send loop are separated. A bounded queue can drop the oldest packet rather than stalling the microphone forever. The input meter is throttled, and diagnostics run away from the hot path. These are small decisions, but they reflect the right priority: the microphone should keep capturing even when observability or the network is having a bad moment.
+For troubleshooting, the useful questions are specific: are packets being lost, arriving late, rejected, or trimmed? Those counters tell a better story than a single green “connected” light.
 
-## What the project proves — and what it does not
+## Pairing without typing a secret twice
 
-The public source is in a better place than a marketing-only demo. It includes Android and Windows code, Kotlin and receiver tests, PowerShell build helpers, firewall setup, protocol checks, receiver-logic checks, source verification, and a web surface with real product captures.
+The v0.1.4 source includes QR pairing on the Windows side and a scanner on Android. The phone can pick up the connection details without the ritual of copying an address and key by hand.
 
-The current changelog records the v0.1.4 QR pairing work and a Windows receiver build with 74 passing tests. That is useful evidence. It is not the same as proving that every Android phone, Wi-Fi access point, Windows audio driver, virtual cable, and target meeting application behaves perfectly together.
+The pairing key is sensitive. A pairing QR code is not a harmless screenshot decoration: it carries connection material, including the key. Keep real codes out of public screenshots and screen shares.
 
-The repository is also honest about the remaining boundary: there is no signed Android release, no Windows installer, no updater, and end-to-end behaviour still needs physical Android/Windows/Wi-Fi/VB-CABLE testing. At the time of writing, the release page is the public handoff target, while the source build is the clearest reproducible path.
+For audio, the protocol uses **AES-256-GCM**. This provides encryption and an authentication tag; the receiver can reject packets whose protected content has been altered. The header is authenticated too.
 
-That distinction is important to me. “The protocol test passes” and “this worked for a full meeting on my hardware” are different statements. PocketMic has enough structure to make the second statement testable, but the first statement should not be inflated into it.
+One subtle detail deserves attention: each packet combines a random stream-session identifier with a sequence number to make its nonce. A reconnect keeps the sequence moving. Resetting the counter while reusing the same session and key would repeat a nonce, which is unsafe for GCM.
 
-There is one more boundary worth keeping precise. The audio path is LAN-only and has no cloud dependency. The landing page also uses a separate web analytics snippet, so I would keep the product claim focused on the microphone data path rather than casually turning “no cloud” into a blanket claim about every page or every form of telemetry.
+The key is derived by hashing the pairing phrase with SHA-256. Hashing does not turn a short, guessable phrase into a strong secret. Use a long, randomly generated pairing key, and keep the service on a trusted private LAN. Do not port-forward it onto the internet.
 
-## Why this is a good AI-assisted build
+## Getting your voice into a meeting
 
-The X post thanks ChatGPT, and that is fair. AI assistance is useful here because there are many connected implementation details: Android foreground services, UDP framing, encryption, sequence arithmetic, WinForms audio playback, QR encoding, protocol tests, build scripts, and a marketing page that should not promise more than the binaries prove.
+This is a source-oriented project, so begin with the [repository's current build instructions](https://github.com/ryanspice/pocketmic-lan/tree/master/pocketmic-lan-v0.1.4) and check that the Android and Windows components belong to the same version. The linked source is not a promise of a signed, one-click installer.
 
-But the valuable part is not asking a model to generate “a wireless microphone app” and accepting the first answer. The useful loop is narrower:
+1. **Put the phone and PC on the same private network.** Guest-network isolation can prevent devices from talking to each other.
+2. **Start the Windows receiver and pair the phone.** Use the QR flow where available, grant microphone permission, and check the receiver address and pairing key.
+3. **Allow the receiver through the firewall for the private network.** The default audio port is UDP 49500; the control channel uses the next port, 49501. Scope access to the LAN.
+4. **Choose an output route.** Use headphones for a listening check to reduce feedback. For a meeting, a tool such as [VB-CABLE](https://vb-audio.com/Cable/) provides the virtual device pair.
+5. **Select the matching microphone in the meeting app.** With VB-CABLE, send PocketMic playback to `CABLE Input`, then select `CABLE Output` as the app's microphone. The names make more sense from the cable's point of view: sound goes into one end and comes out of the other.
+6. **Make a short test recording before the call.** Check level, clipping, dropouts, and whether reconnecting restores audio. A moving meter is encouraging; an audible recording is the useful check.
 
-1. define the network and trust boundary;
-2. make the packet format inspectable;
-3. write small tests around crypto, control messages, and sequence behaviour;
-4. run the Android and Windows paths separately;
-5. exercise loss, reordering, reconnect, and device failure;
-6. keep the release story aligned with what was actually built.
+If the phone connects but the meeting hears nothing, inspect that last audio-device pairing before changing network settings. If discovery fails, check the network, firewall, and key first.
 
-That is the pattern I want from AI-assisted engineering: faster implementation, more explicit checks, and fewer excuses when a claim is not yet proven.
+## Pocket wiki
 
-## The practical bottom line
+A small reference shelf for the terms above. Follow the links for implementation details or the underlying specification.
 
-PocketMic LAN is a useful little answer to a cat-sized hardware failure. It turns an Android phone into a private-LAN microphone for Windows, keeps the audio packets authenticated, gives the user QR pairing instead of a wall of setup text, and includes enough diagnostics to investigate the parts that usually fail.
+| Term | In plain English | Read more |
+| --- | --- | --- |
+| LAN | The local network between the phone and PC—not the meeting service on the internet. | [Project overview](https://canopydigital.ca/sites/pocketmic-lan/) |
+| PCM16 | Audio represented as signed 16-bit samples rather than a compressed voice format. | [Audio format](https://github.com/ryanspice/pocketmic-lan/blob/master/pocketmic-lan-v0.1.4/PROTOCOL.md#audio) |
+| UDP datagram | One independently sent message; delivery and ordering are not guaranteed. | [UDP specification, RFC 768](https://www.rfc-editor.org/rfc/rfc768) |
+| AES-GCM | Authenticated encryption: confidentiality plus a check against tampering. | [NIST GCM specification](https://csrc.nist.gov/pubs/sp/800/38/d/final) |
+| Nonce | A value that must not repeat with the same GCM key. | [PocketMic encryption rules](https://github.com/ryanspice/pocketmic-lan/blob/master/pocketmic-lan-v0.1.4/PROTOCOL.md#encryption) |
+| Prebuffer | Audio held in reserve before playback to absorb uneven packet arrivals. | [Receiver sequencing policy](https://github.com/ryanspice/pocketmic-lan/blob/master/pocketmic-lan-v0.1.4/PROTOCOL.md#receiver-sequencing-policy) |
+| Virtual audio cable | A software connection between one app's output and another app's input. | [VB-CABLE](https://vb-audio.com/Cable/) |
 
-It is not a hardened internet voice service. It is not a signed consumer release yet. It is not a replacement for a good USB microphone in every environment.
+## Where the project stands
 
-It is a focused, open-source build with a clear next proof gate: produce the release artifacts, run the physical matrix, and record what happens on real phones, real Wi-Fi, real Windows outputs, and real meeting software.
+The v0.1.4 tree contains the Android sender, Windows receiver, protocol documentation, QR pairing, diagnostics, and verification tools. Its [changelog](https://github.com/ryanspice/pocketmic-lan/blob/master/pocketmic-lan-v0.1.4/CHANGELOG.md) reports 74 passing Windows tests. That is a project-reported result, not an independent hardware test performed for this article.
 
-For a project that began because the microphone disappeared, that is a pretty good place to be.
+The remaining acceptance test is wonderfully ordinary: a real phone, a real Windows machine, the intended audio route, and a full meeting-length session. Sleep and wake, reconnects, device changes, and a busy Wi-Fi network all deserve time in that test. This article does not claim those scenarios have passed.
 
-## Sources
+What I like about this project is its size. It starts with a broken microphone and ends with a system small enough to follow: capture, encrypt, send, authenticate, buffer, play. The details are real engineering work, but the point is still simple—use the microphone already in your pocket.
 
-- [Ryan’s launch post on X](https://x.com/RyanSpice/status/2097543171995566427)
-- [PocketMic LAN source repository](https://github.com/ryanspice/pocketmic-lan)
-- [PocketMic LAN landing page](https://canopydigital.ca/sites/pocketmic-lan/)
-- [Protocol v1](https://github.com/ryanspice/pocketmic-lan/blob/master/pocketmic-lan-v0.1.4/PROTOCOL.md)
-- [v0.1.4 changelog](https://github.com/ryanspice/pocketmic-lan/blob/master/pocketmic-lan-v0.1.4/CHANGELOG.md)
-- [VB-CABLE](https://vb-audio.com/Cable/)
+[Explore PocketMic LAN](https://canopydigital.ca/sites/pocketmic-lan/) or [read the source](https://github.com/ryanspice/pocketmic-lan). And perhaps keep the next microphone somewhere the cat cannot reach.
