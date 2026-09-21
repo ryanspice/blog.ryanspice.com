@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Model-news systems map</title>
+  <desc id="desc">A flow diagram connecting model capability to evidence, provider access, workflow acceptance, and operational learning.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1728"/>
+      <stop offset="1" stop-color="#101b35"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#69a9ff"/>
+      <stop offset="1" stop-color="#9b7cff"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#78a8f5"/>
+    </marker>
+    <style>
+      .label { font: 700 22px system-ui, sans-serif; fill: #f3f7ff; }
+      .copy { font: 400 16px system-ui, sans-serif; fill: #b9c9e6; }
+      .small { font: 600 14px system-ui, sans-serif; fill: #8fa9d4; letter-spacing: .08em; text-transform: uppercase; }
+      .card { fill: #142440; stroke: #45648f; stroke-width: 2; }
+      .link { fill: none; stroke: #78a8f5; stroke-width: 3; marker-end: url(#arrow); opacity: .9; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="url(#bg)"/>
+  <g opacity=".18" stroke="#6d8fc7">
+    <path d="M0 120H1200M0 240H1200M0 360H1200M0 480H1200M0 600H1200"/>
+    <path d="M120 0V720M300 0V720M480 0V720M660 0V720M840 0V720M1020 0V720"/>
+  </g>
+  <text x="70" y="70" class="small">MODEL NEWS → SYSTEM ACCEPTANCE</text>
+  <text x="70" y="108" class="copy">A launch is only one input to a dependable AI workflow.</text>
+
+  <path class="link" d="M330 220 C410 220 430 260 490 300"/>
+  <path class="link" d="M330 500 C410 500 430 450 490 420"/>
+  <path class="link" d="M710 300 C770 260 790 220 870 220"/>
+  <path class="link" d="M710 420 C770 460 790 500 870 500"/>
+  <path class="link" d="M1030 300 C1100 340 1100 380 1030 420"/>
+
+  <g transform="translate(70 160)">
+    <rect class="card" width="260" height="150" rx="18"/>
+    <text x="24" y="42" class="small">01 · CAPABILITY</text>
+    <text x="24" y="78" class="label">Model behavior</text>
+    <text x="24" y="108" class="copy">Reasoning, coding, vision,</text>
+    <text x="24" y="131" class="copy">voice, tools, autonomy.</text>
+  </g>
+  <g transform="translate(70 430)">
+    <rect class="card" width="260" height="150" rx="18"/>
+    <text x="24" y="42" class="small">02 · ACCESS</text>
+    <text x="24" y="78" class="label">Provider reality</text>
+    <text x="24" y="108" class="copy">Route, price, quota,</text>
+    <text x="24" y="131" class="copy">latency, retention.</text>
+  </g>
+
+  <g transform="translate(490 260)" filter="url(#glow)">
+    <rect width="220" height="200" rx="24" fill="url(#core)" opacity=".22"/>
+    <rect x="8" y="8" width="204" height="184" rx="18" fill="#12223f" stroke="#83b7ff" stroke-width="3"/>
+    <circle cx="110" cy="80" r="38" fill="none" stroke="#a9d1ff" stroke-width="3"/>
+    <circle cx="110" cy="80" r="10" fill="#f1b76a"/>
+    <path d="M110 42V22M110 118v20M72 80H52M148 80h20M83 53 68 38M137 107l15 15M137 53l15-15M83 107l-15 15" stroke="#a9d1ff" stroke-width="3"/>
+    <text x="110" y="160" text-anchor="middle" class="label">Evidence gate</text>
+    <text x="110" y="182" text-anchor="middle" class="copy">Does the claim survive contact?</text>
+  </g>
+
+  <g transform="translate(870 160)">
+    <rect class="card" width="260" height="150" rx="18"/>
+    <text x="24" y="42" class="small">03 · EVIDENCE</text>
+    <text x="24" y="78" class="label">Source quality</text>
+    <text x="24" y="108" class="copy">Primary sources, tests,</text>
+    <text x="24" y="131" class="copy">uncertainty, citations.</text>
+  </g>
+  <g transform="translate(870 430)">
+    <rect class="card" width="260" height="150" rx="18"/>
+    <text x="24" y="42" class="small">04 · ACCEPTANCE</text>
+    <text x="24" y="78" class="label">Workflow result</text>
+    <text x="24" y="108" class="copy">Task success, recovery,</text>
+    <text x="24" y="131" class="copy">cost, and operator trust.</text>
+  </g>
+
+  <g transform="translate(500 610)">
+    <rect width="200" height="54" rx="27" fill="#1c3154" stroke="#5d82bd"/>
+    <text x="100" y="34" text-anchor="middle" class="copy">route → measure → learn</text>
+  </g>
+</svg>
