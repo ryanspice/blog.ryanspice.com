@@ -240,25 +240,19 @@
 					</div>
 					<div class="article-social-embeds__grid">
 						<figure class="article-social-embed">
-							<iframe
-								title="Cognition post about GPT-6 Sol and Luna"
-								src="https://platform.twitter.com/embed/Tweet.html?id=2102463672224543018&theme=dark"
-								loading="lazy"
-								referrerpolicy="strict-origin-when-cross-origin"
-							></iframe>
-							<figcaption><a href="https://x.com/cognition/status/2102463672224543018" target="_blank" rel="noreferrer">View Cognition’s post on X</a></figcaption>
+							<a class="article-social-embed__image-link" href="https://x.com/cognition/status/2102463672224543018" target="_blank" rel="noreferrer">
+								<img src="https://pbs.twimg.com/media/HS1y80tasAAaBSt?format=webp&amp;name=large" alt="Cognition’s FrontierCode 1.1 Extended chart comparing score and cost per rollout for GPT-6 and other models" width="2048" height="1653" loading="lazy" referrerpolicy="no-referrer" />
+							</a>
+							<figcaption>Cognition says GPT-6 Sol matches GPT-5.6 Sol’s score at 61% lower task cost, while GPT-6 Luna scores higher than GPT-5.6 Luna at about one-quarter the cost in this FrontierCode 1.1 Extended comparison. These are Cognition’s reported figures. <a href="https://x.com/cognition/status/2102463672224543018" target="_blank" rel="noreferrer">View the post on X ↗</a></figcaption>
 						</figure>
 						<figure class="article-social-embed">
-							<iframe
-								title="Theo’s Artificial Analysis intelligence versus cost chart post"
-								src="https://platform.twitter.com/embed/Tweet.html?id=2102532392510750922&theme=dark"
-								loading="lazy"
-								referrerpolicy="strict-origin-when-cross-origin"
-							></iframe>
-							<figcaption><a href="https://x.com/theo/status/2102532392510750922" target="_blank" rel="noreferrer">View Theo’s post on X</a></figcaption>
+							<a class="article-social-embed__image-link" href="https://x.com/theo/status/2102532392510750922" target="_blank" rel="noreferrer">
+								<img src="https://pbs.twimg.com/media/HS2xzaNbAAA5axM?format=webp&amp;name=large" alt="Theo’s chart of Artificial Analysis Intelligence Index versus cost per task, with a linear/log toggle" width="2048" height="1402" loading="lazy" referrerpolicy="no-referrer" />
+							</a>
+							<figcaption>Theo’s Artificial Analysis Intelligence Index vs. cost chart; its interactive version switches between linear and log cost scales. <a href="https://x.com/theo/status/2102532392510750922" target="_blank" rel="noreferrer">View the post on X ↗</a></figcaption>
 						</figure>
 					</div>
-					<p class="article-social-embeds__note">The interactive chart uses Artificial Analysis data and lets you switch the cost axis between linear and logarithmic scales. The embeds load from X; each post also has a direct link above if embeds are unavailable.</p>
+					<p class="article-social-embeds__note">The linked interactive chart uses Artificial Analysis data and lets you switch the cost axis between linear and logarithmic scales. The graphics are served from X’s image CDN, and each one links to its original post.</p>
 				</section>
 			{/if}
 			<article class="article-shell"><SafeHtml class="article-inner" html={article.html} /></article>
