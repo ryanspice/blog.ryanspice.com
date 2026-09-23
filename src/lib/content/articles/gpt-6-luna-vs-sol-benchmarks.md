@@ -38,11 +38,22 @@ references:
   - "Theo on X — Artificial Analysis intelligence versus cost chart|https://x.com/theo/status/2102532392510750922"
   - "Theo's interactive Intelligence Index vs. cost chart|https://fc4rgpnygo9f.postplan.dev/"
   - "OpenAI — Introducing GPT-6 Sol and Luna|https://openai.com/index/introducing-gpt-6-sol-and-luna/"
+  - "DeepSWE 1.1 — benchmark and leaderboard|https://deepswe.datacurve.ai/"
+  - "Cognition — FrontierCode benchmark and leaderboard|https://cognition.com/frontiercode"
+  - "Agents' Last Exam — benchmark site|https://agents-last-exam.org/"
+  - "OSWorld 2.0 — benchmark site|https://osworld-v2.xlang.ai/"
+  - "Zapier — AutomationBench|https://zapier.com/benchmarks"
+  - "OpenAI API — GPT-6 Sol model guide|https://developers.openai.com/api/docs/models/gpt-6-sol"
+  - "OpenAI API — GPT-6 Luna model guide|https://developers.openai.com/api/docs/models/gpt-6-luna"
+  - "OpenAI API — evaluation best practices|https://developers.openai.com/api/docs/guides/evaluation-best-practices"
   - "Reddit — Luna Max vs. Sol High on DeepSWE|https://www.reddit.com/r/ChatGPT/comments/1wnielg/gpt_6_luna_max_scores_as_high_as_gpt_6_sol_high/"
   - "Digital Applied — GPT-6 Sol and Luna: API prices, benchmarks and trade-offs|https://www.digitalapplied.com/blog/gpt-6-sol-luna-launch-pricing-benchmarks-2026"
   - "Artificial Analysis — GPT-6 Sol and Luna push the cost efficiency frontier|https://artificialanalysis.ai/articles/gpt-6-sol-and-luna-push-the-cost-efficiency-frontier"
   - "OpenAI API pricing|https://developers.openai.com/api/docs/pricing"
   - "9to5Mac — OpenAI upgrading ChatGPT and Codex with two more GPT-6 models|https://9to5mac.com/2026/09/22/openai-upgrading-chatgpt-and-codex-with-two-more-gpt-6-models/"
+related_posts:
+  - "model-news-is-becoming-a-systems-story-september-2026"
+  - "free-model-fleet-mimo-delegates-ox-alpha-glm53-flash"
 ---
 
 # Is GPT-6 Luna as Smart as Sol? The Benchmark Says: Sometimes
@@ -55,7 +66,7 @@ Two useful visuals frame the debate: Cognition’s post about the new models, an
 
 ## What the Reddit chart actually compares
 
-The post points to DeepSWE 1.1, a benchmark of long-horizon software-engineering tasks in real codebases. OpenAI reports GPT-6 Luna at max reasoning scoring 66.6% and GPT-6 Sol at max scoring 68.8%. The Reddit image compares Luna Max with Sol High and Astra Low. The gap between the published max-effort scores is narrow enough to make the headline plausible for this particular test.
+The post points to [DeepSWE 1.1](https://deepswe.datacurve.ai/), a benchmark of long-horizon software-engineering tasks in real codebases. OpenAI reports GPT-6 Luna at max reasoning scoring 66.6% and GPT-6 Sol at max scoring 68.8% in its [launch evaluation results](https://openai.com/index/introducing-gpt-6-sol-and-luna/). The Reddit image compares Luna Max with Sol High and Astra Low. The gap between the published max-effort scores is narrow enough to make the headline plausible for this particular test.
 
 But three details matter. First, “as high as” is a score comparison at selected effort settings, not a claim of identical capability. Second, effort settings are not universal units of compute or intelligence. Third, benchmark scores summarize a test suite, not every task a developer might hand to a coding agent.
 
@@ -75,13 +86,13 @@ The launch numbers show a capable smaller model, with clear differences by task:
 
 | OpenAI evaluation | GPT-6 Luna best | GPT-6 Sol best | Read it as |
 | --- | ---: | ---: | --- |
-| DeepSWE 1.1 | 66.6% | 68.8% | Close scores on long software tasks; Luna’s reported task cost is much lower. |
-| FrontierCode 1.1 | 42.4% | 49.3% | A wider gap on code judged for mergeability. |
-| Agents’ Last Exam | 50.9% | 56.4% | Sol leads on long professional workflows. |
-| OSWorld 2.0 offline | 52.7% | 64.4% | Sol has a larger advantage on computer-use tasks. |
-| AutomationBench | 20.7% | 33.2% | Different levels of performance on cross-app business workflows. |
+| [DeepSWE 1.1](https://deepswe.datacurve.ai/) | 66.6% | 68.8% | Close scores on long software tasks; Luna’s reported task cost is much lower. |
+| [FrontierCode 1.1](https://cognition.com/frontiercode) | 42.4% | 49.3% | A wider gap on code judged for mergeability. |
+| [Agents’ Last Exam](https://agents-last-exam.org/) | 50.9% | 56.4% | Sol leads on long professional workflows. |
+| [OSWorld 2.0](https://osworld-v2.xlang.ai/) offline | 52.7% | 64.4% | Sol has a larger advantage on computer-use tasks. |
+| [AutomationBench](https://zapier.com/benchmarks) | 20.7% | 33.2% | Different levels of performance on cross-app business workflows. |
 
-These are each model’s reported best settings, so the table is a compact orientation rather than a controlled comparison at one common effort level. OpenAI says Astra remains its strongest model overall. It also says Luna Max exceeds GPT-5.6 Sol Medium on OSWorld at one-tenth the task cost—another useful generational comparison, but not a Sol-versus-Luna tie.
+These are each model’s reported best settings, so the table is a compact orientation rather than a controlled comparison at one common effort level. OpenAI notes that its results were measured in its research environment or through the API; ChatGPT and Codex may behave differently because their prompts and tools differ. The [model guides for Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) and [Luna](https://developers.openai.com/api/docs/models/gpt-6-luna) are useful starting points for reproducing an API-based comparison. For your own task set, OpenAI’s [evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) explain how to build and assess evaluations; that guide is methodology, not the source of the scores above. OpenAI says Astra remains its strongest model overall. It also says Luna Max exceeds GPT-5.6 Sol Medium on OSWorld at one-tenth the task cost—another useful generational comparison, but not a Sol-versus-Luna tie.
 
 The practical picture is a curve, not a ladder rung: Luna gets surprisingly close in some demanding work and remains behind on other tests. Sol buys more headroom on several agentic tasks. Astra sits above both in OpenAI’s positioning when the strongest result matters more than price.
 
