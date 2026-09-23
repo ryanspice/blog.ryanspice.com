@@ -222,13 +222,19 @@
 	background: #080b10;
 }
 
-.article-social-embed iframe {
+.article-social-embed__image-link {
+	display: block;
+	line-height: 0;
+	background: #080b10;
+	border-radius: 7px;
+	overflow: hidden;
+}
+
+.article-social-embed__image-link img {
 	display: block;
 	width: 100%;
-	height: 570px;
-	border: 0;
+	height: auto;
 	border-radius: 7px;
-	background: #080b10;
 }
 
 .article-social-embed figcaption {
@@ -247,7 +253,6 @@
 @media (max-width: 760px) {
 	.article-social-embeds { padding: 14px; }
 	.article-social-embeds__grid { grid-template-columns: minmax(0, 1fr); }
-	.article-social-embed iframe { height: 560px; }
 }
 
 .article-references {
