@@ -240,7 +240,11 @@
 .article-social-embed figcaption {
 	padding: 10px 6px 3px;
 	font-size: 0.875rem;
+	line-height: 1.55;
+	color: #d5deea;
 }
+
+.article-social-embed figcaption a { color: #8fd8ff; }
 
 .article-social-embeds__note {
 	max-width: 78ch;
