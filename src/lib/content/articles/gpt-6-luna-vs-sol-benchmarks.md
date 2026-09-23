@@ -34,6 +34,9 @@ tags:
 credits:
   - "Ryan Spice"
 references:
+  - "Cognition on X — GPT-6 Sol and Luna|https://x.com/cognition/status/2102463672224543018"
+  - "Theo on X — Artificial Analysis intelligence versus cost chart|https://x.com/theo/status/2102532392510750922"
+  - "Theo's interactive Intelligence Index vs. cost chart|https://fc4rgpnygo9f.postplan.dev/"
   - "OpenAI — Introducing GPT-6 Sol and Luna|https://openai.com/index/introducing-gpt-6-sol-and-luna/"
   - "Reddit — Luna Max vs. Sol High on DeepSWE|https://www.reddit.com/r/ChatGPT/comments/1wnielg/gpt_6_luna_max_scores_as_high_as_gpt_6_sol_high/"
   - "Digital Applied — GPT-6 Sol and Luna: API prices, benchmarks and trade-offs|https://www.digitalapplied.com/blog/gpt-6-sol-luna-launch-pricing-benchmarks-2026"
@@ -47,6 +50,8 @@ references:
 A Reddit post made the new GPT-6 lineup easy to read: Luna Max can score about as high as Sol High on DeepSWE, while costing less per run. The post's title says three times cheaper than Sol and 7.3 times cheaper than Astra on that benchmark. It is a sharp comparison—and a good reason to look more closely at the launch charts. The Reddit image was not available for independent inspection here, so those exact effort-level cost ratios remain attributed to the post. They are not proof that Luna and Sol are equally capable at everything.
 
 The more useful conclusion is smaller and more interesting: on at least one demanding software-engineering benchmark, the cheaper model gets close enough that many teams should test it first.
+
+Two useful visuals frame the debate: Cognition’s post about the new models, and Theo’s interactive chart comparing Artificial Analysis Intelligence Index scores with cost per task. The chart includes a linear/log cost toggle, so the apparent price gap can be inspected at both scales. It is a separate comparison from OpenAI’s task-specific benchmark table below; an aggregate index and a coding benchmark answer different questions.
 
 ## What the Reddit chart actually compares
 

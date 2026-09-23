@@ -44,6 +44,7 @@
 	let { article, relatedArticles = [], alternates = [], site = siteConfigs.ryan }: Props = $props();
 
 	const articleAccent = $derived(articleAccentColor(article));
+	const showLunaSolSocialEmbeds = $derived(article.slug === 'gpt-6-luna-vs-sol-benchmarks');
 	const focalImage = $derived(articleFocalImage(article));
 	const focalImageIsDiagram = $derived(Boolean(focalImage?.src.toLowerCase().includes('.svg')));
 	const previewTransitionName = $derived(articlePreviewTransitionName(article.slug));
@@ -231,6 +232,35 @@
 		</aside>
 
 		<div class="article-column">
+			{#if showLunaSolSocialEmbeds}
+				<section class="article-social-embeds" aria-label="Related posts and cost visualization">
+					<div class="article-social-embeds__heading">
+						<p class="eyebrow">The conversation around the chart</p>
+						<a href="https://fc4rgpnygo9f.postplan.dev/" target="_blank" rel="noreferrer">Open Theo’s interactive Intelligence Index vs. cost chart ↗</a>
+					</div>
+					<div class="article-social-embeds__grid">
+						<figure class="article-social-embed">
+							<iframe
+								title="Cognition post about GPT-6 Sol and Luna"
+								src="https://platform.twitter.com/embed/Tweet.html?id=2102463672224543018&theme=dark"
+								loading="lazy"
+								referrerpolicy="strict-origin-when-cross-origin"
+							></iframe>
+							<figcaption><a href="https://x.com/cognition/status/2102463672224543018" target="_blank" rel="noreferrer">View Cognition’s post on X</a></figcaption>
+						</figure>
+						<figure class="article-social-embed">
+							<iframe
+								title="Theo’s Artificial Analysis intelligence versus cost chart post"
+								src="https://platform.twitter.com/embed/Tweet.html?id=2102532392510750922&theme=dark"
+								loading="lazy"
+								referrerpolicy="strict-origin-when-cross-origin"
+							></iframe>
+							<figcaption><a href="https://x.com/theo/status/2102532392510750922" target="_blank" rel="noreferrer">View Theo’s post on X</a></figcaption>
+						</figure>
+					</div>
+					<p class="article-social-embeds__note">The interactive chart uses Artificial Analysis data and lets you switch the cost axis between linear and logarithmic scales. The embeds load from X; each post also has a direct link above if embeds are unavailable.</p>
+				</section>
+			{/if}
 			<article class="article-shell"><SafeHtml class="article-inner" html={article.html} /></article>
 
 			<ArticleEndMeta {article} {site} {coAuthors} copy={ui.article} />
