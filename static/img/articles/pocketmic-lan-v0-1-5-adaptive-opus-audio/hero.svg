@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-labelledby="title desc">
+  <title id="title">PocketMic LAN v0.1.5 uses Opus audio and adaptive buffering</title>
+  <desc id="desc">A centered diagram of encrypted audio moving between Android and Windows, with the Opus codec and adaptive jitter buffer features introduced in PocketMic v0.1.5. Live end-to-end device checks remain open.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111f"/><stop offset="1" stop-color="#12283a"/></linearGradient>
+    <linearGradient id="cyan"><stop stop-color="#48c5d6"/><stop offset="1" stop-color="#2f9bc2"/></linearGradient>
+    <linearGradient id="gold"><stop stop-color="#f4c273"/><stop offset="1" stop-color="#f59e69"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="15" flood-color="#000" flood-opacity=".30"/></filter>
+  </defs>
+  <rect width="1000" height="1000" rx="38" fill="url(#bg)"/><circle cx="850" cy="170" r="200" fill="#163d52" opacity=".35"/><circle cx="150" cy="900" r="220" fill="#17354c" opacity=".4"/>
+  <text x="500" y="100" text-anchor="middle" fill="#48c5d6" font-family="Segoe UI,Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="4">POCKETMIC LAN · V0.1.5</text>
+  <text x="500" y="170" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI,Arial,sans-serif" font-size="43" font-weight="700">Opus audio. Adaptive buffer.</text>
+  <text x="500" y="214" text-anchor="middle" fill="#a8bed0" font-family="Segoe UI,Arial,sans-serif" font-size="22">A private Android-to-Windows microphone link</text>
+  <g filter="url(#shadow)">
+    <rect x="82" y="280" width="836" height="200" rx="28" fill="#0b1928" stroke="#28445b" stroke-width="3"/>
+    <rect x="118" y="320" width="182" height="118" rx="20" fill="#12283a" stroke="#48c5d6" stroke-width="3"/><text x="209" y="369" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI,Arial,sans-serif" font-size="25" font-weight="700">Android</text><text x="209" y="405" text-anchor="middle" fill="#a8bed0" font-family="Segoe UI,Arial,sans-serif" font-size="18">48 kHz mic</text>
+    <rect x="700" y="320" width="182" height="118" rx="20" fill="#12283a" stroke="#48c5d6" stroke-width="3"/><text x="791" y="369" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI,Arial,sans-serif" font-size="25" font-weight="700">Windows</text><text x="791" y="405" text-anchor="middle" fill="#a8bed0" font-family="Segoe UI,Arial,sans-serif" font-size="18">receiver</text>
+    <path d="M315 380h365" fill="none" stroke="#48c5d6" stroke-width="5" stroke-dasharray="11 13"/><circle cx="355" cy="380" r="7" fill="#48c5d6"/><circle cx="640" cy="380" r="7" fill="#48c5d6"/><rect x="407" y="341" width="178" height="78" rx="18" fill="url(#cyan)"/><text x="496" y="373" text-anchor="middle" fill="#07111f" font-family="Segoe UI,Arial,sans-serif" font-size="23" font-weight="700">Opus · v2</text><text x="496" y="402" text-anchor="middle" fill="#07111f" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="600">AES-GCM over UDP</text>
+    <rect x="82" y="520" width="836" height="210" rx="28" fill="#0b1928" stroke="#28445b" stroke-width="3"/><text x="130" y="583" fill="#f8fafc" font-family="Segoe UI,Arial,sans-serif" font-size="29" font-weight="700">Adaptive jitter handling</text><text x="130" y="625" fill="#a8bed0" font-family="Segoe UI,Arial,sans-serif" font-size="21">Receiver adjusts buffering to packet arrival variation.</text><text x="130" y="675" fill="#f4c273" font-family="Segoe UI,Arial,sans-serif" font-size="19" font-weight="700">Implementation shipped · live-device checks remain open</text>
+    <rect x="82" y="770" width="836" height="112" rx="24" fill="#13273a" stroke="#28445b" stroke-width="2"/><circle cx="136" cy="826" r="22" fill="url(#gold)"/><path d="m126 826 7 7 14-16" fill="none" stroke="#07111f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><text x="184" y="819" fill="#f8fafc" font-family="Segoe UI,Arial,sans-serif" font-size="22" font-weight="700">v0.1.5 release links and APK signing are documented</text><text x="184" y="851" fill="#a8bed0" font-family="Segoe UI,Arial,sans-serif" font-size="18">APK is debug signed · verify downloads with SHA256SUMS.txt</text>
+  </g>
+  <text x="500" y="938" text-anchor="middle" fill="#a8bed0" font-family="Segoe UI,Arial,sans-serif" font-size="18">Opus is an audio codec, not Claude Opus</text>
+</svg>
