@@ -5,7 +5,7 @@ slug: "gpt-6-luna-vs-sol-benchmarks"
 status: "published"
 draft_type: "research-note"
 date: "2026-09-23"
-updated_date: "2026-09-23"
+updated_date: "2026-09-24"
 release_date: "2026-09-23"
 release_time: "09:00"
 summary: "A Reddit post says Luna Max can rival Sol High on DeepSWE. OpenAI's wider benchmark results show a narrower truth: near-parity on one hard coding test, lower task cost, and meaningful gaps elsewhere."
@@ -51,9 +51,9 @@ references:
   - "Artificial Analysis — GPT-6 Sol and Luna push the cost efficiency frontier|https://artificialanalysis.ai/articles/gpt-6-sol-and-luna-push-the-cost-efficiency-frontier"
   - "OpenAI API pricing|https://developers.openai.com/api/docs/pricing"
   - "9to5Mac — OpenAI upgrading ChatGPT and Codex with two more GPT-6 models|https://9to5mac.com/2026/09/22/openai-upgrading-chatgpt-and-codex-with-two-more-gpt-6-models/"
-related_posts:
-  - "model-news-is-becoming-a-systems-story-september-2026"
-  - "free-model-fleet-mimo-delegates-ox-alpha-glm53-flash"
+further_reading:
+  - "The Model Is Only Half the Product — September 2026 AI News|/model-news-is-becoming-a-systems-story-september-2026/"
+  - "Building a Free Coding Fleet: MiMo Delegates, OpenRouter Free Lanes, and the Ox Alpha Discovery|/free-model-fleet-mimo-delegates-ox-alpha-glm53-flash/"
 ---
 
 # Is GPT-6 Luna as Smart as Sol? The Benchmark Says: Sometimes
@@ -116,6 +116,6 @@ Treat that as a hypothesis to validate, not a vendor-neutral law. Your model ver
 
 ## What I verified
 
-I checked the Reddit post title and its cited OpenAI announcement, compared the published benchmark figures and task costs against launch-day chart analysis, and reviewed early release coverage. The Reddit preview image was blocked by its CDN; the precise Sol High and Astra Low cost ratios are therefore attributed to the post rather than independently checked. The benchmark results and prices are provider-reported. I did not run a matched Luna-versus-Sol test on an independent task set, so the evidence supports “near-parity on DeepSWE at selected settings,” not “equal intelligence overall.”
+I rechecked the [OpenAI launch announcement](https://openai.com/index/introducing-gpt-6-sol-and-luna/) and its linked benchmark pages on September 24, 2026. The Reddit preview image was blocked by its CDN; the precise Sol High and Astra Low cost ratios are therefore attributed to the post rather than independently checked. The benchmark results and prices are provider-reported. I did not run a matched Luna-versus-Sol test on an independent task set, so the evidence supports “near-parity on DeepSWE at selected settings,” not “equal intelligence overall.”
 
 The Reddit post caught a real and useful result. Its broader lesson is about access: if a lower-cost model can approach a stronger model on the task you actually need, the right question is no longer only which one wins a benchmark. It is how much capability your workflow needs—and what it costs to get a reliable result.
