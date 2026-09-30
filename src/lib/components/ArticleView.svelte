@@ -4,6 +4,7 @@
 	import { articleTagIndexHref, type ArticleIndexStatus } from '$lib/article-browse';
 	import { articleAccentColor } from '$lib/article-accent';
 	import { articleFocalImage } from '$lib/article-focal-images';
+	import { isPublicArticle } from '$lib/article-publication';
 	import { articleHref } from '$lib/article-links';
 	import {
 		ARTICLE_SHARE_IMAGE_HEIGHT,
@@ -44,6 +45,7 @@
 	let { article, relatedArticles = [], alternates = [], site = siteConfigs.ryan }: Props = $props();
 
 	const articleAccent = $derived(articleAccentColor(article));
+	const publicArticle = $derived(isPublicArticle(article));
 	const showLunaSolSocialEmbeds = $derived(article.slug === 'gpt-6-luna-vs-sol-benchmarks');
 	const focalImage = $derived(articleFocalImage(article));
 	const focalImageIsDiagram = $derived(Boolean(focalImage?.src.toLowerCase().includes('.svg')));
@@ -219,7 +221,7 @@
 				</details>
 			{/if}
 
-			<ArticleRailCard {article} />
+			{#if !publicArticle}<ArticleRailCard {article} />{/if}
 		</div>
 	</section>
 
