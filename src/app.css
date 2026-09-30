@@ -3228,6 +3228,31 @@ th {
 	color: var(--article-accent, var(--accent));
 }
 
+.article-inner blockquote.twitter-tweet {
+	max-width: 550px;
+	margin: 28px auto;
+	padding: 18px 20px;
+	border: 1px solid var(--metro-line-soft);
+	border-radius: 16px;
+	background: var(--surface-raised, rgba(255, 255, 255, 0.035));
+	color: var(--text);
+	text-align: left;
+}
+
+.article-inner blockquote.twitter-tweet p {
+	margin: 0 0 12px;
+}
+
+.article-inner blockquote.twitter-tweet p:last-child {
+	margin-bottom: 0;
+	color: var(--muted);
+	font-size: 0.9em;
+}
+
+.article-inner blockquote.twitter-tweet a {
+	color: var(--article-accent, var(--accent));
+}
+
 .article-inner .callout {
 	--callout-accent: var(--article-accent, var(--accent));
 	margin: 28px 0;

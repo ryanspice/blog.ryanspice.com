@@ -462,7 +462,28 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 		return (tree: any) => {
 			visit(tree, 'element', (node: any) => {
 				if (node.tagName !== 'blockquote') return;
+				if (hasClass(node, 'twitter-tweet')) return;
 				setClass(node, 'article-callout');
+			});
+		};
+	}
+
+	function rehypeXPostEmbeds() {
+		return (tree: any) => {
+			visit(tree, 'element', (node: any, index: number, parent: any) => {
+				if (node.tagName !== 'p' || !parent || typeof index !== 'number') return;
+				if (node.children?.length !== 1 || node.children[0]?.type !== 'text') return;
+				const match = String(node.children[0].value).trim().match(/^::x-post\[([A-Za-z0-9_]{1,15})\/(\d{10,25})\]\s+(.+)$/);
+				if (!match) return;
+				const href = `https://x.com/${match[1]}/status/${match[2]}`;
+				parent.children[index] = element(
+					'blockquote',
+					{ className: ['twitter-tweet'], 'data-conversation': 'none' },
+					[
+						element('p', {}, [text(match[3])]),
+						element('p', {}, [element('a', { href, rel: 'noreferrer', target: '_blank' }, [text(`@${match[1]} on X`)])])
+					]
+				);
 			});
 		};
 	}
@@ -785,6 +806,7 @@ async function createMarkdownProcessor(): Promise<(markdown: string) => Promise<
 		.use(remarkCallouts)
 		.use(remarkRehype, { allowDangerousHtml: false })
 		.use(rehypeMermaid)
+		.use(rehypeXPostEmbeds)
 		.use(rehypeLinkClasses)
 		.use(rehypeBlockquotes)
 		.use(rehypeImages)
