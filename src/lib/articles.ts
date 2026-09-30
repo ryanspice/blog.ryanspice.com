@@ -493,14 +493,20 @@ function designFor(
 			colors: ['#1e9bff', '#0b0f14', '#53b8ff', '#f2d27c', '#ff00ff']
 		},
 		navLinks: [{ label: 'Articles', href: article.locale === 'fr' ? '/fr/#articles' : '/#articles' }],
-		heroCardTitle: isFrench ? "Profil de l'article" : 'Article profile',
-		heroCardAria: isFrench ? "Details de l'article" : 'Article details',
-		statusItems: [
-			{ label: isFrench ? 'Type' : 'Type', value: article.draftType.replaceAll('-', ' ') },
-			{ label: isFrench ? 'Statut' : 'Status', value: isFrench ? (isDraft ? article.status : 'publie') : isDraft ? article.status : 'published' },
-			{ label: 'Date', value: article.dateLabel },
-			...(article.releaseDateLabel ? [{ label: isFrench ? 'Publication' : 'Release', value: article.releaseDateLabel }] : [])
-		],
+		heroCardTitle: isDraft ? (isFrench ? "Profil de l'article" : 'Article profile') : isFrench ? 'En bref' : 'At a glance',
+		heroCardAria: isDraft ? (isFrench ? "Details de l'article" : 'Article details') : isFrench ? 'Resume de lecture' : 'Reading details',
+		statusItems: isDraft
+			? [
+					{ label: isFrench ? 'Type' : 'Type', value: article.draftType.replaceAll('-', ' ') },
+					{ label: isFrench ? 'Statut' : 'Status', value: article.status },
+					{ label: 'Date', value: article.dateLabel },
+					...(article.releaseDateLabel ? [{ label: isFrench ? 'Publication' : 'Release', value: article.releaseDateLabel }] : [])
+			]
+			: [
+					{ label: isFrench ? 'Sujet' : 'Topic', value: article.tags[0] ?? article.draftType.replaceAll('-', ' ') },
+					{ label: isFrench ? 'Publie' : 'Published', value: article.dateLabel },
+					...(article.updatedDate !== article.date ? [{ label: isFrench ? 'Mis a jour' : 'Updated', value: article.updatedDateLabel }] : [])
+				],
 		railTitle: isFrench ? (isDraft ? 'Outil de publication' : 'Notes de publication') : isDraft ? 'Publishing tool' : 'Publishing notes',
 		railBodyHtml: isDraft
 			? 'Set the release date, pin the publish window, and keep the draft parked until the final review passes.'
