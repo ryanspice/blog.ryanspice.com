@@ -22,4 +22,13 @@ flowchart TD
 		expect(rendered.html).toContain('<svg');
 		expect(rendered.html).not.toContain('language-mermaid');
 	}, 20_000);
+
+	it('renders X post shorthand as safe linked blockquotes', async () => {
+		const rendered = await renderMarkdown('::x-post[OpenAI/2104984504133918973] OpenAI introduces dots.');
+
+		expect(rendered.html).toContain('class="twitter-tweet"');
+		expect(rendered.html).toContain('OpenAI introduces dots.');
+		expect(rendered.html).toContain('https://x.com/OpenAI/status/2104984504133918973');
+		expect(rendered.html).not.toContain('::x-post');
+	}, 20_000);
 });
