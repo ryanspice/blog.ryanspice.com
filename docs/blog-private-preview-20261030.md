@@ -53,7 +53,9 @@ modified. Worker evidence is separate from these lead checks:
   complete generated assets, direct endpoint HTML/JSON paths, owner/anonymous/
   invalid/revoked/non-owner cases, traversal, missing config, root containment,
   directory-link rejection and CSP source/build policy checks. The graph service
-  in this suite is synthetic; it never calls Microsoft.
+  in this suite is synthetic. The explicit test router and disabled native URL
+  streams enforce that boundary; the first Linux CI fixture failure and its
+  correction are recorded in the review-fixes receipt.
 - `pnpm run build:blog -SkipAdapterSync -RuntimeRoot <isolated-output>` passed
   with the committed adapter and real source catalog, including social images.
   Adapter synchronization was deliberately skipped to avoid changing another

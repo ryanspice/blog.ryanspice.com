@@ -497,6 +497,7 @@ async function startPhpServer({ privateContentRoot, ownerHashValue, logName }) {
 		...process.env,
 		BLOG_PRIVATE_CONTENT_ROOT: privateContentRoot,
 		BLOG_TEST_GRAPH_FIXTURE: path.join(logRoot, 'graph-profiles.json'),
+		BLOG_TEST_BUILD_ROUTER: path.join(workspaceRoot, 'build', 'router.php'),
 		BLOG_ARTICLE_SOURCE_ROOT: path.join(workspaceRoot, 'src', 'lib', 'content', 'articles'),
 		SK_BASE_PATH: ''
 	};
@@ -507,12 +508,12 @@ async function startPhpServer({ privateContentRoot, ownerHashValue, logName }) {
 		phpBinary,
 		[
 			'-d',
-			`auto_prepend_file=${path.join(fixtureRoot, 'php', 'graph-fixture-wrapper.php')}`,
+			'allow_url_fopen=0',
 			'-S',
 			`127.0.0.1:${port}`,
 			'-t',
 			path.join(workspaceRoot, 'build'),
-			path.join(workspaceRoot, 'build', 'router.php')
+			path.join(fixtureRoot, 'php', 'router.php')
 		],
 		{
 			cwd: path.join(workspaceRoot, 'build'),
@@ -650,6 +651,7 @@ async function runEndpointTests() {
 		} finally { await stopPhpServer(metadataServer); }
 		let response = await request(base, 'GET', '/drafts/owner/private/');
 		assertStatus('anonymous article manifest denied', response, 401);
+		record('endpoint test router installed the synthetic Graph transport', response.headers['x-blog-test-transport'] === 'synthetic');
 		record('anonymous article manifest has no private content', !containsPrivate(response.text));
 
 		response = await request(base, 'GET', '/drafts/owner/private/?kind=briefs');

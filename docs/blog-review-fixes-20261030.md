@@ -34,7 +34,7 @@ in ignored local output alongside the final reports.
 
 After the fixes, Svelte checks report 0 errors/warnings, unit tests pass 23/23,
 scoped PHP lint and JavaScript syntax checks pass, and the full isolated blog
-build and SEO audit pass again. The expanded suite passes 116 checks, including
+build and SEO audit pass again. The expanded suite passes 117 checks, including
 mounted navigation and save feedback. The final 903-file real-build scan found
 no complete private HTML bodies, exact private slug fields or private preview
 URLs among 46 private items, and the merged CSP matched the source policy. This
@@ -53,6 +53,14 @@ both `..public-*` aliases and a public build's `..private-payload` child. The
 sentinels. The original reports retain their dispositions at the reviewed
 revisions. This final small helper correction is lead-verified remediation,
 not a claim of a new independent approval or live browser/provider acceptance.
+
+The first Linux CI run could not verify the synthetic Graph profiles. Its
+`auto_prepend_file` setup did not establish mock isolation under that router
+execution. That run used synthetic bearer strings and no real Microsoft
+credential; it does not establish real-provider acceptance or prove isolation.
+The test router now requires the mock explicitly, asserts its installation,
+and starts PHP with native URL streams disabled. The local suite passes 117
+checks with this stricter transport setup. Application guards are unchanged.
 
 Production remains gated on private installation, actual root/alias/permission
 and header verification, real Microsoft/browser/owner and denied-other-account

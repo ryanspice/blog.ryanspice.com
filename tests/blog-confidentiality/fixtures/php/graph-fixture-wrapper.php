@@ -75,4 +75,7 @@ final class BlogConfidentialityGraphFixtureWrapper
 if (in_array('https', stream_get_wrappers(), true)) {
     @stream_wrapper_unregister('https');
 }
-stream_wrapper_register('https', BlogConfidentialityGraphFixtureWrapper::class);
+if (!stream_wrapper_register('https', BlogConfidentialityGraphFixtureWrapper::class, 0)) {
+    throw new RuntimeException('Synthetic Graph transport could not be registered.');
+}
+define('BLOG_TEST_GRAPH_STUB_READY', true);

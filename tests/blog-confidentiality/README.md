@@ -55,4 +55,4 @@ Useful environment variables:
 
 The generated workspace and logs live under `output/`, which is already gitignored. The script reads only frontmatter of repository articles when selecting public source files; it never copies private Markdown into the fixture workspace. The synthetic private fixtures are the only private content written into the test workspace. Do not change the fixture sentinels without updating `run.mjs`.
 
-The test-only Graph wrapper is loaded with PHP's `auto_prepend_file` only in this harness. It intercepts `https://graph.microsoft.com/` calls and answers from synthetic profiles; it is not part of the application runtime.
+The test router explicitly loads the Graph wrapper before the generated application router. It intercepts `https://graph.microsoft.com/` and answers from synthetic profiles. Native URL streams are disabled in these PHP test processes, so a missing wrapper cannot fall through to Microsoft. The custom wrapper uses PHP's default local-stream flag; see [PHP's stream wrapper contract](https://www.php.net/stream_wrapper_register). None of this test transport is deployed.
