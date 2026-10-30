@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 concurrency:
   group: test-blog-${{ github.ref }}
   cancel-in-progress: true
@@ -16,18 +19,21 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     env:
       PUBLIC_SITE_ID: ryan
       PUBLIC_SITE_URL: https://blog.ryanspice.com
-      VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID || '00000000-0000-0000-0000-000000000000' }}
-      VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID || 'common' }}
-      VITE_MSAL_REDIRECT_URI: ${{ secrets.VITE_MSAL_REDIRECT_URI }}
-      VITE_OWNER_EMAIL_SHA256: ${{ secrets.VITE_OWNER_EMAIL_SHA256 }}
-      BLOG_OWNER_EMAIL_SHA256: ${{ secrets.BLOG_OWNER_EMAIL_SHA256 || secrets.VITE_OWNER_EMAIL_SHA256 }}
+      # Checks use synthetic identity inputs; private content tests set their own
+      # fixture owner. No production registration or owner secret is needed.
+      VITE_MSAL_CLIENT_ID: '00000000-0000-0000-0000-000000000000'
+      VITE_MSAL_TENANT_ID: common
+      VITE_MSAL_REDIRECT_URI: https://blog.ryanspice.com/auth/callback/
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Normalize pnpm config for CI
         shell: pwsh
@@ -40,18 +46,24 @@ jobs:
           ) | Set-Content -LiteralPath .npmrc -Encoding utf8NoBOM
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
         with:
           version: 9.0.3
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Set up PHP for isolated owner endpoint fixtures
+        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea # v2
+        with:
+          php-version: '8.3'
+          coverage: none
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps
@@ -64,3 +76,6 @@ jobs:
 
       - name: Unit tests
         run: pnpm run test:unit
+
+      - name: Verify private content delivery and public build confidentiality
+        run: pnpm run test:confidentiality

@@ -2,8 +2,21 @@
 declare(strict_types=1);
 
 function load($event): array {
+	if (isset($GLOBALS['BLOG_DRAFT_METADATA_RESULT'])) {
+		$result = $GLOBALS['BLOG_DRAFT_METADATA_RESULT'];
+		http_response_code((int) ($result['status'] ?? 500));
+		header('Content-Type: text/plain; charset=utf-8');
+		header('Cache-Control: no-store');
+		echo (string) ($result['data']['metadataSave']['message'] ?? 'Metadata save failed.');
+		exit;
+	}
 	$params = $event['params'] ?? [];
-	return ['slug' => (string)($params['slug'] ?? '')];
+	$slug = (string) ($params['slug'] ?? '');
+	$base = defined('SK_BASE_PATH') ? (string) SK_BASE_PATH : (string) (getenv('SK_BASE_PATH') ?: '');
+	$base = rtrim($base, '/');
+	$target = $base . '/drafts/' . ($slug === '' ? '' : '?slug=' . rawurlencode($slug));
+	header('Location: ' . $target, true, 302);
+	exit;
 }
 
 function action_save($event): array {
@@ -15,7 +28,7 @@ function action_save($event): array {
 	try {
 		blog_draft_assert_owner_token($token);
 		$result = blog_draft_save_metadata($slug, $post);
-		return [
+		$result = [
 			'type' => 'success',
 			'status' => 200,
 			'data' => [
@@ -26,13 +39,19 @@ function action_save($event): array {
 				]
 			]
 		];
+		$GLOBALS['BLOG_DRAFT_METADATA_RESULT'] = $result;
+		http_response_code(200);
+		return $result;
 	} catch (Throwable $e) {
-		return sk_fail(400, [
+		$result = sk_fail(400, [
 			'metadataSave' => [
 				'ok' => false,
 				'message' => $e->getMessage()
 			]
 		]);
+		$GLOBALS['BLOG_DRAFT_METADATA_RESULT'] = $result;
+		http_response_code(400);
+		return $result;
 	}
 }
 

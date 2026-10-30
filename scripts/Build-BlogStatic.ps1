@@ -267,6 +267,9 @@ try {
   pnpm exec svelte-kit sync
   if ($LASTEXITCODE -ne 0) { throw "svelte-kit sync failed" }
 
+  pnpm run build:private-content
+  if ($LASTEXITCODE -ne 0) { throw "private draft content generation failed" }
+
   pnpm run generate:social-images -- --site=$SiteId
   if ($LASTEXITCODE -ne 0) { throw "social image generation failed" }
 
@@ -275,6 +278,15 @@ try {
 }
 finally {
   Pop-Location
+}
+
+# Private draft delivery is staged outside the document root by
+# Build-PrivateContent.mjs. Fail closed if a private artifact ever reaches build/.
+foreach ($PrivateArtifact in @("owner-guard.php", "owner.json")) {
+  $FoundPrivate = Get-ChildItem -LiteralPath $BuildDir -Recurse -File -Filter $PrivateArtifact -ErrorAction SilentlyContinue
+  if ($FoundPrivate) {
+    throw "Private draft artifact found in deployable build output: $($FoundPrivate.FullName)"
+  }
 }
 
 # Post-build compatibility fixes for older generated PHP variants.

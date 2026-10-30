@@ -34,7 +34,9 @@
     "deploy:canopy:activate:no-build": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Deploy-BlogStatic.ps1 -ConfigPath deploy.canopy.config.json -Apply -Activate",
     "publish:parallel": "pnpm run deploy:parallel",
     "deploy:test": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Test-BlogDeployConnection.ps1",
-    "deploy:test:canopy": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Test-BlogDeployConnection.ps1 -ConfigPath deploy.canopy.config.json"
+    "deploy:test:canopy": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/Test-BlogDeployConnection.ps1 -ConfigPath deploy.canopy.config.json",
+    "build:private-content": "node ./scripts/Build-PrivateContent.mjs",
+    "test:confidentiality": "node ./tests/blog-confidentiality/run.mjs"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.11.0",

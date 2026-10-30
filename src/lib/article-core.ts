@@ -1,0 +1,571 @@
+import { renderMarkdown, slugify, type MarkdownLinkTerm, type RenderedMarkdown, type TocItem } from './markdown';
+import {
+	articleVisualsFromFrontmatter,
+	splitFrontmatter as parseFrontmatter,
+	type ArticleVisuals,
+	stringValue as frontmatterStringValue
+} from './article-frontmatter';
+import { addArticleImageDiagnostics, type ArticleImageDiagnostic } from './article-image-diagnostics';
+import { articleCanonicalPath } from './article-paths';
+import { effectivePublishDate, isPublicArticle } from './article-publication';
+import {
+	DEFAULT_LOCALE,
+	isSupportedLocale,
+	localeToLanguageTag,
+	resolveLocale,
+	type SupportedLocale
+} from './i18n/locales';
+import { safeInlineHtml, type SafeHtml } from './safe-html';
+
+export type NavItem = {
+	label: string;
+	href: string;
+};
+
+export type ArticleContributor = {
+	name: string;
+	href?: string;
+	type?: 'Person' | 'Organization';
+};
+
+export type StatusItem = {
+	label: string;
+	value: string;
+};
+
+export type ArticlePalette = {
+	label: string;
+	colors: string[];
+};
+
+export type ArticleDesign = {
+	variant: 'repair' | 'debug' | 'default';
+	brandLabel: string;
+	navLinks: NavItem[];
+	eyebrow: string;
+	tags: string[];
+	accent: string;
+	cardPalette?: ArticlePalette;
+	heroCardTitle: string;
+	heroCardAria: string;
+	statusItems: StatusItem[];
+	tocTitle: string;
+	railTitle: string;
+	railBodyHtml: SafeHtml;
+	railStatusItems?: StatusItem[];
+	railPalette?: ArticlePalette;
+	railChips?: string[];
+	railChipsLabel?: string;
+	railCalloutHtml: SafeHtml;
+	footerText: string;
+};
+
+export type ArticleSource = {
+	path: string;
+	raw: string;
+};
+
+export type VersionSourceMap = Record<string, string>;
+
+export type ArticleMeta = {
+	title: string;
+	seoTitle?: string;
+	slug: string;
+	locale: SupportedLocale;
+	languageTag: string;
+	translationOf?: string;
+	translationStatus?: string;
+	canonicalSlug: string;
+	translatedSlug?: string;
+	translations: Partial<Record<SupportedLocale, string>>;
+	status: string;
+	draftType: string;
+	summary: string;
+	seoDescription?: string;
+	tags: string[];
+	audience: string[];
+	date: string;
+	dateLabel: string;
+	releaseTime?: string;
+	updatedDate: string;
+	updatedDateLabel: string;
+	releaseDate?: string;
+	releaseDateLabel?: string;
+	version: string;
+	previousVersion: string | null;
+	visuals: ArticleVisuals;
+	imageDiagnostics: ArticleImageDiagnostic[];
+	credits: string[];
+	coAuthors: ArticleContributor[];
+	references: string[];
+	furtherReading: string[];
+	relatedPosts: string[];
+	design: ArticleDesign;
+};
+
+export type Article = ArticleMeta & RenderedMarkdown & {
+	body: string;
+	previousBody: string | null;
+	toc: TocItem[];
+};
+
+export { effectivePublishDate, isPublicArticle } from './article-publication';
+
+const articleAccents: Record<string, string> = {
+	'gimp-3-repair-photogimp-pixelboats-workstation': '#f2d27c',
+	'debugging-gimp-3-python-plugin-failures-windows-windhawk': '#ffcf77',
+	'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game': '#87dac4',
+	'how-chatgpt-performs-deep-research': '#7c5cff',
+	'ship-fast-for-windows-microsoft-store-playbook': '#53b8ff',
+	'hermes-deepseek-setup': '#1e9bff',
+	'what-can-you-actually-do-with-a-deepseek-api-key': '#ff00ff',
+	'ingesting-voxel-engine-optimisations-ai-wiki-pixelboats': '#b87936',
+	'pixelboats-water-pipeline-pixi-webgl': '#0078d4',
+	'pixelboats-networking-final-recommendation': '#87dac4',
+	'pixelboats-networking-player-hosted-php': '#00c2ff'
+};
+
+export function finalizeArticleCatalog(parsedArticles: Article[]): Article[] {
+	return addArticleImageDiagnostics(normalizeArticleResourceLinks(parsedArticles)).sort(
+		(a, b) => effectivePublishDate(b).localeCompare(effectivePublishDate(a)) || a.title.localeCompare(b.title)
+	);
+}
+
+export async function parseArticle(path: string, raw: string, versionSources: VersionSourceMap = {}): Promise<Article> {
+	const { frontmatter, body } = parseFrontmatter(raw);
+	const filename = path.split('/').pop()?.replace(/\.md$/, '') ?? 'article';
+	const pathLocale = path.includes('/content/articles/fr/') ? 'fr' : DEFAULT_LOCALE;
+	const locale = resolveLocale(stringValue(frontmatter.locale) || pathLocale);
+	const title = stringValue(frontmatter.title) || firstHeading(body) || filename;
+	const seoTitle = stringValue(frontmatter.seo_title) || stringValue(frontmatter.seoTitle);
+	const renderedBody = stripLeadingTitleHeading(body);
+	const slug = stringValue(frontmatter.slug) || slugify(title);
+	const translationOf = stringValue(frontmatter.translation_of);
+	const canonicalSlug = stringValue(frontmatter.canonical_slug) || translationOf || slug;
+	const translatedSlug = stringValue(frontmatter.translated_slug);
+	const translationStatus = stringValue(frontmatter.translation_status);
+	const translations = parseTranslations(arrayValue(frontmatter.translations));
+	const status = stringValue(frontmatter.status) || 'draft';
+	const draftType = stringValue(frontmatter.draft_type) || 'technical-blog-post';
+	const summary = stringValue(frontmatter.summary) || '';
+	const seoDescription = stringValue(frontmatter.seo_description) || stringValue(frontmatter.seoDescription);
+	const tags = arrayValue(frontmatter.tags);
+	const date = stringValue(frontmatter.date) || filename.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || '2026-05-28';
+	const dateLabel = formatArticleDate(date, locale);
+	const updatedDate = stringValue(frontmatter.updated_date) || stringValue(frontmatter.modified_date) || date;
+	const updatedDateLabel = formatArticleDate(updatedDate, locale);
+	const releaseDate = stringValue(frontmatter.release_date);
+	const releaseTime = frontmatterStringValue(frontmatter.release_time);
+	const releaseDateLabel = releaseDate ? formatArticleDate(releaseDate, locale) : '';
+	const version = stringValue(frontmatter.version) || '1.0.0';
+	const previousVersion = stringValue(frontmatter.previous_version) || null;
+	const visuals = articleVisualsFromFrontmatter(frontmatter);
+	const credits = arrayValue(frontmatter.credits);
+	const coAuthors = arrayValue(frontmatter.co_authors)
+		.map(parseContributor)
+		.filter((contributor): contributor is ArticleContributor => contributor !== null);
+	const linkTerms = arrayValue(frontmatter.link_terms)
+		.map(parseLinkTerm)
+		.filter((term): term is MarkdownLinkTerm => term !== null);
+	const rendered = await renderMarkdown(renderedBody, { linkTerms });
+	const previousBody = previousVersion ? loadPreviousBody(slug, previousVersion, versionSources) : null;
+
+	return {
+		...rendered,
+		title,
+		...(seoTitle ? { seoTitle } : {}),
+		slug,
+		locale,
+		languageTag: localeToLanguageTag(locale),
+		...(translationOf ? { translationOf } : {}),
+		...(translationStatus ? { translationStatus } : {}),
+		canonicalSlug,
+		...(translatedSlug ? { translatedSlug } : {}),
+		translations,
+		status,
+		draftType,
+		summary,
+		...(seoDescription ? { seoDescription } : {}),
+		tags,
+		audience: arrayValue(frontmatter.audience),
+		date,
+		dateLabel,
+		updatedDate,
+		updatedDateLabel,
+		releaseDate: releaseDate || undefined,
+		releaseTime: releaseTime || undefined,
+		releaseDateLabel: releaseDateLabel || undefined,
+		version,
+		previousVersion,
+		previousBody: previousBody ? stripLeadingTitleHeading(previousBody) : null,
+		visuals,
+		imageDiagnostics: [],
+		credits: credits.length ? credits : ['Ryan Spice'],
+		coAuthors,
+		references: arrayValue(frontmatter.references),
+		furtherReading: arrayValue(frontmatter.further_reading),
+		relatedPosts: arrayValue(frontmatter.related_posts),
+		design: designFor({ slug, locale, title, status, draftType, summary, tags, date, dateLabel, updatedDate, updatedDateLabel, releaseDate, releaseDateLabel }),
+		body: renderedBody
+	};
+}
+
+function loadPreviousBody(slug: string, version: string, versionSources: VersionSourceMap): string | null {
+	const versionPath = `./content/articles/.versions/${slug}/${version}.md`;
+	const raw = versionSources[versionPath];
+	if (!raw || typeof raw !== 'string') return null;
+	const { body } = parseFrontmatter(raw);
+	return body || null;
+}
+
+function designFor(
+	article: Pick<
+		ArticleMeta,
+		'slug' | 'locale' | 'title' | 'status' | 'draftType' | 'summary' | 'tags' | 'date' | 'dateLabel' | 'updatedDate' | 'updatedDateLabel' | 'releaseDate' | 'releaseDateLabel'
+	>
+): ArticleDesign {
+	const isFrench = article.locale === 'fr';
+	const common = {
+		brandLabel: 'Ryan Spice / Canopy Digital',
+		tocTitle: isFrench ? 'Sommaire' : 'Contents',
+		accent: accentForSlug(article.slug)
+	};
+
+	if (article.slug === 'gimp-3-repair-photogimp-pixelboats-workstation') {
+		return articleDesign({
+			...common,
+			variant: 'repair',
+			eyebrow: 'Tooling repair log · PixelBoats',
+			tags: ['GIMP', 'GIMP 3', 'Windows 11', 'Pixel Art', 'Windhawk', 'DLL Debugging', 'PhotoGIMP', "G'MIC", 'PixelBoats'],
+			navLinks: [
+				{ label: 'Problem', href: '#the-symptom' },
+				{ label: 'Debugging', href: '#the-useful-test-hard-isolated-launch' },
+				{ label: 'PixelBoats Kit', href: '#creating-the-pixelboats-gimp-kit' },
+				{ label: 'Next', href: '#future-improvements' }
+			],
+			cardPalette: {
+				label: 'Repair palette',
+				colors: ['#f2d27c', '#112032', '#0078d4', '#53b8ff', '#ff00ff']
+			},
+			heroCardTitle: 'Production outcome',
+			heroCardAria: 'Article summary',
+			statusItems: [
+				{ label: 'GIMP', value: 'Repaired' },
+				{ label: 'PhotoGIMP', value: 'Installed' },
+				{ label: "G'MIC", value: 'Working' },
+				{ label: 'PixelBoats Kit', value: 'Installed' },
+				{ label: 'Old plug-ins', value: 'Quarantined' },
+				{ label: 'Date', value: article.dateLabel }
+			],
+			railTitle: 'Reference notes',
+			railBodyHtml: 'This article stays practical: repair steps, a safe asset restore order, and a PixelBoats-ready workstation setup.',
+			railPalette: {
+				label: 'PixelBoats palette preview',
+				colors: ['#080c14', '#112032', '#2d5c79', '#0078d4', '#53b8ff', '#f2d27c', '#b87936', '#ff00ff']
+			},
+			railCalloutHtml: '<strong>Editorial angle:</strong> tooling repair as production infrastructure, not just “I fixed my app.”',
+			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
+		});
+	}
+
+	if (article.slug === 'debugging-gimp-3-python-plugin-failures-windows-windhawk') {
+		return articleDesign({
+			...common,
+			variant: 'debug',
+			eyebrow: 'Windows debugging · GIMP 3 · Windhawk',
+			tags: ['GIMP', 'GIMP 3', 'Windows 11', 'Windhawk', 'DLL Debugging', 'Python', 'Troubleshooting'],
+			navLinks: [
+				{ label: 'First error', href: '#the-misleading-first-error' },
+				{ label: 'The test', href: '#the-test-that-changed-the-diagnosis' },
+				{ label: 'Windhawk', href: '#the-spoiler-windhawk-was-a-strong-suspect' },
+				{ label: 'Repair sequence', href: '#safe-repair-sequence' }
+			],
+			cardPalette: {
+				label: 'Debug palette',
+				colors: ['#ffcf77', '#090909', '#232733', '#6fa8dc', '#d44c36']
+			},
+			heroCardTitle: 'Debugging outcome',
+			heroCardAria: 'Article summary',
+			statusItems: [
+				{ label: 'First symptom', value: '_Unwind_Resume' },
+				{ label: 'Better clue', value: 'Pango / GI' },
+				{ label: 'Suspect', value: 'Windhawk hooks' },
+				{ label: 'Secondary risk', value: 'PATH DLLs' },
+				{ label: 'Outcome', value: 'Clean launch' },
+				{ label: 'Date', value: article.dateLabel }
+			],
+			railTitle: 'Debugging angle',
+			railBodyHtml: 'This page is intentionally more searchable and technical than the PixelBoats workflow article.',
+			railChipsLabel: 'Debugging stack',
+			railChips: ['_Unwind_Resume', 'libgraphite2.dll', 'libpango-1.0-0.dll', 'gi.repository', 'Windhawk hooks', 'PATH DLL pollution'],
+			railCalloutHtml: '<strong>Editorial angle:</strong> the search-friendly article people needed when the error message pointed everywhere except the actual suspect.',
+			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
+		});
+	}
+
+	if (article.slug === 'phaser-vs-pixijs-2026-choosing-for-2-5d-multiplayer-seafaring-game') {
+		return articleDesign({
+			...common,
+			variant: 'default',
+			eyebrow: 'Engine decision log · May 2026',
+			tags: ['Phaser', 'PixiJS', 'WebGPU', 'Game Engine Comparison', '2.5D Rendering', 'Water Simulation', 'Multiplayer', 'Colyseus', 'Indie Game Dev'],
+			navLinks: [
+				{ label: 'Decision', href: '#the-decision-that-looked-easy-until-it-wasnt' },
+				{ label: 'Architecture', href: '#the-architecture-that-emerged' },
+				{ label: 'Stack', href: '#the-stack-im-shipping-with' }
+			],
+			cardPalette: {
+				label: 'Engine palette',
+				colors: ['#53b8ff', '#112032', '#2d5c79', '#87dac4', '#ffcf77']
+			},
+			heroCardTitle: 'Decision outcome',
+			heroCardAria: 'Article summary',
+			statusItems: [
+				{ label: 'Chosen', value: 'PixiJS 8.18 + Colyseus' },
+				{ label: 'Runner-up', value: 'Phaser 4.1' },
+				{ label: '3D fallback', value: 'Three.js / Babylon.js (future)' },
+				{ label: 'License', value: 'MIT (all)' },
+				{ label: 'Date', value: article.dateLabel }
+			],
+			railTitle: 'The framing that changed everything',
+			railBodyHtml: 'The question was framed as "Phaser vs PixiJS" but the real answer came from naming the actual rendering problem: a height field driving vertex displacement, particles, and custom projection. Once that was clear, Phaser\'s abstractions became overhead and Pixi\'s Mesh/Filter primitives became the natural fit.',
+			railChips: ['2.5D surface rendering', 'WebGPU compute path', 'GLSL/WGSL shaders', 'Colyseus multiplayer', 'GPU-first with fallback'],
+			railChipsLabel: 'Key technical decisions',
+			railCalloutHtml: '<strong>Editorial angle:</strong> the most important step in engine evaluation is naming your actual rendering problem — not comparing feature lists.',
+			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from AI Wiki deep research work.`
+		});
+	}
+
+	if (article.slug === 'how-chatgpt-performs-deep-research') {
+		return articleDesign({
+			...common,
+			variant: 'default',
+			eyebrow: 'Research comparison · OpenAI vs DeepSeek',
+			tags: ['ChatGPT', 'Deep Research', 'DeepSeek', 'Reasoning Models', 'LLMs', 'Agentic Workflows'],
+			navLinks: [
+				{ label: 'Short version', href: '#the-short-version' },
+				{ label: 'Overlap', href: '#where-the-two-systems-overlap' },
+				{ label: 'Difference', href: '#retrieval-is-the-real-difference' },
+				{ label: 'Takeaway', href: '#the-useful-mental-model' }
+			],
+			cardPalette: {
+				label: 'Research palette',
+				colors: ['#1e9bff', '#0f172a', '#53b8ff', '#7c5cff', '#f2d27c']
+			},
+			heroCardTitle: 'Comparison frame',
+			heroCardAria: 'Comparison summary',
+			statusItems: [
+				{ label: 'OpenAI', value: 'Governed research workflow' },
+				{ label: 'DeepSeek', value: 'Reasoning/API substrate' },
+				{ label: 'Primary question', value: 'Workflow vs model layer' },
+				{ label: 'Date', value: article.dateLabel }
+			],
+			railTitle: 'What to notice',
+			railBodyHtml:
+				'Read the comparison as two layers: the product workflow you use in front, and the model/API substrate underneath. That split is the point of the article.',
+			railChipsLabel: 'Signals to watch',
+			railChips: ['product workflow', 'model substrate', 'governance', 'retrieval', 'developer control'],
+			railCalloutHtml:
+				'<strong>Editorial angle:</strong> compare the layer you are actually using — research workflow, model API, or both.',
+			footerText: `Updated last ${article.updatedDateLabel} · Static SvelteKit comparison article generated from local Markdown.`
+		});
+	}
+
+	const isDraft = !isPublicArticle(article);
+
+	return articleDesign({
+		...common,
+		variant: 'default',
+		eyebrow: isFrench ? `Blogue technique · ${isDraft ? article.status : 'publie'}` : `Technical blog · ${isDraft ? article.status : 'published'}`,
+		tags: article.tags,
+		cardPalette: {
+			label: 'Blog palette',
+			colors: ['#1e9bff', '#0b0f14', '#53b8ff', '#f2d27c', '#ff00ff']
+		},
+		navLinks: [{ label: 'Articles', href: article.locale === 'fr' ? '/fr/#articles' : '/#articles' }],
+		heroCardTitle: isDraft ? (isFrench ? "Profil de l'article" : 'Article profile') : isFrench ? 'En bref' : 'At a glance',
+		heroCardAria: isDraft ? (isFrench ? "Details de l'article" : 'Article details') : isFrench ? 'Resume de lecture' : 'Reading details',
+		statusItems: isDraft
+			? [
+					{ label: isFrench ? 'Type' : 'Type', value: article.draftType.replaceAll('-', ' ') },
+					{ label: isFrench ? 'Statut' : 'Status', value: article.status },
+					{ label: 'Date', value: article.dateLabel },
+					...(article.releaseDateLabel ? [{ label: isFrench ? 'Publication' : 'Release', value: article.releaseDateLabel }] : [])
+			]
+			: [
+					{ label: isFrench ? 'Sujet' : 'Topic', value: article.tags[0] ?? article.draftType.replaceAll('-', ' ') },
+					{ label: isFrench ? 'Publie' : 'Published', value: article.dateLabel },
+					...(article.updatedDate !== article.date ? [{ label: isFrench ? 'Mis a jour' : 'Updated', value: article.updatedDateLabel }] : [])
+				],
+		railTitle: isFrench ? (isDraft ? 'Outil de publication' : 'Notes de publication') : isDraft ? 'Publishing tool' : 'Publishing notes',
+		railBodyHtml: isDraft
+			? 'Set the release date, pin the publish window, and keep the draft parked until the final review passes.'
+			: isFrench
+				? 'Cette route est compatible avec le rendu statique et generee depuis Markdown local.'
+				: 'This route is static-friendly and generated from local Markdown.',
+		railStatusItems: isDraft
+			? [
+					{ label: 'Schedule date', value: article.releaseDateLabel ?? 'Choose a date' },
+					{ label: 'Publish time', value: 'TBD' },
+					{ label: 'Queue', value: 'Draft review' },
+					{ label: 'Target', value: 'ryanspice.com' }
+				]
+			: undefined,
+		railChips: isDraft ? undefined : isFrench ? ['SvelteKit statique', 'Markdown local', 'pnpm'] : ['Static SvelteKit', 'Local Markdown', 'pnpm'],
+		railCalloutHtml: isDraft
+			? '<strong>Editorial angle:</strong> turn the draft into a release plan before the final pass.'
+			: isFrench
+				? '<strong>Angle editorial:</strong> notes techniques pratiques avec contexte source durable.'
+				: '<strong>Editorial angle:</strong> practical technical notes with durable source context.',
+		footerText: isFrench
+			? `Mis a jour le ${article.updatedDateLabel} · Article SvelteKit statique genere depuis Markdown local.`
+			: `Updated last ${article.updatedDateLabel} · Static SvelteKit article generated from local Markdown.`
+	});
+}
+
+function articleDesign(
+	design: Omit<ArticleDesign, 'railBodyHtml' | 'railCalloutHtml'> & {
+		railBodyHtml: string;
+		railCalloutHtml: string;
+	}
+): ArticleDesign {
+	return {
+		...design,
+		railBodyHtml: safeInlineHtml(design.railBodyHtml),
+		railCalloutHtml: safeInlineHtml(design.railCalloutHtml)
+	};
+}
+
+function accentForSlug(slug: string): string {
+	return articleAccents[slug] ?? '#1e9bff';
+}
+
+function stringValue(value: string | string[] | undefined): string {
+	return typeof value === 'string' ? value : '';
+}
+
+function arrayValue(value: string | string[] | undefined): string[] {
+	return Array.isArray(value) ? value : [];
+}
+
+function parseLinkTerm(value: string): MarkdownLinkTerm | null {
+	const [label, ...rest] = value.split('|');
+	const href = rest.join('|').trim();
+	const cleanedLabel = label?.trim() ?? '';
+
+	if (!cleanedLabel || !href) return null;
+	return { label: cleanedLabel, href };
+}
+
+function parseContributor(value: string): ArticleContributor | null {
+	const [rawName, rawHref, rawType] = value.split('|').map((part) => part.trim());
+	if (!rawName) return null;
+
+	const type = rawType === 'Organization' || rawType === 'Person' ? rawType : undefined;
+	return {
+		name: rawName,
+		...(rawHref ? { href: rawHref } : {}),
+		...(type ? { type } : {})
+	};
+}
+
+function formatArticleDate(value: string, locale: SupportedLocale = DEFAULT_LOCALE): string {
+	const parsed = new Date(`${value}T00:00:00Z`);
+	if (Number.isNaN(parsed.getTime())) return value;
+
+	return new Intl.DateTimeFormat(locale === 'fr' ? 'fr-CA' : 'en-US', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+		timeZone: 'UTC'
+	}).format(parsed);
+}
+
+function firstHeading(body: string): string | undefined {
+	return body.match(/^#\s+(.+)$/m)?.[1]?.trim();
+}
+
+function stripLeadingTitleHeading(body: string): string {
+	return body.replace(/^\s*#\s+.+?[ \t]*\n+/, '');
+}
+
+function normalizeArticleResourceLinks(items: Article[]): Article[] {
+	const publicArticlesByLocaleSlug = new Map<string, Article>();
+
+	for (const article of items) {
+		if (!isPublicArticle(article)) continue;
+		publicArticlesByLocaleSlug.set(articleLocaleSlugKey(article.locale, article.slug), article);
+	}
+
+	return items.map((article) => ({
+		...article,
+		references: article.references.map((value) => normalizeArticleResourceLink(value, article.locale, publicArticlesByLocaleSlug)),
+		furtherReading: article.furtherReading.map((value) => normalizeArticleResourceLink(value, article.locale, publicArticlesByLocaleSlug))
+	}));
+}
+
+function normalizeArticleResourceLink(value: string, sourceLocale: SupportedLocale, publicArticlesByLocaleSlug: Map<string, Article>): string {
+	const cleaned = value.trim();
+	if (!cleaned) return value;
+
+	const pipeIndex = cleaned.indexOf('|');
+	const label = pipeIndex >= 0 ? cleaned.slice(0, pipeIndex).trim() : '';
+	const href = pipeIndex >= 0 ? cleaned.slice(pipeIndex + 1).trim() : cleaned;
+	if (!href) return value;
+
+	const canonicalHref = canonicalArticleResourceHref(href, sourceLocale, publicArticlesByLocaleSlug);
+	if (!canonicalHref || canonicalHref === href) return value;
+
+	return label ? `${label}|${canonicalHref}` : canonicalHref;
+}
+
+function canonicalArticleResourceHref(href: string, sourceLocale: SupportedLocale, publicArticlesByLocaleSlug: Map<string, Article>): string | null {
+	if (/^(?:https?:)?\/\//i.test(href) || href.startsWith('#')) return null;
+
+	const match = href.match(/^([^?#]*)([?#].*)?$/);
+	if (!match) return null;
+
+	const rawPath = match[1].trim();
+	const suffix = match[2] ?? '';
+	if (!rawPath || rawPath.includes('//')) return null;
+
+	const segments = rawPath
+		.replace(/^\.?\//, '')
+		.replace(/^\.\.\//, '')
+		.replace(/^\/+|\/+$/g, '')
+		.split('/')
+		.filter(Boolean);
+
+	if (segments.length < 1 || segments.length > 2) return null;
+	if (segments.length === 2 && !isSupportedLocale(segments[0])) return null;
+
+	const targetLocale = segments.length === 2 ? resolveLocale(segments[0]) : sourceLocale;
+	const slug = segments.length === 2 ? segments[1] : segments[0];
+	if (!targetLocale || !slug) return null;
+
+	const targetArticle =
+		publicArticlesByLocaleSlug.get(articleLocaleSlugKey(targetLocale, slug)) ??
+		publicArticlesByLocaleSlug.get(articleLocaleSlugKey(DEFAULT_LOCALE, slug));
+
+	return targetArticle ? `${articleCanonicalPath(targetArticle)}${suffix}` : null;
+}
+
+function articleLocaleSlugKey(locale: SupportedLocale, slug: string): string {
+	return `${locale}:${slug}`;
+}
+
+function parseTranslations(values: string[]): Partial<Record<SupportedLocale, string>> {
+	const translations: Partial<Record<SupportedLocale, string>> = {};
+
+	for (const value of values) {
+		const [locale, slug] = value.split('|').map((part) => part.trim());
+		const resolvedLocale = resolveLocale(locale);
+		if (resolvedLocale && slug) translations[resolvedLocale] = slug;
+	}
+
+	return translations;
+}
+
+export function translationGroupKey(article: Pick<ArticleMeta, 'translationOf' | 'canonicalSlug' | 'slug'>): string {
+	return article.translationOf || article.canonicalSlug || article.slug;
+}

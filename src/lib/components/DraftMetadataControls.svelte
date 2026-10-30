@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { tick } from 'svelte';
 	import { acquireOwnerAccessToken } from '$lib/auth';
 	import { articleAccentColor } from '$lib/article-accent';
 	import type { Article } from '$lib/articles';
@@ -20,7 +19,7 @@
 
 	let { article, form = null }: Props = $props();
 
-	let ownerToken = $state('');
+	let submittedState = $state<MetadataSaveState | null>(null);
 	let clientError = $state<string | null>(null);
 	let submitting = $state(false);
 
@@ -30,15 +29,15 @@
 	const focal = $derived(article.visuals.focal);
 	const row = $derived(article.visuals.row);
 	const background = $derived(article.visuals.background);
-	const saveState = $derived(form?.metadataSave ?? null);
+	const saveState = $derived(submittedState ?? form?.metadataSave ?? null);
 	const unsplashHref = $derived(
 		`https://unsplash.com/s/photos/${encodeURIComponent(article.tags[0] ?? article.title)}`
 	);
 	const actionHref = $derived(`${base}/drafts/${article.slug}/?/save`);
 
 	async function handleSubmit(event: SubmitEvent) {
-		if (ownerToken) return;
 		event.preventDefault();
+		if (submitting) return;
 
 		const formElement = event.currentTarget as HTMLFormElement;
 		if (!formElement.checkValidity()) {
@@ -47,22 +46,34 @@
 		}
 
 		clientError = null;
+		submittedState = null;
 		submitting = true;
 
 		try {
-			ownerToken = await acquireOwnerAccessToken();
-			await tick();
-			formElement.requestSubmit();
+			const token = await acquireOwnerAccessToken();
+			const body = new FormData(formElement);
+			body.set('owner_token', token);
+			const response = await fetch(actionHref, {
+				method: 'POST', body, headers: { Accept: 'application/json' },
+				credentials: 'same-origin', cache: 'no-store', redirect: 'error'
+			});
+			const result = await response.json();
+			const state = result?.data?.metadataSave;
+			if (!['success', 'failure'].includes(result?.type) ||
+				typeof state?.ok !== 'boolean' || typeof state?.message !== 'string' ||
+				(state.ok && (!response.ok || result.type !== 'success'))) {
+				throw new Error(`Metadata save returned an invalid response (${response.status}).`);
+			}
+			submittedState = state;
 		} catch (error_) {
-			clientError = error_ instanceof Error ? error_.message : 'Unable to acquire Microsoft owner token.';
+			clientError = error_ instanceof Error ? error_.message : 'Unable to save draft metadata.';
+		} finally {
 			submitting = false;
-			ownerToken = '';
 		}
 	}
 </script>
 
 <form class="draft-metadata-controls" method="POST" action={actionHref} onsubmit={handleSubmit}>
-	<input type="hidden" name="owner_token" value={ownerToken} />
 
 	<div class="draft-controls-head">
 		<div>
@@ -168,7 +179,7 @@
 	</details>
 
 	<div class="draft-actions">
-		<button type="submit" disabled={submitting}>{submitting ? 'Verifying owner...' : 'Save metadata'}</button>
+		<button type="submit" disabled={submitting}>{submitting ? 'Saving metadata...' : 'Save metadata'}</button>
 		{#if clientError}
 			<span class="draft-save-message is-error" role="status">{clientError}</span>
 		{:else if saveState}
