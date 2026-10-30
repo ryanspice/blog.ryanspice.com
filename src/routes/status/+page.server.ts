@@ -18,7 +18,7 @@ type ArticleRoute = { date: string; locale: 'en' | 'fr'; slug: string };
 
 export const csr = true;
 
-function countPages(published: ArticleRoute[], drafts: ArticleRoute[]) {
+function countPages(published: ArticleRoute[]) {
 	// A pragmatic, user-facing count: "things that behave like pages you can navigate to".
 	const fixedPages = [
 		'/', // home
@@ -30,13 +30,11 @@ function countPages(published: ArticleRoute[], drafts: ArticleRoute[]) {
 	];
 
 	const publishedPages = published.map((article) => articleCanonicalPath(article));
-	const draftPages = drafts.map((article) => `/drafts/${article.slug}/`);
 
 	return {
 		fixed: fixedPages.length,
 		published: publishedPages.length,
-		drafts: draftPages.length,
-		total: fixedPages.length + publishedPages.length + draftPages.length
+		total: fixedPages.length + publishedPages.length
 	};
 }
 
@@ -57,25 +55,22 @@ export const load: PageServerLoad = async ({ url }) => {
 	let pages = {
 		fixed: 6,
 		published: 0,
-		drafts: 0,
 		total: 6
 	};
 
 	let counts = {
 		articles: 0,
 		publishedArticles: 0,
-		draftArticles: 0,
 		tags: 0,
 		publishedTags: 0
 	};
 
 	try {
 		const module = await import('$lib/articles');
-		pages = countPages(module.publishedArticles, module.draftArticles);
+		pages = countPages(module.publishedArticles);
 		counts = {
 			articles: module.articles.length,
 			publishedArticles: module.publishedArticles.length,
-			draftArticles: module.draftArticles.length,
 			tags: module.articleTags.length,
 			publishedTags: module.publishedArticleTags.length
 		};

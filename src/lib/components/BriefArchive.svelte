@@ -13,7 +13,7 @@
 	let { briefs, visibleBriefs, briefTags, selectedTag, searchQuery }: Props = $props();
 </script>
 
-<form class="article-filter-bar" method="get" action="/briefs/">
+<form class="article-filter-bar" method="get" action={`${base}/briefs/`}>
 	<label class="filter-field">
 		<span>Search</span>
 		<input type="text" name="q" value={searchQuery} placeholder="Focus, project, tag..." />
@@ -31,7 +31,7 @@
 
 	<div class="filter-actions">
 		<button type="submit">Update</button>
-		<a class="home-filter-link" href="/briefs/">Reset</a>
+		<a class="home-filter-link" href={`${base}/briefs/`}>Reset</a>
 	</div>
 </form>
 
@@ -45,7 +45,7 @@
 
 	{#if visibleBriefs.length}
 		{#each visibleBriefs as brief, index (brief.slug + ':' + index)}
-			<a class="brief-card article-card-link" href={`${base}/briefs/${brief.slug}/`}>
+			<a class="brief-card article-card-link" href={`${base}/briefs/?slug=${encodeURIComponent(brief.slug)}`}>
 				<p class="related-kicker"><time datetime={brief.date}>{brief.dateLabel}</time></p>
 				<h3>{brief.title}</h3>
 				<p>{brief.summary}</p>

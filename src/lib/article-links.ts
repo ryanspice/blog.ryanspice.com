@@ -13,5 +13,7 @@ type ArticleHrefInput = {
 };
 
 export function articleHref(article: ArticleHrefInput): string {
-	return isPublicArticle(article) ? `${base}${articleCanonicalPath(article)}` : `${base}/drafts/${article.slug}/`;
+	return isPublicArticle(article)
+		? `${base}${articleCanonicalPath(article)}`
+		: `${base}/drafts/?slug=${encodeURIComponent(article.slug)}`;
 }

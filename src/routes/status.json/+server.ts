@@ -1,6 +1,6 @@
 import { base } from '$app/paths';
 import { articleCanonicalPath } from '$lib/article-paths';
-import { draftArticles, publishedArticles, articles, articleTags, publishedArticleTags } from '$lib/articles';
+import { publishedArticles, articles, articleTags, publishedArticleTags } from '$lib/articles';
 import pkg from '../../../package.json';
 
 export const prerender = true;
@@ -21,8 +21,8 @@ export const GET = ({ url }: { url: URL }) => {
 
 	const fixedPages = ['/', '/dev-log/', '/drafts/', '/login/', '/auth/callback/', '/status/'];
 	const publishedPages = publishedArticles.map((article) => articleCanonicalPath(article));
-	const draftPages = draftArticles.map((article) => `/drafts/${article.slug}/`);
 
+	// Public projection only: private draft counts and paths are not published.
 	const payload = {
 		ok: true,
 		siteUrl,
@@ -36,15 +36,13 @@ export const GET = ({ url }: { url: URL }) => {
 		counts: {
 			articles: articles.length,
 			publishedArticles: publishedArticles.length,
-			draftArticles: draftArticles.length,
 			tags: articleTags.length,
 			publishedTags: publishedArticleTags.length
 		},
 		pages: {
 			fixed: fixedPages.length,
 			published: publishedPages.length,
-			drafts: draftPages.length,
-			total: fixedPages.length + publishedPages.length + draftPages.length
+			total: fixedPages.length + publishedPages.length
 		}
 	};
 

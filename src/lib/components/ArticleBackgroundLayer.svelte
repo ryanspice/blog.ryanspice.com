@@ -1,34 +1,17 @@
 <script lang="ts">
-	type ArticleBackgroundInput = {
-		slug: string;
-		html: string;
-		backgroundImage?: string;
-	};
+	import type { Article } from '$lib/articles';
 
 	type Props = {
-		article: ArticleBackgroundInput;
+		article: Pick<Article, 'html' | 'visuals'>;
 	};
-
-	const rawArticleModules = import.meta.glob('$lib/content/articles/*.md', {
-		eager: true,
-		query: '?raw',
-		import: 'default'
-	}) as Record<string, string>;
 
 	let { article }: Props = $props();
 
-	const frontmatterBackgroundImage = $derived.by(() => backgroundImageFromFrontmatter(article.slug));
-	const backgroundImage = $derived.by(() => article.backgroundImage || frontmatterBackgroundImage || firstImageFromHtml(article.html));
-
-	function backgroundImageFromFrontmatter(slug: string): string {
-		const raw = Object.entries(rawArticleModules).find(([path]) => path.endsWith(`/${slug}.md`))?.[1];
-		if (!raw) return '';
-		const match = raw.match(/^---\n([\s\S]*?)\n---/);
-		if (!match) return '';
-		const frontmatter = match[1];
-		const field = frontmatter.match(/^(?:background_image|backgroundImage):\s*['"]?([^'"\n]+)['"]?\s*$/m);
-		return sanitizeImageUrl(field?.[1] ?? '');
-	}
+	const backgroundImage = $derived(
+		sanitizeImageUrl(article.visuals.background?.src ?? '') ||
+			sanitizeImageUrl(article.visuals.focal?.src ?? '') ||
+			firstImageFromHtml(article.html)
+	);
 
 	function firstImageFromHtml(html: string): string {
 		const match = html.match(/<img\b[^>]*\bsrc=(['"])(.*?)\1/i);
